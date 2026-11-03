@@ -146,8 +146,8 @@ function familyMenu(f) {
       },
     ];
     if (
-      player.day > player.married &&
-      (!player.kids.length || player.day - player.kids[player.kids.length - 1].born >= 2)
+      !player.kids.length ||
+      player.day - Math.max(...player.kids.filter((k) => !k.adopted).map((k) => k.born), -99) >= 1
     )
       opts.push({
         t: "Conversar sobre ter um filho",
