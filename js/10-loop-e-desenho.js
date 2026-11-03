@@ -249,6 +249,7 @@ function update(dt) {
   updateFishing(dt);
   updateElves(dt);
   updateAffection();
+  updateWedding();
   monitorPerformance(dt);
   game.musicT = (game.musicT || 0) - dt;
   if (game.musicT <= 0) {
@@ -1433,6 +1434,7 @@ function initVilaLife() {
       timer: Math.random() * 2,
       dir: "down",
     }));
+  initTownExtras();
   game.pets = [];
   for (let i = 0; i < (roads.length ? (player.zone === "vila" ? 6 : 3) : 0); i++) {
     const [x, y] = roads[Math.floor(Math.random() * roads.length)];
@@ -1699,6 +1701,7 @@ function updateWalkerRoutine(w, z, dt, festivalOnly) {
 }
 
 function updateVilaLife(dt) {
+  updateTownExtras(dt);
   const z = ZONES[player.zone];
   if (!z.town) return;
   if (game.lifeZone !== player.zone) initVilaLife();
@@ -2578,6 +2581,10 @@ function drawWorld(t) {
           );
         },
       });
+    }
+    for (const a of game.townActors || []) {
+      const ay = a.kind === "boat" ? a.y : a.kind === "gull" ? 99 : (a.ry ?? a.y);
+      list.push({ y: ay, draw: () => drawTownActor(a, t) });
     }
     for (const w of walkersAway() ? [] : game.walkers || []) {
       if (w.inside > 0 || !inView(Math.round(w.rx), Math.round(w.ry))) continue;
@@ -3564,6 +3571,7 @@ function draw() {
     drawWorld(t);
     drawBrawlScene(t);
     drawAffectionScene(t);
+    drawWeddingScene(t);
     if (dk) {
       ctx.restore();
       ctx.fillStyle = `rgba(255,120,170,${Math.min(0.18, player.drunk / 600)})`;
