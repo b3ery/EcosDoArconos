@@ -246,7 +246,8 @@ function bldAction(b) {
 function bldService(b) {
   if (!b) return;
   if (b.style === "escola") {
-    schoolMenu();
+    if (SPECIAL_SCHOOLS[b.id]) specialSchoolMenu(b.id);
+    else schoolMenu();
     return;
   }
   if (b.inn) {
