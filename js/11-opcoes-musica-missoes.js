@@ -215,6 +215,7 @@ function desiredTrack() {
   if (["title", "story", "create", "choose", "end"].includes(game.mode)) return "titulo";
   if (game.mode === "battle" && battle) return battle.e.boss || battle.e.eco ? "chefe" : "batalha";
   if (game.brawl) return "batalha";
+  if (game.wedding) return "festival";
   const zone = ZONES[player.zone];
   if (!zone) return "vila";
   if (player.zone === "interior" && game.inter && game.inter.st === "taverna" && tavernParty())
@@ -610,4 +611,544 @@ function secretVisitGift() {
   const gift = SECRET_VISIT_GIFTS[Math.floor(Math.random() * SECRET_VISIT_GIFTS.length)];
   addItem(gift);
   return ` Na despedida, você ganha ${ITEMS[gift].nome}.`;
+}
+
+/* ==========================================================================
+   FILHOS: ADOÇÃO NO TEMPLO
+   ========================================================================== */
+
+const KID_ROBES = ["#e86ab0", "#4a7ad9", "#7ab04a", "#f2c14e", "#c94a4a", "#8a4ad9"];
+const KID_HAIRS = ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a", "#e8e4dc"];
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+function randomKidLook(base) {
+  return {
+    skin: base && Math.random() < 0.5 ? base.skin : pick(["#f1c8a5", "#d9a07a", "#a8704a", "#7a4a2a"]),
+    hair: base && Math.random() < 0.5 ? base.hair : pick(KID_HAIRS),
+    hstyle: pick(["curto", "longo", "cacheado", "rabo"]),
+    hat: "nenhum",
+    hatc: "#2a2f6e",
+    outfit: pick(["tunica", "vestido", "manto"]),
+    robe: pick(KID_ROBES),
+  };
+}
+
+/** Qualquer pessoa pode adotar no Templo, casada ou não. */
+function adoptChild() {
+  const priest = "Padre Anselmo";
+  if (player.gold < 50) {
+    say([[priest, "A adoção pede uma doação de 50 de ouro para o orfanato do Templo."]]);
+    return;
+  }
+  say([[priest, "Há uma criança aqui que sonha com uma família. Que nome você quer dar a ela?"]], () =>
+    promptName("Nome da criança", "Como vai se chamar?", (name) => {
+      player.gold -= 50;
+      player.kids.push({ name, born: player.day - 2, look: randomKidLook(player.look), adopted: true });
+      repAdd(3);
+      saveGame();
+      playSound(784, 0.2, "sine");
+      setTimeout(() => playSound(1047, 0.3, "sine"), 180);
+      say([
+        [name, "Você... vai ser minha família de verdade?"],
+        ["", `${name} agora mora na sua casa. Reputação +3.`],
+      ]);
+    }),
+  );
+}
+
+/* ==========================================================================
+   CERIMÔNIA DE CASAMENTO
+   ========================================================================== */
+
+const WEDDING_DURATION = 10;
+const WEDDING_CAPTIONS = [
+  [0, "Os sinos do Templo da Luz tocam. A vila inteira veio ver."],
+  [0.22, 'Padre Anselmo: "Estamos aqui reunidos sob a luz das runas..."'],
+  [0.45, "Troca de alianças"],
+  [0.6, '"Pode beijar o seu amor."'],
+  [0.76, "Viva os noivos!"],
+];
+
+function startWedding(id) {
+  const guests = Object.keys(FRIENDS)
+    .filter((k) => k !== id && NPCS[k] && friendshipLevel(k) >= 1)
+    .slice(0, 10);
+  while (guests.length < 6) guests.push(pick(Object.keys(NPCS).filter((k) => NPCS[k].robe && k !== id)));
+  game.wedding = { id, start: game.t, guests, rang: false };
+  game.mode = "wedding";
+  byId("tgtpill").style.display = "none";
+  [392, 523, 523, 523, 392, 587, 523, 494, 523].forEach((f, i) =>
+    setTimeout(() => playSound(f, 0.5, "triangle", 0.04), i * 450),
+  );
+}
+
+function finishWedding() {
+  const id = game.wedding.id;
+  const name = NPCS[id].nome.split(",")[0];
+  game.wedding = null;
+  game.mode = "world";
+  player.spouse = id;
+  player.dating = null;
+  player.married = player.day;
+  Object.keys(FRIENDS).forEach((k) => (player.rel[k] = Math.min(100, friendship(k) + 5)));
+  saveGame();
+  say([
+    ["Padre Anselmo", `Pelo poder das runas, eu declaro ${player.name} e ${name} unidos para sempre!`],
+    ["Arquimaga Odelia", "Que a Canção Arcana proteja esta família."],
+    ["", `Vocês se casaram! ${name} agora mora com você, dentro da sua casa.`],
+    ["", `Para ter filhos, fale com ${name} em casa e escolha "Conversar sobre ter um filho".`],
+  ]);
+}
+
+function updateWedding() {
+  const w = game.wedding;
+  if (!w) return;
+  const p = (game.t - w.start) / WEDDING_DURATION;
+  if (p > 0.76 && !w.rang) {
+    w.rang = true;
+    [1047, 1319, 1568, 1319, 1047, 1568].forEach((f, i) =>
+      setTimeout(() => playSound(f, 0.7, "sine", 0.03), i * 260),
+    );
+  }
+  if (p >= 1) finishWedding();
+}
+
+function drawTempleBackdrop(W, t) {
+  ctx.fillStyle = "#2a2236";
+  ctx.fillRect(0, 0, W, 480);
+  ctx.fillStyle = "#3a3048";
+  ctx.fillRect(0, 300, W, 180);
+  for (let i = 0; i < 5; i++) {
+    const x = W / 2 - 260 + i * 130;
+    ctx.fillStyle = "#1c1428";
+    ctx.fillRect(x - 6, 40, 72, 150);
+    const colors = ["#ff7a3d", "#4fb8ff", "#9ff0cf", "#e0ab62", "#fff0a0"];
+    for (let r = 0; r < 4; r++)
+      for (let c = 0; c < 3; c++) {
+        ctx.fillStyle = colors[(i + r + c) % 5];
+        ctx.globalAlpha = 0.65 + 0.2 * Math.sin(t * 2 + r + c);
+        ctx.fillRect(x + c * 20, 48 + r * 34, 18, 32);
+      }
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = colors[i];
+    fillPolygon(x, 190, x + 60, 190, x + 120, 480, x - 60, 480);
+    ctx.globalAlpha = 1;
+  }
+  ctx.fillStyle = "#a82a2a";
+  ctx.fillRect(W / 2 - 40, 300, 80, 180);
+  ctx.fillStyle = "#f2c14e";
+  ctx.fillRect(W / 2 - 40, 300, 4, 180);
+  ctx.fillRect(W / 2 + 36, 300, 4, 180);
+  ctx.fillStyle = "#e8e4dc";
+  ctx.fillRect(W / 2 - 70, 236, 140, 40);
+  ctx.fillStyle = "#f2c14e";
+  ctx.fillRect(W / 2 - 70, 236, 140, 5);
+  for (const dx of [-90, 90]) {
+    ctx.fillStyle = "#c9a050";
+    ctx.fillRect(W / 2 + dx - 2, 220, 4, 60);
+    ctx.fillStyle = `rgba(255,214,107,${0.8 + 0.2 * Math.sin(t * 9 + dx)})`;
+    circle(W / 2 + dx, 216, 5);
+  }
+}
+
+function drawWeddingScene(t) {
+  const w = game.wedding;
+  if (!w) return;
+  const p = Math.min(1, (game.t - w.start) / WEDDING_DURATION);
+  const W = viewWidth,
+    cx = W / 2,
+    u = 4;
+  drawTempleBackdrop(W, t);
+
+  const celebrate = p > 0.76;
+  w.guests.forEach((id, i) => {
+    const n = NPCS[id];
+    const left = i % 2 === 0;
+    const row = Math.floor(i / 2);
+    const x = left ? cx - 150 - row * 60 : cx + 90 + row * 60;
+    const hop = celebrate ? Math.abs(Math.sin(t * 7 + i)) * 10 : 0;
+    ctx.fillStyle = "#5a3a1e";
+    ctx.fillRect(x - 6, 392, 76, 10);
+    drawSprite(wizardRects(n.robe, n.hat, n.hair, null, left ? "right" : "left"), x, 330 - hop, u, false);
+  });
+
+  drawSprite(wizardRects("#e8e4dc", null, "#d9d9d9", null, "down"), cx - 32, 182, u);
+
+  const walk = Math.min(1, p / 0.2);
+  const altarX = cx - 18;
+  const startX = -80;
+  const myX = startX + (altarX - 52 - startX) * walk;
+  const partnerX = startX - 50 + (altarX + 8 - startX + 50) * walk;
+  const kissing = p > 0.6 && p < 0.76;
+  const lean = kissing ? 0.08 : 0;
+  const baseY = 300 - 16 * u;
+  const n = NPCS[w.id];
+
+  ctx.save();
+  ctx.translate(myX + 8 * u, 300);
+  ctx.rotate(lean);
+  drawSprite(
+    heroRects(player.look, walk < 1 ? "right" : "right", null, walk < 1 ? walkFrame(true, t) : 0),
+    -8 * u,
+    -16 * u,
+    u,
+  );
+  drawKissFace(-8 * u, -16 * u, u, player.look.skin, kissing, p > 0.45 ? 1 : 0);
+  ctx.fillStyle = "#ff8aa8";
+  ctx.fillRect(-4 * u, -16 * u + 3 * u, 8 * u, u);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(partnerX + 8 * u, 300);
+  ctx.rotate(-lean);
+  drawSprite(
+    wizardRects(n.robe, null, n.hair, null, walk < 1 ? "right" : "left", walk < 1 ? walkFrame(true, t) : 0),
+    -8 * u,
+    -16 * u,
+    u,
+  );
+  drawKissFace(-8 * u, -16 * u, u, "#f1c8a5", kissing, p > 0.45 ? 1 : 0);
+  ctx.fillStyle = "rgba(255,255,255,.75)";
+  ctx.fillRect(-6 * u, -16 * u + 4 * u, 12 * u, 6 * u);
+  ctx.fillStyle = "#ffb3c8";
+  ctx.fillRect(-4 * u, -16 * u + 3 * u, 8 * u, u);
+  ctx.restore();
+
+  if (p > 0.45 && p < 0.6) {
+    const ringX = cx - 22,
+      ringY = 300 - 8 * u;
+    ctx.strokeStyle = "#f2c14e";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(ringX, ringY, 6, 0, 7);
+    ctx.stroke();
+    drawPixelIcon("sparkle", ringX, ringY - 16 - Math.sin(t * 6) * 3, 3);
+  }
+  if (kissing) drawPixelIcon("heart", cx - 22, baseY - 10 - (p - 0.6) * 120, 4);
+  if (celebrate) {
+    const colors = ["#ff6b8a", "#f2c14e", "#7fd0ff", "#9ff0cf", "#fff"];
+    for (let i = 0; i < 70; i++) {
+      const q = (t * 0.35 + i * 0.037) % 1;
+      ctx.fillStyle = colors[i % 5];
+      ctx.fillRect(((i * 53.7) % W) + Math.sin(t * 2 + i) * 14, q * 480, 4, 4);
+    }
+  }
+
+  const caption = WEDDING_CAPTIONS.filter(([at]) => p >= at).pop()[1];
+  ctx.fillStyle = "rgba(10,6,18,.7)";
+  ctx.fillRect(0, 430, W, 50);
+  ctx.fillStyle = "#ffe9a8";
+  ctx.font = '700 16px "Pixelify Sans", sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText(caption, cx, 460);
+}
+
+/* ==========================================================================
+   VIDA EM PORTO BRISAMAR E PEDRAVALE
+   ========================================================================== */
+
+/** Atores extras de cada vila: pescadores, carregadores, mineiros, cabras, barcos e gaivotas. */
+function initTownExtras() {
+  const actors = [];
+  if (player.zone === "porto") {
+    actors.push(
+      { kind: "fisher", x: 9, y: 28, robe: "#3a6a8a", hair: "#3a2414", hat: "#8a6a2a" },
+      { kind: "fisher", x: 21, y: 29, robe: "#8a3a3a", hair: "#d9d9d9", hat: null },
+      { kind: "fisher", x: 32, y: 27, robe: "#5a7a3a", hair: "#1a1a1a", hat: "#5a3a22" },
+      {
+        kind: "porter",
+        path: [
+          [20, 23],
+          [20, 13],
+          [24, 12],
+          [26, 10],
+        ],
+        robe: "#7a5a3a",
+        hair: "#3a2414",
+      },
+      {
+        kind: "porter",
+        path: [
+          [31, 23],
+          [31, 14],
+          [33, 12],
+          [35, 10],
+        ],
+        robe: "#4a5a7a",
+        hair: "#8a3a1a",
+      },
+      { kind: "sandcastle", x: 14, y: 23, robe: "#e86ab0", hair: "#d9a441" },
+      { kind: "sandcastle", x: 27, y: 23, robe: "#4a9ad9", hair: "#1a1a1a" },
+      { kind: "boat", x: 4, y: 30, v: 0.9 },
+      { kind: "boat", x: 30, y: 26.5, v: -0.6 },
+    );
+    for (let i = 0; i < 5; i++)
+      actors.push({ kind: "gull", cx: 6 + i * 8, cy: 20 + (i % 3), r: 2 + (i % 3), ph: i });
+  } else if (player.zone === "serra") {
+    actors.push(
+      {
+        kind: "miner",
+        path: [
+          [21, 9],
+          [21, 13],
+          [12, 13],
+          [6, 10],
+          [5, 9],
+        ],
+        robe: "#6a5a4a",
+        hair: "#3a2414",
+      },
+      {
+        kind: "miner",
+        path: [
+          [22, 9],
+          [22, 14],
+          [30, 14],
+          [32, 10],
+        ],
+        robe: "#5a5a6a",
+        hair: "#8a3a1a",
+      },
+      {
+        kind: "cart",
+        path: [
+          [20, 10],
+          [20, 14],
+          [8, 14],
+          [8, 10],
+        ],
+      },
+      { kind: "campfire", x: 22, y: 23 },
+      { kind: "sitter", x: 21, y: 23, dir: "right", robe: "#8a3a3a", hair: "#d9d9d9" },
+      { kind: "sitter", x: 23, y: 23, dir: "left", robe: "#3a6a8a", hair: "#3a2414" },
+      { kind: "sitter", x: 22, y: 24, dir: "up", robe: "#7a7a3a", hair: "#1a1a1a" },
+      { kind: "sparks", x: 5, y: 9 },
+    );
+    for (let i = 0; i < 4; i++)
+      actors.push({
+        kind: "goat",
+        x: 1 + (i % 3),
+        y: 22 + i * 2,
+        rx: 0,
+        ry: 0,
+        timer: i,
+        hx: 2,
+        hy: 22 + i * 2,
+      });
+  }
+  for (const a of actors) {
+    if (a.path) {
+      a.i = 0;
+      a.t = 0;
+      a.rx = a.path[0][0];
+      a.ry = a.path[0][1];
+      a.forward = true;
+    }
+    if (a.kind === "goat") {
+      a.rx = a.x;
+      a.ry = a.y;
+    }
+  }
+  game.townActors = actors;
+}
+
+function updateTownExtras(dt) {
+  for (const a of game.townActors || []) {
+    if (a.path) {
+      const speed = a.kind === "cart" ? 1.6 : 1.1;
+      const target = a.path[a.i + (a.forward ? 1 : -1)];
+      if (!target) {
+        a.forward = !a.forward;
+        a.wait = 2 + Math.random() * 2;
+        continue;
+      }
+      if (a.wait > 0) {
+        a.wait -= dt;
+        continue;
+      }
+      const dx = target[0] - a.rx,
+        dy = target[1] - a.ry,
+        dist = Math.hypot(dx, dy);
+      if (dist < 0.05) {
+        a.i += a.forward ? 1 : -1;
+        continue;
+      }
+      const step = Math.min(dist, speed * dt);
+      a.rx += (dx / dist) * step;
+      a.ry += (dy / dist) * step;
+      a.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up";
+    } else if (a.kind === "boat") {
+      a.x += a.v * dt;
+      if (a.x > 46) a.x = -4;
+      if (a.x < -4) a.x = 46;
+    } else if (a.kind === "goat") {
+      a.timer -= dt;
+      if (a.timer <= 0) {
+        a.timer = 1 + Math.random() * 3;
+        const [dx, dy] = pick(DIRS4);
+        const nx = a.x + dx,
+          ny = a.y + dy;
+        if (tileAt(player.zone, nx, ny) === "." && Math.abs(nx - a.hx) <= 2 && Math.abs(ny - a.hy) <= 3) {
+          a.x = nx;
+          a.y = ny;
+          a.flip = dx < 0;
+        }
+      }
+      a.rx += (a.x - a.rx) * Math.min(1, dt * 4);
+      a.ry += (a.y - a.ry) * Math.min(1, dt * 4);
+    } else if (a.kind === "fisher" && Math.random() < dt * 0.05) {
+      game.bubbles.push({ x: a.x, y: a.y, icon: "fish", t: 2 });
+    }
+  }
+}
+
+function drawPerson(a, x, y, dir, frame, t) {
+  ctx.fillStyle = "rgba(0,0,0,.22)";
+  ctx.beginPath();
+  ctx.ellipse(x + 16, y + 30, 8, 3, 0, 0, 7);
+  ctx.fill();
+  drawSprite(wizardRects(a.robe, a.hat || null, a.hair, null, dir, frame), x, y, 2, dir === "left");
+}
+
+function drawTownActor(a, t) {
+  const X = (a.rx ?? a.x) * TILE,
+    Y = (a.ry ?? a.y) * TILE;
+  switch (a.kind) {
+    case "fisher": {
+      drawPerson(a, X, Y, "down", 0, t);
+      const bob = Math.sin(t * 2 + a.x) * 2;
+      ctx.strokeStyle = "#6b4423";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(X + 24, Y + 18);
+      ctx.lineTo(X + 34, Y - 4);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(240,240,240,.7)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(X + 34, Y - 4);
+      ctx.lineTo(X + 36, Y + 44 + bob);
+      ctx.stroke();
+      ctx.fillStyle = "#e0303a";
+      circle(X + 36, Y + 44 + bob, 2.5);
+      break;
+    }
+    case "porter":
+    case "miner": {
+      const moving = !a.wait;
+      drawPerson(a, X, Y, a.dir || "down", walkFrame(moving, t), t);
+      if (a.kind === "porter") {
+        ctx.fillStyle = "#a8844e";
+        ctx.fillRect(X + 8, Y - 10, 16, 12);
+        ctx.strokeStyle = "#6b4423";
+        ctx.strokeRect(X + 8.5, Y - 9.5, 15, 11);
+      } else {
+        ctx.fillStyle = "#6b4423";
+        ctx.fillRect(X + 24, Y + 4, 2, 16);
+        ctx.fillStyle = "#9aa0b4";
+        ctx.fillRect(X + 20, Y + 2, 10, 3);
+      }
+      break;
+    }
+    case "cart":
+      ctx.fillStyle = "rgba(0,0,0,.25)";
+      ctx.fillRect(X + 2, Y + 26, 28, 4);
+      ctx.fillStyle = "#5a5a62";
+      ctx.fillRect(X + 4, Y + 10, 24, 14);
+      ctx.fillStyle = "#3a3a44";
+      ctx.fillRect(X + 4, Y + 10, 24, 3);
+      ctx.fillStyle = "#5fd0ff";
+      ctx.fillRect(X + 8, Y + 6, 6, 5);
+      ctx.fillStyle = "#8a8478";
+      ctx.fillRect(X + 15, Y + 5, 8, 6);
+      ctx.fillStyle = "#222";
+      circle(X + 9, Y + 26, 3);
+      circle(X + 23, Y + 26, 3);
+      break;
+    case "sandcastle": {
+      ctx.fillStyle = "#d9c08a";
+      ctx.fillRect(X + 14, Y + 18, 16, 10);
+      ctx.fillRect(X + 16, Y + 12, 4, 6);
+      ctx.fillRect(X + 24, Y + 12, 4, 6);
+      ctx.fillStyle = "#e0303a";
+      ctx.fillRect(X + 21, Y + 6, 1, 8);
+      fillPolygon(X + 22, Y + 6, X + 27, Y + 8, X + 22, Y + 10);
+      ctx.save();
+      ctx.translate(X + 6, Y + 32);
+      ctx.scale(0.7, 0.7);
+      drawSprite(wizardRects(a.robe, null, a.hair, null, "right", Math.sin(t * 3) > 0 ? 1 : 0), -16, -32, 2);
+      ctx.restore();
+      break;
+    }
+    case "boat": {
+      const bob = Math.sin(t * 1.5 + a.y) * 2;
+      const bx = a.x * TILE,
+        by = a.y * TILE + bob;
+      ctx.fillStyle = "#6b4423";
+      fillPolygon(bx - 24, by, bx + 24, by, bx + 16, by + 12, bx - 16, by + 12);
+      ctx.fillStyle = "#5a3a22";
+      ctx.fillRect(bx - 1, by - 34, 3, 34);
+      ctx.fillStyle = "#f3ead2";
+      fillPolygon(bx + 2, by - 32, bx + 22, by - 6, bx + 2, by - 6);
+      ctx.fillStyle = "#c94a4a";
+      fillPolygon(bx + 2, by - 34, bx + 10, by - 31, bx + 2, by - 28);
+      break;
+    }
+    case "gull": {
+      const gx = (a.cx + Math.cos(t * 0.6 + a.ph) * a.r * 2) * TILE,
+        gy = (a.cy + Math.sin(t * 0.8 + a.ph) * a.r) * TILE - 40;
+      const flap = Math.sin(t * 10 + a.ph) > 0 ? -3 : 1;
+      ctx.strokeStyle = "#f2f2f2";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(gx - 7, gy + flap);
+      ctx.lineTo(gx, gy);
+      ctx.lineTo(gx + 7, gy + flap);
+      ctx.stroke();
+      break;
+    }
+    case "campfire": {
+      ctx.fillStyle = "#5a3a22";
+      ctx.fillRect(X + 6, Y + 22, 20, 4);
+      ctx.fillRect(X + 10, Y + 18, 12, 4);
+      const f = Math.sin(t * 12) * 2;
+      ctx.fillStyle = "#ff7a3d";
+      fillPolygon(X + 8, Y + 22, X + 16 + f, Y + 2, X + 24, Y + 22);
+      ctx.fillStyle = "#ffd34d";
+      fillPolygon(X + 12, Y + 22, X + 16 - f, Y + 9, X + 20, Y + 22);
+      ctx.fillStyle = "rgba(255,170,80,.18)";
+      circle(X + 16, Y + 16, 30);
+      break;
+    }
+    case "sitter":
+      drawPerson(a, X, Y + 6, a.dir, 0, t);
+      break;
+    case "sparks":
+      for (let i = 0; i < 6; i++) {
+        const q = (t * 1.5 + i / 6) % 1;
+        ctx.globalAlpha = 1 - q;
+        ctx.fillStyle = i % 2 ? "#ffd34d" : "#ff7a3d";
+        ctx.fillRect(X + 16 + Math.sin(i * 2.3) * q * 20, Y + 10 - q * 30, 2, 2);
+      }
+      ctx.globalAlpha = 1;
+      break;
+    case "goat": {
+      const f = a.flip;
+      const r = (x, y, w, h, c) => {
+        ctx.fillStyle = c;
+        ctx.fillRect(f ? X + 32 - x - w : X + x, Y + y, w, h);
+      };
+      ctx.fillStyle = "rgba(0,0,0,.2)";
+      ctx.fillRect(X + 6, Y + 28, 20, 3);
+      r(8, 14, 16, 9, "#e8e4dc");
+      r(22, 9, 7, 7, "#e8e4dc");
+      r(23, 6, 2, 3, "#8a8478");
+      r(27, 6, 2, 3, "#8a8478");
+      r(9, 23, 2, 5, "#8a8478");
+      r(20, 23, 2, 5, "#8a8478");
+      r(27, 12, 1, 1, "#222");
+      r(26, 16, 2, 3, "#d9d9d9");
+      break;
+    }
+  }
 }
