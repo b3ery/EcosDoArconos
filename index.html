@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Ecos do Arcano — A Magia Perdida</title>
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=VT323&display=swap"
+    />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <div id="wrap">
+      <!-- ================= TELA DO JOGO ================= -->
+      <div id="screen">
+        <canvas id="cv" width="1280" height="960" aria-label="Ecos do Arcano"></canvas>
+
+        <!-- HUD -->
+        <div id="hud" class="ui"></div>
+        <button id="fsb" class="ui" title="Tela cheia (F)">⛶</button>
+        <button id="optb" class="ui" title="Opções (O)">≡</button>
+        <div id="qpill" class="box ui" role="button" title="Ver missões (Q)"></div>
+        <div id="tgtpill" class="box ui"></div>
+
+        <!-- ================= BATALHA ================= -->
+        <div id="battle" class="ui">
+          <div id="ebox" class="box">
+            <div id="ename"></div>
+            <div class="bar"><i id="ehp"></i></div>
+            <div id="einfo" class="chips"></div>
+          </div>
+
+          <div id="bpanel" class="box">
+            <div id="blog"></div>
+
+            <div id="resw">
+              <span>Ressonância</span>
+              <div class="bar"><i id="resb"></i></div>
+              <button id="bUlt">✦ Canção Arcana</button>
+            </div>
+
+            <div class="brow">
+              <div id="rbtns" class="brow"></div>
+              <div id="weave">
+                <div class="slot" id="s0"></div>
+                <div class="slot" id="s1"></div>
+                <div id="prev"></div>
+              </div>
+            </div>
+
+            <div class="brow">
+              <button id="bCast">Lançar</button>
+              <button id="bClear">Limpar</button>
+              <button id="bDef">Defender</button>
+              <button id="bPot">Poção</button>
+              <button id="bEth">Éter</button>
+              <button id="bRun">Fugir</button>
+            </div>
+          </div>
+
+          <div id="disc" class="box">
+            <div class="t">Magia recuperada</div>
+            <div class="n"></div>
+            <div class="l"></div>
+          </div>
+        </div>
+
+        <!-- ================= JANELAS ================= -->
+        <div id="dialog" class="box ui">
+          <canvas id="dport" width="96" height="84"></canvas>
+          <div id="dwho"></div>
+          <div id="dtxt"></div>
+          <div id="dnext">▼</div>
+        </div>
+
+        <div id="grim" class="box ui"></div>
+        <div id="quests" class="box ui"></div>
+        <div id="inv" class="box ui ov"></div>
+        <div id="shop" class="box ui ov"></div>
+        <div id="choice" class="box ui"></div>
+        <div id="tut" class="box ui"></div>
+        <div id="toast" class="box ui"></div>
+        <div id="options" class="box ui ov"></div>
+
+        <!-- ================= TELA DE TÍTULO ================= -->
+        <div id="title" class="over ui">
+          <h1>Ecos do Arcano</h1>
+          <div class="sub">
+            A Magia Perdida<br />
+            <span class="sub-note">A história de um mundo que esqueceu como sonhar</span>
+          </div>
+          <div class="btns">
+            <button id="btnNew">Novo jogo</button>
+            <button id="btnCont">Continuar</button>
+            <button id="btnOpt">Opções</button>
+          </div>
+          <div class="ctl">
+            Mover: setas ou WASD · Interagir: E ou Espaço · Inventário: I · Missões: Q · Grimório: G · Mapa: M
+            · Tela cheia: F<br />
+            Batalha: teclas 1–6 escolhem runas, Enter lança
+          </div>
+        </div>
+
+        <!-- ================= HISTÓRIA ================= -->
+        <div id="story" class="over ui">
+          <div id="stxt"></div>
+          <div id="sdots" class="sdots"></div>
+          <div class="sbtns">
+            <button id="sNext">Continuar</button>
+            <button id="sSkip">Pular</button>
+          </div>
+        </div>
+
+        <!-- ================= CRIAÇÃO DE PERSONAGEM ================= -->
+        <div id="create" class="over ui"></div>
+
+        <!-- ================= ESCOLHA DE ELEMENTO ================= -->
+        <div id="choose" class="over ui">
+          <h2>Qual runa ainda ecoa em você?</h2>
+          <div class="text-muted">
+            Ela será sua afinidade: mais dano com esse elemento e uma habilidade única. As outras cinco estão
+            com os Guardiões, a Academia em ruínas e o vitral do Templo.
+          </div>
+          <div id="cards" class="cards"></div>
+        </div>
+
+        <!-- ================= FINAL ================= -->
+        <div id="end" class="over ui">
+          <h1>Fim</h1>
+          <div class="sub">
+            O Segredo dos Irmãos<br />
+            <span class="sub-note">A Canção Arcana voltou.</span>
+          </div>
+          <div id="estats" class="stats"></div>
+          <div class="btns">
+            <button id="btnKeep">Continuar jogando ▶</button>
+            <button id="btnAgain">Jogar de novo</button>
+          </div>
+          <div class="end-note">
+            Continue explorando para completar as missões secundárias, cuidar da família e da vila.
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CONTROLES DE TOQUE ================= -->
+      <div id="touch">
+        <div id="joy" class="joy" aria-label="Mover">
+          <div id="knob" class="knob"></div>
+        </div>
+
+        <div class="abx">
+          <div class="small">
+            <button id="tI">Itens</button>
+            <button id="tQ">Missões</button>
+            <button id="tM">Mapa</button>
+            <button id="tG">Grimório</button>
+            <button id="tC">Cavalo</button>
+            <button id="tZ">Zoom</button>
+            <button id="tR">Decorar</button>
+            <button id="tO">Opções</button>
+          </div>
+          <div class="big">
+            <button id="tB" aria-label="Voltar">B</button>
+            <button id="tA" aria-label="Interagir">A</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= RODAPÉ (ATALHOS) ================= -->
+      <div id="keys">
+        Setas/WASD movem · E interage · I inventário · Q missões · G grimório · M mapa · N minimapa · Z zoom ·
+        C cavalo · Em batalha: 1–6 runas, Enter lança, D defende
+      </div>
+    </div>
+
+    <!-- ================= SCRIPTS (a ordem importa) ================= -->
+    <script src="js/01-dados.js"></script>
+    <script src="js/02-estado-som-sprites.js"></script>
+    <script src="js/03-mapa-e-mundo.js"></script>
+    <script src="js/04-geracao-do-mundo.js"></script>
+    <script src="js/05-familia-e-vida-social.js"></script>
+    <script src="js/06-festivais-amizades-dialogos.js"></script>
+    <script src="js/07-trabalhos-comercio-ataques.js"></script>
+    <script src="js/08-interface.js"></script>
+    <script src="js/09-batalha.js"></script>
+    <script src="js/10-loop-e-desenho.js"></script>
+    <script src="js/11-opcoes-musica-missoes.js"></script>
+    <script src="js/12-entrada.js"></script>
+  </body>
+</html>
