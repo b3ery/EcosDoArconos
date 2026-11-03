@@ -489,6 +489,50 @@ function drawPathTile(X, Y, h) {
   ctx.fillRect(X + Math.floor((1 - h) * 22) + 5, Y + Math.floor(h * 20) + 8, 2, 2);
 }
 const ON_PATH = "nSJlbxkRWNCPMKhTwqtAoZYVzuE";
+/** Coqueiro do litoral. */
+function drawPalm(X, Y, h, t) {
+  const sway = Math.sin(t * 1.2 + h * 6) * 2;
+  ctx.fillStyle = "rgba(0,0,0,.2)";
+  ctx.beginPath();
+  ctx.ellipse(X + 16, Y + 29, 9, 3, 0, 0, 7);
+  ctx.fill();
+  ctx.fillStyle = "#8a6038";
+  for (let i = 0; i < 6; i++) ctx.fillRect(X + 13 + i * 0.6, Y + 28 - i * 5, 5, 6);
+  ctx.fillStyle = "#3d8a3a";
+  const cx = X + 17 + sway,
+    cy = Y - 2;
+  fillPolygon(cx, cy, cx - 18, cy + 6, cx - 14, cy + 2);
+  fillPolygon(cx, cy, cx + 18, cy + 6, cx + 14, cy + 2);
+  fillPolygon(cx, cy, cx - 10, cy - 10, cx - 4, cy - 4);
+  fillPolygon(cx, cy, cx + 10, cy - 10, cx + 4, cy - 4);
+  ctx.fillStyle = "#5aa84a";
+  fillPolygon(cx, cy, cx - 16, cy + 3, cx - 8, cy);
+  fillPolygon(cx, cy, cx + 16, cy + 3, cx + 8, cy);
+  ctx.fillStyle = "#6b4423";
+  circle(cx - 2, cy + 3, 2.5);
+  circle(cx + 2, cy + 4, 2.5);
+}
+
+/** Pinheiro da serra (com neve no inverno). */
+function drawPine(X, Y, h) {
+  ctx.fillStyle = "rgba(0,0,0,.2)";
+  ctx.beginPath();
+  ctx.ellipse(X + 16, Y + 29, 9, 3, 0, 0, 7);
+  ctx.fill();
+  ctx.fillStyle = "#4a3020";
+  ctx.fillRect(X + 14, Y + 22, 4, 8);
+  const greens = ["#1f4a32", "#2a5a3a", "#356a44"];
+  for (let i = 0; i < 3; i++) {
+    ctx.fillStyle = greens[i];
+    fillPolygon(X + 16, Y - 8 + i * 9, X + 4 + i * 1, Y + 10 + i * 6, X + 28 - i * 1, Y + 10 + i * 6);
+  }
+  if (season().id === "inv") {
+    ctx.fillStyle = "#f2f6fa";
+    fillPolygon(X + 16, Y - 8, X + 12, Y - 1, X + 20, Y - 1);
+    ctx.fillRect(X + 8, Y + 15, 16, 2);
+  }
+}
+
 function drawTile(z, x, y, c, t) {
   const theme = ZONES[z].theme,
     th = THEMES[theme],
@@ -1082,7 +1126,9 @@ function drawTile(z, x, y, c, t) {
       ctx.fillRect(X + 15, Y + 6, 2, 8);
       break;
     case "T":
-      drawWall("bosque", X, Y, h, t);
+      if (theme === "porto") drawPalm(X, Y, h, t);
+      else if (theme === "serra") drawPine(X, Y, h);
+      else drawWall("bosque", X, Y, h, t);
       break;
     case ",":
       ctx.fillStyle = "#a8916a";
