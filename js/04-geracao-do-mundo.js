@@ -55,8 +55,7 @@ function caWalls(m, w, h, it) {
       for (let x = 1; x < w - 1; x++) {
         let c = 0;
         for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++)
-            if ((dx || dy) && m[y + dy][x + dx] === "#") c++;
+          for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && m[y + dy][x + dx] === "#") c++;
         n[y][x] = c >= 5 ? "#" : c <= 3 ? "." : m[y][x];
       }
     m = n;
@@ -129,9 +128,7 @@ function finalize(id, d, m, w, h, open, npcs, inner) {
       if ("GNFCP".includes(c)) feats.push([x, y, c]);
       if (c === "G") guardPos = [x, y];
     }
-  const spawn = inner
-    ? flood(m, w, h, inner).filter(([x, y]) => m[y][x] === ".")
-    : [];
+  const spawn = inner ? flood(m, w, h, inner).filter(([x, y]) => m[y][x] === ".") : [];
   const npcList = Object.keys(npcs).map((k) => {
     const [x, y] = k.split(",").map(Number);
     return [x, y, npcs[k]];
@@ -453,15 +450,11 @@ const STALLS = {
   "50,24": "brinquedos",
 };
 const DOORS = {};
-VILLAGE_BUILDINGS.forEach((b) =>
-  b.door.forEach((dx) => (DOORS[dx + "," + (b.y + b.h - 1)] = b)),
-);
+VILLAGE_BUILDINGS.forEach((b) => b.door.forEach((dx) => (DOORS[dx + "," + (b.y + b.h - 1)] = b)));
 function genVila(d) {
   const w = 64,
     h = 48;
-  const m = makeGrid(w, h, (x, y) =>
-    x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : ".",
-  );
+  const m = makeGrid(w, h, (x, y) => (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : "."));
   const set = (x, y, c) => {
     if (x > 0 && y > 0 && x < w - 1 && y < h - 1) m[y][x] = c;
   };
@@ -490,8 +483,7 @@ function genVila(d) {
   fill(40, 15, 49, 24, ",");
   fill(25, 25, 49, 25, ",");
   for (let y = 1; y < h - 1; y++) {
-    m[y][52] = m[y][53] =
-      y === 12 || y === 13 || y === 26 || y === 27 ? "=" : "~";
+    m[y][52] = m[y][53] = y === 12 || y === 13 || y === 26 || y === 27 ? "=" : "~";
   }
   border(13, 3, 21, 9, "f");
   set(17, 9, ".");
@@ -663,11 +655,7 @@ function genVila(d) {
     for (let x = 1; x < w - 1; x++)
       if (m[y][x] === "T") {
         for (const [dx, dy] of DIRS4) {
-          if (
-            m[y + dy] &&
-            m[y + dy][x + dx] === "." &&
-            (x * 13 + y * 7) % 4 === 0
-          ) {
+          if (m[y + dy] && m[y + dy][x + dx] === "." && (x * 13 + y * 7) % 4 === 0) {
             set(x + dx, y + dy, "u");
             break;
           }
@@ -814,15 +802,12 @@ function genVila(d) {
   trees.forEach(([x, y]) => {
     if (m[y] && m[y][x] === ".") set(x, y, "T");
   });
-  for (let x = 33; x <= 50; x++)
-    if (m[36][x] === "." || m[36][x] === "w") set(x, 36, ",");
+  for (let x = 33; x <= 50; x++) if (m[36][x] === "." || m[36][x] === "w") set(x, 36, ",");
   for (let x = 31; x <= 50; x++) {
     if (m[40][x] !== "H" && m[40][x] !== "D") set(x, 40, ",");
-    if (m[45][x] !== "H" && m[45][x] !== "D" && m[45][x] !== "N")
-      set(x, 45, ",");
+    if (m[45][x] !== "H" && m[45][x] !== "D" && m[45][x] !== "N") set(x, 45, ",");
   }
-  for (let y = 14; y <= 25; y++)
-    for (let x = 40; x <= 51; x++) if (m[y][x] !== "M") set(x, y, ",");
+  for (let y = 14; y <= 25; y++) for (let x = 40; x <= 51; x++) if (m[y][x] !== "M") set(x, y, ",");
   Object.keys(STALLS).forEach((k) => {
     const [x, y] = k.split(",").map(Number);
     set(x, y, "M");
@@ -881,9 +866,7 @@ function genNatural(id, d) {
     w = d.w,
     h = d.h;
   let m = makeGrid(w, h, (x, y) =>
-    x === 0 || y === 0 || x === w - 1 || y === h - 1 || R() < d.wall
-      ? "#"
-      : ".",
+    x === 0 || y === 0 || x === w - 1 || y === h - 1 || R() < d.wall ? "#" : ".",
   );
   m = caWalls(m, w, h, 5);
   for (let x = 0; x < w; x++) {
@@ -905,10 +888,7 @@ function genNatural(id, d) {
   const guard = pt(d.guardF),
     altar = pt(d.altarF),
     page = pt(d.pageF);
-  const wp = [0, 1, 2, 3, 4, 5].map(() => [
-    4 + Math.floor(R() * (w - 8)),
-    4 + Math.floor(R() * (h - 8)),
-  ]);
+  const wp = [0, 1, 2, 3, 4, 5].map(() => [4 + Math.floor(R() * (w - 8)), 4 + Math.floor(R() * (h - 8))]);
   const c = (a, b) => carvePath(m, a, b, R, w, h);
   c(inner, altar);
   c(altar, guard);
@@ -938,10 +918,7 @@ function genNatural(id, d) {
   clear(inner, 2);
   clear(page, 1);
   const perp = v[0] === 0 ? [1, 0] : [0, 1];
-  const npc = [
-    inner[0] + v[0] * 2 + perp[0] * 3,
-    inner[1] + v[1] * 2 + perp[1] * 3,
-  ];
+  const npc = [inner[0] + v[0] * 2 + perp[0] * 3, inner[1] + v[1] * 2 + perp[1] * 3];
   clear(npc, 1);
   m[guard[1]][guard[0]] = "G";
   m[altar[1]][altar[0]] = "F";
@@ -949,11 +926,9 @@ function genNatural(id, d) {
   m[npc[1]][npc[0]] = "N";
   if (d.water) {
     const path = new Set();
-    for (let y = 0; y < h; y++)
-      for (let x = 0; x < w; x++) if (m[y][x] === ".") path.add(x + "," + y);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (m[y][x] === ".") path.add(x + "," + y);
     const prot = [guard, altar, page, npc, inner, open];
-    const isProt = (x, y) =>
-      prot.some((p) => Math.abs(p[0] - x) <= 3 && Math.abs(p[1] - y) <= 3);
+    const isProt = (x, y) => prot.some((p) => Math.abs(p[0] - x) <= 3 && Math.abs(p[1] - y) <= 3);
     const putW = (x, y) => {
       if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1 || isProt(x, y)) return;
       const c = m[y][x];
@@ -968,11 +943,7 @@ function genNatural(id, d) {
       let c0 = Math.round(M * (0.3 + R() * 0.4)),
         ph = R() * 6;
       for (let i = 1; i < L - 1; i++) {
-        c0 = clampi(
-          c0 + Math.round(Math.sin(i * 0.18 + ph) * 0.9 + (R() - 0.5) * 0.8),
-          3,
-          M - 4,
-        );
+        c0 = clampi(c0 + Math.round(Math.sin(i * 0.18 + ph) * 0.9 + (R() - 0.5) * 0.8), 3, M - 4);
         for (let k = 0; k < 2; k++) {
           vert ? putW(c0 + k, i) : putW(i, c0 + k);
         }
@@ -995,15 +966,7 @@ function genNatural(id, d) {
           const X = cx2 + dx,
             Y = cy2 + dy;
           const dd = Math.hypot(dx, dy * 1.2) + (tileHash(X, Y) - 0.5) * 1.6;
-          if (
-            dd < rad &&
-            X > 1 &&
-            Y > 1 &&
-            X < w - 2 &&
-            Y < h - 2 &&
-            !isProt(X, Y) &&
-            m[Y][X] !== "="
-          ) {
+          if (dd < rad && X > 1 && Y > 1 && X < w - 2 && Y < h - 2 && !isProt(X, Y) && m[Y][X] !== "=") {
             if (m[Y][X] === "." || m[Y][X] === "#") m[Y][X] = "~";
           }
         }
@@ -1029,11 +992,7 @@ function genNatural(id, d) {
       while ((x !== b[0] || y !== b[1]) && g < 500) {
         g++;
         st();
-        if (
-          x !== b[0] &&
-          (Math.abs(b[0] - x) >= Math.abs(b[1] - y) || y === b[1])
-        )
-          x += Math.sign(b[0] - x);
+        if (x !== b[0] && (Math.abs(b[0] - x) >= Math.abs(b[1] - y) || y === b[1])) x += Math.sign(b[0] - x);
         else y += Math.sign(b[1] - y);
       }
       st();
@@ -1107,15 +1066,7 @@ function genDungeon(id, d) {
       rh = 4 + Math.floor(R() * 5);
     const x = 2 + Math.floor(R() * (w - rw - 4)),
       y = 2 + Math.floor(R() * (h - rh - 4));
-    if (
-      !rooms.some(
-        (r) =>
-          x < r.x + r.w + 2 &&
-          x + rw + 2 > r.x &&
-          y < r.y + r.h + 2 &&
-          y + rh + 2 > r.y,
-      )
-    )
+    if (!rooms.some((r) => x < r.x + r.w + 2 && x + rw + 2 > r.x && y < r.y + r.h + 2 && y + rh + 2 > r.y))
       rooms.push({
         x,
         y,
@@ -1124,8 +1075,7 @@ function genDungeon(id, d) {
       });
   }
   for (const r of rooms)
-    for (let y = r.y; y < r.y + r.h; y++)
-      for (let x = r.x; x < r.x + r.w; x++) m[y][x] = ".";
+    for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) m[y][x] = ".";
   const ctr = (r) => [r.x + (r.w >> 1), r.y + (r.h >> 1)];
   const corr = (a, b) => {
     let [x, y] = ctr(a);
@@ -1177,17 +1127,12 @@ function genDungeon(id, d) {
   }
   let nb = null;
   for (const a of others) {
-    if (!nb || manhattan(ctr(a), ctr(boss)) < manhattan(ctr(nb), ctr(boss)))
-      nb = a;
+    if (!nb || manhattan(ctr(a), ctr(boss)) < manhattan(ctr(nb), ctr(boss))) nb = a;
   }
   corr(nb || rooms[0], boss);
   for (let i = 0; i < 3 && others.length > 2; i++)
-    corr(
-      others[Math.floor(R() * others.length)],
-      others[Math.floor(R() * others.length)],
-    );
-  for (let y = 0; y < 3; y++)
-    for (let x = mid - 1; x <= mid + 1; x++) m[y][x] = ".";
+    corr(others[Math.floor(R() * others.length)], others[Math.floor(R() * others.length)]);
+  for (let y = 0; y < 3; y++) for (let x = mid - 1; x <= mid + 1; x++) m[y][x] = ".";
   const bc = ctr(boss);
   m[bc[1]][bc[0]] = "G";
   m[rooms[0].y + rooms[0].h - 2][rooms[0].x + 1] = "N";
@@ -1394,9 +1339,7 @@ ZONES.vila.town = {
 function buildTown(id, spec) {
   const w = spec.w,
     h = spec.h;
-  const m = makeGrid(w, h, (x, y) =>
-    x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : ".",
-  );
+  const m = makeGrid(w, h, (x, y) => (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : "."));
   const set = (x, y, c) => {
     if (x > 0 && y > 0 && x < w - 1 && y < h - 1) m[y][x] = c;
   };
@@ -2193,9 +2136,7 @@ ZONES.casa = (function () {
   return z;
 })();
 ZONES.interior = (function () {
-  const m = makeGrid(12, 10, (x, y) =>
-    x === 0 || y === 0 || x === 11 || y === 9 || y === 1 ? "#" : ".",
-  );
+  const m = makeGrid(12, 10, (x, y) => (x === 0 || y === 0 || x === 11 || y === 9 || y === 1 ? "#" : "."));
   m[9][5] = "X";
   m[9][6] = "X";
   const z = finalize("interior", ZONE_DEFS.interior, m, 12, 10, {}, {}, null);
@@ -2221,9 +2162,7 @@ const FURN_DEF = {
 };
 function furnAt(x, y, solidOnly) {
   return player.zone === "casa"
-    ? (player.furn || []).find(
-        (f) => f.x === x && f.y === y && (!solidOnly || !furnWalk(f.id)),
-      )
+    ? (player.furn || []).find((f) => f.x === x && f.y === y && (!solidOnly || !furnWalk(f.id)))
     : null;
 }
 function furnWalk(id) {
@@ -2257,10 +2196,7 @@ function enterHouse() {
     setTimeout(
       () =>
         say([
-          [
-            "",
-            "Sua casa! Aqui você dorme, troca de roupa e mora com sua família.",
-          ],
+          ["", "Sua casa! Aqui você dorme, troca de roupa e mora com sua família."],
           [
             "",
             "Aperte R (ou o botão Decorar) para decorar: compre móveis na Marcenaria do Tonico e coloque onde quiser.",
@@ -2365,9 +2301,7 @@ function renderDecor() {
   const [fx, fy] = frontTile(),
     fr = furnAt(fx, fy),
     ok = canPlace(fx, fy);
-  const ids = Object.keys(player.inv).filter(
-    (id) => ITEMS[id].tipo === "movel",
-  );
+  const ids = Object.keys(player.inv).filter((id) => ITEMS[id].tipo === "movel");
   let h = `<div class="gh"><h2>Decorar a casa</h2><button id="shclose">Fechar (Esc)</button></div>
   <div class="gsub">Fique de frente para um espaço vazio e escolha um móvel. Para tirar um móvel, fique de frente para ele e guarde.</div>
   <div class="irow"><div><div class="nm">À sua frente: ${fr ? furnName(fr.id) : ok ? "espaço vazio ✓" : "não dá para colocar aqui"}</div></div>${fr ? '<button id="dpick">Guardar este móvel</button>' : ""}</div>
@@ -2468,13 +2402,7 @@ function drawFurn(f, t) {
       c("#7f796d", 1, -10, 30, 38);
       c("#6a655b", 1, -10, 30, 4);
       c("#2a1a10", 7, 4, 18, 20);
-      c(
-        `rgb(255,${140 + Math.floor(Math.sin(t * 9) * 40)},40)`,
-        10,
-        14 + Math.sin(t * 7) * 2,
-        12,
-        10,
-      );
+      c(`rgb(255,${140 + Math.floor(Math.sin(t * 9) * 40)},40)`, 10, 14 + Math.sin(t * 7) * 2, 12, 10);
       c("#ffd66b", 13, 18, 6, 6);
       break;
     case "mesa":
@@ -2501,9 +2429,7 @@ function drawFurn(f, t) {
         c("#3a2414", 4, -9 + r * 12, 24, 9);
         for (let k = 0; k < 5; k++)
           c(
-            ["#c94a4a", "#4a74c9", "#5a9a4a", "#d9a441", "#8a4ad9"][
-              (k + r) % 5
-            ],
+            ["#c94a4a", "#4a74c9", "#5a9a4a", "#d9a441", "#8a4ad9"][(k + r) % 5],
             5 + k * 5,
             -8 + r * 12,
             4,
@@ -2958,9 +2884,7 @@ function genInterior(b) {
     ["barrel", 1, 5],
     ["crate", w - 2, 5],
   ];
-  const props0 = (INTER_PROPS[st] || []).filter(
-    ([id, x, y]) => x < w - 1 && y < h - 1 && m[y][x] === ".",
-  );
+  const props0 = (INTER_PROPS[st] || []).filter(([id, x, y]) => x < w - 1 && y < h - 1 && m[y][x] === ".");
   const props = props0.concat(
     extra.filter(
       ([id, x, y]) =>
@@ -2976,11 +2900,7 @@ function genInterior(b) {
   const free = [];
   for (let y = 5; y < h - 2; y++)
     for (let x = 1; x < w - 1; x++)
-      if (
-        m[y][x] === "." &&
-        !props.some((p) => p[1] === x && p[2] === y) &&
-        Math.abs(x - cx) > 1
-      )
+      if (m[y][x] === "." && !props.some((p) => p[1] === x && p[2] === y) && Math.abs(x - cx) > 1)
         free.push([x, y]);
   const nPeople =
     st === "taverna"
@@ -3005,9 +2925,7 @@ function genInterior(b) {
       robe: robes[i % 5],
       hair: hairs[(i + 2) % 5],
       hat: big ? "#5a5a6a" : null,
-      nm: big
-        ? "Guarda Real"
-        : WALKER_NAMES[Math.floor(Math.random() * WALKER_NAMES.length)],
+      nm: big ? "Guarda Real" : WALKER_NAMES[Math.floor(Math.random() * WALKER_NAMES.length)],
       guard: big,
       dance: st === "taverna" && tavernParty() && i % 2 === 0,
     });
@@ -3020,6 +2938,12 @@ function genInterior(b) {
       [10, 6],
       [3, 8],
       [5, 8],
+      [8, 8],
+      [10, 8],
+      [2, 7],
+      [4, 7],
+      [7, 7],
+      [9, 7],
     ];
     player.kids
       .filter((k) => atSchool(k))
@@ -3057,16 +2981,7 @@ function genInterior(b) {
     ky: big ? 2 : 3,
     props,
     people,
-    pal: [
-      "templo",
-      "castle",
-      "forja",
-      "guilda",
-      "biblio",
-      "cristal",
-      "pedra",
-      "hosp",
-    ].includes(st)
+    pal: ["templo", "castle", "forja", "guilda", "biblio", "cristal", "pedra", "hosp"].includes(st)
       ? INTER_PAL.stone
       : INTER_PAL.wood,
     st,
@@ -3315,12 +3230,7 @@ function drawProp(p, t) {
         ctx.globalAlpha = 1;
       }
       sh();
-      drawSprite(
-        wizardRects("#c94a8a", "#6a2a5a", null, null, "right"),
-        X,
-        Y + Math.sin(t * 6) * 1,
-        2,
-      );
+      drawSprite(wizardRects("#c94a8a", "#6a2a5a", null, null, "right"), X, Y + Math.sin(t * 6) * 1, 2);
       c("#c9a050", 22, 12, 6, 10);
       break;
     case "maptable":
@@ -3390,26 +3300,14 @@ function drawProp(p, t) {
       for (let r = 0; r < 3; r++) {
         c("#3a2414", 4, -7 + r * 12, 24, 9);
         for (let k = 0; k < 4; k++)
-          c(
-            ["#ff6b8a", "#5fd0ff", "#7ad36b", "#f2c14e"][(k + r) % 4],
-            6 + k * 6,
-            -5 + r * 12,
-            4,
-            7,
-          );
+          c(["#ff6b8a", "#5fd0ff", "#7ad36b", "#f2c14e"][(k + r) % 4], 6 + k * 6, -5 + r * 12, 4, 7);
       }
       break;
     case "forge":
       sh();
       c("#5a5a62", 0, -8, 32, 36);
       c("#2a1a10", 6, 6, 20, 16);
-      c(
-        `rgb(255,${100 + Math.floor(Math.sin(t * 9) * 40)},20)`,
-        8,
-        10 + Math.sin(t * 7) * 2,
-        16,
-        10,
-      );
+      c(`rgb(255,${100 + Math.floor(Math.sin(t * 9) * 40)},20)`, 8, 10 + Math.sin(t * 7) * 2, 16, 10);
       c("#3a3a44", 0, -10, 32, 4);
       break;
     case "anvil":
@@ -3423,13 +3321,7 @@ function drawProp(p, t) {
       sh();
       c("#6b4423", 15, 22, 2, 8);
       c("#c9a878", 12, -2, 8, 7);
-      c(
-        ["#c94a8a", "#4a74c9", "#5a9a4a", "#d4a020"][(x + y) % 4],
-        8,
-        5,
-        16,
-        18,
-      );
+      c(["#c94a8a", "#4a74c9", "#5a9a4a", "#d4a020"][(x + y) % 4], 8, 5, 16, 18);
       c("#f2c14e", 8, 12, 16, 2);
       break;
     case "mirror":
@@ -3553,8 +3445,7 @@ function addDoorPaths(zid) {
   const W = z.w,
     H = z.h;
   for (const b of z.town.bld) {
-    if (!b.name || ["moinho", "celeiro", "farol", "mina"].includes(b.style))
-      continue;
+    if (!b.name || ["moinho", "celeiro", "farol", "mina"].includes(b.style)) continue;
     const fy = b.y + b.h;
     if (fy >= H - 1) continue;
     for (let x = b.x - 1; x <= b.x + b.w; x++)
@@ -3610,10 +3501,7 @@ function addDoorPaths(zid) {
           goal = [X, Y];
           break;
         }
-        if (
-          ".w".includes(m[Y][X]) &&
-          Math.abs(X - sx) + Math.abs(Y - sy) < 26
-        ) {
+        if (".w".includes(m[Y][X]) && Math.abs(X - sx) + Math.abs(Y - sy) < 26) {
           prev[k] = [x, y];
           q.push([X, Y]);
         }
@@ -3635,20 +3523,13 @@ function tidyTown(zid) {
   const orig = z.map.map((r) => r.split(""));
   const W = z.w,
     H = z.h;
-  const R = (x, y) =>
-    x >= 0 && y >= 0 && x < W && y < H && (m[y][x] === "," || m[y][x] === "=");
-  const inPlaza = (x, y) =>
-    zid === "vila" && x >= 24 && x <= 39 && y >= 14 && y <= 25;
-  const keepL =
-    zid === "vila" ? new Set(["24,14", "39,14", "24,25", "39,25"]) : new Set();
+  const R = (x, y) => x >= 0 && y >= 0 && x < W && y < H && (m[y][x] === "," || m[y][x] === "=");
+  const inPlaza = (x, y) => zid === "vila" && x >= 24 && x <= 39 && y >= 14 && y <= 25;
+  const keepL = zid === "vila" ? new Set(["24,14", "39,14", "24,25", "39,25"]) : new Set();
   for (let y = 1; y < H - 1; y++)
     for (let x = 1; x < W - 1; x++) {
       const c = m[y][x];
-      if (
-        c === "q" ||
-        (c === "n" && !inPlaza(x, y)) ||
-        (c === "l" && !keepL.has(x + "," + y))
-      ) {
+      if (c === "q" || (c === "n" && !inPlaza(x, y)) || (c === "l" && !keepL.has(x + "," + y))) {
         const n = DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length;
         m[y][x] = n >= 2 ? "," : ".";
       }
@@ -3664,8 +3545,7 @@ function tidyTown(zid) {
         if ((l && r) || (u && d) || l + r + u + d >= 3) m[y][x] = ",";
       }
   if (zid === "vila") {
-    for (let y = 15; y <= 24; y++)
-      for (let x = 25; x <= 38; x++) if (m[y][x] !== "N") m[y][x] = ",";
+    for (let y = 15; y <= 24; y++) for (let x = 25; x <= 38; x++) if (m[y][x] !== "N") m[y][x] = ",";
     for (let y = 18; y <= 21; y++) for (let x = 29; x <= 33; x++) m[y][x] = "~";
     m[19][31] = "F";
     [
@@ -3724,13 +3604,8 @@ function tidyTown(zid) {
   for (let pass = 0; pass < 2; pass++)
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++) {
-        if (
-          !R(x, y) ||
-          DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length !== 1
-        )
-          continue;
-        if (DIRS4.some(([dx, dy]) => m[y + dy] && m[y + dy][x + dx] === "D"))
-          continue;
+        if (!R(x, y) || DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length !== 1) continue;
+        if (DIRS4.some(([dx, dy]) => m[y + dy] && m[y + dy][x + dx] === "D")) continue;
         const rd = roadDist(x, y);
         const prev = {},
           q = [[x, y]];
@@ -3752,8 +3627,7 @@ function tidyTown(zid) {
             const X = cx + dx,
               Y = cy + dy,
               k = X + "," + Y;
-            if (k in prev || X < 1 || Y < 1 || X >= W - 1 || Y >= H - 1)
-              continue;
+            if (k in prev || X < 1 || Y < 1 || X >= W - 1 || Y >= H - 1) continue;
             if (R(X, Y) && !(cx === x && cy === y)) {
               const rdd = rd[k];
               if (rdd === undefined || rdd > 3 * (g + 1) + 4) {
@@ -3805,14 +3679,8 @@ function tidyTown(zid) {
     }
   {
     const ok2 = (x, y) =>
-      x > 0 &&
-      y > 0 &&
-      x < W - 1 &&
-      y < H - 1 &&
-      ".wu".includes(m[y][x]) &&
-      !inPlaza(x, y);
-    const narrowH = (x, y) =>
-      R(x, y) && (R(x - 1, y) || R(x + 1, y)) && !R(x, y - 1) && !R(x, y + 1);
+      x > 0 && y > 0 && x < W - 1 && y < H - 1 && ".wu".includes(m[y][x]) && !inPlaza(x, y);
+    const narrowH = (x, y) => R(x, y) && (R(x - 1, y) || R(x + 1, y)) && !R(x, y - 1) && !R(x, y + 1);
     for (let y = 1; y < H - 1; y++) {
       let x = 1;
       while (x < W - 1) {
@@ -3835,8 +3703,7 @@ function tidyTown(zid) {
         x = e;
       }
     }
-    const narrowV = (x, y) =>
-      R(x, y) && (R(x, y - 1) || R(x, y + 1)) && !R(x - 1, y) && !R(x + 1, y);
+    const narrowV = (x, y) => R(x, y) && (R(x, y - 1) || R(x, y + 1)) && !R(x - 1, y) && !R(x + 1, y);
     for (let x = 1; x < W - 1; x++) {
       let y = 1;
       while (y < H - 1) {
@@ -3889,8 +3756,7 @@ function tidyTown(zid) {
               else ob++;
             }
           }
-          if (comp.length <= 10 && rb >= Math.max(2, ob * 0.5))
-            for (const [cx, cy] of comp) m[cy][cx] = ",";
+          if (comp.length <= 10 && rb >= Math.max(2, ob * 0.5)) for (const [cx, cy] of comp) m[cy][cx] = ",";
         }
       for (let y = 1; y < H - 1; y++)
         for (let x = 1; x < W - 1; x++) {
@@ -3918,8 +3784,7 @@ function tidyTown(zid) {
         if (!".wu".includes(m[y][x]) || inPlaza(x, y)) continue;
         let n = 0;
         for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++)
-            if ((dx || dy) && R(x + dx, y + dy)) n++;
+          for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && R(x + dx, y + dy)) n++;
         const o = DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length;
         if (n >= 5 || (o >= 2 && n >= 4)) ch.push([x, y]);
       }
@@ -3968,8 +3833,7 @@ function tidyTown(zid) {
             } else if (c === "," || c === "=") touch = true;
           }
         }
-        if (touch && comp.length <= 70)
-          for (const [cx, cy] of comp) m[cy][cx] = ",";
+        if (touch && comp.length <= 70) for (const [cx, cy] of comp) m[cy][cx] = ",";
       }
   }
   if (zid === "vila")
@@ -4001,36 +3865,30 @@ function tidyTown(zid) {
         if (orig[y][x] === "f" && m[y][x] !== "f") continue;
       }
     if (zid === "vila") {
-      for (let y = 14; y <= 27; y++)
-        if (m[y][54] !== "~" && m[y][54] !== "=") m[y][54] = ",";
+      for (let y = 14; y <= 27; y++) if (m[y][54] !== "~" && m[y][54] !== "=") m[y][54] = ",";
       for (let x = 54; x <= 62; x++) if (m[18][x] !== "N") m[18][x] = ",";
-      for (let y = 20; y <= 22; y++)
-        for (let x = 56; x <= 60; x++) if (m[y][x] === ",") m[y][x] = ".";
+      for (let y = 20; y <= 22; y++) for (let x = 56; x <= 60; x++) if (m[y][x] === ",") m[y][x] = ".";
     }
   }
   // Porto e Pedravale mantêm areia e grama: só ficam as ruas e calçadas originais.
   if (zid !== "vila")
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++)
-        if (m[y][x] === "," && orig[y][x] !== "," && orig[y][x] !== "=")
-          m[y][x] = orig[y][x];
+        if (m[y][x] === "," && orig[y][x] !== "," && orig[y][x] !== "=") m[y][x] = orig[y][x];
   // Passada final: nenhum tile de grama solto com rua em dois lados (exceto perto de cercas).
   for (let pass = 0; pass < 3; pass++)
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++) {
-        if (zid !== "vila" || !".wu".includes(m[y][x]) || inPlaza(x, y))
-          continue;
+        if (zid !== "vila" || !".wu".includes(m[y][x]) || inPlaza(x, y)) continue;
         let nearFence = false;
         for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++)
-            if (m[y + dy][x + dx] === "f") nearFence = true;
+          for (let dx = -1; dx <= 1; dx++) if (m[y + dy][x + dx] === "f") nearFence = true;
         if (nearFence) continue;
         const roads = DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length;
         if (roads >= 2) m[y][x] = ",";
       }
   const free = (x, y) => {
-    if (!(x > 1 && y > 1 && x < W - 2 && y < H - 2 && m[y][x] === "."))
-      return false;
+    if (!(x > 1 && y > 1 && x < W - 2 && y < H - 2 && m[y][x] === ".")) return false;
     for (let dy = -1; dy <= 1; dy++)
       for (let dx = -1; dx <= 1; dx++) {
         const c = m[y + dy][x + dx];
@@ -4039,8 +3897,7 @@ function tidyTown(zid) {
     return true;
   };
   const placed = [...keepL].map((k) => k.split(",").map(Number));
-  const far = (x, y) =>
-    placed.every(([a, b]) => Math.abs(a - x) + Math.abs(b - y) >= 6);
+  const far = (x, y) => placed.every(([a, b]) => Math.abs(a - x) + Math.abs(b - y) >= 6);
   for (let y = 1; y < H - 1; y++) {
     let x = 1;
     while (x < W - 1) {
@@ -4056,8 +3913,7 @@ function tidyTown(zid) {
             if (free(k, yy) && !R(k, yy) && far(k, yy) && !inPlaza(k, yy)) {
               m[yy][k] = "l";
               placed.push([k, yy]);
-              if (zid === "vila" && placed.length % 2 === 0 && free(k + 1, yy))
-                m[yy][k + 1] = "n";
+              if (zid === "vila" && placed.length % 2 === 0 && free(k + 1, yy)) m[yy][k + 1] = "n";
               break;
             }
           }
@@ -4169,10 +4025,7 @@ const NPCS = {
       };
       if (player.flags.flash && player.runes.length === 4)
         return [
-          [
-            "Arquimaga Odelia",
-            "Então você viu o eco. Sim... Vesper é meu irmão.",
-          ],
+          ["Arquimaga Odelia", "Então você viu o eco. Sim... Vesper é meu irmão."],
           [
             "Arquimaga Odelia",
             "Eu não tive coragem de contar. Achei que você desistiria se soubesse que eu falhei em salvá-lo.",
@@ -4354,10 +4207,7 @@ const NPCS = {
     hair: "#a8442a",
     talk() {
       return [
-        [
-          "Marina",
-          "O mar é minha casa. Quando o vento sopra do sul, os peixes pulam sozinhos na rede!",
-        ],
+        ["Marina", "O mar é minha casa. Quando o vento sopra do sul, os peixes pulam sozinhos na rede!"],
         ["Marina", "Se quiser me agradar, um Peixe Grelhado nunca é demais."],
       ];
     },
@@ -4372,10 +4222,7 @@ const NPCS = {
           "Capitão Bento",
           "Naveguei por sete mares e nunca vi monstros como os de hoje. Dizem que o Silêncio chegou até às marés.",
         ],
-        [
-          "Capitão Bento",
-          "A carruagem no estábulo leva você de volta a Cinzaluz.",
-        ],
+        ["Capitão Bento", "A carruagem no estábulo leva você de volta a Cinzaluz."],
       ];
     },
   },
@@ -4393,12 +4240,7 @@ const NPCS = {
     robe: "#3a5a8a",
     hair: "#5a3a22",
     talk() {
-      return [
-        [
-          "Marujo",
-          "A Moda Brisamar vende roupas que vêm de navio. Coisa fina!",
-        ],
-      ];
+      return [["Marujo", "A Moda Brisamar vende roupas que vêm de navio. Coisa fina!"]];
     },
   },
   portoB: {
@@ -4406,12 +4248,7 @@ const NPCS = {
     robe: "#8a6a3a",
     hair: "#3a2414",
     talk() {
-      return [
-        [
-          "Vendedora de Redes",
-          "A Joalheria Pérola tem anéis de compromisso. Já pensou em casar?",
-        ],
-      ];
+      return [["Vendedora de Redes", "A Joalheria Pérola tem anéis de compromisso. Já pensou em casar?"]];
     },
   },
   minerA: {
@@ -4456,10 +4293,7 @@ const NPCS = {
           "Anciã Berta",
           "Os anões chegaram aqui antes dos homens. Foi a Forja Anã que fez a armadura da Rainha.",
         ],
-        [
-          "Anciã Berta",
-          "Você pode minerar na mina uma vez por dia. Quem sabe acha um Fragmento Arcano?",
-        ],
+        ["Anciã Berta", "Você pode minerar na mina uma vez por dia. Quem sabe acha um Fragmento Arcano?"],
       ];
     },
   },
@@ -4477,9 +4311,7 @@ const NPCS = {
     robe: "#8a8a6a",
     hair: "#d9d9d9",
     talk() {
-      return [
-        ["Pastor", "As cabras daqui sobem até nas paredes da mina. Malucas!"],
-      ];
+      return [["Pastor", "As cabras daqui sobem até nas paredes da mina. Malucas!"]];
     },
   },
   cocada: {
@@ -4583,12 +4415,7 @@ const NPCS = {
     robe: "#8a8a9a",
     hat: "#5a5a6a",
     talk() {
-      return [
-        [
-          "Guarda Real",
-          "Dizem que a Rainha recompensa quem liberta os Guardiões.",
-        ],
-      ];
+      return [["Guarda Real", "Dizem que a Rainha recompensa quem liberta os Guardiões."]];
     },
   },
   bardo: {
@@ -4599,10 +4426,7 @@ const NPCS = {
       playTune();
       player.mp = Math.min(maxMp(), player.mp + 8);
       return [
-        [
-          "Bardo Lírio",
-          "♪ Era uma vez uma canção, que o silêncio quis guardar... ♪",
-        ],
+        ["Bardo Lírio", "♪ Era uma vez uma canção, que o silêncio quis guardar... ♪"],
         ["", "A música te inspira: +8 MP."],
       ];
     },
@@ -4648,10 +4472,7 @@ const NPCS = {
           "Tião, o Cocheiro",
           "Com um cavalo você atravessa o mundo na metade do tempo. Aperte C para montar e desmontar.",
         ],
-        [
-          "Tião, o Cocheiro",
-          "E se tiver pressa, minha carruagem leva você aos lugares que já visitou.",
-        ],
+        ["Tião, o Cocheiro", "E se tiver pressa, minha carruagem leva você aos lugares que já visitou."],
       ];
     },
   },
@@ -4719,21 +4540,10 @@ const NPCS = {
     talk() {
       return player.runes.length < 4
         ? [
-            [
-              "Guarda Tomé",
-              "Ninguém passa pela barreira do sul. Dizem que lá fica a Torre do Silêncio.",
-            ],
-            [
-              "Guarda Tomé",
-              "Só quem carregar as quatro runas consegue rompê-la.",
-            ],
+            ["Guarda Tomé", "Ninguém passa pela barreira do sul. Dizem que lá fica a Torre do Silêncio."],
+            ["Guarda Tomé", "Só quem carregar as quatro runas consegue rompê-la."],
           ]
-        : [
-            [
-              "Guarda Tomé",
-              "A barreira caiu! Que as runas te protejam, aprendiz.",
-            ],
-          ];
+        : [["Guarda Tomé", "A barreira caiu! Que as runas te protejam, aprendiz."]];
     },
   },
   druida: {
@@ -4742,14 +4552,8 @@ const NPCS = {
     hair: "#cfcfcf",
     talk() {
       return [
-        [
-          "Druida Errante",
-          "As árvores lembram da magia. O Ent não é mau, só esqueceu quem era.",
-        ],
-        [
-          "Druida Errante",
-          "Quando tiver a Maré, misture-a com a Terra. Tudo que é ferido pode florescer.",
-        ],
+        ["Druida Errante", "As árvores lembram da magia. O Ent não é mau, só esqueceu quem era."],
+        ["Druida Errante", "Quando tiver a Maré, misture-a com a Terra. Tudo que é ferido pode florescer."],
       ];
     },
   },
@@ -4773,10 +4577,7 @@ const NPCS = {
     hair: "#2a1a10",
     talk() {
       return [
-        [
-          "Monge da Montanha",
-          "Nada que sopra fere o Grifo. Nada que queima o derrete.",
-        ],
+        ["Monge da Montanha", "Nada que sopra fere o Grifo. Nada que queima o derrete."],
         [
           "Monge da Montanha",
           "Mas a água sempre vence a pedra. E vento com terra vira areia nos olhos de qualquer fera.",
@@ -4791,10 +4592,7 @@ const NPCS = {
     ghost: true,
     talk() {
       return [
-        [
-          "Espírito de um Aprendiz",
-          "Eu tentei antes de você. Fui o último a tentar.",
-        ],
+        ["Espírito de um Aprendiz", "Eu tentei antes de você. Fui o último a tentar."],
         [
           "Espírito de um Aprendiz",
           "O Silenciador troca de fraqueza a cada três turnos: observe a cor da máscara. E de tempos em tempos ele sela uma runa. Tenha sempre um plano B.",
@@ -4805,24 +4603,15 @@ const NPCS = {
 };
 const GUARD_PRE = {
   diretor: () => [
-    [
-      "Diretor Espectral",
-      "SILÊNCIO NA BIBLIOTECA! Nenhum aluno sai daqui com os meus livros!",
-    ],
+    ["Diretor Espectral", "SILÊNCIO NA BIBLIOTECA! Nenhum aluno sai daqui com os meus livros!"],
     ["", "O Diretor ergue seu cetro sombrio!"],
   ],
   ent: () => [
-    [
-      "Ent Silenciado",
-      "...sss... silêncio... a terra... dorme... não acorde... ela...",
-    ],
+    ["Ent Silenciado", "...sss... silêncio... a terra... dorme... não acorde... ela..."],
     ["", "O Ent ergue os galhos contra você!"],
   ],
   serpente: () => [
-    [
-      "Serpente de Névoa",
-      "Ssssó o silêncio é eterno, pequena faísca. Esta runa é minha agora.",
-    ],
+    ["Serpente de Névoa", "Ssssó o silêncio é eterno, pequena faísca. Esta runa é minha agora."],
   ],
   grifo: () => [
     ["Grifo de Pedra", "Nenhuma asa voa sem vento. E o vento obedece a mim."],
@@ -4838,10 +4627,7 @@ const GUARD_PRE = {
     ];
     if (player.pages.includes("torre"))
       l.push(
-        [
-          "Você",
-          '"Magia guardada não é magia." Foi você que escreveu isso, Vesper.',
-        ],
+        ["Você", '"Magia guardada não é magia." Foi você que escreveu isso, Vesper.'],
         ["O Silenciador", "...Esse nome... CALE-SE!"],
       );
     return l;
@@ -4884,10 +4670,7 @@ function GUARD_POST(type) {
     ],
   }[type];
   return L.concat([
-    [
-      "",
-      `Você recuperou a Runa ${RUNE_OF[r]}! Novas combinações estão disponíveis.`,
-    ],
+    ["", `Você recuperou a Runa ${RUNE_OF[r]}! Novas combinações estão disponíveis.`],
     ["", `Você recebeu: ${it}! Equipe pelo inventário (tecla I).`],
   ]);
 }
@@ -4936,45 +4719,21 @@ const FLASH = [
     "",
     "Ao cruzar a porta da torre, as runas em suas mãos vibram. Um eco do passado ganha forma diante de você...",
   ],
-  [
-    "Odelia (eco)",
-    "A magia não pode ser aprisionada, Vesper. Ela precisa viver.",
-  ],
-  [
-    "Vesper (eco)",
-    "E quando não houver mais ninguém capaz de protegê-la? Quando a última runa desaparecer?",
-  ],
+  ["Odelia (eco)", "A magia não pode ser aprisionada, Vesper. Ela precisa viver."],
+  ["Vesper (eco)", "E quando não houver mais ninguém capaz de protegê-la? Quando a última runa desaparecer?"],
   ["Odelia (eco)", "Então ensinaremos outros a ouvir sua canção."],
-  [
-    "Vesper (eco)",
-    "Você ainda acredita que o mundo merece esse poder. Eu não posso arriscar perdê-lo.",
-  ],
-  [
-    "",
-    "O eco se desfaz. Odelia conhecia o Silenciador desde o princípio... Ele é o irmão dela.",
-  ],
+  ["Vesper (eco)", "Você ainda acredita que o mundo merece esse poder. Eu não posso arriscar perdê-lo."],
+  ["", "O eco se desfaz. Odelia conhecia o Silenciador desde o princípio... Ele é o irmão dela."],
 ];
 const FINALE = [
   ["", "Após a longa batalha, a máscara do Silenciador começa a se partir."],
-  [
-    "",
-    "Você ergue as quatro runas, e a Canção Arcana volta a ecoar pela torre.",
-  ],
+  ["", "Você ergue as quatro runas, e a Canção Arcana volta a ecoar pela torre."],
   ["O Silenciador", "Não... Se libertar a magia, ela desaparecerá novamente!"],
-  [
-    "Você",
-    "Você tentou salvá-la, mas esqueceu por que ela era tão importante.",
-  ],
+  ["Você", "Você tentou salvá-la, mas esqueceu por que ela era tão importante."],
   ["O Silenciador", "Eu... só queria protegê-la..."],
   ["", "Você abre a última página do diário e lê em voz alta:"],
-  [
-    "Você",
-    '"Magia guardada não é magia. Ela só vive quando é usada e compartilhada."',
-  ],
-  [
-    "",
-    "O Silenciador reconhece aquelas palavras. Foram escritas por ele mesmo.",
-  ],
+  ["Você", '"Magia guardada não é magia. Ela só vive quando é usada e compartilhada."'],
+  ["", "O Silenciador reconhece aquelas palavras. Foram escritas por ele mesmo."],
   ["Vesper", "Odelia... Minha irmã... Ela ainda está viva?"],
   ["Você", "Ela nunca deixou de esperar por você."],
   [
