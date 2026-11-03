@@ -109,22 +109,6 @@
 
 ---
 
-## 📸 Capturas de Tela
-
-<div align="center">
-
-| | |
-|:---:|:---:|
-| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial</sub> | <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> |
-| <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> | <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> |
-| <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
-
-</div>
-
-<br>
-
----
-
 ## 📜 A História — O Segredo dos Irmãos
 
 | Ato | O que acontece |
