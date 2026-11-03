@@ -29,7 +29,7 @@
 
 ---
 
-## 👩‍💻 Autoria
+## 👥 Nossa Equipe
 
 <div align="center">
 
@@ -39,7 +39,42 @@
 
 <table>
   <tr>
-    <td align="center" width="20%">
+    <td align="center" width="14%">
+      <a href="https://github.com/atr3ssa">
+        <img src="https://avatars.githubusercontent.com/u/162994271?s=400&u=b6be7807d4f38c164926fbeb108a7e29ad502503&v=4" width="90px;" alt="Andressa"/><br>
+        <sub><b>Andressa Rabêlo</b></sub>
+      </a><br>
+      <sub>RA: 823213904</sub>
+    </td>
+    <td align="center" width="14%">
+      <a href="https://github.com/Julia-Olive">
+        <img src="https://i.imgur.com/hrQ4GAz.jpeg" width="90px;" alt="Júlia"/><br>
+        <sub><b>Júlia Oliveira</b></sub>
+      </a><br>
+      <sub>RA: 823214680</sub>
+    </td>
+    <td align="center" width="14%">
+      <a href="https://github.com/Marzocca99">
+        <img src="https://i.imgur.com/lYWliFF.jpeg" width="90px;" alt="Lucas"/><br>
+        <sub><b>Lucas Marzocca</b></sub>
+      </a><br>
+      <sub>RA: 823116813</sub>
+    </td>
+    <td align="center" width="14%">
+      <a href="https://github.com/Elmarquitoos">
+        <img src="https://i.imgur.com/RcjtqUi.jpeg" width="90px;" alt="Marcos"/><br>
+        <sub><b>Marcos V. Santos</b></sub>
+      </a><br>
+      <sub>RA: 82327399</sub>
+    </td>
+    <td align="center" width="14%">
+      <a href="https://github.com/matheushfg">
+        <img src="https://i.imgur.com/YBAtoF4.jpeg" width="90px;" alt="Matheus"/><br>
+        <sub><b>Matheus H. F.</b></sub>
+      </a><br>
+      <sub>RA: 823141914</sub>
+    </td>
+    <td align="center" width="14%">
       <a href="https://github.com/b3ery">
         <img src="https://i.imgur.com/B7MrE2M.png" width="90px;" alt="Mylena"/><br>
         <sub><b>Mylena Soares</b></sub>
