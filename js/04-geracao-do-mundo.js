@@ -55,7 +55,8 @@ function caWalls(m, w, h, it) {
       for (let x = 1; x < w - 1; x++) {
         let c = 0;
         for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && m[y + dy][x + dx] === "#") c++;
+          for (let dx = -1; dx <= 1; dx++)
+            if ((dx || dy) && m[y + dy][x + dx] === "#") c++;
         n[y][x] = c >= 5 ? "#" : c <= 3 ? "." : m[y][x];
       }
     m = n;
@@ -128,7 +129,9 @@ function finalize(id, d, m, w, h, open, npcs, inner) {
       if ("GNFCP".includes(c)) feats.push([x, y, c]);
       if (c === "G") guardPos = [x, y];
     }
-  const spawn = inner ? flood(m, w, h, inner).filter(([x, y]) => m[y][x] === ".") : [];
+  const spawn = inner
+    ? flood(m, w, h, inner).filter(([x, y]) => m[y][x] === ".")
+    : [];
   const npcList = Object.keys(npcs).map((k) => {
     const [x, y] = k.split(",").map(Number);
     return [x, y, npcs[k]];
@@ -450,11 +453,15 @@ const STALLS = {
   "50,24": "brinquedos",
 };
 const DOORS = {};
-VILLAGE_BUILDINGS.forEach((b) => b.door.forEach((dx) => (DOORS[dx + "," + (b.y + b.h - 1)] = b)));
+VILLAGE_BUILDINGS.forEach((b) =>
+  b.door.forEach((dx) => (DOORS[dx + "," + (b.y + b.h - 1)] = b)),
+);
 function genVila(d) {
   const w = 64,
     h = 48;
-  const m = makeGrid(w, h, (x, y) => (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : "."));
+  const m = makeGrid(w, h, (x, y) =>
+    x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : ".",
+  );
   const set = (x, y, c) => {
     if (x > 0 && y > 0 && x < w - 1 && y < h - 1) m[y][x] = c;
   };
@@ -483,7 +490,8 @@ function genVila(d) {
   fill(40, 15, 49, 24, ",");
   fill(25, 25, 49, 25, ",");
   for (let y = 1; y < h - 1; y++) {
-    m[y][52] = m[y][53] = y === 12 || y === 13 || y === 26 || y === 27 ? "=" : "~";
+    m[y][52] = m[y][53] =
+      y === 12 || y === 13 || y === 26 || y === 27 ? "=" : "~";
   }
   border(13, 3, 21, 9, "f");
   set(17, 9, ".");
@@ -655,7 +663,11 @@ function genVila(d) {
     for (let x = 1; x < w - 1; x++)
       if (m[y][x] === "T") {
         for (const [dx, dy] of DIRS4) {
-          if (m[y + dy] && m[y + dy][x + dx] === "." && (x * 13 + y * 7) % 4 === 0) {
+          if (
+            m[y + dy] &&
+            m[y + dy][x + dx] === "." &&
+            (x * 13 + y * 7) % 4 === 0
+          ) {
             set(x + dx, y + dy, "u");
             break;
           }
@@ -802,12 +814,15 @@ function genVila(d) {
   trees.forEach(([x, y]) => {
     if (m[y] && m[y][x] === ".") set(x, y, "T");
   });
-  for (let x = 33; x <= 50; x++) if (m[36][x] === "." || m[36][x] === "w") set(x, 36, ",");
+  for (let x = 33; x <= 50; x++)
+    if (m[36][x] === "." || m[36][x] === "w") set(x, 36, ",");
   for (let x = 31; x <= 50; x++) {
     if (m[40][x] !== "H" && m[40][x] !== "D") set(x, 40, ",");
-    if (m[45][x] !== "H" && m[45][x] !== "D" && m[45][x] !== "N") set(x, 45, ",");
+    if (m[45][x] !== "H" && m[45][x] !== "D" && m[45][x] !== "N")
+      set(x, 45, ",");
   }
-  for (let y = 14; y <= 25; y++) for (let x = 40; x <= 51; x++) if (m[y][x] !== "M") set(x, y, ",");
+  for (let y = 14; y <= 25; y++)
+    for (let x = 40; x <= 51; x++) if (m[y][x] !== "M") set(x, y, ",");
   Object.keys(STALLS).forEach((k) => {
     const [x, y] = k.split(",").map(Number);
     set(x, y, "M");
@@ -866,7 +881,9 @@ function genNatural(id, d) {
     w = d.w,
     h = d.h;
   let m = makeGrid(w, h, (x, y) =>
-    x === 0 || y === 0 || x === w - 1 || y === h - 1 || R() < d.wall ? "#" : ".",
+    x === 0 || y === 0 || x === w - 1 || y === h - 1 || R() < d.wall
+      ? "#"
+      : ".",
   );
   m = caWalls(m, w, h, 5);
   for (let x = 0; x < w; x++) {
@@ -888,7 +905,10 @@ function genNatural(id, d) {
   const guard = pt(d.guardF),
     altar = pt(d.altarF),
     page = pt(d.pageF);
-  const wp = [0, 1, 2, 3, 4, 5].map(() => [4 + Math.floor(R() * (w - 8)), 4 + Math.floor(R() * (h - 8))]);
+  const wp = [0, 1, 2, 3, 4, 5].map(() => [
+    4 + Math.floor(R() * (w - 8)),
+    4 + Math.floor(R() * (h - 8)),
+  ]);
   const c = (a, b) => carvePath(m, a, b, R, w, h);
   c(inner, altar);
   c(altar, guard);
@@ -918,7 +938,10 @@ function genNatural(id, d) {
   clear(inner, 2);
   clear(page, 1);
   const perp = v[0] === 0 ? [1, 0] : [0, 1];
-  const npc = [inner[0] + v[0] * 2 + perp[0] * 3, inner[1] + v[1] * 2 + perp[1] * 3];
+  const npc = [
+    inner[0] + v[0] * 2 + perp[0] * 3,
+    inner[1] + v[1] * 2 + perp[1] * 3,
+  ];
   clear(npc, 1);
   m[guard[1]][guard[0]] = "G";
   m[altar[1]][altar[0]] = "F";
@@ -926,9 +949,11 @@ function genNatural(id, d) {
   m[npc[1]][npc[0]] = "N";
   if (d.water) {
     const path = new Set();
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (m[y][x] === ".") path.add(x + "," + y);
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) if (m[y][x] === ".") path.add(x + "," + y);
     const prot = [guard, altar, page, npc, inner, open];
-    const isProt = (x, y) => prot.some((p) => Math.abs(p[0] - x) <= 3 && Math.abs(p[1] - y) <= 3);
+    const isProt = (x, y) =>
+      prot.some((p) => Math.abs(p[0] - x) <= 3 && Math.abs(p[1] - y) <= 3);
     const putW = (x, y) => {
       if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1 || isProt(x, y)) return;
       const c = m[y][x];
@@ -943,7 +968,11 @@ function genNatural(id, d) {
       let c0 = Math.round(M * (0.3 + R() * 0.4)),
         ph = R() * 6;
       for (let i = 1; i < L - 1; i++) {
-        c0 = clampi(c0 + Math.round(Math.sin(i * 0.18 + ph) * 0.9 + (R() - 0.5) * 0.8), 3, M - 4);
+        c0 = clampi(
+          c0 + Math.round(Math.sin(i * 0.18 + ph) * 0.9 + (R() - 0.5) * 0.8),
+          3,
+          M - 4,
+        );
         for (let k = 0; k < 2; k++) {
           vert ? putW(c0 + k, i) : putW(i, c0 + k);
         }
@@ -966,7 +995,15 @@ function genNatural(id, d) {
           const X = cx2 + dx,
             Y = cy2 + dy;
           const dd = Math.hypot(dx, dy * 1.2) + (tileHash(X, Y) - 0.5) * 1.6;
-          if (dd < rad && X > 1 && Y > 1 && X < w - 2 && Y < h - 2 && !isProt(X, Y) && m[Y][X] !== "=") {
+          if (
+            dd < rad &&
+            X > 1 &&
+            Y > 1 &&
+            X < w - 2 &&
+            Y < h - 2 &&
+            !isProt(X, Y) &&
+            m[Y][X] !== "="
+          ) {
             if (m[Y][X] === "." || m[Y][X] === "#") m[Y][X] = "~";
           }
         }
@@ -992,7 +1029,11 @@ function genNatural(id, d) {
       while ((x !== b[0] || y !== b[1]) && g < 500) {
         g++;
         st();
-        if (x !== b[0] && (Math.abs(b[0] - x) >= Math.abs(b[1] - y) || y === b[1])) x += Math.sign(b[0] - x);
+        if (
+          x !== b[0] &&
+          (Math.abs(b[0] - x) >= Math.abs(b[1] - y) || y === b[1])
+        )
+          x += Math.sign(b[0] - x);
         else y += Math.sign(b[1] - y);
       }
       st();
@@ -1066,7 +1107,15 @@ function genDungeon(id, d) {
       rh = 4 + Math.floor(R() * 5);
     const x = 2 + Math.floor(R() * (w - rw - 4)),
       y = 2 + Math.floor(R() * (h - rh - 4));
-    if (!rooms.some((r) => x < r.x + r.w + 2 && x + rw + 2 > r.x && y < r.y + r.h + 2 && y + rh + 2 > r.y))
+    if (
+      !rooms.some(
+        (r) =>
+          x < r.x + r.w + 2 &&
+          x + rw + 2 > r.x &&
+          y < r.y + r.h + 2 &&
+          y + rh + 2 > r.y,
+      )
+    )
       rooms.push({
         x,
         y,
@@ -1075,7 +1124,8 @@ function genDungeon(id, d) {
       });
   }
   for (const r of rooms)
-    for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) m[y][x] = ".";
+    for (let y = r.y; y < r.y + r.h; y++)
+      for (let x = r.x; x < r.x + r.w; x++) m[y][x] = ".";
   const ctr = (r) => [r.x + (r.w >> 1), r.y + (r.h >> 1)];
   const corr = (a, b) => {
     let [x, y] = ctr(a);
@@ -1127,12 +1177,17 @@ function genDungeon(id, d) {
   }
   let nb = null;
   for (const a of others) {
-    if (!nb || manhattan(ctr(a), ctr(boss)) < manhattan(ctr(nb), ctr(boss))) nb = a;
+    if (!nb || manhattan(ctr(a), ctr(boss)) < manhattan(ctr(nb), ctr(boss)))
+      nb = a;
   }
   corr(nb || rooms[0], boss);
   for (let i = 0; i < 3 && others.length > 2; i++)
-    corr(others[Math.floor(R() * others.length)], others[Math.floor(R() * others.length)]);
-  for (let y = 0; y < 3; y++) for (let x = mid - 1; x <= mid + 1; x++) m[y][x] = ".";
+    corr(
+      others[Math.floor(R() * others.length)],
+      others[Math.floor(R() * others.length)],
+    );
+  for (let y = 0; y < 3; y++)
+    for (let x = mid - 1; x <= mid + 1; x++) m[y][x] = ".";
   const bc = ctr(boss);
   m[bc[1]][bc[0]] = "G";
   m[rooms[0].y + rooms[0].h - 2][rooms[0].x + 1] = "N";
@@ -1339,7 +1394,9 @@ ZONES.vila.town = {
 function buildTown(id, spec) {
   const w = spec.w,
     h = spec.h;
-  const m = makeGrid(w, h, (x, y) => (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : "."));
+  const m = makeGrid(w, h, (x, y) =>
+    x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : ".",
+  );
   const set = (x, y, c) => {
     if (x > 0 && y > 0 && x < w - 1 && y < h - 1) m[y][x] = c;
   };
@@ -1361,7 +1418,7 @@ function buildTown(id, spec) {
   }
   (spec.deco || []).forEach(([c, list]) =>
     list.forEach(([x, y]) => {
-      if (m[y][x] === ".") set(x, y, c);
+      if (m[y][x] === "." || (c === "n" && m[y][x] === ",")) set(x, y, c);
     }),
   );
   for (const k in spec.npcs) {
@@ -1392,8 +1449,12 @@ ZONE_DEFS.serra = {
   exits: {},
   enemies: [],
 };
+/* ===================== PORTO BRISAMAR (layout planejado) =====================
+   Linhas:  3–6 prédios do norte · 7–9 rua principal · 10–13 mercado
+            14–15 rua do cais · 16–18 prédios do sul · 19 calçada · 20 jardins
+            21 calçadão da praia · 22–23 areia · 24–30 mar com 3 píeres        */
 ZONES.porto = buildTown("porto", {
-  w: 44,
+  w: 62,
   h: 32,
   arrive: [5, 19],
   paint: (set, fill) => {
@@ -1401,64 +1462,160 @@ ZONES.porto = buildTown("porto", {
     fill(9, 24, 10, 29, "=");
     fill(20, 24, 21, 29, "=");
     fill(31, 24, 32, 29, "=");
-    fill(1, 12, 42, 13, ",");
-    fill(20, 1, 21, 23, ",");
-    fill(24, 7, 37, 11, ",");
+    fill(1, 7, 42, 9, ",");
+    fill(11, 10, 35, 13, ",");
+    fill(1, 14, 42, 15, ",");
+    fill(20, 7, 21, 23, ",");
+    fill(1, 19, 36, 19, ",");
+    fill(1, 21, 42, 21, ",");
+    fill(9, 19, 10, 23, ",");
+    fill(31, 19, 32, 23, ",");
+    // Bairro novo a leste
+    fill(43, 24, 60, 30, "~");
+    fill(45, 24, 46, 29, "=");
+    fill(54, 24, 55, 29, "=");
+    fill(43, 7, 60, 9, ",");
+    fill(43, 14, 60, 15, ",");
+    fill(37, 19, 37, 19, ".");
+    fill(42, 19, 60, 19, ",");
+    fill(43, 21, 60, 21, ",");
+    fill(45, 19, 46, 23, ",");
+    fill(54, 19, 55, 23, ",");
+    fill(46, 10, 58, 13, ",");
   },
   bld: [
+    { id: "p16", style: "casa", x: 44, y: 3, w: 4, h: 4, door: [45] },
+    {
+      id: "p17",
+      style: "casa2",
+      x: 50,
+      y: 3,
+      w: 5,
+      h: 4,
+      door: [52],
+      name: "Casa do Capitão",
+    },
+    { id: "p18", style: "casa", x: 57, y: 3, w: 3, h: 4, door: [58] },
+    {
+      id: "p19",
+      style: "escola",
+      x: 43,
+      y: 16,
+      w: 5,
+      h: 3,
+      door: [44],
+      name: "Escola de Navegação",
+    },
+    { id: "p20", style: "casa2", x: 49, y: 16, w: 4, h: 3, door: [50] },
+    { id: "p21", style: "casa", x: 56, y: 16, w: 4, h: 3, door: [57] },
     {
       id: "p1",
       style: "taverna",
-      x: 3,
+      x: 2,
       y: 3,
-      w: 7,
+      w: 6,
       h: 4,
-      door: [6],
+      door: [5],
       name: "Taverna do Marujo",
       shop: "tavPorto",
     },
     {
       id: "p2",
       style: "pousada",
-      x: 12,
+      x: 10,
       y: 3,
-      w: 6,
+      w: 5,
       h: 4,
-      door: [14],
+      door: [12],
       name: "Pousada Gaivota",
       inn: 20,
     },
     {
       id: "p3",
       style: "perola",
-      x: 25,
-      y: 2,
+      x: 23,
+      y: 3,
       w: 5,
       h: 4,
-      door: [27],
+      door: [25],
       name: "Joalheria Pérola",
       shop: "perola",
     },
     {
       id: "p4",
       style: "moda",
-      x: 32,
-      y: 2,
-      w: 6,
+      x: 30,
+      y: 3,
+      w: 5,
       h: 4,
-      door: [34],
+      door: [32],
       name: "Moda Brisamar",
       cos: "moda",
     },
+    { id: "p12", style: "casa", x: 37, y: 3, w: 4, h: 4, door: [38] },
     {
       id: "p5",
       style: "estab",
-      x: 3,
+      x: 2,
       y: 16,
       w: 5,
       h: 3,
-      door: [5],
+      door: [4],
       name: "Estábulo do Porto",
+    },
+    {
+      id: "p7",
+      style: "padaria",
+      x: 9,
+      y: 16,
+      w: 4,
+      h: 3,
+      door: [10],
+      name: "Padaria do Cais",
+      shop: "padPorto",
+    },
+    {
+      id: "p13",
+      style: "marcenaria",
+      x: 15,
+      y: 16,
+      w: 4,
+      h: 3,
+      door: [16],
+      name: "Estaleiro Brisamar",
+      shop: "moveis",
+    },
+    {
+      id: "p8",
+      style: "peixaria",
+      x: 23,
+      y: 16,
+      w: 4,
+      h: 3,
+      door: [24],
+      name: "Peixaria do Porto",
+      shop: "peixPorto",
+    },
+    {
+      id: "p9",
+      style: "armazem",
+      x: 29,
+      y: 16,
+      w: 3,
+      h: 3,
+      door: [30],
+      name: "Armazém do Cais",
+      shop: "armazem",
+    },
+    {
+      id: "p15",
+      style: "templo",
+      x: 34,
+      y: 16,
+      w: 3,
+      h: 3,
+      door: [35],
+      name: "Capela do Mar",
     },
     {
       id: "p6",
@@ -1470,179 +1627,293 @@ ZONES.porto = buildTown("porto", {
       door: [39],
       name: "Farol de Brisamar",
     },
-    {
-      id: "p7",
-      style: "padaria",
-      x: 12,
-      y: 16,
-      w: 4,
-      h: 3,
-      door: [13],
-      name: "Padaria do Cais",
-      shop: "padPorto",
-    },
-    {
-      id: "p8",
-      style: "peixaria",
-      x: 25,
-      y: 16,
-      w: 4,
-      h: 3,
-      door: [26],
-      name: "Peixaria do Porto",
-      shop: "peixPorto",
-    },
-    {
-      id: "p9",
-      style: "cabana",
-      x: 31,
-      y: 17,
-      w: 3,
-      h: 3,
-      door: [32],
-    },
   ],
   stalls: {
-    "25,9": "peixeG",
-    "26,9": "peixeG",
-    "29,9": "especiarias",
-    "30,9": "especiarias",
-    "33,9": "conchas",
-    "34,9": "conchas",
+    "12,11": "peixeG",
+    "13,11": "peixeG",
+    "15,11": "especiarias",
+    "16,11": "especiarias",
+    "24,11": "conchas",
+    "25,11": "conchas",
+    "27,11": "frutasP",
+    "28,11": "frutasP",
+    "30,11": "redes",
+    "48,11": "doceria",
+    "49,11": "doceria",
+    "55,11": "bazar",
+    "56,11": "bazar",
+    "31,11": "redes",
   },
   npcs: {
-    "25,8": "nicoP",
-    "29,8": "mercOri",
-    "33,8": "conchas",
-    "17,22": "marina",
-    "23,22": "capitao",
-    "8,19": "cocheiro2",
-    "15,11": "portoA",
-    "28,14": "portoB",
+    "12,10": "nicoP",
+    "15,10": "mercOri",
+    "24,10": "conchas",
+    "27,10": "frutasNPC",
+    "30,10": "redesNPC",
+    "48,10": "docesP",
+    "55,10": "bazarP",
+    "51,22": "pescadorVelho",
+    "11,22": "marina",
+    "24,22": "capitao",
+    "7,20": "cocheiro2",
+    "37,12": "portoA",
+    "6,12": "portoB",
   },
   deco: [
     [
+      "n",
+      [
+        [51, 11],
+        [52, 11],
+        [51, 13],
+        [52, 13],
+        [48, 22],
+        [58, 22],
+      ],
+    ],
+    [
       "l",
       [
-        [19, 11],
-        [22, 11],
-        [19, 14],
-        [22, 14],
-        [8, 11],
-        [34, 14],
-      ],
-    ],
-    [
-      "b",
-      [
-        [11, 22],
-        [12, 22],
-        [18, 8],
-        [37, 9],
-      ],
-    ],
-    [
-      "x",
-      [
-        [22, 23],
-        [8, 22],
-        [30, 22],
+        [45, 10],
+        [59, 10],
+        [45, 13],
+        [59, 13],
+        [48, 20],
+        [53, 20],
+        [59, 20],
       ],
     ],
     [
       "T",
       [
-        [2, 2],
-        [11, 2],
-        [19, 2],
-        [24, 2],
-        [40, 3],
-        [2, 9],
-        [41, 9],
-        [2, 20],
-        [41, 20],
-        [16, 19],
-        [35, 19],
+        [47, 1],
+        [55, 1],
+        [60, 2],
+        [44, 23],
+        [50, 23],
+        [59, 23],
+        [60, 11],
       ],
     ],
     [
       "w",
       [
-        [6, 9],
-        [7, 9],
-        [14, 9],
-        [27, 19],
-        [13, 19],
-        [29, 6],
+        [44, 12],
+        [58, 20],
+        [43, 20],
+        [52, 20],
       ],
     ],
+    [
+      "b",
+      [
+        [56, 20],
+        [57, 20],
+      ],
+    ],
+    [
+      "n",
+      [
+        [18, 11],
+        [23, 11],
+        [6, 22],
+        [16, 22],
+        [26, 22],
+        [36, 22],
+      ],
+    ],
+    [
+      "l",
+      [
+        [10, 10],
+        [36, 10],
+        [10, 13],
+        [36, 13],
+        [6, 20],
+        [18, 20],
+        [26, 20],
+        [35, 20],
+      ],
+    ],
+    [
+      "T",
+      [
+        [3, 22],
+        [14, 23],
+        [26, 23],
+        [37, 23],
+        [9, 1],
+        [23, 1],
+        [35, 1],
+        [41, 1],
+        [2, 11],
+        [40, 11],
+      ],
+    ],
+    [
+      "w",
+      [
+        [3, 20],
+        [12, 20],
+        [22, 20],
+        [8, 12],
+        [39, 13],
+        [3, 13],
+      ],
+    ],
+    [
+      "b",
+      [
+        [28, 20],
+        [29, 20],
+        [11, 13],
+        [35, 10],
+      ],
+    ],
+    [
+      "x",
+      [
+        [30, 20],
+        [34, 13],
+      ],
+    ],
+    ["V", [[14, 20]]],
   ],
   boats: [
+    [50, 27],
+    [59, 27],
     [14, 27],
     [26, 27],
-    [36, 26],
+    [37, 27],
   ],
 });
+
+/* ===================== PEDRAVALE (layout planejado) =====================
+   Linhas:  3–7 prédios do norte (mina no centro) · 8–9 rua principal
+            10–15 praça com mercado e fogueira · 16–17 rua de baixo
+            18–20 prédios do sul · 21 calçada · 22–29 campos, casas e pasto      */
 ZONES.serra = buildTown("serra", {
-  w: 44,
-  h: 32,
+  w: 62,
+  h: 40,
   arrive: [38, 21],
   paint: (set, fill) => {
     fill(1, 1, 42, 2, "#");
-    fill(1, 14, 42, 15, ",");
-    fill(21, 7, 22, 30, ",");
-    fill(15, 17, 30, 23, ",");
-    [
-      [2, 10],
-      [3, 11],
-      [40, 10],
-      [41, 11],
-      [10, 28],
-      [11, 29],
-      [32, 28],
-      [33, 29],
-      [40, 26],
-      [2, 27],
-    ].forEach(([x, y]) => set(x, y, "#"));
+    fill(1, 8, 42, 9, ",");
+    fill(13, 10, 30, 15, ",");
+    fill(1, 16, 42, 17, ",");
+    fill(21, 8, 22, 26, ",");
+    fill(2, 21, 41, 21, ",");
+    fill(2, 26, 34, 26, ",");
+    fill(35, 22, 41, 22, "f");
+    fill(35, 29, 41, 29, "f");
+    fill(35, 22, 35, 29, "f");
+    fill(41, 22, 41, 29, "f");
+    set(35, 26, ".");
+    // Bairro novo a leste e campos ao sul
+    fill(43, 1, 60, 2, "#");
+    fill(43, 8, 60, 9, ",");
+    fill(43, 16, 60, 17, ",");
+    fill(42, 21, 59, 21, ",");
+    fill(46, 10, 58, 15, ",");
+    fill(42, 26, 58, 26, ",");
+    fill(50, 21, 51, 26, ",");
+    fill(21, 27, 22, 30, ",");
+    fill(2, 31, 58, 31, ",");
+    fill(4, 33, 18, 37, "g");
+    fill(3, 32, 19, 32, "f");
+    fill(3, 38, 19, 38, "f");
+    fill(3, 32, 3, 38, "f");
+    fill(19, 32, 19, 38, "f");
+    set(11, 32, ".");
+    fill(26, 33, 40, 37, "g");
+    fill(25, 32, 41, 32, "f");
+    fill(25, 38, 41, 38, "f");
+    fill(25, 32, 25, 38, "f");
+    fill(41, 32, 41, 38, "f");
+    set(33, 32, ".");
   },
   bld: [
     {
-      id: "s0",
-      style: "mina",
-      x: 19,
-      y: 3,
-      w: 6,
+      id: "s14",
+      style: "pedra",
+      x: 44,
+      y: 4,
+      w: 4,
       h: 4,
-      door: [21, 22],
-      name: "Mina de Cristal",
+      door: [45],
+      name: "Torre de Vigia",
+    },
+    { id: "s15", style: "pedra", x: 50, y: 4, w: 4, h: 4, door: [51] },
+    {
+      id: "s16",
+      style: "escola",
+      x: 55,
+      y: 4,
+      w: 5,
+      h: 4,
+      door: [57],
+      name: "Escola da Serra",
+    },
+    { id: "s17", style: "casa", x: 43, y: 18, w: 4, h: 3, door: [44] },
+    { id: "s18", style: "pedra", x: 53, y: 18, w: 4, h: 3, door: [54] },
+    {
+      id: "s19",
+      style: "celeiro",
+      x: 46,
+      y: 23,
+      w: 4,
+      h: 3,
+      door: [47],
+      name: "Celeiro da Serra",
+    },
+    { id: "s20", style: "casa2", x: 54, y: 23, w: 4, h: 3, door: [55] },
+    {
+      id: "s21",
+      style: "moinho",
+      x: 46,
+      y: 32,
+      w: 4,
+      h: 4,
+      door: [47],
+      name: "Moinho da Serra",
     },
     {
       id: "s1",
       style: "forja",
-      x: 3,
-      y: 5,
+      x: 2,
+      y: 4,
       w: 6,
       h: 4,
-      door: [5],
+      door: [4],
       name: "Forja Anã",
       shop: "forjaAna",
     },
     {
       id: "s2",
       style: "pousada",
-      x: 11,
-      y: 5,
+      x: 10,
+      y: 4,
       w: 6,
       h: 4,
-      door: [13],
+      door: [12],
       name: "Pousada do Pico",
       inn: 20,
+    },
+    {
+      id: "s0",
+      style: "mina",
+      x: 19,
+      y: 3,
+      w: 6,
+      h: 5,
+      door: [21, 22],
+      name: "Mina de Cristal",
     },
     {
       id: "s3",
       style: "cristal",
       x: 27,
-      y: 5,
+      y: 4,
       w: 5,
       h: 4,
       door: [29],
@@ -1653,32 +1924,14 @@ ZONES.serra = buildTown("serra", {
       id: "s4",
       style: "pedra",
       x: 34,
-      y: 5,
+      y: 4,
       w: 6,
       h: 4,
       door: [36],
       name: "Casa de Chá",
       shop: "chaSerra",
     },
-    {
-      id: "s5",
-      style: "estab",
-      x: 36,
-      y: 18,
-      w: 5,
-      h: 3,
-      door: [38],
-      name: "Estábulo da Serra",
-    },
-    {
-      id: "s6",
-      style: "pedra",
-      x: 3,
-      y: 18,
-      w: 4,
-      h: 3,
-      door: [4],
-    },
+    { id: "s6", style: "pedra", x: 2, y: 18, w: 4, h: 3, door: [3] },
     {
       id: "s7",
       style: "padaria",
@@ -1691,97 +1944,219 @@ ZONES.serra = buildTown("serra", {
       shop: "padSerra",
     },
     {
-      id: "s8",
-      style: "pedra",
-      x: 3,
-      y: 24,
+      id: "s13",
+      style: "marcenaria",
+      x: 14,
+      y: 18,
       w: 4,
       h: 3,
-      door: [5],
+      door: [15],
+      name: "Serraria do Pico",
+      shop: "moveis",
     },
     {
-      id: "s9",
-      style: "pedra",
-      x: 34,
-      y: 25,
+      id: "s11",
+      style: "templo",
+      x: 24,
+      y: 18,
       w: 4,
       h: 3,
-      door: [35],
+      door: [25],
+      name: "Templo da Montanha",
     },
+    {
+      id: "s12",
+      style: "armazem",
+      x: 30,
+      y: 18,
+      w: 4,
+      h: 3,
+      door: [31],
+      name: "Armazém Anão",
+      shop: "armazem",
+    },
+    {
+      id: "s5",
+      style: "estab",
+      x: 36,
+      y: 18,
+      w: 4,
+      h: 3,
+      door: [37],
+      name: "Estábulo da Serra",
+    },
+    { id: "s8", style: "pedra", x: 7, y: 23, w: 4, h: 3, door: [8] },
+    { id: "s10", style: "casa", x: 16, y: 23, w: 4, h: 3, door: [17] },
+    { id: "s9", style: "casa2", x: 27, y: 23, w: 4, h: 3, door: [28] },
   ],
   stalls: {
-    "17,20": "minerios",
-    "18,20": "minerios",
-    "25,20": "peles",
-    "26,20": "peles",
+    "14,11": "minerios",
+    "15,11": "minerios",
+    "17,11": "queijos",
+    "18,11": "queijos",
+    "25,11": "peles",
+    "26,11": "peles",
+    "28,11": "ervasS",
+    "29,11": "ervasS",
+    "48,11": "doceria",
+    "49,11": "doceria",
+    "55,11": "bazar",
+    "56,11": "bazar",
   },
   npcs: {
-    "17,19": "minerA",
-    "25,19": "peleiro",
-    "12,16": "tobias",
-    "29,22": "ancia",
-    "41,21": "cocheiro3",
-    "33,15": "serraA",
+    "14,10": "minerA",
+    "17,10": "queijeira",
+    "25,10": "peleiro",
+    "28,10": "erveira",
+    "48,10": "docesS",
+    "55,10": "bazarS",
+    "10,13": "tobias",
+    "33,13": "ancia",
+    "41,20": "cocheiro3",
+    "6,11": "serraA",
   },
   deco: [
     [
+      "n",
+      [
+        [51, 12],
+        [52, 12],
+        [51, 14],
+        [52, 14],
+      ],
+    ],
+    ["S", [[52, 13]]],
+    [
       "l",
       [
-        [20, 13],
-        [23, 13],
-        [14, 16],
-        [31, 16],
-        [20, 24],
-        [23, 24],
-      ],
-    ],
-    ["W", [[16, 22]]],
-    ["S", [[19, 17]]],
-    [
-      "b",
-      [
-        [9, 9],
-        [10, 9],
-      ],
-    ],
-    [
-      "x",
-      [
-        [2, 13],
-        [26, 9],
-      ],
-    ],
-    [
-      "h",
-      [
-        [35, 21],
-        [35, 22],
+        [45, 10],
+        [59, 10],
+        [45, 15],
+        [59, 15],
+        [44, 22],
+        [52, 22],
+        [58, 22],
       ],
     ],
     [
       "T",
       [
-        [2, 4],
-        [10, 4],
-        [33, 4],
-        [41, 4],
-        [2, 16],
-        [41, 16],
-        [13, 26],
-        [28, 27],
-        [38, 29],
-        [16, 28],
+        [60, 10],
+        [60, 14],
+        [43, 12],
+        [42, 24],
+        [58, 28],
+        [44, 29],
+        [52, 29],
+        [56, 36],
+        [60, 33],
+        [2, 34],
+        [22, 34],
+        [44, 37],
+      ],
+    ],
+    [
+      "o",
+      [
+        [59, 25],
+        [43, 34],
+        [23, 36],
+        [58, 35],
       ],
     ],
     [
       "w",
       [
-        [18, 23],
-        [27, 23],
-        [4, 22],
-        [9, 22],
+        [48, 22],
+        [56, 22],
+        [44, 27],
+        [52, 27],
       ],
     ],
+    [
+      "Y",
+      [
+        [11, 35],
+        [33, 35],
+      ],
+    ],
+    [
+      "n",
+      [
+        [19, 12],
+        [24, 12],
+        [19, 15],
+        [24, 15],
+      ],
+    ],
+    [
+      "l",
+      [
+        [12, 10],
+        [31, 10],
+        [12, 15],
+        [31, 15],
+        [6, 22],
+        [16, 22],
+        [26, 22],
+      ],
+    ],
+    ["S", [[17, 14]]],
+    ["W", [[26, 14]]],
+    [
+      "T",
+      [
+        [3, 11],
+        [9, 11],
+        [3, 14],
+        [36, 11],
+        [40, 14],
+        [41, 10],
+        [2, 23],
+        [2, 29],
+        [14, 29],
+        [19, 29],
+        [25, 29],
+        [32, 29],
+      ],
+    ],
+    [
+      "o",
+      [
+        [5, 14],
+        [38, 12],
+        [7, 29],
+        [12, 24],
+        [24, 24],
+        [33, 24],
+      ],
+    ],
+    [
+      "w",
+      [
+        [4, 22],
+        [11, 22],
+        [19, 22],
+        [29, 22],
+        [4, 27],
+        [13, 27],
+      ],
+    ],
+    [
+      "h",
+      [
+        [36, 23],
+        [40, 28],
+      ],
+    ],
+    [
+      "b",
+      [
+        [8, 10],
+        [9, 10],
+      ],
+    ],
+    ["x", [[26, 10]]],
   ],
 });
 ZONE_DEFS.casa = {
@@ -1818,7 +2193,9 @@ ZONES.casa = (function () {
   return z;
 })();
 ZONES.interior = (function () {
-  const m = makeGrid(12, 10, (x, y) => (x === 0 || y === 0 || x === 11 || y === 9 || y === 1 ? "#" : "."));
+  const m = makeGrid(12, 10, (x, y) =>
+    x === 0 || y === 0 || x === 11 || y === 9 || y === 1 ? "#" : ".",
+  );
   m[9][5] = "X";
   m[9][6] = "X";
   const z = finalize("interior", ZONE_DEFS.interior, m, 12, 10, {}, {}, null);
@@ -1844,7 +2221,9 @@ const FURN_DEF = {
 };
 function furnAt(x, y, solidOnly) {
   return player.zone === "casa"
-    ? (player.furn || []).find((f) => f.x === x && f.y === y && (!solidOnly || !furnWalk(f.id)))
+    ? (player.furn || []).find(
+        (f) => f.x === x && f.y === y && (!solidOnly || !furnWalk(f.id)),
+      )
     : null;
 }
 function furnWalk(id) {
@@ -1878,7 +2257,10 @@ function enterHouse() {
     setTimeout(
       () =>
         say([
-          ["", "Sua casa! Aqui você dorme, troca de roupa e mora com sua família."],
+          [
+            "",
+            "Sua casa! Aqui você dorme, troca de roupa e mora com sua família.",
+          ],
           [
             "",
             "Aperte R (ou o botão Decorar) para decorar: compre móveis na Marcenaria do Tonico e coloque onde quiser.",
@@ -1983,7 +2365,9 @@ function renderDecor() {
   const [fx, fy] = frontTile(),
     fr = furnAt(fx, fy),
     ok = canPlace(fx, fy);
-  const ids = Object.keys(player.inv).filter((id) => ITEMS[id].tipo === "movel");
+  const ids = Object.keys(player.inv).filter(
+    (id) => ITEMS[id].tipo === "movel",
+  );
   let h = `<div class="gh"><h2>Decorar a casa</h2><button id="shclose">Fechar (Esc)</button></div>
   <div class="gsub">Fique de frente para um espaço vazio e escolha um móvel. Para tirar um móvel, fique de frente para ele e guarde.</div>
   <div class="irow"><div><div class="nm">À sua frente: ${fr ? furnName(fr.id) : ok ? "espaço vazio ✓" : "não dá para colocar aqui"}</div></div>${fr ? '<button id="dpick">Guardar este móvel</button>' : ""}</div>
@@ -2084,7 +2468,13 @@ function drawFurn(f, t) {
       c("#7f796d", 1, -10, 30, 38);
       c("#6a655b", 1, -10, 30, 4);
       c("#2a1a10", 7, 4, 18, 20);
-      c(`rgb(255,${140 + Math.floor(Math.sin(t * 9) * 40)},40)`, 10, 14 + Math.sin(t * 7) * 2, 12, 10);
+      c(
+        `rgb(255,${140 + Math.floor(Math.sin(t * 9) * 40)},40)`,
+        10,
+        14 + Math.sin(t * 7) * 2,
+        12,
+        10,
+      );
       c("#ffd66b", 13, 18, 6, 6);
       break;
     case "mesa":
@@ -2111,7 +2501,9 @@ function drawFurn(f, t) {
         c("#3a2414", 4, -9 + r * 12, 24, 9);
         for (let k = 0; k < 5; k++)
           c(
-            ["#c94a4a", "#4a74c9", "#5a9a4a", "#d9a441", "#8a4ad9"][(k + r) % 5],
+            ["#c94a4a", "#4a74c9", "#5a9a4a", "#d9a441", "#8a4ad9"][
+              (k + r) % 5
+            ],
             5 + k * 5,
             -8 + r * 12,
             4,
@@ -2566,7 +2958,9 @@ function genInterior(b) {
     ["barrel", 1, 5],
     ["crate", w - 2, 5],
   ];
-  const props0 = (INTER_PROPS[st] || []).filter(([id, x, y]) => x < w - 1 && y < h - 1 && m[y][x] === ".");
+  const props0 = (INTER_PROPS[st] || []).filter(
+    ([id, x, y]) => x < w - 1 && y < h - 1 && m[y][x] === ".",
+  );
   const props = props0.concat(
     extra.filter(
       ([id, x, y]) =>
@@ -2582,7 +2976,11 @@ function genInterior(b) {
   const free = [];
   for (let y = 5; y < h - 2; y++)
     for (let x = 1; x < w - 1; x++)
-      if (m[y][x] === "." && !props.some((p) => p[1] === x && p[2] === y) && Math.abs(x - cx) > 1)
+      if (
+        m[y][x] === "." &&
+        !props.some((p) => p[1] === x && p[2] === y) &&
+        Math.abs(x - cx) > 1
+      )
         free.push([x, y]);
   const nPeople =
     st === "taverna"
@@ -2607,7 +3005,9 @@ function genInterior(b) {
       robe: robes[i % 5],
       hair: hairs[(i + 2) % 5],
       hat: big ? "#5a5a6a" : null,
-      nm: big ? "Guarda Real" : WALKER_NAMES[Math.floor(Math.random() * WALKER_NAMES.length)],
+      nm: big
+        ? "Guarda Real"
+        : WALKER_NAMES[Math.floor(Math.random() * WALKER_NAMES.length)],
       guard: big,
       dance: st === "taverna" && tavernParty() && i % 2 === 0,
     });
@@ -2657,7 +3057,16 @@ function genInterior(b) {
     ky: big ? 2 : 3,
     props,
     people,
-    pal: ["templo", "castle", "forja", "guilda", "biblio", "cristal", "pedra", "hosp"].includes(st)
+    pal: [
+      "templo",
+      "castle",
+      "forja",
+      "guilda",
+      "biblio",
+      "cristal",
+      "pedra",
+      "hosp",
+    ].includes(st)
       ? INTER_PAL.stone
       : INTER_PAL.wood,
     st,
@@ -2906,7 +3315,12 @@ function drawProp(p, t) {
         ctx.globalAlpha = 1;
       }
       sh();
-      drawSprite(wizardRects("#c94a8a", "#6a2a5a", null, null, "right"), X, Y + Math.sin(t * 6) * 1, 2);
+      drawSprite(
+        wizardRects("#c94a8a", "#6a2a5a", null, null, "right"),
+        X,
+        Y + Math.sin(t * 6) * 1,
+        2,
+      );
       c("#c9a050", 22, 12, 6, 10);
       break;
     case "maptable":
@@ -2976,14 +3390,26 @@ function drawProp(p, t) {
       for (let r = 0; r < 3; r++) {
         c("#3a2414", 4, -7 + r * 12, 24, 9);
         for (let k = 0; k < 4; k++)
-          c(["#ff6b8a", "#5fd0ff", "#7ad36b", "#f2c14e"][(k + r) % 4], 6 + k * 6, -5 + r * 12, 4, 7);
+          c(
+            ["#ff6b8a", "#5fd0ff", "#7ad36b", "#f2c14e"][(k + r) % 4],
+            6 + k * 6,
+            -5 + r * 12,
+            4,
+            7,
+          );
       }
       break;
     case "forge":
       sh();
       c("#5a5a62", 0, -8, 32, 36);
       c("#2a1a10", 6, 6, 20, 16);
-      c(`rgb(255,${100 + Math.floor(Math.sin(t * 9) * 40)},20)`, 8, 10 + Math.sin(t * 7) * 2, 16, 10);
+      c(
+        `rgb(255,${100 + Math.floor(Math.sin(t * 9) * 40)},20)`,
+        8,
+        10 + Math.sin(t * 7) * 2,
+        16,
+        10,
+      );
       c("#3a3a44", 0, -10, 32, 4);
       break;
     case "anvil":
@@ -2997,7 +3423,13 @@ function drawProp(p, t) {
       sh();
       c("#6b4423", 15, 22, 2, 8);
       c("#c9a878", 12, -2, 8, 7);
-      c(["#c94a8a", "#4a74c9", "#5a9a4a", "#d4a020"][(x + y) % 4], 8, 5, 16, 18);
+      c(
+        ["#c94a8a", "#4a74c9", "#5a9a4a", "#d4a020"][(x + y) % 4],
+        8,
+        5,
+        16,
+        18,
+      );
       c("#f2c14e", 8, 12, 16, 2);
       break;
     case "mirror":
@@ -3121,7 +3553,8 @@ function addDoorPaths(zid) {
   const W = z.w,
     H = z.h;
   for (const b of z.town.bld) {
-    if (!b.name || ["moinho", "celeiro", "farol", "mina"].includes(b.style)) continue;
+    if (!b.name || ["moinho", "celeiro", "farol", "mina"].includes(b.style))
+      continue;
     const fy = b.y + b.h;
     if (fy >= H - 1) continue;
     for (let x = b.x - 1; x <= b.x + b.w; x++)
@@ -3177,7 +3610,10 @@ function addDoorPaths(zid) {
           goal = [X, Y];
           break;
         }
-        if (".w".includes(m[Y][X]) && Math.abs(X - sx) + Math.abs(Y - sy) < 26) {
+        if (
+          ".w".includes(m[Y][X]) &&
+          Math.abs(X - sx) + Math.abs(Y - sy) < 26
+        ) {
           prev[k] = [x, y];
           q.push([X, Y]);
         }
@@ -3199,13 +3635,20 @@ function tidyTown(zid) {
   const orig = z.map.map((r) => r.split(""));
   const W = z.w,
     H = z.h;
-  const R = (x, y) => x >= 0 && y >= 0 && x < W && y < H && (m[y][x] === "," || m[y][x] === "=");
-  const inPlaza = (x, y) => zid === "vila" && x >= 24 && x <= 39 && y >= 14 && y <= 25;
-  const keepL = zid === "vila" ? new Set(["24,14", "39,14", "24,25", "39,25"]) : new Set();
+  const R = (x, y) =>
+    x >= 0 && y >= 0 && x < W && y < H && (m[y][x] === "," || m[y][x] === "=");
+  const inPlaza = (x, y) =>
+    zid === "vila" && x >= 24 && x <= 39 && y >= 14 && y <= 25;
+  const keepL =
+    zid === "vila" ? new Set(["24,14", "39,14", "24,25", "39,25"]) : new Set();
   for (let y = 1; y < H - 1; y++)
     for (let x = 1; x < W - 1; x++) {
       const c = m[y][x];
-      if (c === "q" || (c === "n" && !inPlaza(x, y)) || (c === "l" && !keepL.has(x + "," + y))) {
+      if (
+        c === "q" ||
+        (c === "n" && !inPlaza(x, y)) ||
+        (c === "l" && !keepL.has(x + "," + y))
+      ) {
         const n = DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length;
         m[y][x] = n >= 2 ? "," : ".";
       }
@@ -3221,7 +3664,8 @@ function tidyTown(zid) {
         if ((l && r) || (u && d) || l + r + u + d >= 3) m[y][x] = ",";
       }
   if (zid === "vila") {
-    for (let y = 15; y <= 24; y++) for (let x = 25; x <= 38; x++) if (m[y][x] !== "N") m[y][x] = ",";
+    for (let y = 15; y <= 24; y++)
+      for (let x = 25; x <= 38; x++) if (m[y][x] !== "N") m[y][x] = ",";
     for (let y = 18; y <= 21; y++) for (let x = 29; x <= 33; x++) m[y][x] = "~";
     m[19][31] = "F";
     [
@@ -3280,8 +3724,13 @@ function tidyTown(zid) {
   for (let pass = 0; pass < 2; pass++)
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++) {
-        if (!R(x, y) || DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length !== 1) continue;
-        if (DIRS4.some(([dx, dy]) => m[y + dy] && m[y + dy][x + dx] === "D")) continue;
+        if (
+          !R(x, y) ||
+          DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length !== 1
+        )
+          continue;
+        if (DIRS4.some(([dx, dy]) => m[y + dy] && m[y + dy][x + dx] === "D"))
+          continue;
         const rd = roadDist(x, y);
         const prev = {},
           q = [[x, y]];
@@ -3303,7 +3752,8 @@ function tidyTown(zid) {
             const X = cx + dx,
               Y = cy + dy,
               k = X + "," + Y;
-            if (k in prev || X < 1 || Y < 1 || X >= W - 1 || Y >= H - 1) continue;
+            if (k in prev || X < 1 || Y < 1 || X >= W - 1 || Y >= H - 1)
+              continue;
             if (R(X, Y) && !(cx === x && cy === y)) {
               const rdd = rd[k];
               if (rdd === undefined || rdd > 3 * (g + 1) + 4) {
@@ -3355,8 +3805,14 @@ function tidyTown(zid) {
     }
   {
     const ok2 = (x, y) =>
-      x > 0 && y > 0 && x < W - 1 && y < H - 1 && ".wu".includes(m[y][x]) && !inPlaza(x, y);
-    const narrowH = (x, y) => R(x, y) && (R(x - 1, y) || R(x + 1, y)) && !R(x, y - 1) && !R(x, y + 1);
+      x > 0 &&
+      y > 0 &&
+      x < W - 1 &&
+      y < H - 1 &&
+      ".wu".includes(m[y][x]) &&
+      !inPlaza(x, y);
+    const narrowH = (x, y) =>
+      R(x, y) && (R(x - 1, y) || R(x + 1, y)) && !R(x, y - 1) && !R(x, y + 1);
     for (let y = 1; y < H - 1; y++) {
       let x = 1;
       while (x < W - 1) {
@@ -3379,7 +3835,8 @@ function tidyTown(zid) {
         x = e;
       }
     }
-    const narrowV = (x, y) => R(x, y) && (R(x, y - 1) || R(x, y + 1)) && !R(x - 1, y) && !R(x + 1, y);
+    const narrowV = (x, y) =>
+      R(x, y) && (R(x, y - 1) || R(x, y + 1)) && !R(x - 1, y) && !R(x + 1, y);
     for (let x = 1; x < W - 1; x++) {
       let y = 1;
       while (y < H - 1) {
@@ -3432,7 +3889,8 @@ function tidyTown(zid) {
               else ob++;
             }
           }
-          if (comp.length <= 10 && rb >= Math.max(2, ob * 0.5)) for (const [cx, cy] of comp) m[cy][cx] = ",";
+          if (comp.length <= 10 && rb >= Math.max(2, ob * 0.5))
+            for (const [cx, cy] of comp) m[cy][cx] = ",";
         }
       for (let y = 1; y < H - 1; y++)
         for (let x = 1; x < W - 1; x++) {
@@ -3460,7 +3918,8 @@ function tidyTown(zid) {
         if (!".wu".includes(m[y][x]) || inPlaza(x, y)) continue;
         let n = 0;
         for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && R(x + dx, y + dy)) n++;
+          for (let dx = -1; dx <= 1; dx++)
+            if ((dx || dy) && R(x + dx, y + dy)) n++;
         const o = DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length;
         if (n >= 5 || (o >= 2 && n >= 4)) ch.push([x, y]);
       }
@@ -3509,7 +3968,8 @@ function tidyTown(zid) {
             } else if (c === "," || c === "=") touch = true;
           }
         }
-        if (touch && comp.length <= 70) for (const [cx, cy] of comp) m[cy][cx] = ",";
+        if (touch && comp.length <= 70)
+          for (const [cx, cy] of comp) m[cy][cx] = ",";
       }
   }
   if (zid === "vila")
@@ -3541,30 +4001,36 @@ function tidyTown(zid) {
         if (orig[y][x] === "f" && m[y][x] !== "f") continue;
       }
     if (zid === "vila") {
-      for (let y = 14; y <= 27; y++) if (m[y][54] !== "~" && m[y][54] !== "=") m[y][54] = ",";
+      for (let y = 14; y <= 27; y++)
+        if (m[y][54] !== "~" && m[y][54] !== "=") m[y][54] = ",";
       for (let x = 54; x <= 62; x++) if (m[18][x] !== "N") m[18][x] = ",";
-      for (let y = 20; y <= 22; y++) for (let x = 56; x <= 60; x++) if (m[y][x] === ",") m[y][x] = ".";
+      for (let y = 20; y <= 22; y++)
+        for (let x = 56; x <= 60; x++) if (m[y][x] === ",") m[y][x] = ".";
     }
   }
   // Porto e Pedravale mantêm areia e grama: só ficam as ruas e calçadas originais.
   if (zid !== "vila")
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++)
-        if (m[y][x] === "," && orig[y][x] !== "," && orig[y][x] !== "=") m[y][x] = orig[y][x];
+        if (m[y][x] === "," && orig[y][x] !== "," && orig[y][x] !== "=")
+          m[y][x] = orig[y][x];
   // Passada final: nenhum tile de grama solto com rua em dois lados (exceto perto de cercas).
   for (let pass = 0; pass < 3; pass++)
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++) {
-        if (zid !== "vila" || !".wu".includes(m[y][x]) || inPlaza(x, y)) continue;
+        if (zid !== "vila" || !".wu".includes(m[y][x]) || inPlaza(x, y))
+          continue;
         let nearFence = false;
         for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++) if (m[y + dy][x + dx] === "f") nearFence = true;
+          for (let dx = -1; dx <= 1; dx++)
+            if (m[y + dy][x + dx] === "f") nearFence = true;
         if (nearFence) continue;
         const roads = DIRS4.filter(([dx, dy]) => R(x + dx, y + dy)).length;
         if (roads >= 2) m[y][x] = ",";
       }
   const free = (x, y) => {
-    if (!(x > 1 && y > 1 && x < W - 2 && y < H - 2 && m[y][x] === ".")) return false;
+    if (!(x > 1 && y > 1 && x < W - 2 && y < H - 2 && m[y][x] === "."))
+      return false;
     for (let dy = -1; dy <= 1; dy++)
       for (let dx = -1; dx <= 1; dx++) {
         const c = m[y + dy][x + dx];
@@ -3573,7 +4039,8 @@ function tidyTown(zid) {
     return true;
   };
   const placed = [...keepL].map((k) => k.split(",").map(Number));
-  const far = (x, y) => placed.every(([a, b]) => Math.abs(a - x) + Math.abs(b - y) >= 6);
+  const far = (x, y) =>
+    placed.every(([a, b]) => Math.abs(a - x) + Math.abs(b - y) >= 6);
   for (let y = 1; y < H - 1; y++) {
     let x = 1;
     while (x < W - 1) {
@@ -3589,7 +4056,8 @@ function tidyTown(zid) {
             if (free(k, yy) && !R(k, yy) && far(k, yy) && !inPlaza(k, yy)) {
               m[yy][k] = "l";
               placed.push([k, yy]);
-              if (zid === "vila" && placed.length % 2 === 0 && free(k + 1, yy)) m[yy][k + 1] = "n";
+              if (zid === "vila" && placed.length % 2 === 0 && free(k + 1, yy))
+                m[yy][k + 1] = "n";
               break;
             }
           }
@@ -3621,7 +4089,7 @@ function tidyTown(zid) {
   }
   z.map = m.map((r) => r.join(""));
 }
-["vila", "porto", "serra"].forEach(tidyTown);
+["vila"].forEach(tidyTown);
 function decorTown(zid) {
   const z = ZONES[zid];
   const m = z.map.map((r) => r.split(""));
@@ -3651,7 +4119,7 @@ function decorTown(zid) {
     }
   z.map = m.map((r) => r.join(""));
 }
-["vila", "porto", "serra"].forEach(decorTown);
+["vila"].forEach(decorTown);
 function chestRarity(z, x, y) {
   const zi = Object.keys(ZONES).indexOf(z);
   const h = tileHash(x * 31 + zi * 997, y * 17 + zi * 131);
@@ -3701,7 +4169,10 @@ const NPCS = {
       };
       if (player.flags.flash && player.runes.length === 4)
         return [
-          ["Arquimaga Odelia", "Então você viu o eco. Sim... Vesper é meu irmão."],
+          [
+            "Arquimaga Odelia",
+            "Então você viu o eco. Sim... Vesper é meu irmão.",
+          ],
           [
             "Arquimaga Odelia",
             "Eu não tive coragem de contar. Achei que você desistiria se soubesse que eu falhei em salvá-lo.",
@@ -3777,6 +4248,97 @@ const NPCS = {
       return null;
     },
   },
+  docesP: {
+    nome: "Doceira Marisol",
+    robe: "#e86a9a",
+    hair: "#3a2414",
+    talk() {
+      openShop("doceria");
+      return null;
+    },
+  },
+  bazarP: {
+    nome: "Mercador Jonas",
+    robe: "#6a3a8a",
+    hair: "#1a1a1a",
+    talk() {
+      openShop("bazar");
+      return null;
+    },
+  },
+  docesS: {
+    nome: "Doceira Brunhilda",
+    robe: "#c97a3a",
+    hair: "#d9a441",
+    talk() {
+      openShop("doceria");
+      return null;
+    },
+  },
+  bazarS: {
+    nome: "Mercador Ulrich",
+    robe: "#5a6a4a",
+    hair: "#8a3a1a",
+    talk() {
+      openShop("bazar");
+      return null;
+    },
+  },
+  pescadorVelho: {
+    nome: "Velho Bartolomeu",
+    robe: "#3a5a7a",
+    hair: "#d9d9d9",
+    hat: "#5a3a22",
+    talk() {
+      return [
+        [
+          "Velho Bartolomeu",
+          [
+            "Pesquei nesse mar a vida inteira. Antes do Silêncio, os peixes brilhavam à noite.",
+            "Se pescar uma pérola, a Marina vai gostar de saber.",
+            "Vento do leste traz tempestade. Sinto nos joelhos.",
+          ][Math.floor(Math.random() * 3)],
+        ],
+      ];
+    },
+  },
+  frutasNPC: {
+    nome: "Vendedora Ilha",
+    robe: "#e8902a",
+    hair: "#1a1a1a",
+    talk() {
+      openShop("frutasP");
+      return null;
+    },
+  },
+  redesNPC: {
+    nome: "Pescador Tomás",
+    robe: "#3a5a7a",
+    hair: "#d9d9d9",
+    hat: "#5a3a22",
+    talk() {
+      openShop("redes");
+      return null;
+    },
+  },
+  queijeira: {
+    nome: "Queijeira Hilda",
+    robe: "#d9c08a",
+    hair: "#8a3a1a",
+    talk() {
+      openShop("queijos");
+      return null;
+    },
+  },
+  erveira: {
+    nome: "Erveira Malva",
+    robe: "#4a7a4a",
+    hair: "#d9d9d9",
+    talk() {
+      openShop("ervasS");
+      return null;
+    },
+  },
   conchas: {
     nome: "Menina das Conchas",
     robe: "#e8a0b0",
@@ -3792,7 +4354,10 @@ const NPCS = {
     hair: "#a8442a",
     talk() {
       return [
-        ["Marina", "O mar é minha casa. Quando o vento sopra do sul, os peixes pulam sozinhos na rede!"],
+        [
+          "Marina",
+          "O mar é minha casa. Quando o vento sopra do sul, os peixes pulam sozinhos na rede!",
+        ],
         ["Marina", "Se quiser me agradar, um Peixe Grelhado nunca é demais."],
       ];
     },
@@ -3807,7 +4372,10 @@ const NPCS = {
           "Capitão Bento",
           "Naveguei por sete mares e nunca vi monstros como os de hoje. Dizem que o Silêncio chegou até às marés.",
         ],
-        ["Capitão Bento", "A carruagem no estábulo leva você de volta a Cinzaluz."],
+        [
+          "Capitão Bento",
+          "A carruagem no estábulo leva você de volta a Cinzaluz.",
+        ],
       ];
     },
   },
@@ -3825,7 +4393,12 @@ const NPCS = {
     robe: "#3a5a8a",
     hair: "#5a3a22",
     talk() {
-      return [["Marujo", "A Moda Brisamar vende roupas que vêm de navio. Coisa fina!"]];
+      return [
+        [
+          "Marujo",
+          "A Moda Brisamar vende roupas que vêm de navio. Coisa fina!",
+        ],
+      ];
     },
   },
   portoB: {
@@ -3833,7 +4406,12 @@ const NPCS = {
     robe: "#8a6a3a",
     hair: "#3a2414",
     talk() {
-      return [["Vendedora de Redes", "A Joalheria Pérola tem anéis de compromisso. Já pensou em casar?"]];
+      return [
+        [
+          "Vendedora de Redes",
+          "A Joalheria Pérola tem anéis de compromisso. Já pensou em casar?",
+        ],
+      ];
     },
   },
   minerA: {
@@ -3878,7 +4456,10 @@ const NPCS = {
           "Anciã Berta",
           "Os anões chegaram aqui antes dos homens. Foi a Forja Anã que fez a armadura da Rainha.",
         ],
-        ["Anciã Berta", "Você pode minerar na mina uma vez por dia. Quem sabe acha um Fragmento Arcano?"],
+        [
+          "Anciã Berta",
+          "Você pode minerar na mina uma vez por dia. Quem sabe acha um Fragmento Arcano?",
+        ],
       ];
     },
   },
@@ -3896,7 +4477,9 @@ const NPCS = {
     robe: "#8a8a6a",
     hair: "#d9d9d9",
     talk() {
-      return [["Pastor", "As cabras daqui sobem até nas paredes da mina. Malucas!"]];
+      return [
+        ["Pastor", "As cabras daqui sobem até nas paredes da mina. Malucas!"],
+      ];
     },
   },
   cocada: {
@@ -4000,7 +4583,12 @@ const NPCS = {
     robe: "#8a8a9a",
     hat: "#5a5a6a",
     talk() {
-      return [["Guarda Real", "Dizem que a Rainha recompensa quem liberta os Guardiões."]];
+      return [
+        [
+          "Guarda Real",
+          "Dizem que a Rainha recompensa quem liberta os Guardiões.",
+        ],
+      ];
     },
   },
   bardo: {
@@ -4011,7 +4599,10 @@ const NPCS = {
       playTune();
       player.mp = Math.min(maxMp(), player.mp + 8);
       return [
-        ["Bardo Lírio", "♪ Era uma vez uma canção, que o silêncio quis guardar... ♪"],
+        [
+          "Bardo Lírio",
+          "♪ Era uma vez uma canção, que o silêncio quis guardar... ♪",
+        ],
         ["", "A música te inspira: +8 MP."],
       ];
     },
@@ -4057,7 +4648,10 @@ const NPCS = {
           "Tião, o Cocheiro",
           "Com um cavalo você atravessa o mundo na metade do tempo. Aperte C para montar e desmontar.",
         ],
-        ["Tião, o Cocheiro", "E se tiver pressa, minha carruagem leva você aos lugares que já visitou."],
+        [
+          "Tião, o Cocheiro",
+          "E se tiver pressa, minha carruagem leva você aos lugares que já visitou.",
+        ],
       ];
     },
   },
@@ -4125,10 +4719,21 @@ const NPCS = {
     talk() {
       return player.runes.length < 4
         ? [
-            ["Guarda Tomé", "Ninguém passa pela barreira do sul. Dizem que lá fica a Torre do Silêncio."],
-            ["Guarda Tomé", "Só quem carregar as quatro runas consegue rompê-la."],
+            [
+              "Guarda Tomé",
+              "Ninguém passa pela barreira do sul. Dizem que lá fica a Torre do Silêncio.",
+            ],
+            [
+              "Guarda Tomé",
+              "Só quem carregar as quatro runas consegue rompê-la.",
+            ],
           ]
-        : [["Guarda Tomé", "A barreira caiu! Que as runas te protejam, aprendiz."]];
+        : [
+            [
+              "Guarda Tomé",
+              "A barreira caiu! Que as runas te protejam, aprendiz.",
+            ],
+          ];
     },
   },
   druida: {
@@ -4137,8 +4742,14 @@ const NPCS = {
     hair: "#cfcfcf",
     talk() {
       return [
-        ["Druida Errante", "As árvores lembram da magia. O Ent não é mau, só esqueceu quem era."],
-        ["Druida Errante", "Quando tiver a Maré, misture-a com a Terra. Tudo que é ferido pode florescer."],
+        [
+          "Druida Errante",
+          "As árvores lembram da magia. O Ent não é mau, só esqueceu quem era.",
+        ],
+        [
+          "Druida Errante",
+          "Quando tiver a Maré, misture-a com a Terra. Tudo que é ferido pode florescer.",
+        ],
       ];
     },
   },
@@ -4162,7 +4773,10 @@ const NPCS = {
     hair: "#2a1a10",
     talk() {
       return [
-        ["Monge da Montanha", "Nada que sopra fere o Grifo. Nada que queima o derrete."],
+        [
+          "Monge da Montanha",
+          "Nada que sopra fere o Grifo. Nada que queima o derrete.",
+        ],
         [
           "Monge da Montanha",
           "Mas a água sempre vence a pedra. E vento com terra vira areia nos olhos de qualquer fera.",
@@ -4177,7 +4791,10 @@ const NPCS = {
     ghost: true,
     talk() {
       return [
-        ["Espírito de um Aprendiz", "Eu tentei antes de você. Fui o último a tentar."],
+        [
+          "Espírito de um Aprendiz",
+          "Eu tentei antes de você. Fui o último a tentar.",
+        ],
         [
           "Espírito de um Aprendiz",
           "O Silenciador troca de fraqueza a cada três turnos: observe a cor da máscara. E de tempos em tempos ele sela uma runa. Tenha sempre um plano B.",
@@ -4188,15 +4805,24 @@ const NPCS = {
 };
 const GUARD_PRE = {
   diretor: () => [
-    ["Diretor Espectral", "SILÊNCIO NA BIBLIOTECA! Nenhum aluno sai daqui com os meus livros!"],
+    [
+      "Diretor Espectral",
+      "SILÊNCIO NA BIBLIOTECA! Nenhum aluno sai daqui com os meus livros!",
+    ],
     ["", "O Diretor ergue seu cetro sombrio!"],
   ],
   ent: () => [
-    ["Ent Silenciado", "...sss... silêncio... a terra... dorme... não acorde... ela..."],
+    [
+      "Ent Silenciado",
+      "...sss... silêncio... a terra... dorme... não acorde... ela...",
+    ],
     ["", "O Ent ergue os galhos contra você!"],
   ],
   serpente: () => [
-    ["Serpente de Névoa", "Ssssó o silêncio é eterno, pequena faísca. Esta runa é minha agora."],
+    [
+      "Serpente de Névoa",
+      "Ssssó o silêncio é eterno, pequena faísca. Esta runa é minha agora.",
+    ],
   ],
   grifo: () => [
     ["Grifo de Pedra", "Nenhuma asa voa sem vento. E o vento obedece a mim."],
@@ -4212,7 +4838,10 @@ const GUARD_PRE = {
     ];
     if (player.pages.includes("torre"))
       l.push(
-        ["Você", '"Magia guardada não é magia." Foi você que escreveu isso, Vesper.'],
+        [
+          "Você",
+          '"Magia guardada não é magia." Foi você que escreveu isso, Vesper.',
+        ],
         ["O Silenciador", "...Esse nome... CALE-SE!"],
       );
     return l;
@@ -4255,7 +4884,10 @@ function GUARD_POST(type) {
     ],
   }[type];
   return L.concat([
-    ["", `Você recuperou a Runa ${RUNE_OF[r]}! Novas combinações estão disponíveis.`],
+    [
+      "",
+      `Você recuperou a Runa ${RUNE_OF[r]}! Novas combinações estão disponíveis.`,
+    ],
     ["", `Você recebeu: ${it}! Equipe pelo inventário (tecla I).`],
   ]);
 }
@@ -4304,21 +4936,45 @@ const FLASH = [
     "",
     "Ao cruzar a porta da torre, as runas em suas mãos vibram. Um eco do passado ganha forma diante de você...",
   ],
-  ["Odelia (eco)", "A magia não pode ser aprisionada, Vesper. Ela precisa viver."],
-  ["Vesper (eco)", "E quando não houver mais ninguém capaz de protegê-la? Quando a última runa desaparecer?"],
+  [
+    "Odelia (eco)",
+    "A magia não pode ser aprisionada, Vesper. Ela precisa viver.",
+  ],
+  [
+    "Vesper (eco)",
+    "E quando não houver mais ninguém capaz de protegê-la? Quando a última runa desaparecer?",
+  ],
   ["Odelia (eco)", "Então ensinaremos outros a ouvir sua canção."],
-  ["Vesper (eco)", "Você ainda acredita que o mundo merece esse poder. Eu não posso arriscar perdê-lo."],
-  ["", "O eco se desfaz. Odelia conhecia o Silenciador desde o princípio... Ele é o irmão dela."],
+  [
+    "Vesper (eco)",
+    "Você ainda acredita que o mundo merece esse poder. Eu não posso arriscar perdê-lo.",
+  ],
+  [
+    "",
+    "O eco se desfaz. Odelia conhecia o Silenciador desde o princípio... Ele é o irmão dela.",
+  ],
 ];
 const FINALE = [
   ["", "Após a longa batalha, a máscara do Silenciador começa a se partir."],
-  ["", "Você ergue as quatro runas, e a Canção Arcana volta a ecoar pela torre."],
+  [
+    "",
+    "Você ergue as quatro runas, e a Canção Arcana volta a ecoar pela torre.",
+  ],
   ["O Silenciador", "Não... Se libertar a magia, ela desaparecerá novamente!"],
-  ["Você", "Você tentou salvá-la, mas esqueceu por que ela era tão importante."],
+  [
+    "Você",
+    "Você tentou salvá-la, mas esqueceu por que ela era tão importante.",
+  ],
   ["O Silenciador", "Eu... só queria protegê-la..."],
   ["", "Você abre a última página do diário e lê em voz alta:"],
-  ["Você", '"Magia guardada não é magia. Ela só vive quando é usada e compartilhada."'],
-  ["", "O Silenciador reconhece aquelas palavras. Foram escritas por ele mesmo."],
+  [
+    "Você",
+    '"Magia guardada não é magia. Ela só vive quando é usada e compartilhada."',
+  ],
+  [
+    "",
+    "O Silenciador reconhece aquelas palavras. Foram escritas por ele mesmo.",
+  ],
   ["Vesper", "Odelia... Minha irmã... Ela ainda está viva?"],
   ["Você", "Ela nunca deixou de esperar por você."],
   [
