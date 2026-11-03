@@ -1027,6 +1027,18 @@ const SHOPS = {
     sub: "Sabores raros",
     items: ["cha", "bolo", "maca", "torta"],
   },
+  frutasP: {
+    nome: "Frutas da Ilha",
+    sub: "Frutas e doces do litoral",
+    items: ["maca", "mel", "doce", "agua"],
+  },
+  redes: { nome: "Redes e Anzóis", sub: "Tudo para pescar", items: ["vara", "petisco", "racao"] },
+  queijos: {
+    nome: "Queijos da Serra",
+    sub: "Queijo curado e pão de forno a lenha",
+    items: ["queijo", "pao", "mel"],
+  },
+  ervasS: { nome: "Ervas da Montanha", sub: "Chás e ervas que curam", items: ["ervas", "cha", "eter"] },
   conchas: {
     nome: "Barraca das Conchas",
     sub: "Lembranças do mar",
