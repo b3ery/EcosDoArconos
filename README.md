@@ -125,6 +125,43 @@
 
 ---
 
+## 🧙 Personagens Principais
+
+<div align="center">
+
+| | | | |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/personagens/npc_odelia.png" width="110"/><br><b>Arquimaga Odelia</b><br><sub>Mentora do aprendiz e irmã de Vesper · Cinzaluz</sub> | <img src="assets/personagens/npc_kael.png" width="110"/><br><b>Instrutor Kael</b><br><sub>Ensina a lutar com runas · Cinzaluz</sub> | <img src="assets/personagens/npc_bruno.png" width="110"/><br><b>Bruno, o Alquimista</b><br><sub>Poções e remédios · Cinzaluz</sub> | <img src="assets/personagens/npc_rosa.png" width="110"/><br><b>Rosa, a Quitandeira</b><br><sub>Comida e bebida · Cinzaluz</sub> |
+| <img src="assets/personagens/npc_doran.png" width="110"/><br><b>Doran, o Artesão</b><br><sub>Cajados mágicos · Cinzaluz</sub> | <img src="assets/personagens/npc_curandeira.png" width="110"/><br><b>Curandeira Maíra</b><br><sub>Cura e cuidados · Cinzaluz</sub> | <img src="assets/personagens/npc_capitao.png" width="110"/><br><b>Capitão Bento</b><br><sub>Velho marinheiro · Porto Brisamar</sub> | <img src="assets/personagens/npc_ancia.png" width="110"/><br><b>Anciã Berta</b><br><sub>Conhece a história dos anões · Pedravale</sub> |
+| <img src="assets/personagens/npc_druida.png" width="110"/><br><b>Druida Errante</b><br><sub>Dicas sobre o Ent · Bosque Murmurante</sub> | <img src="assets/personagens/npc_monge.png" width="110"/><br><b>Monge da Montanha</b><br><sub>Dicas sobre o Grifo · Picos Uivantes</sub> | <img src="assets/personagens/npc_selene.png" width="110"/><br><b>Professora Selene</b><br><sub>Antiga professora · Academia Arcana</sub> | <img src="assets/personagens/npc_espirito.png" width="110"/><br><b>Espírito de um Aprendiz</b><br><sub>Dicas sobre o Silenciador · Torre do Silêncio</sub> |
+
+</div>
+
+<br>
+
+---
+
+## 👹 Chefes
+
+<div align="center">
+
+| Chefe | Nome | Onde | Nível sugerido | Dificuldade | Vida<br><sub>Fácil / Normal / Difícil</sub> | Ataque<br><sub>Fácil / Normal / Difícil</sub> | XP |
+|:---:|:---|:---|:---:|:---:|:---:|:---:|:---:|
+| <img src="assets/personagens/boss_ent.png" width="90"/> | **Ent Silenciado**<br><sub>Guardião</sub> | 🌲 Bosque Murmurante | **Nv 3** | ★★☆☆☆ | 140 / 182 / 252 | 11 / 13 / 16 | 60 |
+| <img src="assets/personagens/boss_serpente.png" width="90"/> | **Serpente de Névoa**<br><sub>Guardião</sub> | 🌫️ Pântano das Brumas | **Nv 5** | ★★★☆☆ | 165 / 214 / 297 | 13 / 16 / 20 | 85 |
+| <img src="assets/personagens/boss_grifo.png" width="90"/> | **Grifo de Pedra**<br><sub>Guardião</sub> | 🏔️ Picos Uivantes | **Nv 6** | ★★★☆☆ | 190 / 247 / 342 | 15 / 18 / 22 | 100 |
+| <img src="assets/personagens/boss_vitral.png" width="90"/> | **Espírito do Vitral**<br><sub>Chefe secreto</sub> | ⛪ Templo da Luz (opcional) | **Nv 6** | ★★★★☆ | 210 / 273 / 378 | 15 / 18 / 22 | 130 |
+| <img src="assets/personagens/boss_diretor.png" width="90"/> | **Diretor Espectral**<br><sub>Chefe da masmorra</sub> | 📚 Academia Arcana | **Nv 8** | ★★★★☆ | 260 / 338 / 468 | 16 / 19 / 24 | 150 |
+| <img src="assets/personagens/boss_silenciador.png" width="90"/> | **O Silenciador**<br><sub>Chefe final</sub> | 🗼 Torre do Silêncio | **Nv 9** | ★★★★★ | 440 / 572 / 792 | 16 / 19 / 24 | — |
+
+</div>
+
+> **Nível sugerido** é uma estimativa: o nível que o aprendiz costuma ter ao chegar no chefe, treinando com o Instrutor Kael e enfrentando uns 12 monstros em cada região. As fraquezas dos Guardiões mudam conforme a runa escolhida no início.
+
+<br>
+
+---
+
 ## 📜 A História — O Segredo dos Irmãos
 
 | Ato | O que acontece |
