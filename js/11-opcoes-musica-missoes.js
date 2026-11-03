@@ -18,11 +18,7 @@ const DEFAULT_SETTINGS = {
 
 const settings = (() => {
   try {
-    return Object.assign(
-      {},
-      DEFAULT_SETTINGS,
-      JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}"),
-    );
+    return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}"));
   } catch (e) {
     return Object.assign({}, DEFAULT_SETTINGS);
   }
@@ -94,10 +90,7 @@ function monitorPerformance(dt) {
     autoQuality = autoQuality === "alta" ? "media" : "baixa";
     fpsMonitor.slowStreak = 0;
     applyQuality();
-    toast(
-      `O jogo ficou lento: qualidade ajustada para ${currentQuality().label}.`,
-      3000,
-    );
+    toast(`O jogo ficou lento: qualidade ajustada para ${currentQuality().label}.`, 3000);
   }
 }
 
@@ -116,8 +109,8 @@ const TRACKS = {
     bpm: 72,
     lead: "triangle",
     melody: [
-      69, 0, 72, 0, 76, 0, 74, 72, 71, 0, 67, 0, 69, 0, 0, 0, 65, 0, 69, 0, 72,
-      0, 71, 69, 67, 0, 64, 0, 69, 0, 0, 0,
+      69, 0, 72, 0, 76, 0, 74, 72, 71, 0, 67, 0, 69, 0, 0, 0, 65, 0, 69, 0, 72, 0, 71, 69, 67, 0, 64, 0, 69,
+      0, 0, 0,
     ],
     bass: [45, 0, 0, 0, 45, 0, 0, 0, 41, 0, 0, 0, 43, 0, 0, 0],
   },
@@ -125,8 +118,8 @@ const TRACKS = {
     bpm: 96,
     lead: "square",
     melody: [
-      72, 0, 74, 76, 79, 0, 76, 74, 72, 0, 69, 0, 72, 0, 0, 0, 77, 0, 76, 74,
-      72, 0, 74, 76, 74, 0, 72, 0, 72, 0, 0, 0,
+      72, 0, 74, 76, 79, 0, 76, 74, 72, 0, 69, 0, 72, 0, 0, 0, 77, 0, 76, 74, 72, 0, 74, 76, 74, 0, 72, 0, 72,
+      0, 0, 0,
     ],
     bass: [48, 0, 55, 0, 45, 0, 52, 0, 41, 0, 48, 0, 43, 0, 50, 0],
   },
@@ -134,8 +127,8 @@ const TRACKS = {
     bpm: 70,
     lead: "triangle",
     melody: [
-      69, 0, 0, 72, 0, 0, 76, 0, 74, 0, 0, 72, 0, 0, 69, 0, 67, 0, 0, 69, 0, 0,
-      72, 0, 71, 0, 0, 0, 0, 0, 0, 0,
+      69, 0, 0, 72, 0, 0, 76, 0, 74, 0, 0, 72, 0, 0, 69, 0, 67, 0, 0, 69, 0, 0, 72, 0, 71, 0, 0, 0, 0, 0, 0,
+      0,
     ],
     bass: [45, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0],
   },
@@ -143,8 +136,8 @@ const TRACKS = {
     bpm: 112,
     lead: "square",
     melody: [
-      69, 0, 72, 69, 76, 0, 74, 0, 72, 71, 69, 0, 67, 0, 69, 0, 69, 0, 72, 74,
-      76, 0, 79, 0, 77, 76, 74, 0, 76, 0, 0, 0,
+      69, 0, 72, 69, 76, 0, 74, 0, 72, 71, 69, 0, 67, 0, 69, 0, 69, 0, 72, 74, 76, 0, 79, 0, 77, 76, 74, 0,
+      76, 0, 0, 0,
     ],
     bass: [45, 45, 0, 45, 41, 41, 0, 41, 43, 43, 0, 43, 40, 40, 0, 40],
   },
@@ -152,8 +145,8 @@ const TRACKS = {
     bpm: 150,
     lead: "sawtooth",
     melody: [
-      69, 69, 72, 69, 74, 69, 76, 74, 72, 72, 76, 72, 79, 77, 76, 74, 69, 69,
-      72, 69, 74, 69, 76, 79, 81, 79, 77, 76, 74, 72, 71, 72,
+      69, 69, 72, 69, 74, 69, 76, 74, 72, 72, 76, 72, 79, 77, 76, 74, 69, 69, 72, 69, 74, 69, 76, 79, 81, 79,
+      77, 76, 74, 72, 71, 72,
     ],
     bass: [45, 45, 57, 45, 45, 45, 57, 45, 41, 41, 53, 41, 43, 43, 55, 43],
   },
@@ -161,8 +154,8 @@ const TRACKS = {
     bpm: 160,
     lead: "sawtooth",
     melody: [
-      64, 0, 64, 65, 64, 0, 62, 0, 64, 0, 67, 68, 67, 0, 65, 0, 64, 0, 64, 65,
-      64, 0, 62, 60, 59, 0, 60, 62, 64, 0, 0, 0,
+      64, 0, 64, 65, 64, 0, 62, 0, 64, 0, 67, 68, 67, 0, 65, 0, 64, 0, 64, 65, 64, 0, 62, 60, 59, 0, 60, 62,
+      64, 0, 0, 0,
     ],
     bass: [40, 40, 40, 40, 41, 41, 41, 41, 40, 40, 40, 40, 38, 38, 39, 39],
   },
@@ -170,8 +163,8 @@ const TRACKS = {
     bpm: 132,
     lead: "square",
     melody: [
-      74, 76, 78, 74, 79, 0, 78, 76, 74, 0, 71, 0, 74, 76, 78, 0, 79, 81, 83,
-      79, 81, 0, 79, 78, 76, 0, 74, 0, 74, 0, 0, 0,
+      74, 76, 78, 74, 79, 0, 78, 76, 74, 0, 71, 0, 74, 76, 78, 0, 79, 81, 83, 79, 81, 0, 79, 78, 76, 0, 74, 0,
+      74, 0, 0, 0,
     ],
     bass: [50, 0, 57, 0, 50, 0, 57, 0, 55, 0, 62, 0, 57, 0, 64, 0],
   },
@@ -179,8 +172,8 @@ const TRACKS = {
     bpm: 124,
     lead: "square",
     melody: [
-      72, 76, 79, 76, 81, 79, 76, 72, 74, 77, 81, 77, 79, 0, 0, 0, 72, 76, 79,
-      84, 83, 81, 79, 76, 77, 76, 74, 71, 72, 0, 0, 0,
+      72, 76, 79, 76, 81, 79, 76, 72, 74, 77, 81, 77, 79, 0, 0, 0, 72, 76, 79, 84, 83, 81, 79, 76, 77, 76, 74,
+      71, 72, 0, 0, 0,
     ],
     bass: [48, 0, 55, 0, 53, 0, 57, 0, 55, 0, 59, 0, 48, 0, 55, 0],
   },
@@ -229,27 +222,12 @@ function scheduleMusic() {
   const track = TRACKS[music.track];
   if (!track || !audioCtx || settings.music <= 0) return;
   const stepLen = 60 / track.bpm / 2;
-  if (music.nextTime < audioCtx.currentTime)
-    music.nextTime = audioCtx.currentTime + 0.05;
+  if (music.nextTime < audioCtx.currentTime) music.nextTime = audioCtx.currentTime + 0.05;
   while (music.nextTime < audioCtx.currentTime + 0.25) {
     const melodyNote = track.melody[music.step % track.melody.length];
     const bassNote = track.bass[music.step % track.bass.length];
-    if (melodyNote)
-      playNote(
-        midiToFreq(melodyNote),
-        music.nextTime,
-        stepLen * 0.9,
-        track.lead,
-        0.5,
-      );
-    if (bassNote)
-      playNote(
-        midiToFreq(bassNote),
-        music.nextTime,
-        stepLen * 1.6,
-        "triangle",
-        0.7,
-      );
+    if (melodyNote) playNote(midiToFreq(melodyNote), music.nextTime, stepLen * 0.9, track.lead, 0.5);
+    if (bassNote) playNote(midiToFreq(bassNote), music.nextTime, stepLen * 1.6, "triangle", 0.7);
     music.step++;
     music.nextTime += stepLen;
   }
@@ -257,20 +235,13 @@ function scheduleMusic() {
 
 /** Escolhe a faixa de acordo com o que está acontecendo. */
 function desiredTrack() {
-  if (["title", "story", "create", "choose", "end"].includes(game.mode))
-    return "titulo";
-  if (game.mode === "battle" && battle)
-    return battle.e.boss || battle.e.eco ? "chefe" : "batalha";
+  if (["title", "story", "create", "choose", "end"].includes(game.mode)) return "titulo";
+  if (game.mode === "battle" && battle) return battle.e.boss || battle.e.eco ? "chefe" : "batalha";
   if (game.brawl) return "batalha";
   if (game.wedding) return "festival";
   const zone = ZONES[player.zone];
   if (!zone) return "vila";
-  if (
-    player.zone === "interior" &&
-    game.inter &&
-    game.inter.st === "taverna" &&
-    tavernParty()
-  )
+  if (player.zone === "interior" && game.inter && game.inter.st === "taverna" && tavernParty())
     return "taverna";
   if (player.zone === "vila" && festivalToday()) return "festival";
   if (zone.town) return isNight() ? "noite" : "vila";
@@ -335,14 +306,8 @@ function optionButtons(group, choices, current) {
 
 function renderOptions() {
   const inGame = optionsReturnMode !== "title";
-  const qualityChoices = [
-    ["auto", "Automática"],
-    ...Object.entries(QUALITY).map(([k, q]) => [k, q.label]),
-  ];
-  const difficultyChoices = Object.entries(DIFFICULTIES).map(([k, d]) => [
-    k,
-    d.n,
-  ]);
+  const qualityChoices = [["auto", "Automática"], ...Object.entries(QUALITY).map(([k, q]) => [k, q.label])];
+  const difficultyChoices = Object.entries(DIFFICULTIES).map(([k, d]) => [k, d.n]);
   let html = `<div class="gh"><h2>Opções</h2><button id="optclose">Fechar (Esc)</button></div>
     <h3>Som</h3>
     <div class="opt"><span>Efeitos</span><input type="range" id="optSfx" min="0" max="1" step="0.05" value="${settings.sfx}"></div>
@@ -351,10 +316,7 @@ function renderOptions() {
     <div class="opt"><span>Qualidade</span><div class="seg">${optionButtons("q", qualityChoices, settings.quality)}</div></div>
     <div class="opt"><span>Zoom</span><div class="seg">${optionButtons(
       "z",
-      [1, 1.25, 1.5, 1.8, 2.2].map((z) => [
-        String(z),
-        Math.round(z * 100) + "%",
-      ]),
+      [1, 1.25, 1.5, 1.8, 2.2].map((z) => [String(z), Math.round(z * 100) + "%"]),
       String(game.zoom),
     )}</div></div>
     <h3>Celular</h3>
@@ -371,11 +333,17 @@ function renderOptions() {
       <div class="opt"><span>Dificuldade</span><div class="seg">${optionButtons("d", difficultyChoices, player.diff || "normal")}</div></div>
       <div class="opt"><span>Progresso</span><div><button id="optSave">Salvar agora</button> <button id="optErase">Apagar progresso</button></div></div>`;
   }
+  html += `<h3>Ajuda</h3><div class="opt"><span>Como jogar</span><div><button id="optGuide">Guia do Aprendiz</button> <button id="optCredits">Créditos</button></div></div>`;
   html += `<h3>Controles</h3><div class="controls">${CONTROLS_HELP.map(([a, k]) => `<div><b>${a}</b><span>${k}</span></div>`).join("")}</div>`;
   const box = byId("options");
   box.innerHTML = html;
 
   byId("optclose").onclick = closeOptions;
+  byId("optGuide").onclick = openGuide;
+  byId("optCredits").onclick = () => {
+    closeOptions();
+    openCredits();
+  };
   byId("optSfx").oninput = (e) => {
     settings.sfx = +e.target.value;
     saveSettings();
@@ -463,8 +431,7 @@ const TOWN_QUESTS = [
     title: "Uma Pérola para Marina",
     need: { perolaN: 1 },
     reward: { gold: 80, rel: 10 },
-    intro:
-      "Minha mãe tinha uma pérola que perdeu no mar. Se você pescar uma por aí... eu ia adorar.",
+    intro: "Minha mãe tinha uma pérola que perdeu no mar. Se você pescar uma por aí... eu ia adorar.",
     done: "Ela é linda! Vou guardar perto do coração. Obrigada, de verdade.",
   },
   {
@@ -474,8 +441,7 @@ const TOWN_QUESTS = [
     title: "Carpas para a Feira",
     need: { carpa: 3 },
     reward: { gold: 100, rep: 2 },
-    intro:
-      "Prometi carpas frescas para a feira de amanhã e a pesca foi fraca. Consegue 3 Carpas?",
+    intro: "Prometi carpas frescas para a feira de amanhã e a pesca foi fraca. Consegue 3 Carpas?",
     done: "Salvou minha feira! Volte sempre que quiser peixe fresco.",
   },
   {
@@ -485,8 +451,7 @@ const TOWN_QUESTS = [
     title: "Pedras para a Forja Anã",
     need: { pedra: 5 },
     reward: { gold: 120, item: "fragmento" },
-    intro:
-      "A forja está com fome! Preciso de 5 Pedras de Golem para uma liga nova.",
+    intro: "A forja está com fome! Preciso de 5 Pedras de Golem para uma liga nova.",
     done: "Pedra boa, sim senhor! Leve este fragmento, achei lá no fundo da mina.",
   },
   {
@@ -507,15 +472,13 @@ const TOWN_QUESTS = [
     title: "Peles para o Inverno",
     need: { couro: 4 },
     reward: { gold: 110, item: "armPele" },
-    intro:
-      "O inverno vem forte. Preciso de 4 Couros de Lobo para os casacos da vila.",
+    intro: "O inverno vem forte. Preciso de 4 Couros de Lobo para os casacos da vila.",
     done: "Agora ninguém passa frio. Leve esta armadura de pele, fiz pensando em você.",
   },
 ];
 
 const townQuestState = (q) => (player.townQ || {})[q.id] || "novo";
-const hasQuestItems = (q) =>
-  Object.entries(q.need).every(([id, n]) => itemCount(id) >= n);
+const hasQuestItems = (q) => Object.entries(q.need).every(([id, n]) => itemCount(id) >= n);
 const questNeedText = (q) =>
   Object.entries(q.need)
     .map(([id, n]) => `${Math.min(itemCount(id), n)}/${n} ${ITEMS[id].nome}`)
@@ -558,9 +521,7 @@ function townQuestMenuItems(id) {
       });
     else if (state === "ativo")
       items.push({
-        t: hasQuestItems(q)
-          ? `Entregar: ${q.title}`
-          : `${q.title} (${questNeedText(q)})`,
+        t: hasQuestItems(q) ? `Entregar: ${q.title}` : `${q.title} (${questNeedText(q)})`,
         fn: () => {
           if (!hasQuestItems(q)) {
             say([[name, `Ainda falta: ${questNeedText(q)}.`]]);
@@ -582,12 +543,7 @@ function townQuestsHTML() {
   for (const q of TOWN_QUESTS) {
     const state = townQuestState(q);
     const who = NPCS[q.giver].nome.split(",")[0];
-    const status =
-      state === "feito"
-        ? "concluído"
-        : state === "ativo"
-          ? questNeedText(q)
-          : `fale com ${who}`;
+    const status = state === "feito" ? "concluído" : state === "ativo" ? questNeedText(q) : `fale com ${who}`;
     html += `<div class="qs ${state === "feito" ? "done" : ""}">${q.title} · ${q.town}<div class="qtip">${status}</div></div>`;
   }
   return html;
@@ -602,15 +558,10 @@ function elfMenu(elf) {
   choice(elf.nm, "Um elfo da floresta. Os olhos brilham como folhas ao sol.", [
     {
       t: "Conversar",
-      fn: () =>
-        say([
-          [elf.nm, ELF_LINES[Math.floor(Math.random() * ELF_LINES.length)]],
-        ]),
+      fn: () => say([[elf.nm, ELF_LINES[Math.floor(Math.random() * ELF_LINES.length)]]]),
     },
     {
-      t: blessed
-        ? "Bênção élfica (já recebida hoje)"
-        : "Pedir a bênção élfica (1 Buquê de Flores)",
+      t: blessed ? "Bênção élfica (já recebida hoje)" : "Pedir a bênção élfica (1 Buquê de Flores)",
       fn: () => {
         if (blessed) return;
         if (!itemCount("flor")) {
@@ -622,10 +573,7 @@ function elfMenu(elf) {
         saveGame();
         say([
           [elf.nm, "*canta baixinho numa língua antiga*"],
-          [
-            "",
-            "Bênção élfica: hoje você recupera 3 HP por turno nas batalhas.",
-          ],
+          ["", "Bênção élfica: hoje você recupera 3 HP por turno nas batalhas."],
         ]);
       },
     },
@@ -633,9 +581,7 @@ function elfMenu(elf) {
       t: "Trocar 3 Ervas Medicinais por um Elixir",
       fn: () => {
         if (itemCount("ervas") < 3) {
-          say([
-            [elf.nm, "Três ervas por um elixir. É a troca justa da floresta."],
-          ]);
+          say([[elf.nm, "Três ervas por um elixir. É a troca justa da floresta."]]);
           return;
         }
         removeItem("ervas", 3);
@@ -665,10 +611,7 @@ function grownKidMenuItems(k) {
         player.gold += gold;
         saveGame();
         say([
-          [
-            k.name,
-            "Varri a casa, alimentei as galinhas e ainda vendi ovos na feira!",
-          ],
+          [k.name, "Varri a casa, alimentei as galinhas e ainda vendi ovos na feira!"],
           ["", `+${gold} de ouro.`],
         ]);
       },
@@ -697,8 +640,7 @@ const SECRET_VISIT_GIFTS = ["pao", "doce", "mel", "flor"];
 
 function secretVisitGift() {
   if (Math.random() >= 0.45) return "";
-  const gift =
-    SECRET_VISIT_GIFTS[Math.floor(Math.random() * SECRET_VISIT_GIFTS.length)];
+  const gift = SECRET_VISIT_GIFTS[Math.floor(Math.random() * SECRET_VISIT_GIFTS.length)];
   addItem(gift);
   return ` Na despedida, você ganha ${ITEMS[gift].nome}.`;
 }
@@ -707,23 +649,13 @@ function secretVisitGift() {
    FILHOS: ADOÇÃO NO TEMPLO
    ========================================================================== */
 
-const KID_ROBES = [
-  "#e86ab0",
-  "#4a7ad9",
-  "#7ab04a",
-  "#f2c14e",
-  "#c94a4a",
-  "#8a4ad9",
-];
+const KID_ROBES = ["#e86ab0", "#4a7ad9", "#7ab04a", "#f2c14e", "#c94a4a", "#8a4ad9"];
 const KID_HAIRS = ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a", "#e8e4dc"];
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
 function randomKidLook(base) {
   return {
-    skin:
-      base && Math.random() < 0.5
-        ? base.skin
-        : pick(["#f1c8a5", "#d9a07a", "#a8704a", "#7a4a2a"]),
+    skin: base && Math.random() < 0.5 ? base.skin : pick(["#f1c8a5", "#d9a07a", "#a8704a", "#7a4a2a"]),
     hair: base && Math.random() < 0.5 ? base.hair : pick(KID_HAIRS),
     hstyle: pick(["curto", "longo", "cacheado", "rabo"]),
     hat: "nenhum",
@@ -737,39 +669,27 @@ function randomKidLook(base) {
 function adoptChild() {
   const priest = "Padre Anselmo";
   if (player.gold < 50) {
-    say([
-      [
-        priest,
-        "A adoção pede uma doação de 50 de ouro para o orfanato do Templo.",
-      ],
-    ]);
+    say([[priest, "A adoção pede uma doação de 50 de ouro para o orfanato do Templo."]]);
     return;
   }
-  say(
-    [
-      [
-        priest,
-        "Há uma criança aqui que sonha com uma família. Que nome você quer dar a ela?",
-      ],
-    ],
-    () =>
-      promptName("Nome da criança", "Como vai se chamar?", (name) => {
-        player.gold -= 50;
-        player.kids.push({
-          name,
-          born: player.day - 2,
-          look: randomKidLook(player.look),
-          adopted: true,
-        });
-        repAdd(3);
-        saveGame();
-        playSound(784, 0.2, "sine");
-        setTimeout(() => playSound(1047, 0.3, "sine"), 180);
-        say([
-          [name, "Você... vai ser minha família de verdade?"],
-          ["", `${name} agora mora na sua casa. Reputação +3.`],
-        ]);
-      }),
+  say([[priest, "Há uma criança aqui que sonha com uma família. Que nome você quer dar a ela?"]], () =>
+    promptName("Nome da criança", "Como vai se chamar?", (name) => {
+      player.gold -= 50;
+      player.kids.push({
+        name,
+        born: player.day - 2,
+        look: randomKidLook(player.look),
+        adopted: true,
+      });
+      repAdd(3);
+      saveGame();
+      playSound(784, 0.2, "sine");
+      setTimeout(() => playSound(1047, 0.3, "sine"), 180);
+      say([
+        [name, "Você... vai ser minha família de verdade?"],
+        ["", `${name} agora mora na sua casa. Reputação +3.`],
+      ]);
+    }),
   );
 }
 
@@ -790,10 +710,7 @@ function startWedding(id) {
   const guests = Object.keys(FRIENDS)
     .filter((k) => k !== id && NPCS[k] && friendshipLevel(k) >= 1)
     .slice(0, 10);
-  while (guests.length < 6)
-    guests.push(
-      pick(Object.keys(NPCS).filter((k) => NPCS[k].robe && k !== id)),
-    );
+  while (guests.length < 6) guests.push(pick(Object.keys(NPCS).filter((k) => NPCS[k].robe && k !== id)));
   game.wedding = { id, start: game.t, guests, rang: false };
   game.mode = "wedding";
   byId("tgtpill").style.display = "none";
@@ -810,21 +727,13 @@ function finishWedding() {
   player.spouse = id;
   player.dating = null;
   player.married = player.day;
-  Object.keys(FRIENDS).forEach(
-    (k) => (player.rel[k] = Math.min(100, friendship(k) + 5)),
-  );
+  Object.keys(FRIENDS).forEach((k) => (player.rel[k] = Math.min(100, friendship(k) + 5)));
   saveGame();
   say([
-    [
-      "Padre Anselmo",
-      `Pelo poder das runas, eu declaro ${player.name} e ${name} unidos para sempre!`,
-    ],
+    ["Padre Anselmo", `Pelo poder das runas, eu declaro ${player.name} e ${name} unidos para sempre!`],
     ["Arquimaga Odelia", "Que a Canção Arcana proteja esta família."],
     ["", `Vocês se casaram! ${name} agora mora com você, dentro da sua casa.`],
-    [
-      "",
-      `Para ter filhos, fale com ${name} em casa e escolha "Conversar sobre ter um filho".`,
-    ],
+    ["", `Para ter filhos, fale com ${name} em casa e escolha "Conversar sobre ter um filho".`],
   ]);
 }
 
@@ -897,21 +806,10 @@ function drawWeddingScene(t) {
     const hop = celebrate ? Math.abs(Math.sin(t * 7 + i)) * 10 : 0;
     ctx.fillStyle = "#5a3a1e";
     ctx.fillRect(x - 6, 392, 76, 10);
-    drawSprite(
-      wizardRects(n.robe, n.hat, n.hair, null, left ? "right" : "left"),
-      x,
-      330 - hop,
-      u,
-      false,
-    );
+    drawSprite(wizardRects(n.robe, n.hat, n.hair, null, left ? "right" : "left"), x, 330 - hop, u, false);
   });
 
-  drawSprite(
-    wizardRects("#e8e4dc", null, "#d9d9d9", null, "down"),
-    cx - 32,
-    182,
-    u,
-  );
+  drawSprite(wizardRects("#e8e4dc", null, "#d9d9d9", null, "down"), cx - 32, 182, u);
 
   const walk = Math.min(1, p / 0.2);
   const altarX = cx - 18;
@@ -927,12 +825,7 @@ function drawWeddingScene(t) {
   ctx.translate(myX + 8 * u, 300);
   ctx.rotate(lean);
   drawSprite(
-    heroRects(
-      player.look,
-      walk < 1 ? "right" : "right",
-      null,
-      walk < 1 ? walkFrame(true, t) : 0,
-    ),
+    heroRects(player.look, walk < 1 ? "right" : "right", null, walk < 1 ? walkFrame(true, t) : 0),
     -8 * u,
     -16 * u,
     u,
@@ -946,14 +839,7 @@ function drawWeddingScene(t) {
   ctx.translate(partnerX + 8 * u, 300);
   ctx.rotate(-lean);
   drawSprite(
-    wizardRects(
-      n.robe,
-      null,
-      n.hair,
-      null,
-      walk < 1 ? "right" : "left",
-      walk < 1 ? walkFrame(true, t) : 0,
-    ),
+    wizardRects(n.robe, null, n.hair, null, walk < 1 ? "right" : "left", walk < 1 ? walkFrame(true, t) : 0),
     -8 * u,
     -16 * u,
     u,
@@ -1210,9 +1096,7 @@ function initTownExtras() {
       [39, 25],
       [38, 27],
       [40, 23],
-    ].forEach(([x, y], i) =>
-      actors.push({ kind: "goat", x, y, timer: i, hx: x, hy: y }),
-    );
+    ].forEach(([x, y], i) => actors.push({ kind: "goat", x, y, timer: i, hx: x, hy: y }));
   }
   for (const a of actors) {
     if (a.path) {
@@ -1253,14 +1137,7 @@ function updateTownExtras(dt) {
       const step = Math.min(dist, speed * dt);
       a.rx += (dx / dist) * step;
       a.ry += (dy / dist) * step;
-      a.dir =
-        Math.abs(dx) > Math.abs(dy)
-          ? dx > 0
-            ? "right"
-            : "left"
-          : dy > 0
-            ? "down"
-            : "up";
+      a.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up";
     } else if (a.kind === "boat") {
       a.x += a.v * dt;
       if (a.x > 46) a.x = -4;
@@ -1272,11 +1149,7 @@ function updateTownExtras(dt) {
         const [dx, dy] = pick(DIRS4);
         const nx = a.x + dx,
           ny = a.y + dy;
-        if (
-          tileAt(player.zone, nx, ny) === "." &&
-          Math.abs(nx - a.hx) <= 2 &&
-          Math.abs(ny - a.hy) <= 3
-        ) {
+        if (tileAt(player.zone, nx, ny) === "." && Math.abs(nx - a.hx) <= 2 && Math.abs(ny - a.hy) <= 3) {
           a.x = nx;
           a.y = ny;
           a.flip = dx < 0;
@@ -1295,13 +1168,7 @@ function drawPerson(a, x, y, dir, frame, t) {
   ctx.beginPath();
   ctx.ellipse(x + 16, y + 30, 8, 3, 0, 0, 7);
   ctx.fill();
-  drawSprite(
-    wizardRects(a.robe, a.hat || null, a.hair, null, dir, frame),
-    x,
-    y,
-    2,
-    dir === "left",
-  );
+  drawSprite(wizardRects(a.robe, a.hat || null, a.hair, null, dir, frame), x, y, 2, dir === "left");
 }
 
 function drawTownActor(a, t) {
@@ -1370,19 +1237,7 @@ function drawTownActor(a, t) {
       ctx.save();
       ctx.translate(X + 6, Y + 32);
       ctx.scale(0.7, 0.7);
-      drawSprite(
-        wizardRects(
-          a.robe,
-          null,
-          a.hair,
-          null,
-          "right",
-          Math.sin(t * 3) > 0 ? 1 : 0,
-        ),
-        -16,
-        -32,
-        2,
-      );
+      drawSprite(wizardRects(a.robe, null, a.hair, null, "right", Math.sin(t * 3) > 0 ? 1 : 0), -16, -32, 2);
       ctx.restore();
       break;
     }
@@ -1438,14 +1293,7 @@ function drawTownActor(a, t) {
       ctx.fillRect(X + 15, Y - 10, 2, 38);
       for (let i = 0; i < 6; i++) {
         ctx.fillStyle = i % 2 ? "#fff" : a.color;
-        fillPolygon(
-          X + 16,
-          Y - 16,
-          X - 6 + i * 7.3,
-          Y - 2,
-          X + 1.3 + i * 7.3,
-          Y - 2,
-        );
+        fillPolygon(X + 16, Y - 16, X - 6 + i * 7.3, Y - 2, X + 1.3 + i * 7.3, Y - 2);
       }
       ctx.fillStyle = a.color;
       ctx.fillRect(X + 2, Y + 22, 28, 6);
@@ -1457,12 +1305,7 @@ function drawTownActor(a, t) {
         const q = (t * 1.5 + i / 6) % 1;
         ctx.globalAlpha = 1 - q;
         ctx.fillStyle = i % 2 ? "#ffd34d" : "#ff7a3d";
-        ctx.fillRect(
-          X + 16 + Math.sin(i * 2.3) * q * 20,
-          Y + 10 - q * 30,
-          2,
-          2,
-        );
+        ctx.fillRect(X + 16 + Math.sin(i * 2.3) * q * 20, Y + 10 - q * 30, 2, 2);
       }
       ctx.globalAlpha = 1;
       break;
@@ -1485,4 +1328,191 @@ function drawTownActor(a, t) {
       break;
     }
   }
+}
+
+/* ==========================================================================
+   GUIA DO APRENDIZ
+   ========================================================================== */
+
+/** Cada sistema explicado em uma linha: onde fica e como usar. */
+const GUIDE_SECTIONS = [
+  [
+    "Começo",
+    [
+      ["Missões (Q)", "Mostram sempre o próximo passo da história e os pedidos aceitos."],
+      ["Treino", "O Instrutor Kael, ao norte da praça, ensina a lutar com runas."],
+      ["Fome e sede", "Coma e beba (mercado, taverna, padarias). Sem isso, a vida cai."],
+      ["Dormir", "Na cama da sua casa (porta azul, Sua Casa) ou nas pousadas."],
+    ],
+  ],
+  [
+    "Magia e batalha",
+    [
+      ["Runas", "Combine 1 ou 2 runas para criar feitiços. Acerte a fraqueza do inimigo."],
+      ["Grimório (G)", "Lista os feitiços descobertos e o bestiário."],
+      ["Canção Arcana", "Quando a barra de Ressonância enche, solte o golpe supremo."],
+      ["Ecos Corrompidos", "Inimigos com aura roxa. Cada um dá um Selo permanente."],
+    ],
+  ],
+  [
+    "Vilas e viagem",
+    [
+      ["Carruagem", "Placas de estrada e estábulos levam a Porto Brisamar e Pedravale."],
+      ["Pedidos", "Moradores das vilas vizinhas pedem itens em troca de ouro e prêmios."],
+      ["Trabalhos", "Quadro da Guilda e conversas com moradores (Trabalhar 3 horas)."],
+      ["Pesca", "Compre uma Vara de Pesca, fique de frente para a água e aperte E."],
+    ],
+  ],
+  [
+    "Amizade e família",
+    [
+      ["Amizade", "Converse, dê presentes, elogie. Corações: Conhecido, Amigo, Melhor Amigo."],
+      ["Gestos", "Com amigos: abraço e toca aqui. Com namoro: beijo e dança."],
+      ["Namoro", "Com amizade de Amigo (2 corações), use 'Convidar para namorar'."],
+      ["Casamento", "Compre o Anel de Compromisso no Ourives e peça com amizade 75+."],
+      ["Filhos", "Fale com seu cônjuge dentro de casa: 'Conversar sobre ter um filho'."],
+      ["Adoção", "No Templo da Luz (ou Capela do Mar), por 50 de ouro, mesmo sem casar."],
+      ["Escola", "Matricule os filhos na Escola de Cinzaluz. Aulas das 8h às 14h."],
+    ],
+  ],
+  [
+    "Vida na vila",
+    [
+      ["Casa", "Compre móveis na Marcenaria e decore com R."],
+      ["Mascotes", "Adote no Abrigo dos Bichos. Faça carinho todo dia para manter o bônus."],
+      ["Taverna", "Festa toda noite das 18h às 2h: dança, bebida, queda de braço."],
+      ["Festivais", "A cada 7 dias a praça vira festa. A família real desfila a cada 5 dias."],
+      ["Reputação", "Boas ações sobem, brigas e traições descem. Muda preços e conversas."],
+      ["Elfos", "No Bosque. Dão bênção em troca de flores e trocam ervas por elixir."],
+    ],
+  ],
+];
+
+let guideReturnMode = "world";
+
+function openGuide() {
+  guideReturnMode = game.mode === "guide" ? guideReturnMode : game.mode;
+  game.mode = "guide";
+  const html =
+    `<div class="gh"><h2>Guia do Aprendiz</h2><button id="guideclose">Fechar (Esc)</button></div>` +
+    GUIDE_SECTIONS.map(
+      ([title, items]) =>
+        `<h3>${title}</h3>` +
+        items
+          .map(([name, text]) => `<div class="guide-row"><b>${name}</b><span>${text}</span></div>`)
+          .join(""),
+    ).join("");
+  const box = byId("guide");
+  box.innerHTML = html;
+  box.style.display = "block";
+  byId("guideclose").onclick = closeGuide;
+}
+
+function closeGuide() {
+  byId("guide").style.display = "none";
+  game.mode = guideReturnMode === "guide" ? "world" : guideReturnMode;
+  if (game.mode === "options") renderOptions();
+}
+
+/* ==========================================================================
+   CRÉDITOS
+   ========================================================================== */
+
+const TEAM = [
+  ["Andressa Rabêlo", "823213904"],
+  ["Lucas Marzocca", "823116813"],
+  ["Marcos V. Santos", "82327399"],
+  ["Matheus H. F.", "823141914"],
+  ["Mylena Soares", "824144075"],
+];
+
+let creditsReturnMode = "title";
+
+function openCredits() {
+  creditsReturnMode = game.mode === "credits" ? creditsReturnMode : game.mode;
+  game.mode = "credits";
+  byId("title").style.display = "none";
+  byId("end").style.display = "none";
+  const box = byId("credits");
+  box.innerHTML = `
+    <h1>Ecos do Arcano</h1>
+    <div class="sub">A Magia Perdida</div>
+    <h3>Equipe</h3>
+    <div class="team">${TEAM.map(([name, ra]) => `<div><b>${name}</b><span>RA ${ra}</span></div>`).join("")}</div>
+    <div class="credits-note">Universidade São Judas Tadeu · 2026<br>
+    Feito com HTML5, CSS3 e JavaScript puro. Todo o desenho, os sons e a música são gerados pelo próprio jogo.</div>
+    <div class="btns"><button id="creditsclose">Voltar</button></div>`;
+  box.style.display = "flex";
+  byId("creditsclose").onclick = closeCredits;
+}
+
+function closeCredits() {
+  byId("credits").style.display = "none";
+  game.mode = creditsReturnMode === "credits" ? "title" : creditsReturnMode;
+  if (game.mode === "title") byId("title").style.display = "flex";
+  if (game.mode === "end") byId("end").style.display = "flex";
+}
+
+/* ==========================================================================
+   ESCOLAS DE PORTO BRISAMAR E PEDRAVALE
+   ========================================================================== */
+
+/** Aulas especiais: uma por dia, custam ouro e ensinam algo útil. */
+const SPECIAL_SCHOOLS = {
+  p19: {
+    name: "Escola de Navegação",
+    teacher: "Mestre Navegante Iolanda",
+    intro: "Aqui se aprende a ler as estrelas, o vento e o mar.",
+    lesson: "Aula de navegação (15 ouro)",
+    cost: 15,
+    reward: () => {
+      const xp = 20 + player.lvl * 3;
+      player.xp += xp;
+      addItem("petisco");
+      return `+${xp} XP e uma isca especial (Petisco).`;
+    },
+    line: "O mar não perdoa quem não presta atenção. Mas premia quem presta.",
+  },
+  s16: {
+    name: "Escola da Serra",
+    teacher: "Mestra Anã Brunna",
+    intro: "Aprendemos a ouvir a pedra. Ela também canta, sabia?",
+    lesson: "Aula de mineração (15 ouro)",
+    cost: 15,
+    reward: () => {
+      const xp = 20 + player.lvl * 3;
+      player.xp += xp;
+      addItem("pedra");
+      return `+${xp} XP e uma Pedra de Golem para a forja.`;
+    },
+    line: "Bata onde a pedra canta mais grave. É ali que mora o cristal.",
+  },
+};
+
+function specialSchoolMenu(id) {
+  const school = SPECIAL_SCHOOLS[id];
+  const dayKey = "school_" + id;
+  const done = (player.famDay || {})[dayKey] === player.day;
+  choice(school.name, school.intro, [
+    {
+      t: done ? "Aula de hoje concluída" : school.lesson,
+      fn: () => {
+        if (done) return;
+        if (player.gold < school.cost) {
+          say([[school.teacher, `A aula custa ${school.cost} de ouro.`]]);
+          return;
+        }
+        player.gold -= school.cost;
+        player.famDay[dayKey] = player.day;
+        const result = school.reward();
+        saveGame();
+        say([
+          [school.teacher, school.line],
+          ["", `Aula concluída! ${result}`],
+        ]);
+      },
+    },
+    { t: "Matricular meus filhos (Escola de Cinzaluz)", fn: schoolMenu },
+    { t: "Sair", fn: null },
+  ]);
 }
