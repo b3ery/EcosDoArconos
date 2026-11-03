@@ -3546,11 +3546,16 @@ function tidyTown(zid) {
       for (let y = 20; y <= 22; y++) for (let x = 56; x <= 60; x++) if (m[y][x] === ",") m[y][x] = ".";
     }
   }
+  // Porto e Pedravale mantêm areia e grama: só ficam as ruas e calçadas originais.
+  if (zid !== "vila")
+    for (let y = 1; y < H - 1; y++)
+      for (let x = 1; x < W - 1; x++)
+        if (m[y][x] === "," && orig[y][x] !== "," && orig[y][x] !== "=") m[y][x] = orig[y][x];
   // Passada final: nenhum tile de grama solto com rua em dois lados (exceto perto de cercas).
   for (let pass = 0; pass < 3; pass++)
     for (let y = 1; y < H - 1; y++)
       for (let x = 1; x < W - 1; x++) {
-        if (!".wu".includes(m[y][x]) || inPlaza(x, y)) continue;
+        if (zid !== "vila" || !".wu".includes(m[y][x]) || inPlaza(x, y)) continue;
         let nearFence = false;
         for (let dy = -1; dy <= 1; dy++)
           for (let dx = -1; dx <= 1; dx++) if (m[y + dy][x + dx] === "f") nearFence = true;
