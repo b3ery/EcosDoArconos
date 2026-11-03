@@ -67,6 +67,8 @@ const BATTLE_SHORTCUTS = {
 /** Um tratador por modo de jogo. Recebem a tecla e o evento. */
 const KEY_HANDLERS = {
   options: (k) => (k === "escape" || k === "o") && closeOptions(),
+  guide: (k) => k === "escape" && closeGuide(),
+  credits: (k) => (k === "escape" || k === "enter") && closeCredits(),
   title: (k) => {
     if (k === "o") openOptions();
     if (k === "enter" || k === " ")
@@ -108,7 +110,19 @@ const KEY_HANDLERS = {
 };
 
 /** Modos que têm prioridade sobre um diálogo aberto. */
-const BEFORE_DIALOG = new Set(["options", "title", "end", "choose", "choice", "inv", "shop", "story", "map"]);
+const BEFORE_DIALOG = new Set([
+  "options",
+  "guide",
+  "credits",
+  "title",
+  "end",
+  "choose",
+  "choice",
+  "inv",
+  "shop",
+  "story",
+  "map",
+]);
 
 addEventListener("keydown", (e) => {
   const typing = e.target && e.target.tagName === "INPUT";
@@ -472,3 +486,7 @@ const startMusicOnce = () => {
 };
 addEventListener("pointerdown", startMusicOnce);
 addEventListener("keydown", startMusicOnce);
+
+byId("btnGuide").onclick = openGuide;
+byId("btnCredits").onclick = openCredits;
+byId("btnEndCredits").onclick = openCredits;
