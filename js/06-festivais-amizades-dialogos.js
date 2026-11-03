@@ -872,6 +872,7 @@ function castleMenu() {
 function templeMenu() {
   const n = "Padre Anselmo";
   choice("Templo da Luz", "Velas tremulam diante de um vitral com as Quatro Runas.", [
+    { t: "Adotar uma criança (doação de 50 ouro)", fn: adoptChild },
     {
       t: player.blessDay === player.day ? "Bênção ativa hoje" : "Receber bênção (20 ouro)",
       fn: () => {
@@ -2637,23 +2638,7 @@ function socialMenu(id) {
           return;
         }
         removeItem("anel");
-        player.spouse = id;
-        player.dating = null;
-        player.married = player.day;
-        Object.keys(FRIENDS).forEach((k) => (player.rel[k] = Math.min(100, friendship(k) + 5)));
-        game.fade = 1;
-        saveGame();
-        playTune();
-        say([
-          [nm, "Sim! Mil vezes sim!"],
-          ["", "No dia seguinte, o Templo da Luz se enche de flores. A vila inteira vem ver."],
-          [
-            "Padre Anselmo",
-            `Pelo poder das Quatro Runas, eu declaro ${player.name} e ${nm.split(",")[0]} unidos para sempre!`,
-          ],
-          ["Arquimaga Odelia", "Que a Canção Arcana proteja esta família."],
-          ["", `Vocês se casaram! ${nm.split(",")[0]} agora mora com você, dentro da sua casa.`],
-        ]);
+        say([[nm, "Sim! Mil vezes sim!"]], () => startWedding(id));
       },
     });
   player.lovers = player.lovers || [];
