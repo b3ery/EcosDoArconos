@@ -748,6 +748,10 @@ const HUTSTY = {
   peixeG: ["#3a8ab0", "fish"],
   especiarias: ["#c9603a", "veg"],
   conchas: ["#e8a0b0", "shell"],
+  frutasP: ["#e8902a", "veg"],
+  redes: ["#3a5a7a", "fish"],
+  queijos: ["#d9c08a", "veg"],
+  ervasS: ["#4a7a4a", "herb"],
   minerios: ["#6a6f62", "ore"],
   peles: ["#8a5a2e", "fur"],
 };
@@ -1353,7 +1357,7 @@ function initVilaLife() {
     hairs = ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a", "#d9d9d9", "#5a3a22"];
   game.walkers = [];
   const wn = WALKER_NAMES.slice().sort(() => Math.random() - 0.5);
-  const walkerCount = Math.round((player.zone === "vila" ? 28 : 16) * currentQuality().walkers);
+  const walkerCount = Math.round((player.zone === "vila" ? 28 : 24) * currentQuality().walkers);
   for (let i = 0; i < (roads.length ? walkerCount : 0); i++) {
     const [x, y] = roads[Math.floor(Math.random() * roads.length)];
     game.walkers.push({
