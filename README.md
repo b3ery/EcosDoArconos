@@ -23,6 +23,10 @@
 ![Web Audio API](https://img.shields.io/badge/Web%20Audio-Música%20Procedural-4a0070?style=flat-square&logoColor=white)
 ![Mobile](https://img.shields.io/badge/Mobile-Joystick%20Touch-7a00b3?style=flat-square&logoColor=white)
 
+<br><br>
+
+### 🎮 [Jogar agora no navegador](https://b3ery.github.io/EcosDoArconos/)
+
 </div>
 
 <br>
@@ -39,42 +43,35 @@
 
 <table>
   <tr>
-    <td align="center" width="14%">
+    <td align="center" width="20%">
       <a href="https://github.com/atr3ssa">
         <img src="https://avatars.githubusercontent.com/u/162994271?s=400&u=b6be7807d4f38c164926fbeb108a7e29ad502503&v=4" width="90px;" alt="Andressa"/><br>
         <sub><b>Andressa Rabêlo</b></sub>
       </a><br>
       <sub>RA: 823213904</sub>
     </td>
-    <td align="center" width="14%">
-      <a href="https://github.com/Julia-Olive">
-        <img src="https://i.imgur.com/hrQ4GAz.jpeg" width="90px;" alt="Júlia"/><br>
-        <sub><b>Júlia Oliveira</b></sub>
-      </a><br>
-      <sub>RA: 823214680</sub>
-    </td>
-    <td align="center" width="14%">
+    <td align="center" width="20%">
       <a href="https://github.com/Marzocca99">
         <img src="https://i.imgur.com/lYWliFF.jpeg" width="90px;" alt="Lucas"/><br>
         <sub><b>Lucas Marzocca</b></sub>
       </a><br>
       <sub>RA: 823116813</sub>
     </td>
-    <td align="center" width="14%">
+    <td align="center" width="20%">
       <a href="https://github.com/Elmarquitoos">
         <img src="https://i.imgur.com/RcjtqUi.jpeg" width="90px;" alt="Marcos"/><br>
         <sub><b>Marcos V. Santos</b></sub>
       </a><br>
       <sub>RA: 82327399</sub>
     </td>
-    <td align="center" width="14%">
+    <td align="center" width="20%">
       <a href="https://github.com/matheushfg">
         <img src="https://i.imgur.com/YBAtoF4.jpeg" width="90px;" alt="Matheus"/><br>
         <sub><b>Matheus H. F.</b></sub>
       </a><br>
       <sub>RA: 823141914</sub>
     </td>
-    <td align="center" width="14%">
+    <td align="center" width="20%">
       <a href="https://github.com/b3ery">
         <img src="https://i.imgur.com/B7MrE2M.png" width="90px;" alt="Mylena"/><br>
         <sub><b>Mylena Soares</b></sub>
@@ -105,6 +102,22 @@
 ║  ✦ Epílogo  ←  🗼 Torre (Silenciador)  ←  🏔️ Picos (Grifo)          ║
 ╚══════════════════════════════════════════════════════════════════════╝
 ```
+
+</div>
+
+<br>
+
+---
+
+## 📸 Capturas de Tela
+
+<div align="center">
+
+| | |
+|:---:|:---:|
+| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial</sub> | <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> |
+| <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> | <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> |
+| <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
 
 </div>
 
@@ -199,6 +212,9 @@ São **6 runas** e **27 feitiços** formados por combinações de 1 ou 2 runas:
 | 🎵 **Música procedural** | Trilhas geradas pelo Web Audio API, sem arquivos de áudio |
 | 📱 **Celular** | Joystick flutuante, botões na tela, tela cheia e qualidade automática |
 | ⚙️ **Opções** | Volume, qualidade gráfica, zoom, vibração, dificuldade e controles |
+| 📖 **Guia do Aprendiz** | Explica cada sistema do jogo em uma linha: onde fica e como usar |
+| 🎓 **Escolas das vilas** | Aulas de navegação no Porto e de mineração em Pedravale |
+| 💍 **Casamento e adoção** | Cerimônia animada no Templo e adoção de crianças |
 | 💾 **Salvamento** | Progresso salvo automaticamente no navegador |
 
 </div>
@@ -243,7 +259,7 @@ ecos-do-arcano/
     ├── 08-interface.js                 diálogos, missões, HUD, grimório
     ├── 09-batalha.js                   sistema de batalha
     ├── 10-loop-e-desenho.js            loop principal e desenho
-    ├── 11-opcoes-musica-missoes.js     opções, música, qualidade, pedidos das vilas
+    ├── 11-opcoes-musica-missoes.js     opções, música, guia, créditos, vilas, casamento
     └── 12-entrada.js                   teclado, joystick e inicialização
 ```
 
@@ -267,10 +283,12 @@ ecos-do-arcano/
 
 ## 🚀 Como Executar
 
+**🌐 Online:** [b3ery.github.io/EcosDoArconos](https://b3ery.github.io/EcosDoArconos/)
+
 **💻 Local:**
 ```bash
-git clone https://github.com/b3ery/EcosDoArcano.git
-cd EcosDoArcano
+git clone https://github.com/b3ery/EcosDoArconos.git
+cd EcosDoArconos
 # Abra o index.html no navegador
 ```
 
