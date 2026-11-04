@@ -934,12 +934,33 @@ function templeMenu() {
 }
 /* ---- escolhas, casa, curandeira, treino ---- */
 
+/** Ícone de cada opção de menu, pelo que ela faz. */
+const CHOICE_ICONS = [
+  [/^(Sair|Cancelar|Voltar|Fugir)/, "door"],
+  [/Comprar|Vender|Loja|ouro\)/, "coin"],
+  [/Abraçar|Beijar|namorar|casamento|Namorar|Dançar juntos/, "heart"],
+  [/Toca aqui/, "wave"],
+  [/presente|Presente/, "gift"],
+  [/Conversar|Falar|Ouvir|Perguntar|Fofoca|fofoca|Bater papo/, "chat"],
+  [/Pedido|Entregar|Trabalh|Quadro/, "scroll"],
+  [/Dormir|Descansar|cochilo/, "zzz"],
+  [/briga|Soco|Gancho|Chute|Golpe|Bloquear|Esquivar/, "sword"],
+  [/bebida|Beber|Cerveja|Taverna|Concurso/, "mug"],
+  [/Cantar|Karaok|Dançar|música/, "note"],
+  [/filho|Adotar|colo|cócegas|Bebê|bebê/, "baby"],
+  [/Pescar|pesca/, "fish"],
+  [/bênção|Bênção|Aula|Treinar|Rezar|Orar/, "sparkle"],
+  [/Elixir|Poção|poção|Curar|Tratar/, "potion"],
+  [/casa|Casa|Decorar/, "house"],
+];
+const choiceIcon = (text) => (CHOICE_ICONS.find(([re]) => re.test(text)) || [null, "star"])[1];
+
 function choice(title, text, opts) {
   game.prevMode = game.mode === "choice" ? game.prevMode : game.mode;
   game.mode = "choice";
   game.choice = opts;
   byId("choice").innerHTML =
-    `<h3>${title}</h3><p>${text}</p><div class="btns">${opts.map((o, i) => `<button data-i="${i}">${i + 1}. ${o.t}</button>`).join("")}</div>`;
+    `<h3>${title}</h3><p>${text}</p><div class="btns">${opts.map((o, i) => `<button data-i="${i}">${iconHTML(choiceIcon(o.t))}${i + 1}. ${o.t}</button>`).join("")}</div>`;
   byId("choice").style.display = "block";
   byId("choice")
     .querySelectorAll("button")
