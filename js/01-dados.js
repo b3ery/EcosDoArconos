@@ -6,8 +6,9 @@
 "use strict";
 
 const TILE = 32;
-const canvas = document.getElementById("cv"),
-  ctx = canvas.getContext("2d");
+const canvas = document.getElementById("cv");
+/** Contexto de desenho atual. Pode apontar para outro canvas temporariamente (ver withContext). */
+let ctx = canvas.getContext("2d");
 ctx.setTransform(2, 0, 0, 2, 0, 0);
 const byId = (id) => document.getElementById(id);
 const SAVE_KEY = "ecos-do-arcano-save-v3";
