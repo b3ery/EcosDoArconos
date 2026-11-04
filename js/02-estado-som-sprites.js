@@ -1421,6 +1421,37 @@ function enemyRects(shape, c, t, accent) {
         [7, 5, 2, 2, "#fff"],
         [4, 1, 8, 2, "#c9a050"],
       ];
+    case "diretor": {
+      // Diretor da Academia: capelo de formatura, óculos, barba longa e um grimório na mão.
+      const cap = "#1a1430",
+        gold = "#f2c14e",
+        face = "#cfd8f0",
+        beard = "#e8e4f4";
+      return [
+        [3, 0, 10, 1, cap],
+        [5, 1, 6, 2, cap],
+        [12, 1, 1, 3 + f, gold],
+        [5, 3, 6, 4, face],
+        [5, 4, 2, 2, gold],
+        [9, 4, 2, 2, gold],
+        [6, 4, 1, 1, "#7ab8ff"],
+        [9, 4, 1, 1, "#7ab8ff"],
+        [7, 4, 2, 1, gold],
+        [3, 7, 10, 7, c],
+        [4, 7, 2, 3, l],
+        [10, 7, 2, 3, l],
+        [6, 7, 4, 4, beard],
+        [7, 11, 2, 1, beard],
+        [3, 13, 10, 1, gold],
+        [3, 14, 2, 1 + f, c],
+        [7, 14, 2, 2 - f, c],
+        [11, 14, 2, 1 + f, c],
+        [1, 9 + f, 2, 3, d],
+        [13, 9 - f, 2, 3, d],
+        [12, 11 - f, 4, 3, "#7a4fb3"],
+        [13, 11 - f, 2, 1, "#efe2c0"],
+      ];
+    }
     case "boss": {
       const a = accent || "#b06cff";
       return [
@@ -1460,8 +1491,27 @@ function drawEnemy(type, x, y, u, t, extra = {}) {
       );
     });
   }
+  if (e.shape === "diretor") {
+    // Brilho azul e páginas voando em volta (o Silenciador tem as runas).
+    const cx = x + 8 * u,
+      cy = y + 8 * u;
+    const g = ctx.createRadialGradient(cx, cy, u, cx, cy, u * 11);
+    g.addColorStop(0, "rgba(120,170,255,.4)");
+    g.addColorStop(1, "rgba(120,170,255,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(cx - u * 11, cy - u * 11, u * 22, u * 22);
+    for (let i = 0; i < 4; i++) {
+      const a = t * 0.9 + (i * Math.PI) / 2;
+      const px = cx + Math.cos(a) * u * 9,
+        py = cy + Math.sin(a) * u * 3.5 - u * 2;
+      ctx.fillStyle = "#efe2c0";
+      ctx.fillRect(px - u, py - u * 0.7, u * 2, u * 1.4);
+      ctx.fillStyle = "#a8a090";
+      ctx.fillRect(px - u * 0.6, py - u * 0.2, u * 1.2, u * 0.3);
+    }
+  }
   ctx.save();
-  if (e.shape === "ghost") ctx.globalAlpha = 0.85;
+  if (e.shape === "ghost" || e.shape === "diretor") ctx.globalAlpha = e.shape === "ghost" ? 0.85 : 0.92;
   drawSprite(enemyRects(e.shape, e.cor, t, accent), x, y, u, extra.flip);
   ctx.restore();
 }

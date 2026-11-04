@@ -1903,6 +1903,7 @@ function interact() {
   interactAt(tg.x, tg.y);
 }
 function interactAt(x, y) {
+  game.talkTarget = talkTargetAt(x, y);
   const elf = elfAt(x, y);
   if (elf) {
     elf.dir = x < player.x ? "right" : x > player.x ? "left" : y < player.y ? "down" : "up";

@@ -1693,7 +1693,7 @@ const ENEMIES = {
     weak: [],
     resist: [],
     cor: "#4b3a8a",
-    shape: "boss",
+    shape: "diretor",
     boss: true,
     special: "regen",
   },

@@ -27,10 +27,56 @@ function enemyByName(name) {
   return Object.keys(ENEMIES).find((type) => ENEMIES[type].nome === name);
 }
 
+/** Aparência de um morador que anda pela vila, igual ao desenho no mapa. */
+function walkerLook(w) {
+  if (w.elf) return { robe: ELF_ROBES[w.robe.length % 4], hair: ELF_HAIRS[w.nm.length % 4], elf: true };
+  return { robe: w.robe, hat: w.hat ?? null, hair: w.hair, seed: w.seed };
+}
+
+/** Nomes pelos quais alguém pode aparecer no diálogo: completo, sem o apelido e só o primeiro nome. */
+function speakerNames(full, extra = []) {
+  return [full, full.split(",")[0], full.split(" ")[0], ...extra];
+}
+
+/**
+ * Descobre quem está no tile (x, y) quando o jogador vai falar com alguém.
+ * Assim o retrato mostra exatamente essa pessoa, mesmo que ela fale com um apelido.
+ */
+function talkTargetAt(x, y) {
+  const z = ZONES[player.zone];
+  const town = z.town;
+  const at = (q) => q.x === x && q.y === y;
+  const elf = elfAt(x, y);
+  if (elf) return { names: speakerNames(elf.nm), look: { robe: elf.robe, hair: elf.hair, elf: true } };
+  const fm = town && familyList().find(at);
+  if (fm) {
+    if (fm.kind === "spouse" && NPCS[fm.id]) return { names: speakerNames(NPCS[fm.id].nome), look: npcLook(fm.id) };
+    if (fm.k) return { names: [fm.k.name], look: { kid: fm.k } };
+  }
+  const ro = town && roamAt(x, y);
+  const id = ro ? ro.id : z.npcs && z.npcs[`${x},${y}`];
+  if (id && NPCS[id]) return { names: speakerNames(NPCS[id].nome), look: npcLook(id) };
+  const wk = town && walkerAt(x, y);
+  if (wk) return { names: speakerNames(wk.nm, ["Morador"]), look: walkerLook(wk) };
+  const fk = (game.farmers || []).find(at);
+  if (fk) return { names: speakerNames(fk.nm), look: { robe: fk.robe, hat: "#c9a03a", hair: fk.hair } };
+  const kd = (game.kidsP || []).find(at);
+  if (kd) return { names: [kd.nm], look: { robe: kd.robe, hat: null, hair: kd.hair } };
+  return null;
+}
+
+function npcLook(id) {
+  const n = NPCS[id];
+  return { robe: n.robe, hat: n.hat, hair: n.hair, id, glow: MAGIC_KEEPERS.has(id) };
+}
+
 /** Descobre quem está falando, para desenhar o retrato certo. */
 function speakerLook(name) {
   if (!name) return null;
   if (name === "Você") return { hero: true };
+  const short = name.split(",")[0];
+  const target = game.talkTarget;
+  if (target && target.names.includes(name)) return target.look;
   if (name in STORY_SPEAKERS) {
     const s = STORY_SPEAKERS[name];
     if (!s) return null;
@@ -40,26 +86,39 @@ function speakerLook(name) {
   }
   const enemy = enemyByName(name);
   if (enemy) return { enemy };
-  const short = name.split(",")[0];
+  const kid = (player.kids || []).find((k) => k.name === name);
+  if (kid) return { kid };
+  if (player.zone === "interior" && game.inter) {
+    const I = game.inter;
+    if (I.keeper && I.keeper.split(",")[0] === short) return { robe: I.kc, hat: null, hair: I.kh };
+    const pe = (I.people || []).find((q) => q.nm === short);
+    if (pe) return pe.kid ? { kid: pe.kid } : { robe: pe.robe, hat: pe.hat ?? null, hair: pe.hair };
+  }
   for (const id in NPCS) {
     const n = NPCS[id];
-    if (n.nome === name || n.nome.split(",")[0] === short)
-      return { robe: n.robe, hat: n.hat, hair: n.hair, id, glow: MAGIC_KEEPERS.has(id) };
+    if (n.nome === name || n.nome.split(",")[0] === short) return npcLook(id);
   }
   const royal = (typeof PARADE_MEM !== "undefined" ? PARADE_MEM : []).find((m) => m.n === name);
   if (royal) return { robe: royal.robe, hat: royal.hat, hair: royal.hair, crown: royal.crown };
+  // Os atendentes são desenhados sem chapéu: o retrato precisa usar o mesmo "null".
   const keeper = Object.values(KEEPERS).find(([n]) => n === name || n.split(",")[0] === short);
-  if (keeper) return { robe: keeper[1], hair: keeper[2] };
-  const walker = (game.walkers || []).find((w) => w.nm === short);
-  if (walker)
-    return { robe: walker.robe, hat: walker.hat, hair: walker.hair, seed: walker.seed, elf: walker.elf };
+  if (keeper) return { robe: keeper[1], hat: null, hair: keeper[2] };
+  // Vários moradores podem ter o mesmo nome: fica com o mais perto do jogador.
+  const dist = (w) => Math.abs(w.x - player.x) + Math.abs(w.y - player.y);
+  const walker = (game.walkers || [])
+    .filter((w) => w.nm === short)
+    .sort((a, b) => dist(a) - dist(b))[0];
+  if (walker) return walkerLook(walker);
   const elf = (game.elves || []).find((e) => e.nm === short);
   if (elf) return { robe: elf.robe, hair: elf.hair, elf: true };
-  if (game.inter && game.inter.keeper && game.inter.keeper.split(",")[0] === short)
-    return { robe: game.inter.kc, hair: game.inter.kh };
+  const farmer = (game.farmers || []).find((f) => f.nm === name);
+  if (farmer) return { robe: farmer.robe, hat: "#c9a03a", hair: farmer.hair };
+  const child = (game.kidsP || []).find((k) => k.nm === name);
+  if (child) return { robe: child.robe, hat: null, hair: child.hair };
   const seed = nameHash(name);
   return {
     robe: NAME_COLORS[seed % NAME_COLORS.length],
+    hat: null,
     hair: ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a"][seed % 4],
     seed,
   };
@@ -156,7 +215,9 @@ function drawDialogPortrait(d, talking) {
   }
   const rects = d.look.hero
     ? heroRects(player.look, "down", player.look.staffc || "#ffe066")
-    : d.look.elf
+    : d.look.kid
+      ? heroRects(d.look.kid.look, "down", null)
+      : d.look.elf
       ? elfRects(d.look.robe, d.look.hair, "down")
       : wizardRects(
           d.look.robe,
@@ -184,9 +245,13 @@ function drawDialogPortrait(d, talking) {
   }
   const skin = d.look.hero
     ? player.look.skin
-    : d.look.elf
+    : d.look.kid
+      ? d.look.kid.look.skin
+      : d.look.elf
       ? "#f1d8b8"
-      : npcSkin(d.look.robe, d.look.hat, d.look.hair);
+      : d.look.seed != null
+        ? SKIN_TONES[d.look.seed % SKIN_TONES.length]
+        : npcSkin(d.look.robe, d.look.hat, d.look.hair);
   const blink = Math.floor(t * 10) % 34 === 0;
   if (blink) {
     c2.fillStyle = skin;
