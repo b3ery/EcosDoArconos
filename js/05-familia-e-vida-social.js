@@ -55,6 +55,58 @@ function familyList() {
 function kidAge(k) {
   return player.day - k.born;
 }
+/** Bebê dormindo no berço, com manta, móbile e respiração. */
+function drawBaby(X, Y, k, t) {
+  const wood = "#a8784a",
+    woodDark = "#7a5230";
+  ctx.fillStyle = woodDark;
+  ctx.fillRect(X + 3, Y + 26, 3, 5);
+  ctx.fillRect(X + 26, Y + 26, 3, 5);
+  ctx.fillStyle = "#f6efe2";
+  ctx.fillRect(X + 4, Y + 18, 24, 9);
+  const breathe = Math.sin(t * 2.2) * 0.8;
+  ctx.fillStyle = k.look.skin;
+  circle(X + 11, Y + 18, 5);
+  ctx.fillStyle = k.look.hair;
+  ctx.fillRect(X + 8, Y + 13, 6, 2);
+  ctx.fillRect(X + 10, Y + 12, 2, 1);
+  ctx.fillStyle = "#3a2414";
+  ctx.fillRect(X + 8, Y + 18, 2, 1);
+  ctx.fillRect(X + 12, Y + 18, 2, 1);
+  ctx.fillStyle = "#ff9ab0";
+  ctx.fillRect(X + 7, Y + 20, 2, 1);
+  ctx.fillRect(X + 13, Y + 20, 2, 1);
+  ctx.fillStyle = k.look.robe || "#e86ab0";
+  ctx.fillRect(X + 13, Y + 19 - breathe, 14, 8 + breathe);
+  ctx.fillStyle = shade(k.look.robe || "#e86ab0", 0.35);
+  for (let i = 0; i < 3; i++) ctx.fillRect(X + 15 + i * 4, Y + 21 - breathe, 2, 2);
+  ctx.fillStyle = wood;
+  ctx.fillRect(X + 2, Y + 14, 28, 2);
+  ctx.fillRect(X + 2, Y + 26, 28, 2);
+  ctx.fillStyle = woodDark;
+  for (let i = 0; i < 7; i++) ctx.fillRect(X + 3 + i * 4, Y + 16, 1, 10);
+  ctx.fillRect(X + 2, Y + 10, 2, 18);
+  ctx.fillRect(X + 28, Y + 10, 2, 18);
+  ctx.strokeStyle = "#8a6038";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(X + 16, Y + 2);
+  ctx.lineTo(X + 16, Y + 6);
+  ctx.stroke();
+  const spin = Math.sin(t * 1.5) * 4;
+  ctx.fillStyle = "#f2c14e";
+  circle(X + 12 + spin, Y + 8, 2);
+  ctx.fillStyle = "#7fd0ff";
+  circle(X + 20 - spin, Y + 8, 2);
+  ctx.fillStyle = "#ff8aa8";
+  circle(X + 16, Y + 9 + spin * 0.3, 2);
+  if (Math.sin(t * 0.7) > 0.85) {
+    ctx.fillStyle = "rgba(255,255,255,.8)";
+    ctx.font = '10px "VT323", monospace';
+    ctx.fillText("z", X + 4, Y + 10 - (t % 1) * 4);
+  }
+}
+
 function drawFamily(f, t) {
   const X = f.x * TILE,
     Y = f.y * TILE;
@@ -70,19 +122,7 @@ function drawFamily(f, t) {
     ctx.textAlign = "center";
     if (Math.sin(t * 1.5) > 0.6) drawPixelIcon("heart", X + 16, Y - 6);
   } else if (kidAge(f.k) < 2) {
-    ctx.fillStyle = "#8a5a2e";
-    ctx.fillRect(X + 4, Y + 16, 24, 12);
-    ctx.fillStyle = "#a8784a";
-    ctx.fillRect(X + 4, Y + 14, 24, 4);
-    ctx.fillStyle = "#f2eee4";
-    ctx.fillRect(X + 8, Y + 12, 16, 8);
-    ctx.fillStyle = f.k.look.skin;
-    circle(X + 12, Y + 14, 4);
-    ctx.fillStyle = f.k.look.hair;
-    ctx.fillRect(X + 9, Y + 9, 6, 3);
-    ctx.fillStyle = "#6b4423";
-    ctx.fillRect(X + 5, Y + 28, 3, 3);
-    ctx.fillRect(X + 24, Y + 28, 3, 3);
+    drawBaby(X, Y, f.k, t);
   } else {
     const b = Math.abs(Math.sin(t * 4 + f.i)) * -2;
     ctx.save();
@@ -1532,7 +1572,7 @@ function drawKissScene(a, t) {
   ctx.rotate(-tilt);
   const rise = leanIn * (1 - stepBack) * 4;
   drawSprite(wizardRects(a.look.robe, a.look.hat, a.look.hair, null, "left"), -8 * u, -16 * u - rise, u);
-  drawKissFace(-8 * u, -16 * u - rise, u, "#f1c8a5", eyesClosed, blush);
+  drawKissFace(-8 * u, -16 * u - rise, u, npcSkin(a.look.robe, a.look.hat, a.look.hair), eyesClosed, blush);
   ctx.restore();
   ctx.restore();
 
@@ -2244,13 +2284,22 @@ function schoolMenu() {
 
 /* ===================== PASSEATA REAL ===================== */
 
+/** Rota da passeata: contorna a estátua e a fonte da praça pelo lado leste. */
 const PARADE_PATH = [
   [31, 12],
-  [31, 26],
+  [31, 14],
+  [35, 14],
+  [35, 22],
+  [34, 22],
+  [34, 26],
   [48, 26],
-  [31, 26],
+  [34, 26],
   [12, 26],
-  [31, 26],
+  [34, 26],
+  [34, 22],
+  [35, 22],
+  [35, 14],
+  [31, 14],
   [31, 12],
 ];
 const PARADE_MEM = [
