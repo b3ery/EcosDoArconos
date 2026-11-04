@@ -156,7 +156,10 @@ function hasMoon() {
   return Object.values(player.eq).some((id) => id && ITEMS[id].moon);
 }
 function maxHp() {
-  return Math.max(1, Math.round((player.basehp + equipStat("hp")) * (player.injured ? 0.5 : 1)));
+  return Math.max(
+    1,
+    Math.round((player.basehp + equipStat("hp")) * (player.injured ? 0.5 : 1)),
+  );
 }
 function maxMp() {
   return player.basemp + equipStat("mp");
@@ -320,7 +323,8 @@ function rollWeather(announce) {
     }
   }
   if (season().id !== "inv" && w === "neve") w = "chuva";
-  if (season().id === "inv" && (w === "chuva" || w === "tempestade")) w = "neve";
+  if (season().id === "inv" && (w === "chuva" || w === "tempestade"))
+    w = "neve";
   const old = player.weather;
   player.weather = w;
   player.wLeft = 180 + Math.random() * 300;
@@ -371,7 +375,9 @@ const FESTS = [
   },
 ];
 function festivalToday() {
-  return player.day % 7 === 0 ? FESTS[(Math.floor(player.day / 7) - 1) % 4] : null;
+  return player.day % 7 === 0
+    ? FESTS[(Math.floor(player.day / 7) - 1) % 4]
+    : null;
 }
 function daysToFest() {
   return (7 - (player.day % 7)) % 7;
@@ -394,7 +400,9 @@ const AWAKE = new Set([
   "monge",
 ]);
 function npcAsleep(id) {
-  return sleepTime() && !festivalToday() && !AWAKE.has(id) && ZONES[player.zone].town;
+  return (
+    sleepTime() && !festivalToday() && !AWAKE.has(id) && ZONES[player.zone].town
+  );
 }
 const ROAMERS = new Set([
   "lia",
@@ -431,11 +439,15 @@ function npcHidden(id) {
   return (
     id === player.spouse ||
     npcAsleep(id) ||
-    (ROAMERS.has(id) && !!ZONES[player.zone].town && !!(game.roam || []).find((r) => r.id === id))
+    (ROAMERS.has(id) &&
+      !!ZONES[player.zone].town &&
+      !!(game.roam || []).find((r) => r.id === id))
   );
 }
 function roamAt(x, y) {
-  return (game.roam || []).find((r) => r.x === x && r.y === y && !npcAsleep(r.id) && r.id !== player.spouse);
+  return (game.roam || []).find(
+    (r) => r.x === x && r.y === y && !npcAsleep(r.id) && r.id !== player.spouse,
+  );
 }
 const CLOSED_STYLES = new Set([
   "peixaria",
@@ -462,8 +474,14 @@ const CLOSED_STYLES = new Set([
 
 /** Ícones 8x8 desenhados em pixel (no lugar de emojis). Cada linha é uma string; "." é vazio. */
 const PIXEL_ICONS = {
-  heart: { c: { r: "#e0306a" }, p: [".rr.rr..", "rrrrrrr.", "rrrrrrr.", ".rrrrr..", "..rrr...", "...r...."] },
-  anger: { c: { r: "#e0303a" }, p: ["r.r..r.r", ".rr..rr.", "........", "........", ".rr..rr.", "r.r..r.r"] },
+  heart: {
+    c: { r: "#e0306a" },
+    p: [".rr.rr..", "rrrrrrr.", "rrrrrrr.", ".rrrrr..", "..rrr...", "...r...."],
+  },
+  anger: {
+    c: { r: "#e0303a" },
+    p: ["r.r..r.r", ".rr..rr.", "........", "........", ".rr..rr.", "r.r..r.r"],
+  },
   sweat: {
     c: { b: "#4fb8ff", w: "#cfeaff" },
     p: ["...b....", "..bbb...", ".bwbbb..", ".bwbbb..", ".bbbbb..", "..bbb..."],
@@ -472,10 +490,22 @@ const PIXEL_ICONS = {
     c: { k: "#222", p: "#ff8aa8" },
     p: ["........", ".k...k..", "........", "pp...pp.", "..kkk...", "........"],
   },
-  laugh: { c: { k: "#222" }, p: ["........", "k.k.k.k.", ".k...k..", "........", ".kkkkk..", "..kkk..."] },
-  smile: { c: { k: "#222" }, p: ["........", ".k...k..", ".k...k..", "........", "k.....k.", ".kkkkk.."] },
-  meh: { c: { k: "#222" }, p: ["........", ".kk.kk..", "........", "........", ".kkkkk..", "........"] },
-  chat: { c: { k: "#555" }, p: ["........", "........", "k.k.k...", "........", "........", "........"] },
+  laugh: {
+    c: { k: "#222" },
+    p: ["........", "k.k.k.k.", ".k...k..", "........", ".kkkkk..", "..kkk..."],
+  },
+  smile: {
+    c: { k: "#222" },
+    p: ["........", ".k...k..", ".k...k..", "........", "k.....k.", ".kkkkk.."],
+  },
+  meh: {
+    c: { k: "#222" },
+    p: ["........", ".kk.kk..", "........", "........", ".kkkkk..", "........"],
+  },
+  chat: {
+    c: { w: "#f2f2f2", k: "#555", o: "#9a9aa8" },
+    p: [".ooooo..", "owwwwwo.", "owkwkwo.", "owwwwwo.", ".oowoo..", "...o...."],
+  },
   wave: {
     c: { s: "#f1c8a5", k: "#a87a5a" },
     p: ["s.s.s...", "s.s.s.s.", "sssss.s.", "ssssss..", ".ssss...", "..kk...."],
@@ -504,7 +534,10 @@ const PIXEL_ICONS = {
     c: { y: "#f2c14e", w: "#fff", b: "#8a5a2e" },
     p: ["wwwww...", "yyyyybb.", "yyyyy.b.", "yyyyybb.", "yyyyy...", "bbbbb..."],
   },
-  note: { c: { k: "#5a3a9a" }, p: ["...kkkk.", "...k..k.", "...k..k.", ".kkk.kk.", "kkkkkkk.", ".kk..k.."] },
+  note: {
+    c: { k: "#5a3a9a" },
+    p: ["...kkkk.", "...k..k.", "...k..k.", ".kkk.kk.", "kkkkkkk.", ".kk..k.."],
+  },
   eye: {
     c: { k: "#222", w: "#fff" },
     p: ["........", ".wwwww..", "wwkkkww.", "wwkkkww.", ".wwwww..", "........"],
@@ -513,11 +546,86 @@ const PIXEL_ICONS = {
     c: { b: "#6aa8c8", k: "#222" },
     p: ["........", ".bbbb..b", "bbkbbbbb", "bbbbbbbb", ".bbbb..b", "........"],
   },
+  gift: {
+    c: { r: "#e0303a", y: "#f2c14e" },
+    p: ["..y.y...", "rrryrrr.", "rrryrrr.", "yyyyyyy.", "rrryrrr.", "rrryrrr."],
+  },
+  door: {
+    c: { b: "#8a5a2e", d: "#5a3a1e", y: "#f2c14e" },
+    p: [".bbbbb..", ".bdddb..", ".bdddb..", ".bddyb..", ".bdddb..", ".bdddb.."],
+  },
+  scroll: {
+    c: { p: "#efe2c0", b: "#a8844e", k: "#7a6a4a" },
+    p: ["bppppb..", ".pkkkp..", ".ppppp..", ".pkkkp..", ".ppppp..", "bppppb.."],
+  },
+  zzz: {
+    c: { b: "#7fb6ff" },
+    p: ["...bbbb.", ".....b..", "....b...", "bbbbbbb.", "..b.....", "bbbb...."],
+  },
+  sword: {
+    c: { s: "#d9d9e8", b: "#8a5a2e", y: "#f2c14e" },
+    p: ["......s.", ".....s..", "....s...", ".y.s....", "..b.....", ".b.y...."],
+  },
+  bag: {
+    c: { b: "#a8784a", d: "#7a5230" },
+    p: ["..dd....", ".d..d...", "bbbbbb..", "bbddbb..", "bbbbbb..", ".bbbb..."],
+  },
+  potion: {
+    c: { g: "#cfd8e8", r: "#e0306a", w: "#ffb3c8" },
+    p: ["..gg....", "..gg....", ".rrrr...", "rrwrrr..", "rrrrrr..", ".rrrr..."],
+  },
+  house: {
+    c: { r: "#c94a4a", w: "#e8dcc0", b: "#5a3a1e" },
+    p: ["...r....", "..rrr...", ".rrrrr..", "rrrrrrr.", ".wwbww..", ".wwbww.."],
+  },
+  star: {
+    c: { y: "#f2c14e" },
+    p: ["...y....", "..yyy...", "yyyyyyy.", ".yyyyy..", ".yy.yy..", "y.....y."],
+  },
+  baby: {
+    c: { s: "#f1c8a5", p: "#ff9ab0", w: "#f6efe2" },
+    p: ["..ss....", ".ssss...", ".spps...", "wwwwww..", "wwwwww..", ".wwww..."],
+  },
   skull: {
     c: { w: "#e8e4dc", k: "#222" },
     p: [".wwwww..", "wwwwwww.", "wkkwkkw.", "wwwwwww.", ".wwkww..", ".w.w.w.."],
   },
 };
+
+const pixelIconCache = {};
+
+/** Ícone em pixel como <img> para usar nos menus (HTML). */
+function iconHTML(key, size = 16) {
+  const icon = PIXEL_ICONS[key];
+  if (!icon) return "";
+  if (!pixelIconCache[key]) {
+    const c = document.createElement("canvas");
+    c.width = 8;
+    c.height = 8;
+    const g = c.getContext("2d");
+    icon.p.forEach((row, y) => {
+      for (let x = 0; x < row.length; x++) {
+        const color = icon.c[row[x]];
+        if (!color) continue;
+        g.fillStyle = color;
+        g.fillRect(x, y + 1, 1, 1);
+      }
+    });
+    pixelIconCache[key] = c.toDataURL();
+  }
+  return `<img class="pxi" src="${pixelIconCache[key]}" width="${size}" height="${size}" alt="">`;
+}
+
+/** Desenha num canvas qualquer usando as mesmas funções do jogo. */
+function withContext(other, draw) {
+  const previous = ctx;
+  ctx = other;
+  try {
+    draw();
+  } finally {
+    ctx = previous;
+  }
+}
 
 /** Desenha um ícone em pixel centralizado em (cx, cy). */
 function drawPixelIcon(key, cx, cy, size = 2) {
@@ -609,7 +717,8 @@ const DIR_VECTORS = {
 const xpToNextLevel = (l) => Math.floor(22 * Math.pow(l, 1.5));
 function saveGame() {
   try {
-    for (const z in game.seenArr) player.seen[z] = Array.from(game.seenArr[z]).join("");
+    for (const z in game.seenArr)
+      player.seen[z] = Array.from(game.seenArr[z]).join("");
     localStorage.setItem(SAVE_KEY, JSON.stringify(player));
   } catch (e) {}
 }
@@ -635,7 +744,8 @@ function playSound(f, d = 0.08, type = "square", vol = 0.05) {
     vol *= settings.sfx;
   }
   try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx)
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const o = audioCtx.createOscillator(),
       g = audioCtx.createGain();
     o.type = type;
@@ -654,8 +764,17 @@ function playSound(f, d = 0.08, type = "square", vol = 0.05) {
 
 function shade(hex, amt) {
   const c = parseInt(hex.slice(1), 16);
-  const f = (v) => Math.max(0, Math.min(255, Math.round(amt < 0 ? v * (1 + amt) : v + (255 - v) * amt)));
-  return "#" + ((1 << 24) | (f(c >> 16) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255)).toString(16).slice(1);
+  const f = (v) =>
+    Math.max(
+      0,
+      Math.min(255, Math.round(amt < 0 ? v * (1 + amt) : v + (255 - v) * amt)),
+    );
+  return (
+    "#" +
+    ((1 << 24) | (f(c >> 16) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255))
+      .toString(16)
+      .slice(1)
+  );
 }
 function tileHash(x, y) {
   let h = (x * 374761393 + y * 668265263) | 0;
@@ -678,7 +797,12 @@ function drawSprite(rects, x, y, u, flip) {
   for (const [rx, ry, rw, rh, c] of rects) {
     ctx.fillStyle = c;
     const X = flip ? x + (16 - rx - rw) * u : x + rx * u;
-    ctx.fillRect(Math.round(X), Math.round(y + ry * u), Math.ceil(rw * u), Math.ceil(rh * u));
+    ctx.fillRect(
+      Math.round(X),
+      Math.round(y + ry * u),
+      Math.ceil(rw * u),
+      Math.ceil(rh * u),
+    );
   }
 }
 /* ===================== ÍCONES DAS RUNAS ===================== */
@@ -773,10 +897,32 @@ function glyph(id, x, y, s, alpha = 1) {
 
 /* ===================== SPRITES ===================== */
 
-function wizardRects(robe, hat, hair, glow, dir, frame = 0) {
-  const skin = "#f1c8a5",
-    gold = "#f2c14e",
+const SKIN_TONES = [
+  "#f1c8a5",
+  "#e8b48a",
+  "#d9a07a",
+  "#c08458",
+  "#8a5a3a",
+  "#6b4428",
+];
+const BELT_COLORS = ["#f2c14e", "#6b4423", "#2a2a2a", "#c94a4a", "#d9d9d9"];
+const SCARF_COLORS = ["#c94a4a", "#4a7ad9", "#e8c24a", "#7ab04a", "#e86ab0"];
+
+const npcSkin = (robe, hat, hair) =>
+  SKIN_TONES[colorSeed(`${robe}${hat}${hair}`) % SKIN_TONES.length];
+const colorSeed = (text) =>
+  [...text].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 17);
+
+/**
+ * Morador comum. A "semente" escolhe tom de pele, penteado, barba, óculos e
+ * detalhes da roupa, para que duas pessoas com a mesma cor não fiquem iguais.
+ */
+function wizardRects(robe, hat, hair, glow, dir, frame = 0, seed) {
+  const s = seed ?? colorSeed(`${robe}${hat}${hair}`);
+  const skin = SKIN_TONES[s % SKIN_TONES.length],
+    gold = BELT_COLORS[(s >> 3) % BELT_COLORS.length],
     dark = shade(robe, -0.35);
+  const hairStyle = (s >> 5) % 6;
   const r = [];
   if (hat && glow) {
     // Só quem ainda guarda magia (como a Arquimaga Odelia) usa o chapéu pontudo.
@@ -784,26 +930,60 @@ function wizardRects(robe, hat, hair, glow, dir, frame = 0) {
       [7, 0, 2, 1, hat],
       [6, 1, 4, 2, hat],
       [5, 3, 6, 2, hat],
-      [5, 4, 6, 1, gold],
+      [5, 4, 6, 1, "#f2c14e"],
       [3, 5, 10, 1, shade(hat, -0.25)],
     );
   } else if (hat) {
-    // Moradores comuns: boné de pano com aba.
     r.push(
       [5, 3, 6, 2, hat],
       [4, 5, 8, 1, shade(hat, -0.25)],
       [4, 6, 1, 2, shade(hat, -0.4)],
       [11, 6, 1, 2, shade(hat, -0.4)],
     );
+  } else if (hairStyle === 1) {
+    r.push([5, 3, 6, 3, hair], [4, 5, 1, 7, hair], [11, 5, 1, 7, hair]);
+  } else if (hairStyle === 2) {
+    r.push(
+      [5, 3, 6, 3, hair],
+      [4, 5, 1, 4, hair],
+      [11, 5, 1, 4, hair],
+      [7, 1, 2, 2, hair],
+    );
+  } else if (hairStyle === 3) {
+    r.push([6, 4, 4, 2, skin], [4, 5, 2, 3, hair], [10, 5, 2, 3, hair]);
+  } else if (hairStyle === 4) {
+    r.push(
+      [4, 3, 8, 3, hair],
+      [3, 4, 1, 4, hair],
+      [12, 4, 1, 4, hair],
+      [5, 2, 6, 1, hair],
+    );
   } else {
     r.push([5, 3, 6, 3, hair], [4, 5, 1, 4, hair], [11, 5, 1, 4, hair]);
+    if (hairStyle === 5) r.push([11, 8, 1, 4, hair]);
   }
   r.push([6, 6, 4, 3, skin]);
-  if (dir === "up") r.push([6, 6, 4, 3, hat || hair]);
+  if (dir === "up")
+    r.push([6, 6, 4, 3, hat || (hairStyle === 3 ? skin : hair)]);
   else if (dir === "left") r.push([6, 7, 1, 1, "#222"], [8, 7, 1, 1, "#222"]);
   else if (dir === "right") r.push([7, 7, 1, 1, "#222"], [9, 7, 1, 1, "#222"]);
   else r.push([6, 7, 1, 1, "#222"], [9, 7, 1, 1, "#222"]);
+  if (dir === "down" && s % 11 === 3)
+    r.push(
+      [5, 7, 2, 1, "#5a6a7a"],
+      [9, 7, 2, 1, "#5a6a7a"],
+      [7, 7, 2, 1, "#333"],
+    );
   r.push(...npcBodyRects(robe, gold, dark, skin, dir, frame));
+  const outfit = (s >> 7) % 4;
+  if (outfit === 1 && dir === "down")
+    r.push([5, 11, 6, 4, "#e8e4dc"], [5, 11, 6, 1, "#cfc8b8"]);
+  if (outfit === 2 && dir !== "left" && dir !== "right")
+    r.push([4, 9, 2, 3, shade(robe, -0.3)], [10, 9, 2, 3, shade(robe, -0.3)]);
+  if (outfit === 3)
+    r.push([5, 9, 6, 1, SCARF_COLORS[(s >> 2) % SCARF_COLORS.length]]);
+  if (s % 6 === 1 && dir !== "up" && hairStyle !== 1 && !glow)
+    r.push([6, 8, 4, 1, hair], [7, 9, 2, 1, hair]);
   if (glow) {
     r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
   }
@@ -835,12 +1015,23 @@ function npcBodyRects(robe, gold, dark, skin, dir, frame) {
     [4, 9, 8, 3, robe],
     [3, 12, 10, 3, robe],
   ];
-  if (dir === "up") body.push([5, 9, 6, 1, dark], [7, 10, 2, 5, shade(robe, -0.2)]);
+  if (dir === "up")
+    body.push([5, 9, 6, 1, dark], [7, 10, 2, 5, shade(robe, -0.2)]);
   else body.push([5, 11, 6, 1, gold], [7, 9, 2, 6, dark]);
   if (frame === 1)
-    body.push([5, 14, 2, 1, boot], [9, 15, 2, 1, boot], [2, 10, 1, 3, dark], [13, 11, 1, 3, dark]);
+    body.push(
+      [5, 14, 2, 1, boot],
+      [9, 15, 2, 1, boot],
+      [2, 10, 1, 3, dark],
+      [13, 11, 1, 3, dark],
+    );
   else if (frame === 2)
-    body.push([5, 15, 2, 1, boot], [9, 14, 2, 1, boot], [2, 11, 1, 3, dark], [13, 10, 1, 3, dark]);
+    body.push(
+      [5, 15, 2, 1, boot],
+      [9, 14, 2, 1, boot],
+      [2, 11, 1, 3, dark],
+      [13, 10, 1, 3, dark],
+    );
   else body.push([5, 15, 2, 1, boot], [9, 15, 2, 1, boot]);
   return body;
 }
@@ -864,9 +1055,17 @@ function heroRects(L, dir, glow, fr = 0) {
     dk = shade(rb, -0.35),
     tr = "#f2c14e",
     hs = L.hstyle;
-  if (hs === "longo" && dir !== "up") r.push([4, 6, 2, 7, hc], [10, 6, 2, 7, hc]);
-  if (hs === "trancas") r.push([4, 7, 1, 6, hc], [11, 7, 1, 6, hc], [4, 13, 1, 1, tr], [11, 13, 1, 1, tr]);
-  if (hs === "rabo" && dir !== "down") r.push([dir === "left" ? 10 : 4, 6, 2, 5, hc]);
+  if (hs === "longo" && dir !== "up")
+    r.push([4, 6, 2, 7, hc], [10, 6, 2, 7, hc]);
+  if (hs === "trancas")
+    r.push(
+      [4, 7, 1, 6, hc],
+      [11, 7, 1, 6, hc],
+      [4, 13, 1, 1, tr],
+      [11, 13, 1, 1, tr],
+    );
+  if (hs === "rabo" && dir !== "down")
+    r.push([dir === "left" ? 10 : 4, 6, 2, 5, hc]);
   const o = L.outfit;
   if (o === "tunica")
     r.push(
@@ -878,7 +1077,13 @@ function heroRects(L, dir, glow, fr = 0) {
       [11, 9, 1, 3, dk],
     );
   else if (o === "vestido")
-    r.push([5, 9, 6, 2, rb], [4, 11, 8, 2, rb], [3, 13, 10, 2, rb], [5, 10, 6, 1, tr], [3, 14, 10, 1, dk]);
+    r.push(
+      [5, 9, 6, 2, rb],
+      [4, 11, 8, 2, rb],
+      [3, 13, 10, 2, rb],
+      [5, 10, 6, 1, tr],
+      [3, 14, 10, 1, dk],
+    );
   else if (o === "gibao")
     r.push(
       [4, 9, 8, 4, rb],
@@ -905,11 +1110,21 @@ function heroRects(L, dir, glow, fr = 0) {
       [9, 13, 2, 2, "#4a3a2a"],
       [5, 11, 6, 1, tr],
     );
-  else r.push([4, 9, 8, 3, rb], [3, 12, 10, 3, rb], [5, 11, 6, 1, tr], [7, 9, 2, 6, dk]);
+  else
+    r.push(
+      [4, 9, 8, 3, rb],
+      [3, 12, 10, 3, rb],
+      [5, 11, 6, 1, tr],
+      [7, 9, 2, 6, dk],
+    );
   if (dir === "up") {
     for (let i = r.length - 1; i >= 0; i--) {
       const q = r[i];
-      if (q[1] >= 9 && (q[4] === tr || q[4] === "#f2eee4" || q[4] === "#cfd3e6")) r.splice(i, 1);
+      if (
+        q[1] >= 9 &&
+        (q[4] === tr || q[4] === "#f2eee4" || q[4] === "#cfd3e6")
+      )
+        r.splice(i, 1);
     }
     r.push([5, 9, 6, 1, dk], [7, 10, 2, 5, shade(rb, -0.2)]);
   }
@@ -954,7 +1169,8 @@ function heroRects(L, dir, glow, fr = 0) {
       e2 = dir === "left" ? 8 : 9;
     r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec]);
     const ac = L.acc;
-    if (ac === "sardas") r.push([e1, 8, 1, 1, "#c9785a"], [e2, 8, 1, 1, "#c9785a"]);
+    if (ac === "sardas")
+      r.push([e1, 8, 1, 1, "#c9785a"], [e2, 8, 1, 1, "#c9785a"]);
     else if (ac === "bigode") r.push([6, 8, 4, 1, shade(hc, -0.1)]);
     else if (ac === "oculos")
       r.push(
@@ -964,10 +1180,12 @@ function heroRects(L, dir, glow, fr = 0) {
         [e1 - 1, 7, 1, 1, "#1a1a1a"],
         [e2 + 1, 7, 1, 1, "#1a1a1a"],
       );
-    else if (ac === "tapaolho") r.push([e2, 7, 1, 1, "#1a1a1a"], [5, 6, 6, 1, "#1a1a1a"]);
+    else if (ac === "tapaolho")
+      r.push([e2, 7, 1, 1, "#1a1a1a"], [5, 6, 6, 1, "#1a1a1a"]);
     if (hs === "curto" || hs === "rabo" || hs === "trancas")
       r.push([5, 5, 6, 1, hc], [5, 6, 1, 1, hc], [10, 6, 1, 1, hc]);
-    else if (hs === "longo") r.push([5, 5, 6, 1, hc], [5, 6, 1, 2, hc], [10, 6, 1, 2, hc]);
+    else if (hs === "longo")
+      r.push([5, 5, 6, 1, hc], [5, 6, 1, 2, hc], [10, 6, 1, 2, hc]);
     else if (hs === "cacheado")
       r.push(
         [4, 4, 8, 2, hc],
@@ -976,12 +1194,20 @@ function heroRects(L, dir, glow, fr = 0) {
         [5, 4, 1, 1, shade(hc, 0.2)],
         [9, 4, 1, 1, shade(hc, 0.2)],
       );
-    else if (hs === "coque") r.push([5, 5, 6, 1, hc], [5, 6, 1, 1, hc], [10, 6, 1, 1, hc], [7, 2, 2, 3, hc]);
+    else if (hs === "coque")
+      r.push(
+        [5, 5, 6, 1, hc],
+        [5, 6, 1, 1, hc],
+        [10, 6, 1, 1, hc],
+        [7, 2, 2, 3, hc],
+      );
     else if (hs === "moicano") r.push([7, 2, 2, 4, hc]);
   }
-  if (L.acc === "brincos" && dir !== "up") r.push([5, 8, 1, 1, tr], [10, 8, 1, 1, tr]);
+  if (L.acc === "brincos" && dir !== "up")
+    r.push([5, 8, 1, 1, tr], [10, 8, 1, 1, tr]);
   if (L.acc === "colar") r.push([6, 9, 4, 1, tr], [7, 10, 2, 1, "#5fd0ff"]);
-  if (L.acc === "cachecol") r.push([5, 9, 6, 1, "#c94a4a"], [9, 9, 1, 3, "#a83a3a"]);
+  if (L.acc === "cachecol")
+    r.push([5, 9, 6, 1, "#c94a4a"], [9, 9, 1, 3, "#a83a3a"]);
   const hc2 = L.hatc || "#2a2f6e";
   switch (L.hat) {
     case "mago":
@@ -994,10 +1220,19 @@ function heroRects(L, dir, glow, fr = 0) {
       );
       break;
     case "capuz":
-      r.push([5, 3, 6, 2, dk], [4, 4, 1, 6, dk], [11, 4, 1, 6, dk], [4, 3, 8, 1, dk]);
+      r.push(
+        [5, 3, 6, 2, dk],
+        [4, 4, 1, 6, dk],
+        [11, 4, 1, 6, dk],
+        [4, 3, 8, 1, dk],
+      );
       break;
     case "boina":
-      r.push([4, 3, 8, 2, hc2], [5, 5, 6, 1, shade(hc2, -0.2)], [10, 2, 2, 1, hc2]);
+      r.push(
+        [4, 3, 8, 2, hc2],
+        [5, 5, 6, 1, shade(hc2, -0.2)],
+        [10, 2, 2, 1, hc2],
+      );
       break;
     case "tiara":
       r.push([5, 5, 6, 1, tr], [7, 4, 2, 1, "#5fd0ff"]);
@@ -1216,7 +1451,13 @@ function drawEnemy(type, x, y, u, t, extra = {}) {
     ctx.fillRect(cx - u * 12, cy - u * 12, u * 24, u * 24);
     ORDER.forEach((r, i) => {
       const a = t * 1.2 + (i * Math.PI) / 2;
-      glyph(r, cx + Math.cos(a) * u * 10, cy + Math.sin(a) * u * 4 - u * 2, u * 2.2, 0.75);
+      glyph(
+        r,
+        cx + Math.cos(a) * u * 10,
+        cy + Math.sin(a) * u * 4 - u * 2,
+        u * 2.2,
+        0.75,
+      );
     });
   }
   ctx.save();
