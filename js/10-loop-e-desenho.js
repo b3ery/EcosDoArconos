@@ -1353,7 +1353,24 @@ function initVilaLife() {
       if (z.map[y][x] === ",") roads.push([x, y]);
       if (z.map[y][x] === "g") farm.push([x, y]);
     }
-  const robes = ["#8a3a3a", "#3a6a8a", "#5a7a3a", "#8a6a2a", "#6a3a7a", "#7a7a7a", "#a85a2a", "#2a5a5a"],
+  const robes = [
+      "#8a3a3a",
+      "#3a6a8a",
+      "#5a7a3a",
+      "#8a6a2a",
+      "#6a3a7a",
+      "#7a7a7a",
+      "#a85a2a",
+      "#2a5a5a",
+      "#c97a8a",
+      "#4a4a7a",
+      "#7a8a3a",
+      "#b88a4a",
+      "#3a3a3a",
+      "#d9c08a",
+      "#5a8aa8",
+      "#9a4a6a",
+    ],
     hairs = ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a", "#d9d9d9", "#5a3a22"];
   game.walkers = [];
   const wn = WALKER_NAMES.slice().sort(() => Math.random() - 0.5);
@@ -1368,9 +1385,10 @@ function initVilaLife() {
       timer: Math.random() * 2,
       dir: "down",
       moving: false,
-      robe: robes[i % robes.length],
-      hair: hairs[i % hairs.length],
-      hat: i % 5 === 0 ? "#5a3a22" : null,
+      robe: robes[Math.floor(Math.random() * robes.length)],
+      hair: hairs[Math.floor(Math.random() * hairs.length)],
+      hat: i % 5 === 0 ? ["#5a3a22", "#3a4a6a", "#7a2a2a", "#d9c08a"][i % 4] : null,
+      seed: Math.floor(Math.random() * 100000),
       line: WALKER_LINES[i % WALKER_LINES.length],
       nm: i % 9 === 4 ? ELF_NAMES[i % ELF_NAMES.length] : wn[i % wn.length],
       elf: i % 9 === 4,
@@ -2607,7 +2625,15 @@ function drawWorld(t) {
                   w.dir,
                   w.sit > 0 ? 0 : walkFrame(w.moving, t),
                 )
-              : wizardRects(w.robe, w.hat, w.hair, null, w.dir, w.sit > 0 ? 0 : walkFrame(w.moving, t)),
+              : wizardRects(
+                  w.robe,
+                  w.hat,
+                  w.hair,
+                  null,
+                  w.dir,
+                  w.sit > 0 ? 0 : walkFrame(w.moving, t),
+                  w.seed,
+                ),
             w.rx * TILE,
             w.ry * TILE +
               (w.sit > 0 ? 5 : w.moving ? Math.abs(Math.sin(t * 12)) * -1 : 0) +
