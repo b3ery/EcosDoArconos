@@ -657,7 +657,7 @@ function renderCosmetic() {
         cat === "hair" || cat === "robe"
           ? `<span class="swb" style="background:${id};display:inline-block;vertical-align:middle;margin-right:.3em"></span>`
           : "";
-      h += `<div class="irow ${on ? "eqd" : ""}"><div class="nm">${sw}${nm}</div><div>${own ? (on ? '<span class="pr">Usando</span>' : `<button data-wear="${cat}:${id}">Vestir</button>`) : `<span class="pr">${pr} ouro</span> <button data-try="${cat}:${id}" ${game.tryOn && game.tryOn.c === cat && game.tryOn.id === id ? 'class="on"' : ""}>Provar</button> <button data-buy="${cat}:${id}" ${player.gold >= pr ? "" : "disabled"}>Comprar</button>`}</div></div>`;
+      h += `<div class="irow ${on ? "eqd" : ""}"><div class="nm">${sw}${nm}</div><div>${own ? (on ? '<span class="pr">Usando</span>' : `<button data-wear="${cat}:${id}">Vestir</button>`) : `<span class="pr">${withTax(pr)} ouro</span> <button data-try="${cat}:${id}" ${game.tryOn && game.tryOn.c === cat && game.tryOn.id === id ? 'class="on"' : ""}>Provar</button> <button data-buy="${cat}:${id}" ${player.gold >= withTax(pr) ? "" : "disabled"}>Comprar</button>`}</div></div>`;
     }
   }
   h +=
@@ -711,8 +711,8 @@ function renderCosmetic() {
         (b.onclick = () => {
           const [c, id] = b.dataset.buy.split(":");
           const e = COSMETICS[c].find((o) => o[0] === id);
-          if (player.gold < e[2]) return;
-          player.gold -= e[2];
+          if (player.gold < withTax(e[2])) return;
+          payWithTax(e[2]);
           (player.owned[c] = player.owned[c] || []).push(id);
           player.look[c] = id;
           game.tryOn = null;
@@ -1286,11 +1286,11 @@ function hearGossip() {
 /* ===================== BEBEDEIRA ===================== */
 
 function drink(amount, cost, nm) {
-  if (player.gold < cost) {
+  if (player.gold < withTax(cost)) {
     say([["Gus, o Taverneiro", "Sem ouro, sem bebida!"]]);
     return;
   }
-  player.gold -= cost;
+  payWithTax(cost);
   player.drunk = Math.min(110, (player.drunk || 0) + amount);
   player.water = Math.min(100, player.water + 15);
   playSound(330, 0.1, "triangle");

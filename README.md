@@ -125,6 +125,22 @@
 
 ---
 
+## 🎓 Destaque: Professor Bruno Honda
+
+<div align="center">
+
+<img src="assets/personagens/npc_honda.png" width="150"/>
+
+**Professor Bruno Honda** · Historiador de runas · Praça de Cinzaluz, ao lado da fonte
+
+</div>
+
+Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que ainda lê a escrita rúnica antiga em que **Vesper** escreveu o diário. Cada página perdida que o aprendiz traz, ele decifra e conta o que ela revela, dando **XP** pelo estudo. Com 3 páginas, ele entrega os **Óculos do Professor Honda** (+12% de dano mágico e +15 MP). Com as 5, ele explica como libertar Vesper no final. Fora isso, dá dicas sobre os níveis dos monstros e sobre como fugir do Imposto Real.
+
+<br>
+
+---
+
 ## 🧙 Personagens Principais
 
 <div align="center">
@@ -163,18 +179,18 @@
 
 <div align="center">
 
-| Chefe | Nome | Onde | Nível sugerido | Dificuldade | Vida<br><sub>Fácil / Normal / Difícil</sub> | Ataque<br><sub>Fácil / Normal / Difícil</sub> | XP |
+| Chefe | Nome | Onde | Nível | Dificuldade | Vida<br><sub>Fácil / Normal / Difícil</sub> | Ataque<br><sub>Fácil / Normal / Difícil</sub> | XP |
 |:---:|:---|:---|:---:|:---:|:---:|:---:|:---:|
-| <img src="assets/personagens/boss_ent.png" width="90"/> | **Ent Silenciado**<br><sub>Guardião</sub> | 🌲 Bosque Murmurante | **Nv 3** | ★★☆☆☆ | 140 / 182 / 252 | 11 / 13 / 16 | 60 |
-| <img src="assets/personagens/boss_serpente.png" width="90"/> | **Serpente de Névoa**<br><sub>Guardião</sub> | 🌫️ Pântano das Brumas | **Nv 5** | ★★★☆☆ | 165 / 214 / 297 | 13 / 16 / 20 | 85 |
-| <img src="assets/personagens/boss_grifo.png" width="90"/> | **Grifo de Pedra**<br><sub>Guardião</sub> | 🏔️ Picos Uivantes | **Nv 6** | ★★★☆☆ | 190 / 247 / 342 | 15 / 18 / 22 | 100 |
-| <img src="assets/personagens/boss_vitral.png" width="90"/> | **Espírito do Vitral**<br><sub>Chefe secreto</sub> | ⛪ Templo da Luz (opcional) | **Nv 6** | ★★★★☆ | 210 / 273 / 378 | 15 / 18 / 22 | 130 |
-| <img src="assets/personagens/boss_diretor.png" width="90"/> | **Diretor Espectral**<br><sub>Chefe da masmorra</sub> | 📚 Academia Arcana | **Nv 8** | ★★★★☆ | 260 / 338 / 468 | 16 / 19 / 24 | 150 |
-| <img src="assets/personagens/boss_silenciador.png" width="90"/> | **O Silenciador**<br><sub>Chefe final</sub> | 🗼 Torre do Silêncio | **Nv 9** | ★★★★★ | 440 / 572 / 792 | 16 / 19 / 24 | — |
+| <img src="assets/personagens/boss_ent.png" width="90"/> | **Ent Silenciado**<br><sub>Guardião</sub> | 🌲 Bosque Murmurante | **Nv 4+** | ★★☆☆☆ | 158 / 221 / 316 | 12 / 16 / 21 | 66 |
+| <img src="assets/personagens/boss_serpente.png" width="90"/> | **Serpente de Névoa**<br><sub>Guardião</sub> | 🌫️ Pântano das Brumas | **Nv 6+** | ★★★☆☆ | 186 / 260 / 372 | 14 / 19 / 24 | 94 |
+| <img src="assets/personagens/boss_grifo.png" width="90"/> | **Grifo de Pedra**<br><sub>Guardião</sub> | 🏔️ Picos Uivantes | **Nv 8+** | ★★★☆☆ | 239 / 335 / 478 | 18 / 24 / 31 | 120 |
+| <img src="assets/personagens/boss_vitral.png" width="90"/> | **Espírito do Vitral**<br><sub>Chefe secreto</sub> | ⛪ Templo da Luz (opcional) | **Nv 8+** | ★★★★☆ | 265 / 371 / 530 | 18 / 24 / 31 | 156 |
+| <img src="assets/personagens/boss_diretor.png" width="90"/> | **Diretor Espectral**<br><sub>Chefe da masmorra</sub> | 📚 Academia Arcana | **Nv 10+** | ★★★★☆ | 328 / 459 / 656 | 19 / 26 / 33 | 180 |
+| <img src="assets/personagens/boss_silenciador.png" width="90"/> | **O Silenciador**<br><sub>Chefe final</sub> | 🗼 Torre do Silêncio | **Nv 12+** | ★★★★★ | 612 / 857 / 1224 | 21 / 28 / 35 | — |
 
 </div>
 
-> **Nível sugerido** é uma estimativa: o nível que o aprendiz costuma ter ao chegar no chefe, treinando com o Instrutor Kael e enfrentando uns 12 monstros em cada região. As fraquezas dos Guardiões mudam conforme a runa escolhida no início.
+> Todo monstro tem **nível**, que aparece na batalha. O número da tabela é o nível mínimo do chefe: se o aprendiz treinar demais, o chefe sobe junto (fica um nível abaixo do jogador). Vida e ataque estão no nível mínimo. As fraquezas dos Guardiões mudam conforme a runa escolhida no início.
 
 <br>
 
@@ -186,7 +202,7 @@
 |:---:|:---|
 | **I** | O aprendiz desperta em **Cinzaluz** ouvindo o eco de uma runa. A Arquimaga **Odelia** o guia. |
 | **II** | Os **Guardiões** (Ent, Serpente e Grifo) guardam as runas aprisionadas. Cada um libertado devolve um elemento. |
-| **III** | Páginas do **diário de Vesper** revelam quem ele era antes de se perder no Silêncio. |
+| **III** | Páginas do **diário de Vesper**, decifradas pelo **Professor Bruno Honda**, revelam quem ele era antes de se perder no Silêncio. |
 | **IV** | Na **Torre do Silêncio**, um eco do passado mostra a última discussão dos irmãos. |
 | **V** | No confronto final, o aprendiz lê as palavras do próprio Vesper e o liberta. **Epílogo:** os irmãos se reencontram. |
 
@@ -285,12 +301,19 @@ São **6 runas** e **27 feitiços** formados por combinações de 1 ou 2 runas:
 | Modo | Monstros | Ouro e XP | Feitiços |
 |:---:|:---|:---|:---|
 | **Fácil** | Força normal | Normais | +20% de poder, −20% de mana |
-| **Normal** | +30% vida, +20% ataque | Ouro ×0,85 · XP normal | Padrão |
-| **Difícil** | +80% vida, +50% ataque | Ouro ×0,65 · XP ×0,85 | −5% de poder, +15% de mana |
+| **Normal** | +40% vida, +35% ataque | Ouro ×0,85 · XP normal | Padrão |
+| **Difícil** | +100% vida, +70% ataque | Ouro ×0,65 · XP ×0,85 | −5% de poder, +15% de mana |
 
 </div>
 
-> O equilíbrio foi ajustado com uma **simulação automática** que joga a história inteira, do Bosque até o Silenciador.
+> **Níveis dos monstros:** cada região tem uma faixa de níveis (Bosque 1–5, Pântano 4–8, Picos 6–10, Academia 8–12, Torre 9–14). Os monstros comuns aparecem perto do nível do aprendiz, dentro dessa faixa. Cada nível dá **+13% de vida, +10% de ataque e +10% de XP**. A defesa máxima dos equipamentos caiu de 75% para 60%.
+
+## 💰 Imposto Real
+
+A Rainha Aurélia cobra **12% de imposto** em toda compra: lojas, roupas, bebidas da taverna, pousada e carruagem. Na venda, **10%** do valor fica com a Coroa. Cada loja mostra o preço com o imposto separado, e quanto você já pagou.
+
+- 🎉 **Dia de festival:** sem imposto.
+- ⭐ **Boa fama (80+):** paga metade (6%).
 
 <br>
 

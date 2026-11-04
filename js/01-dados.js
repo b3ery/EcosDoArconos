@@ -530,6 +530,16 @@ const ITEMS = {
     lend: true,
     desc: "LENDÁRIO. -42% de dano recebido, +80 HP.",
   },
+  oculosHonda: {
+    nome: "Óculos do Professor Honda",
+    tipo: "equip",
+    slot: "amuleto",
+    preco: 300,
+    pow: 0.12,
+    mp: 15,
+    lend: true,
+    desc: "Presente do Professor Bruno Honda. +12% de dano mágico e +15 MP.",
+  },
   amuCan: {
     nome: "Amuleto da Canção Arcana",
     tipo: "equip",

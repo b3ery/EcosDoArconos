@@ -373,16 +373,16 @@ function carriageMenu() {
   );
   choice(
     "Carruagem",
-    `Para onde? Custa ${cost} de ouro e leva 1 hora. Vilas vizinhas: Porto Brisamar (litoral) e Pedravale (serra).`,
+    `Para onde? Custa ${withTax(cost)} de ouro (com Imposto Real) e leva 1 hora. Vilas vizinhas: Porto Brisamar (litoral) e Pedravale (serra).`,
     dests
       .map((z) => ({
         t: ZONES[z].nome + (ZONES[z].town ? " (vila)" : ""),
         fn: () => {
-          if (player.gold < cost) {
+          if (player.gold < withTax(cost)) {
             say([["Cocheiro", "Sem ouro, sem viagem."]]);
             return;
           }
-          player.gold -= cost;
+          payWithTax(cost);
           player.flags.rode = true;
           player.clock = (player.clock + 60) % 1440;
           const zz = ZONES[z];
@@ -604,15 +604,17 @@ function renderShop() {
   const sh = SHOPS[game.shopId];
   let h = `<div class="gh"><h2>${sh.nome}</h2><button id="shclose">Fechar (Esc)</button></div>
   <div class="gsub">${sh.sub} · Seu ouro: <b style="color:var(--gold)">${player.gold}</b></div>
+  <div class="gsub">${taxNote()}${player.taxPaid ? ` · Você já pagou ${player.taxPaid} de imposto` : ""}</div>
   <div class="tabs"><button data-t="buy" class="${game.shopTab === "buy" ? "on" : ""}">Comprar</button><button data-t="sell" class="${game.shopTab === "sell" ? "on" : ""}">Vender</button></div>`;
   if (game.shopTab === "buy") {
     for (const id of sh.items) {
       const it = ITEMS[id];
       const lock = it.req && guardiansFreed() < it.req;
-      const pr = Math.round(it.preco * discount(game.shopId));
+      const base = Math.round(it.preco * discount(game.shopId));
+      const pr = withTax(base);
       const can = !lock && player.gold >= pr;
       h += `<div class="irow"><div><div class="nm">${it.nome}${itemCount(id) ? ` <span class="ds">(tem ${itemCount(id)})</span>` : ""}</div><div class="ds">${lock ? `Disponível após libertar ${it.req} Guardião(ões).` : it.desc}</div></div>
-      <div><span class="pr">${pr} ouro</span> <button data-b="${id}" ${can ? "" : "disabled"}>Comprar</button></div></div>`;
+      <div><span class="pr">${pr} ouro</span>${pr > base ? ` <span class="ds">(${base} + ${pr - base} imposto)</span>` : ""} <button data-b="${id}" ${can ? "" : "disabled"}>Comprar</button></div></div>`;
     }
   } else {
     const ids = Object.keys(player.inv).filter(
@@ -621,7 +623,7 @@ function renderShop() {
     if (!ids.length) h += '<div class="qtip">Nada para vender.</div>';
     for (const id of ids) {
       const it = ITEMS[id];
-      const pr = Math.floor(it.preco / 2);
+      const pr = saleAfterTax(Math.floor(it.preco / 2));
       h += `<div class="irow"><div><div class="nm">${it.nome} <span class="ds">(tem ${itemCount(id)})</span></div><div class="ds">${it.desc}</div></div><div><span class="pr">${pr} ouro</span> <button data-s="${id}">Vender</button></div></div>`;
     }
   }
@@ -642,9 +644,9 @@ function renderShop() {
       (b) =>
         (b.onclick = () => {
           const it = ITEMS[b.dataset.b];
-          const pr = Math.round(it.preco * discount(game.shopId));
-          if (player.gold < pr) return;
-          player.gold -= pr;
+          const base = Math.round(it.preco * discount(game.shopId));
+          if (player.gold < withTax(base)) return;
+          payWithTax(base);
           addItem(b.dataset.b);
           if (game.shopId === "rosa" || game.shopId === "bruno") player.flags.bought = true;
           playSound(880, 0.08, "sine");
@@ -659,7 +661,7 @@ function renderShop() {
       (b) =>
         (b.onclick = () => {
           const it = ITEMS[b.dataset.s];
-          player.gold += Math.floor(it.preco / 2);
+          player.gold += saleAfterTax(Math.floor(it.preco / 2));
           removeItem(b.dataset.s);
           playSound(600, 0.08, "sine");
           saveGame();

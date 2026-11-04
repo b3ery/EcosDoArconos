@@ -29,7 +29,7 @@ const DEFENSE = {
   DEFENDING: 0.5,
   ROCK_SKIN: 0.3,
   BLESSING: 0.9,
-  MAX_EQUIP_DEF: 0.75,
+  MAX_EQUIP_DEF: 0.6,
   CRIT: 1.6,
   ROCK_REFLECT: 0.25,
   BLIND_MISS_CHANCE: 0.5,
@@ -226,6 +226,62 @@ function applyStoryAdjustments(enemy, type) {
     enemy.resist = [player.aff];
   }
 }
+/* ---- Nível dos monstros ----
+ * Antes os monstros tinham sempre a mesma força, enquanto o aprendiz ficava
+ * mais forte a cada nível. Agora cada monstro tem um nível: os comuns
+ * acompanham o jogador dentro da faixa da região, e os chefes têm um nível
+ * mínimo e sobem junto se o jogador treinar demais.
+ *   base  = nível para o qual os números de ENEMIES foram feitos
+ *   range = faixa de níveis em que o monstro aparece (comuns)
+ *   min   = nível mínimo (chefes e Ecos)
+ */
+const ENEMY_LEVELS = {
+  lobo: { base: 1, range: [1, 5] },
+  cogumelo: { base: 1, range: [1, 5] },
+  sapo: { base: 4, range: [4, 8] },
+  espectro: { base: 4, range: [4, 8] },
+  harpia: { base: 6, range: [6, 10] },
+  golem: { base: 6, range: [6, 10] },
+  livro: { base: 8, range: [8, 12] },
+  aprendiz: { base: 8, range: [8, 12] },
+  sentinela: { base: 9, range: [9, 14] },
+  eco: { base: 9, range: [9, 14] },
+  ent: { base: 3, min: 4, boss: true },
+  serpente: { base: 5, min: 6, boss: true },
+  grifo: { base: 6, min: 8, boss: true },
+  vitral: { base: 6, min: 8, boss: true },
+  diretor: { base: 8, min: 10, boss: true },
+  silenciador: { base: 9, min: 12, boss: true },
+  lobo_alfa: { base: 4, min: 5, boss: true },
+  hidra: { base: 6, min: 7, boss: true },
+  roc: { base: 8, min: 9, boss: true },
+  quimera: { base: 10, min: 11, boss: true },
+  colosso: { base: 12, min: 13, boss: true },
+};
+/** Quanto cada nível acima da base aumenta vida, ataque e XP. */
+const LEVEL_GROWTH = { hp: 0.13, atk: 0.1, xp: 0.1 };
+
+function enemyLevelFor(type) {
+  const info = ENEMY_LEVELS[type];
+  if (!info) return null;
+  if (info.boss) return Math.max(info.min, player.lvl - 1);
+  const [lo, hi] = info.range;
+  const roll = player.lvl + Math.floor(Math.random() * 3) - 1;
+  return Math.max(lo, Math.min(hi, roll));
+}
+function applyEnemyLevel(enemy, type) {
+  if (type === "lider") {
+    enemy.lvl = player.lvl + 1;
+    return;
+  }
+  const lvl = enemyLevelFor(type);
+  if (lvl == null) return;
+  const steps = lvl - ENEMY_LEVELS[type].base;
+  enemy.lvl = lvl;
+  enemy.hp = Math.round(enemy.hp * (1 + LEVEL_GROWTH.hp * steps));
+  enemy.atk *= 1 + LEVEL_GROWTH.atk * steps;
+  enemy.xp = Math.round(enemy.xp * (1 + LEVEL_GROWTH.xp * steps));
+}
 function applyDifficulty(enemy) {
   const diff = difficulty();
   enemy.hp = Math.round(enemy.hp * diff.hp);
@@ -249,6 +305,7 @@ function applyEnvironment(enemy, type) {
 function createEnemy(type) {
   const enemy = Object.assign({}, ENEMIES[type]);
   applyStoryAdjustments(enemy, type);
+  applyEnemyLevel(enemy, type);
   if (type !== "boneco") applyDifficulty(enemy);
   const night = applyEnvironment(enemy, type);
   return {
@@ -335,7 +392,7 @@ const chip = (text, color) => `<span class="chip" style="color:${color}">${text}
 const backButton = '<button data-back="1">Voltar</button>';
 function renderEnemyInfo() {
   const enemy = battle.e;
-  byId("ename").textContent = enemy.nome;
+  byId("ename").textContent = enemy.lvl ? `${enemy.nome} · Nv ${enemy.lvl}` : enemy.nome;
   byId("ehp").style.width = Math.max(0, (100 * enemy.hp) / enemy.max) + "%";
   let info = `<span>${Math.max(0, enemy.hp)}/${enemy.max}</span>`;
   if (isFinalBoss(enemy)) {

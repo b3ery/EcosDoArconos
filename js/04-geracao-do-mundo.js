@@ -837,6 +837,7 @@ function genVila(d) {
     "30,11": "guarda",
     "33,11": "guarda2",
     "18,18": "bardo",
+    "34,20": "honda",
   };
   for (const k in npcs) {
     const [x, y] = k.split(",").map(Number);
@@ -3394,8 +3395,8 @@ const DIFFICULTIES = {
     n: "Normal",
     spPow: 1,
     spMp: 1,
-    hp: 1.3,
-    atk: 1.2,
+    hp: 1.4,
+    atk: 1.35,
     xp: 1,
     gold: 0.85,
     need: 1.3,
@@ -3409,8 +3410,8 @@ const DIFFICULTIES = {
     n: "Difícil",
     spPow: 0.95,
     spMp: 1.15,
-    hp: 1.8,
-    atk: 1.5,
+    hp: 2,
+    atk: 1.7,
     xp: 0.85,
     gold: 0.65,
     need: 1.6,
@@ -3993,7 +3994,63 @@ const PAGES = {
   torre:
     "Última página. Se alguém ler isto, me liberte. Magia guardada não é magia: ela só vive quando é usada e compartilhada. — Vesper, irmão de Odelia",
 };
+/** O que o Professor Bruno Honda conta a cada página decifrada do diário de Vesper. */
+const HONDA_NOTES = {
+  1: "Veja só esta letra apertada... é a escrita rúnica da Academia. Vesper amava a irmã, isso está em cada linha. Ele não começou como vilão, aprendiz.",
+  2: "Duas páginas! Repare como a tinta muda: ele escrevia com raiva. Brigar com quem a gente ama é a coisa mais fácil e a mais cara do mundo.",
+  3: "O ritual proibido... eu li sobre ele nos arquivos da Academia. Separar as runas não protege a magia: só a deixa sozinha. Tome, use os meus óculos. Eles ajudam a enxergar as runas por dentro.",
+  4: "Ele esqueceu a voz da irmã. *tira os óculos e limpa as lentes* Desculpe. É que eu também já esqueci vozes que não queria esquecer.",
+  5: "Agora entendo tudo. Vesper não quer vencer, quer ser lembrado. No fim, não lute só com magia: leia para ele as palavras dele mesmo. Magia guardada não é magia.",
+};
+const HONDA_TIPS = [
+  "Monstros agora crescem junto com você. Olhe o nível deles na batalha antes de sair atacando!",
+  "A Rainha cobra 12% de Imposto Real em tudo. Dica de professor: no dia de festival não tem imposto. Guarde as compras grandes para esse dia!",
+  "Quem tem boa fama na vila paga metade do imposto. Ser gentil também é economia.",
+  "Acertar a fraqueza do inimigo enche a Ressonância. Estude o inimigo antes de gastar mana.",
+  "Na minha época, o Diretor da Academia dava aula com um grimório que voava sozinho. Hoje ele virou espectro... mas continua exigente.",
+  "Eu dava aula de runas antigas para crianças. Muitas viraram magos. Uma virou padeira. As duas coisas são mágicas.",
+];
+
 const NPCS = {
+  honda: {
+    nome: "Professor Bruno Honda",
+    // Cores escolhidas para que o desenho saia careca no topo, de óculos e com barba branca.
+    robe: "#9a222e",
+    hair: "#d9d9d9",
+    talk() {
+      const P = "Professor Bruno Honda";
+      if (!player.flags.honda) {
+        player.flags.honda = true;
+        saveGame();
+        return [
+          [P, "Ah, um aprendiz de verdade! Sente-se, sente-se. Eu sou o Professor Bruno Honda. Faz quarenta anos que estudo as ruínas da Academia Arcana."],
+          [P, "Vesper escrevia o diário numa escrita rúnica antiga. Quase ninguém mais sabe ler... mas eu sei."],
+          [P, "Se encontrar páginas perdidas pelas regiões, traga para mim. Eu decifro cada uma, e o que elas ensinam vai deixar você mais forte."],
+        ];
+      }
+      const pages = player.pages.length,
+        read = player.flags.hondaPages || 0;
+      if (pages > read) {
+        player.flags.hondaPages = pages;
+        const lines = [];
+        for (let i = read + 1; i <= pages; i++) lines.push([P, HONDA_NOTES[i]]);
+        if (pages >= 3 && !player.flags.hondaGift) {
+          player.flags.hondaGift = true;
+          addItem("oculosHonda");
+          lines.push(["", "Você recebeu os Óculos do Professor Honda! Equipe no inventário (I): +12% de dano e +15 MP."]);
+        }
+        const xp = (pages - read) * (25 + 10 * player.lvl);
+        const before = player.lvl;
+        gainXP(xp);
+        lines.push(["", `+${xp} XP por estudar as páginas.${player.lvl > before ? ` Você chegou ao nível ${player.lvl}!` : ""}`]);
+        if (pages === 5) lines.push([P, "Vá até a torre. E quando terminar... volte para me contar como foi. Professor gosta de saber o final da história."]);
+        saveGame();
+        return lines;
+      }
+      if (pages === 0) return [[P, "Nenhuma página ainda? Procure papéis brilhando nas regiões. Vesper espalhou o diário pelo mundo."]];
+      return [[P, HONDA_TIPS[Math.floor(Math.random() * HONDA_TIPS.length)]]];
+    },
+  },
   odelia: {
     nome: "Arquimaga Odelia",
     robe: "#5b3fa8",
@@ -4008,6 +4065,7 @@ const NPCS = {
         1: [
           `O Bosque Murmurante fica a oeste. A Runa ${RUNE_OF[o[1]]} dorme com o Ent Guardião, e ele teme ${RUNE_WITH_ARTICLE[o[0]]}, a runa que vive em você.`,
           "Antes de partir: treine com o Instrutor Kael, compre comida e água no mercado e volte para casa quando escurecer. A noite é perigosa.",
+          "E procure o Professor Bruno Honda, ao lado da fonte. Ele é o único que ainda lê a escrita antiga de Vesper.",
         ],
         2: [
           `Você trouxe ${RUNE_WITH_ARTICLE[o[1]]} de volta! Sinto o mundo respirar.`,

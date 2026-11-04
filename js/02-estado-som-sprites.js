@@ -398,6 +398,7 @@ const AWAKE = new Set([
   "druida",
   "pescador",
   "monge",
+  "honda",
 ]);
 function npcAsleep(id) {
   return (

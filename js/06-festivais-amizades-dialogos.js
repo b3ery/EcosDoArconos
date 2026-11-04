@@ -251,15 +251,15 @@ function bldService(b) {
     return;
   }
   if (b.inn) {
-    choice(b.name, `Um quarto limpo e uma cama macia por ${b.inn} de ouro a noite.`, [
+    choice(b.name, `Um quarto limpo e uma cama macia por ${withTax(b.inn)} de ouro a noite (com Imposto Real).`, [
       {
-        t: `Dormir até o amanhecer (${b.inn} ouro)`,
+        t: `Dormir até o amanhecer (${withTax(b.inn)} ouro)`,
         fn: () => {
-          if (player.gold < b.inn) {
+          if (player.gold < withTax(b.inn)) {
             say([["", "Você não tem ouro suficiente."]]);
             return;
           }
-          player.gold -= b.inn;
+          payWithTax(b.inn);
           player.clock = 6 * 60;
           player.day++;
           player.hp = maxHp();
@@ -474,9 +474,9 @@ function drinksMenu() {
     '"O que vai ser hoje?" ' +
       ((player.drunk || 0) >= 30 ? "<br><i>Você já está um pouco alegre...</i>" : ""),
     DRINKS.map(([id, nm, pr, dk, fx]) => ({
-      t: `${nm} · ${pr} ouro`,
+      t: `${nm} · ${withTax(pr)} ouro`,
       fn: () => {
-        if (player.gold < pr) {
+        if (player.gold < withTax(pr)) {
           say([["Gus, o Taverneiro", "Sem ouro, sem bebida!"]]);
           return;
         }
@@ -491,7 +491,7 @@ function drinksMenu() {
         }
         if (fx === "water") player.water = Math.min(100, player.water + 35);
         if (dk <= 0) {
-          player.gold -= pr;
+          payWithTax(pr);
           player.drunk = Math.max(0, (player.drunk || 0) + dk);
           toast(dk < 0 ? "A bebida quente clareia sua cabeça." : "Refrescante!");
           return;
@@ -1288,6 +1288,41 @@ function discount(shop) {
   const rm = (player.rep ?? 50) < 25 ? 1.15 : (player.rep ?? 50) >= 80 ? 0.95 : 1;
   return (id && angry(id) ? 1.3 : id && friendshipLevel(id) >= 2 ? 0.85 : 1) * rm;
 }
+/* ===================== IMPOSTO REAL ===================== */
+
+/**
+ * A Rainha Aurélia cobra o Imposto Real em toda compra: 12% sobre o preço.
+ * Dia de festival é livre de imposto, e quem tem boa fama (80+) paga metade.
+ * Vender também tem taxa: 10% do valor fica com a Coroa.
+ */
+const TAX = { buy: 0.12, sell: 0.1 };
+function taxRate() {
+  if (festivalToday()) return 0;
+  return (player.rep ?? 50) >= 80 ? TAX.buy / 2 : TAX.buy;
+}
+function taxOf(price) {
+  return price > 0 ? Math.ceil(price * taxRate()) : 0;
+}
+function withTax(price) {
+  return price + taxOf(price);
+}
+/** Cobra o preço com imposto e guarda quanto já foi para a Coroa. */
+function payWithTax(price) {
+  const tax = taxOf(price);
+  player.gold -= price + tax;
+  player.taxPaid = (player.taxPaid || 0) + tax;
+  return tax;
+}
+function saleAfterTax(value) {
+  if (festivalToday()) return value;
+  return value - Math.floor(value * TAX.sell);
+}
+function taxNote() {
+  if (festivalToday()) return '<span style="color:#7ad36b">Dia de festival: sem Imposto Real!</span>';
+  const pct = Math.round(taxRate() * 100);
+  return `Imposto Real: ${pct}% na compra · ${Math.round(TAX.sell * 100)}% na venda${pct < 12 ? " (desconto por boa fama)" : ""}`;
+}
+
 function addFriendship(id, n) {
   if (!FRIENDS[id]) return;
   if (n > 0) n = Math.ceil(n * 1.7);
