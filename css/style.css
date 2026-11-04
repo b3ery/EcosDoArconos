@@ -1890,3 +1890,10 @@ body.mland #qpill {
   text-align: center;
   max-width: 34em;
 }
+
+/* Ícones em pixel nos menus */
+.pxi {
+  image-rendering: pixelated;
+  vertical-align: -3px;
+  margin-right: 0.35em;
+}
