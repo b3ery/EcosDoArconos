@@ -11,23 +11,57 @@ const NAME_COLORS = ["#f2c14e", "#7fd0ff", "#ff8ad0", "#9ff0cf", "#ffb36b", "#c9
 const nameHash = (name) => [...name].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
 
 /** Descobre a aparência de quem está falando, para o retrato. */
+/** Nomes da história que não estão em NPCS: chefes, ecos e família real. */
+const STORY_SPEAKERS = {
+  "Ent Guardião": { enemy: "ent" },
+  "Grifo Dourado": { enemy: "grifo" },
+  "Serpente das Águas": { enemy: "serpente" },
+  Vesper: { enemy: "silenciador" },
+  "Vesper (eco)": { enemy: "silenciador" },
+  "Odelia (eco)": { npc: "odelia" },
+  "Espírito de um Aprendiz": { enemy: "aprendiz" },
+  Narrador: null,
+};
+
+function enemyByName(name) {
+  return Object.keys(ENEMIES).find((type) => ENEMIES[type].nome === name);
+}
+
+/** Descobre quem está falando, para desenhar o retrato certo. */
 function speakerLook(name) {
   if (!name) return null;
   if (name === "Você") return { hero: true };
+  if (name in STORY_SPEAKERS) {
+    const s = STORY_SPEAKERS[name];
+    if (!s) return null;
+    if (s.enemy) return { enemy: s.enemy };
+    if (s.npc)
+      return { robe: NPCS[s.npc].robe, hat: NPCS[s.npc].hat, hair: NPCS[s.npc].hair, id: s.npc, glow: true };
+  }
+  const enemy = enemyByName(name);
+  if (enemy) return { enemy };
   const short = name.split(",")[0];
   for (const id in NPCS) {
     const n = NPCS[id];
     if (n.nome === name || n.nome.split(",")[0] === short)
-      return { robe: n.robe, hat: n.hat, hair: n.hair, id };
+      return { robe: n.robe, hat: n.hat, hair: n.hair, id, glow: MAGIC_KEEPERS.has(id) };
   }
+  const royal = (typeof PARADE_MEM !== "undefined" ? PARADE_MEM : []).find((m) => m.n === name);
+  if (royal) return { robe: royal.robe, hat: royal.hat, hair: royal.hair, crown: royal.crown };
+  const keeper = Object.values(KEEPERS).find(([n]) => n === name || n.split(",")[0] === short);
+  if (keeper) return { robe: keeper[1], hair: keeper[2] };
   const walker = (game.walkers || []).find((w) => w.nm === short);
-  if (walker) return { robe: walker.robe, hat: walker.hat, hair: walker.hair };
+  if (walker)
+    return { robe: walker.robe, hat: walker.hat, hair: walker.hair, seed: walker.seed, elf: walker.elf };
+  const elf = (game.elves || []).find((e) => e.nm === short);
+  if (elf) return { robe: elf.robe, hair: elf.hair, elf: true };
   if (game.inter && game.inter.keeper && game.inter.keeper.split(",")[0] === short)
     return { robe: game.inter.kc, hair: game.inter.kh };
   const seed = nameHash(name);
   return {
     robe: NAME_COLORS[seed % NAME_COLORS.length],
     hair: ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a"][seed % 4],
+    seed,
   };
 }
 
@@ -113,9 +147,26 @@ function drawDialogPortrait(d, talking) {
     talking && (mood === "shout" || mood === "excited")
       ? Math.abs(Math.sin(t * 18)) * 3
       : Math.sin(t * 2) * 0.6;
+  if (d.look.enemy) {
+    withContext(c2, () => {
+      const u = 4.6;
+      drawEnemy(d.look.enemy, cv.width / 2 - 8 * u, cv.height / 2 - 8 * u - bounce, u, t);
+    });
+    return;
+  }
   const rects = d.look.hero
     ? heroRects(player.look, "down", player.look.staffc || "#ffe066")
-    : wizardRects(d.look.robe, d.look.hat, d.look.hair, null, "down");
+    : d.look.elf
+      ? elfRects(d.look.robe, d.look.hair, "down")
+      : wizardRects(
+          d.look.robe,
+          d.look.hat,
+          d.look.hair,
+          d.look.glow ? "#c9a8ff" : null,
+          "down",
+          0,
+          d.look.seed,
+        );
   const u = 6;
   const ox = cv.width / 2 - 8 * u,
     oy = 8 - bounce;
@@ -124,7 +175,18 @@ function drawDialogPortrait(d, talking) {
     c2.fillStyle = col;
     c2.fillRect(ox + x * u, oy + y * u, w * u, Math.min(h, 13 - y) * u);
   }
-  const skin = d.look.hero ? player.look.skin : "#f1c8a5";
+  if (d.look.crown) {
+    c2.fillStyle = "#f2c14e";
+    c2.fillRect(ox + 5 * u, oy + 2 * u, 6 * u, u);
+    c2.fillRect(ox + 5 * u, oy + 1 * u, u, u);
+    c2.fillRect(ox + 7.5 * u, oy + 1 * u, u, u);
+    c2.fillRect(ox + 10 * u, oy + 1 * u, u, u);
+  }
+  const skin = d.look.hero
+    ? player.look.skin
+    : d.look.elf
+      ? "#f1d8b8"
+      : npcSkin(d.look.robe, d.look.hat, d.look.hair);
   const blink = Math.floor(t * 10) % 34 === 0;
   if (blink) {
     c2.fillStyle = skin;
