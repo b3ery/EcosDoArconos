@@ -844,7 +844,7 @@ function drawWeddingScene(t) {
     -16 * u,
     u,
   );
-  drawKissFace(-8 * u, -16 * u, u, "#f1c8a5", kissing, p > 0.45 ? 1 : 0);
+  drawKissFace(-8 * u, -16 * u, u, npcSkin(n.robe, null, n.hair), kissing, p > 0.45 ? 1 : 0);
   ctx.fillStyle = "rgba(255,255,255,.75)";
   ctx.fillRect(-6 * u, -16 * u + 4 * u, 12 * u, 6 * u);
   ctx.fillStyle = "#ffb3c8";
