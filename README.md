@@ -137,6 +137,24 @@
 
 </div>
 
+> Cada morador tem tom de pele, penteado e roupa próprios. Só quem ainda guarda magia, a **Arquimaga Odelia** e a **Professora Selene**, usa chapéu pontudo e cajado brilhante.
+
+<br>
+
+---
+
+## 👑 Família Real
+
+<div align="center">
+
+| | | | |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/personagens/real_rainha.png" width="110"/><br><b>Rainha Aurélia</b><br><sub>Recebe aventureiros no Castelo de Cinzaluz</sub> | <img src="assets/personagens/real_principe.png" width="110"/><br><b>Príncipe Leon</b><br><sub>Acompanha a rainha na passeata</sub> | <img src="assets/personagens/real_princesa.png" width="110"/><br><b>Princesa Aurora</b><br><sub>Acompanha a rainha na passeata</sub> | <img src="assets/personagens/real_guarda.png" width="110"/><br><b>Guarda Real</b><br><sub>Guarda o portão do castelo e a passeata</sub> |
+
+</div>
+
+> A cada 5 dias, das 10h ao meio-dia, a família real faz uma **passeata** pela vila, contornando a fonte da praça.
+
 <br>
 
 ---
