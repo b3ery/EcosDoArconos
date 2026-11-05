@@ -200,6 +200,7 @@ function kingdomsMenu() {
     return `${KINGDOMS[a].short} × ${KINGDOMS[b].short}: ${st} (${r}/100)`;
   }).join("<br>");
   const opts = [];
+  if (isMonarch()) opts.push({ t: `Governar o reino (${royalTitle()})`, fn: royalMenu });
   if (kingdomAtWar(here))
     opts.push({
       t: "Alistar-se no exército por um dia (perigoso, paga bem)",
@@ -208,7 +209,7 @@ function kingdomsMenu() {
   opts.push({ t: "Fechar", fn: null });
   choice(
     "Reinos",
-    `Você está em <b>${ZONES[player.zone].nome}</b>, ${KINGDOMS[here].n} (governante: ${KINGDOMS[here].ruler}).<br>${playerAge()} anos · ${lifeStage()}${player.generation > 1 ? ` · ${player.generation}ª geração` : ""}<br><br>${lines}`,
+    `Você está em <b>${ZONES[player.zone].nome}</b>, ${KINGDOMS[here].n} (governante: ${here === "aurelia" && isMonarch() ? `${player.name} e Rainha Aurélia` : KINGDOMS[here].ruler}).<br>${playerAge()} anos · ${lifeStage()}${player.generation > 1 ? ` · ${player.generation}ª geração` : ""}<br><br>${lines}`,
     opts,
   );
 }

@@ -34,6 +34,7 @@ function onNewDay() {
   if (lifeMode()) {
     ageTick();
     worldTick();
+    houseDaily();
   }
   restoreWorkTiles();
 }

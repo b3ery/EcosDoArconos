@@ -233,7 +233,7 @@ const RESIDENT = [
 ];
 function bldAction(b) {
   if (!b) return;
-  if (storyBuilding(b)) return;
+  if (lifeHouseDoor(b) || storyBuilding(b)) return;
   if (sleepTime() && !festivalToday() && CLOSED_STYLES.has(b.style)) {
     say([["", `${b.name || "A loja"} está fechada. Todos foram dormir. Abre às 6h.`]]);
     return;
@@ -1016,6 +1016,7 @@ function restMenu() {
         player.hp = maxHp();
         player.mp = maxMp();
         player.energy = 100;
+        if (lifeMode()) addNeed("fun", Math.round((homeComfort() - 1) * 40));
         player.food = Math.max(0, player.food - 20);
         player.water = Math.max(0, player.water - 20);
         player.checkpoint = {
@@ -2711,7 +2712,7 @@ function socialMenu(id) {
   });
   if (ROMANCE.includes(id) && !player.spouse && !player.dating && friendshipLevel(id) >= 2)
     opts.push({
-      t: "Convidar para namorar ♥",
+      t: "Convidar para namorar ♥" + (lifeMode() ? ` (chance ~${Math.round(romanceOdds(id, "namoro").chance * 100)}%)` : ""),
       fn: () => {
         if (id === "rainha" && !royalSuitor()) {
           say([
@@ -2720,7 +2721,9 @@ function socialMenu(id) {
           ]);
           return;
         }
+        if (lifeMode() && !romanceAccepts(id, "namoro")) return;
         player.dating = id;
+        player.datingSince = player.day;
         addFriendship(id, 5);
         saveGame();
         playSound(784, 0.2, "sine");
@@ -2735,7 +2738,7 @@ function socialMenu(id) {
     });
   if (player.dating === id && !player.spouse)
     opts.push({
-      t: "Pedir em casamento ",
+      t: "Pedir em casamento" + (lifeMode() ? ` (chance ~${Math.round(romanceOdds(id, "casamento").chance * 100)}%)` : ""),
       fn: () => {
         if (!itemCount("anel")) {
           say([[nm, "(Você precisa de um Anel de Compromisso. O Ourives Lúcio vende no mercado.)"]]);
@@ -2749,6 +2752,7 @@ function socialMenu(id) {
           say([[nm, "Eu digo sim com o coração. Mas o reino precisa amar você também. (reputação 80+)"]]);
           return;
         }
+        if (lifeMode() && !romanceAccepts(id, "casamento")) return;
         removeItem("anel");
         if (id === "rainha") {
           say(

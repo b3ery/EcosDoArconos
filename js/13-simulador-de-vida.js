@@ -187,5 +187,87 @@ function lifeGoalText() {
   if (starving()) return "! Coma e beba alguma coisa!";
   const here = kingdomOf(player.zone);
   if (kingdomAtWar(here)) return `! ${KINGDOMS[here].short} está em guerra · K: ver reinos e alistar-se`;
+  if (isMonarch()) return `${royalTitle()} · ${player.name}, ${playerAge()} anos · K: governar o reino`;
+  if ((player.taxDue || 0) > 0) return `${player.name}, ${playerAge()} anos · Imposto da casa: ${player.taxDue} ouro (o Coletor Real vai cobrar)`;
   return `${player.name}, ${playerAge()} anos · ${KINGDOMS[here].short} · ${player.gold} ouro · E no Quadro de Trabalhos · K: reinos`;
+}
+
+/* ===================== ROMANCE COM REJEIÇÃO (só no Simulador) ===================== */
+
+/** Idade aproximada de cada morador (fixa por pessoa). */
+function npcAge(id) {
+  const h = [...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  return 19 + (h % 42) + Math.floor(Math.max(0, (player.day || 1) - 1) / 3);
+}
+/** Quanto cada personalidade liga para cada coisa (1 = normal). */
+const ROMANCE_TASTES = {
+  gentil: { hygiene: 1, money: 0.5, rep: 1, fun: 1.2 },
+  orgulhoso: { hygiene: 1.4, money: 1.6, rep: 1.5, fun: 0.8 },
+  engracado: { hygiene: 0.8, money: 0.6, rep: 0.8, fun: 1.6 },
+  aventureiro: { hygiene: 0.6, money: 0.8, rep: 1, fun: 1.4 },
+  serio: { hygiene: 1.2, money: 1.2, rep: 1.4, fun: 0.7 },
+  timido: { hygiene: 1.1, money: 0.8, rep: 0.9, fun: 1 },
+  sabio: { hygiene: 1, money: 0.7, rep: 1.3, fun: 0.9 },
+  esperto: { hygiene: 1, money: 1.3, rep: 1, fun: 1 },
+};
+/**
+ * Calcula a chance de alguém aceitar e junta os motivos (bons e ruins).
+ * kind: "namoro" ou "casamento" (casamento é mais exigente).
+ */
+function romanceOdds(id, kind) {
+  const taste = ROMANCE_TASTES[PERSONALITIES[id]] || ROMANCE_TASTES.gentil;
+  let score = (friendship(id) - (kind === "casamento" ? 70 : 50)) * 1.4;
+  const why = [];
+  const add = (v, reason) => {
+    score += v;
+    if (Math.abs(v) >= 4) why.push([v, reason]);
+  };
+  const hyg = lifeNeed("hygiene");
+  if (hyg < 30) add(-30 * taste.hygiene, "você está cheirando mal (higiene baixa)");
+  else if (hyg > 80) add(6 * taste.hygiene, "você está cheiroso");
+  const fun = lifeNeed("fun");
+  if (fun < 25) add(-12 * taste.fun, "você anda de mau humor (diversão baixa)");
+  const rep = player.rep ?? 50;
+  add(((rep - 50) / 3) * taste.rep, rep >= 50 ? "você tem boa fama na vila" : "sua fama na vila é ruim");
+  const wealth = player.gold + ownedHouses().reduce((a, h) => a + h.price, 0);
+  const needMoney = kind === "casamento" ? 300 : 80;
+  add(Math.max(-20, Math.min(15, (wealth - needMoney) / 25)) * taste.money, wealth >= needMoney ? "você tem onde cair morto" : "você está sem dinheiro nenhum");
+  const gap = Math.abs(playerAge() - npcAge(id));
+  if (gap > 15) add(-(gap - 15) * 1.5, "a diferença de idade é grande");
+  if ((player.drunk || 0) >= 40) add(-25, "você está bêbad" + genderWord("o", "a", "e"));
+  if (player.famDay["date" + id] === player.day) add(12, "o encontro de hoje foi ótimo");
+  if (festivalToday()) add(8, "o clima de festival ajuda");
+  if (player.cheatCount) add(-8 * player.cheatCount, "você tem fama de traidor");
+  if (kind === "casamento" && player.day - (player.datingSince || 0) < 3) add(-15, "vocês namoram há pouco tempo");
+  const chance = Math.max(0.03, Math.min(0.97, 0.5 + score / 100));
+  return { chance, why: why.sort((a, b) => a[0] - b[0]) };
+}
+/** Tenta e responde. Retorna true se aceitou. Recusa deixa 2 dias de espera e um climão. */
+function romanceAccepts(id, kind) {
+  const n = NPCS[id].nome.split(",")[0];
+  const key = "romanceNo" + kind + id;
+  if (player.famDay[key] && player.day - player.famDay[key] < 2) {
+    say([[n, kind === "casamento" ? "Você me pediu há pouco... Ainda estou pensando. Me dá um tempo." : "Já te respondi. Não insista agora, por favor."]]);
+    return false;
+  }
+  const { chance, why } = romanceOdds(id, kind);
+  if (Math.random() < chance) {
+    const good = why.filter(([v]) => v > 0).slice(-1)[0];
+    if (good) toast(`Pesou a favor: ${good[1]}.`, 3000);
+    return true;
+  }
+  player.famDay[key] = player.day;
+  addFriendship(id, kind === "casamento" ? -8 : -4);
+  addNeed("fun", -15);
+  saveGame();
+  const bad = why.filter(([v]) => v < 0).slice(0, 2).map(([, r]) => r);
+  const lines =
+    kind === "casamento"
+      ? ["*fica em silêncio, olhando o anel* ...Não. Desculpa. Não estou pronto(a) para isso.", "Casar? Eu... gosto de você, mas não. Não agora."]
+      : ["Ah... Você é legal, mas eu não te vejo desse jeito.", "Namorar? *ri sem graça* Acho melhor a gente continuar amigos."];
+  say([
+    [n, lines[Math.floor(Math.random() * lines.length)]],
+    ["", `Recusado (chance era ${Math.round(chance * 100)}%).${bad.length ? " O que pesou contra: " + bad.join("; ") + "." : " Faltou mais amizade."} Espere 2 dias para tentar de novo.`],
+  ]);
+  return false;
 }

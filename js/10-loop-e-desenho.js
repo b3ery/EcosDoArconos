@@ -200,6 +200,7 @@ function update(dt) {
     needsTick(dt * timeSpeed());
     lifeNeedsTick(dt * timeSpeed());
     jobTick(dt);
+    collectorTick(dt);
     const nn = isNight();
     if (game.wasNight !== undefined && nn !== game.wasNight) {
       if (nn) {
@@ -2894,6 +2895,7 @@ function drawWorld(t) {
     });
   }
   jobDrawList(list, t);
+  lifeDrawList(list, t);
   list.sort((a, b) => a.y - b.y).forEach((s) => s.draw());
   if (ZONES[player.zone].town) drawVilaLife(t, x0, y0, x1, y1);
   if (player.zone === "vila") {

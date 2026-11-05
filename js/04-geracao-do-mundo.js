@@ -2215,7 +2215,9 @@ function furnWalk(id) {
 function furnName(id) {
   return ITEMS[id] ? ITEMS[id].nome : FURN_DEF[id] || id;
 }
-function enterHouse() {
+function enterHouse(h) {
+  // Lembra por qual porta você entrou (no Simulador dá para ter várias casas).
+  player.homeReturn = h ? { zone: h.zone, x: h.x, y: h.y + 1 } : { zone: "vila", x: 5, y: 18 };
   player.zone = "casa";
   player.x = 6;
   player.y = 7;
@@ -2240,9 +2242,10 @@ function enterHouse() {
   }
 }
 function leaveHouse() {
-  player.zone = "vila";
-  player.x = 5;
-  player.y = 18;
+  const r = player.homeReturn || { zone: "vila", x: 5, y: 18 };
+  player.zone = r.zone;
+  player.x = r.x;
+  player.y = r.y;
   player.dir = "down";
   game.fade = 1;
   enterZone(false);
