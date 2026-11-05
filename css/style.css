@@ -1943,3 +1943,86 @@ body.mland #qpill {
 #waitb {
   top: 39%;
 }
+
+/* ==========================================================================
+   TELA DE ENTRADA
+   ========================================================================== */
+#title .sub {
+  margin-bottom: 0.8em;
+}
+#title .cont-btn {
+  font-size: 1.15em;
+  padding: 0.35em 1.2em;
+  margin-bottom: 0.8em;
+  border-color: var(--gold);
+  color: #fff3b0;
+  box-shadow: 0 0 14px rgba(242, 193, 78, 0.35);
+}
+#title .modes {
+  display: flex;
+  gap: 0.9em;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 40em;
+}
+#title .mode-card {
+  width: 17em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25em;
+  padding: 0.7em 0.8em 0.8em;
+  font-size: 1em;
+  line-height: 1.2;
+  background: rgba(26, 19, 40, 0.88);
+  border: 2px solid #7a5ac9;
+  transition: transform 0.12s, border-color 0.12s;
+}
+#title .mode-card b {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.35em;
+  color: var(--gold);
+}
+#title .mode-card span {
+  color: #d9c9ff;
+  font-size: 0.92em;
+}
+#title .mode-card.life {
+  border-color: #4f9a6a;
+}
+#title .mode-card.life b {
+  color: #9ff0cf;
+}
+#title .mode-card:hover,
+#title .mode-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--gold);
+}
+#title .mode-ic img {
+  width: 40px;
+  height: 40px;
+  margin: 0;
+}
+#title .small-btns {
+  flex-direction: row;
+  margin-top: 0.9em;
+  min-width: 0;
+}
+#title .small-btns button {
+  font-size: 1em;
+}
+#title .ctl {
+  margin-top: 0.8em;
+  font-size: 0.85em;
+}
+
+/* Barras das necessidades do Simulador de Vida: cada uma com sua cor */
+.hrow .bar.en i {
+  background: #f2e14e;
+}
+.hrow .bar.hy i {
+  background: #f2a8c8;
+}
+.hrow .bar.fu i {
+  background: #9ff06a;
+}

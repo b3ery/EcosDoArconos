@@ -488,7 +488,23 @@ byId("btnAgain").onclick = () => {
   byId("end").style.display = "none";
   showCreate("new");
 };
-if (!loadSave()) byId("btnCont").style.display = "none";
+/** Botão Continuar mostra qual jogo está salvo. */
+function refreshTitle() {
+  const s = loadSave();
+  const b = byId("btnCont");
+  if (!s) {
+    b.style.display = "none";
+    return;
+  }
+  b.style.display = "";
+  b.innerHTML =
+    s.mode === "vida"
+      ? `▶ Continuar: ${s.name}, ${s.age ?? 18} anos · Simulador de Vida · Dia ${s.day}`
+      : `▶ Continuar: ${s.name} · Modo História · Nv ${s.lvl} · Dia ${s.day}`;
+}
+refreshTitle();
+byId("icStory").innerHTML = iconHTML("staff", 40);
+byId("icLife").innerHTML = iconHTML("house", 40);
 layout();
 requestAnimationFrame(loop);
 

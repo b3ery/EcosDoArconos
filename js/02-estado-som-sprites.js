@@ -775,6 +775,18 @@ Object.assign(PIXEL_ICONS, {
     c: { r: "#c94a4a", b: "#5a3a22" },
     p: ["brrrr...", "brrrrr..", "brrrr...", "b.......", "b.......", "b......."],
   },
+  bolt: {
+    c: { y: "#f2e14e", o: "#c99a2a" },
+    p: ["...yy...", "..yy....", ".yyyyy..", "...yy...", "..yy....", ".o......"],
+  },
+  soap: {
+    c: { p: "#f2a8c8", w: "#ffffff", b: "#bfe0f0" },
+    p: [".w..b...", "w.w.....", ".w.pppp.", "...pwpp.", "...pppp.", "........"],
+  },
+  joy: {
+    c: { y: "#f2c14e", k: "#3a2414", r: "#e0306a" },
+    p: [".yyyyy..", "yykykyy.", "yyyyyyy.", "ykyyyky.", "yykkkyy.", ".yyyyy.."],
+  },
   bath: {
     c: { w: "#e8e4dc", b: "#4fb8ff" },
     p: ["........", ".b.b.b..", "wwwwwww.", "wbbbbbw.", ".wwwww..", ".w...w.."],

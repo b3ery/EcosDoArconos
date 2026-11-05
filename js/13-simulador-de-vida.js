@@ -16,9 +16,9 @@ function lifeMode() {
 
 /** Além de fome e sede: energia, higiene e diversão (0 a 100). */
 const LIFE_NEEDS = {
-  energy: { n: "Energia", icon: "zzz", rate: 0.17, low: "Você está exausto. Vá dormir!" },
-  hygiene: { n: "Higiene", icon: "water", rate: 0.12, low: "Você precisa de um banho. As pessoas estão se afastando..." },
-  fun: { n: "Diversão", icon: "party", rate: 0.13, low: "Que tédio... vá se divertir na taverna, dançar ou namorar." },
+  energy: { n: "Energia", icon: "bolt", rate: 0.17, low: "Você está exausto. Vá dormir!" },
+  hygiene: { n: "Higiene", icon: "soap", rate: 0.12, low: "Você precisa de um banho. As pessoas estão se afastando..." },
+  fun: { n: "Diversão", icon: "joy", rate: 0.13, low: "Que tédio... vá se divertir na taverna, dançar ou namorar." },
 };
 function lifeNeed(k) {
   return player[k] ?? 100;

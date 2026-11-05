@@ -3467,10 +3467,49 @@ function drawTitle(t) {
     ctx.fillStyle = `rgba(255,255,255,${0.2 + 0.6 * Math.abs(Math.sin(t * 1.5 + i))})`;
     ctx.fillRect(x, y, tileHash(i, 3) > 0.8 ? 2 : 1, tileHash(i, 3) > 0.8 ? 2 : 1);
   }
+  // Lua
+  ctx.fillStyle = "rgba(255,243,176,.07)";
+  circle(520, 90, 48);
+  ctx.fillStyle = "rgba(255,243,176,.1)";
+  circle(520, 90, 38);
+  ctx.fillStyle = "#fff3b0";
+  circle(520, 90, 30);
+  ctx.fillStyle = "#e8d890";
+  circle(510, 82, 6);
+  circle(528, 100, 4);
+  // Colinas
+  ctx.fillStyle = "#1c1230";
+  fillPolygon(-200, 480, -200, 380, 60, 330, 220, 370, 420, 320, 640, 360, 840, 330, 840, 480);
+  // Torre da magia no centro
   ctx.fillStyle = "#120b20";
   fillPolygon(270, 480, 290, 190, 320, 150, 350, 190, 370, 480);
   ctx.fillStyle = "rgba(176,108,255,.6)";
   ctx.fillRect(314, 200, 12, 16);
+  // Silhueta da vila: casas e castelo com janelas acesas
+  const houses = [
+    [10, 400, 50, 40], [70, 390, 44, 50], [125, 405, 56, 35], [440, 395, 50, 45], [500, 405, 46, 35], [556, 392, 60, 48],
+  ];
+  for (const [hx, hy, hw, hh] of houses) {
+    ctx.fillStyle = "#0e0818";
+    ctx.fillRect(hx, hy, hw, hh);
+    fillPolygon(hx - 4, hy, hx + hw / 2, hy - 22, hx + hw + 4, hy);
+    ctx.fillStyle = Math.sin(t * 0.7 + hx) > -0.6 ? "#f2c14e" : "#6a5020";
+    ctx.fillRect(hx + hw / 2 - 4, hy + 12, 8, 8);
+  }
+  ctx.fillStyle = "#0e0818";
+  ctx.fillRect(190, 360, 60, 80);
+  ctx.fillRect(180, 340, 16, 100);
+  ctx.fillRect(244, 340, 16, 100);
+  fillPolygon(176, 340, 188, 318, 200, 340);
+  fillPolygon(240, 340, 252, 318, 264, 340);
+  ctx.fillStyle = "#f2c14e";
+  ctx.fillRect(214, 380, 10, 14);
+  ctx.fillStyle = "#c94a4a";
+  ctx.fillRect(252, 304, 10, 6);
+  ctx.fillStyle = "#0e0818";
+  ctx.fillRect(251, 304, 1, 14);
+  ctx.fillStyle = "#0e0818";
+  ctx.fillRect(-200, 440, 1040, 40);
   ORDER.forEach((r, i) => {
     const a = t * 0.5 + (i * Math.PI) / 2;
     glyph(r, 320 + Math.cos(a) * 190, 250 + Math.sin(a) * 60, 26, 0.4 + 0.4 * Math.sin(t * 2 + i));
@@ -3651,6 +3690,12 @@ function loop(now) {
   if (!(game.paused && game.mode === "world" && !game.dialog)) update(dt);
   draw();
   if (game.paused && game.mode === "world" && !game.dialog) drawPauseOverlay();
+  // Pausa, velocidade e esperar só aparecem andando pelo mundo.
+  const showTime = game.mode === "world" ? "" : "none";
+  if (game.tbShown !== showTime) {
+    game.tbShown = showTime;
+    for (const id of ["pauseb", "speedb", "waitb"]) byId(id).style.display = showTime;
+  }
   touchUI();
   requestAnimationFrame(loop);
 }
