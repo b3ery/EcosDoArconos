@@ -472,6 +472,10 @@ const CLOSED_STYLES = new Set([
 
 /** Ícones 8x8 desenhados em pixel (no lugar de emojis). Cada linha é uma string; "." é vazio. */
 const PIXEL_ICONS = {
+  lock: {
+    c: { g: "#f2c14e", d: "#7a5a1a" },
+    p: ["..ddd...", ".d...d..", "ggggggg.", "gggdggg.", "gggdggg.", "ggggggg."],
+  },
   heart: {
     c: { r: "#e0306a" },
     p: [".rr.rr..", "rrrrrrr.", "rrrrrrr.", ".rrrrr..", "..rrr...", "...r...."],

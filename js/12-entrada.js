@@ -92,9 +92,13 @@ const KEY_HANDLERS = {
   shop: (k) => {
     if (k === "escape") return closeShop();
     if (game.shopId === "__jobs" || !byId("shop").querySelector(".slider")) return;
-    const slide = game.shopId === "__cos" ? cosSlide : shopSlide;
+    const cos = game.shopId === "__cos";
+    const slide = cos ? cosSlide : shopSlide;
     if (k === "arrowleft" || k === "a") slide(-1);
     else if (k === "arrowright" || k === "d") slide(1);
+    else if (!cos && (k === "arrowup" || k === "w")) shopQty(1);
+    else if (!cos && (k === "arrowdown" || k === "s")) shopQty(-1);
+    else if (k === "tab") cos ? cosCategory() : shopSwitchTab();
     else if (k === "enter" || k === " " || k === "e") shopConfirm();
   },
   story: (k, e) => {
@@ -140,7 +144,7 @@ addEventListener("keydown", (e) => {
   const typing = e.target && e.target.tagName === "INPUT";
   if (game.mode === "create" || game.mode === "prompt" || typing) return;
   const k = e.key.toLowerCase();
-  if (SCROLL_KEYS.has(k) || (k === "enter" && game.mode !== "end")) e.preventDefault();
+  if (SCROLL_KEYS.has(k) || (k === "enter" && game.mode !== "end") || (k === "tab" && game.mode === "shop")) e.preventDefault();
   const mode = game.dialog && !BEFORE_DIALOG.has(game.mode) ? "dialog" : game.mode;
   const handler = KEY_HANDLERS[mode];
   if (handler) handler(k, e);
