@@ -5617,3 +5617,71 @@ body.in-battle .hudL,
 body.in-battle #achtoast {
   visibility: hidden;
 }
+/* Celular em pé: painéis em tela cheia, sem os controles de toque por baixo. */
+body.tallui #screen {
+  height: 100dvh;
+  border-radius: 0;
+  border-width: 0;
+}
+body.tallui #touch {
+  display: none !important;
+}
+body.tallui .ov,
+body.tallui #quests,
+body.tallui #grim {
+  inset: 0 !important;
+  border-radius: 0 !important;
+}
+body.tallui #canvas,
+body.tallui canvas#cv {
+  visibility: hidden;
+}
+@media (pointer: coarse) and (orientation: portrait) {
+  .cc-win {
+    grid-template-columns: auto 1fr !important;
+    grid-template-rows: auto 1fr auto !important;
+    height: 100% !important;
+  }
+  .cc-stage {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    flex-direction: row !important;
+    align-items: center;
+    border-left: 0 !important;
+    border-bottom: 2px solid #3a2a5a;
+  }
+  .cc-side {
+    grid-row: 2 / span 2;
+  }
+  .cc-main {
+    grid-row: 2 / span 2;
+  }
+  .cc-room {
+    flex: 1 !important;
+    min-height: 9em;
+  }
+  .cc-room canvas {
+    width: 8em !important;
+    height: 8em !important;
+  }
+  .cc-pose {
+    flex-direction: column;
+  }
+  .cc-btns {
+    flex-direction: column;
+  }
+  .inv-top {
+    flex-direction: column;
+  }
+  .inv-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+    max-height: none;
+  }
+}
+body.tallui #fsb,
+body.tallui #optb,
+body.tallui #pauseb,
+body.tallui #speedb,
+body.tallui #waitb {
+  display: none !important;
+}

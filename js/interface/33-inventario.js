@@ -268,3 +268,16 @@ function wireInvTabs() {
     invKeys(k, e);
   };
 }
+
+/* ===================== CELULAR EM PÉ: TELAS GRANDES OCUPAM A TELA TODA ===================== */
+{
+  const PANEL_MODES = new Set(["inv", "shop", "create", "cal", "careers", "achs", "svs", "quests", "grim", "options", "guide", "mgame"]);
+  let last = null;
+  setInterval(() => {
+    const tall = matchMedia("(pointer:coarse)").matches && innerHeight > innerWidth && PANEL_MODES.has(game.mode);
+    if (tall === last) return;
+    last = tall;
+    document.body.classList.toggle("tallui", tall);
+    byId("screen").style.aspectRatio = tall ? "auto" : innerWidth > innerHeight ? "auto" : "4 / 3";
+  }, 150);
+}

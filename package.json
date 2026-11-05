@@ -1,0 +1,13 @@
+{
+  "name": "ecos-do-arcano",
+  "private": true,
+  "description": "Ecos do Arcano: RPG em pixel art no navegador",
+  "scripts": {
+    "test": "node tests/smoke.js",
+    "check": "node -e \"for (const d of require('fs').readdirSync('js')) for (const f of require('fs').readdirSync('js/' + d)) require('child_process').execSync('node --check js/' + d + '/' + f)\" && echo ok",
+    "build": "node tools/build.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

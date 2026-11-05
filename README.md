@@ -421,6 +421,19 @@ Na criação e no guarda-roupa: **barra lateral com ícones** (Perfil, Rosto, Ca
 - **Clínica da Júlia:** missões de resgate de animais machucados no Bosque (História) ou na Floresta Grande (Simulador).
 - **Versão rápida:** `node tools/build.js` junta todos os scripts num arquivo só em `dist/`. Para usar, publique a pasta `dist/` no GitHub Pages.
 
+## 📅 Calendário, diário e festival
+
+- **Calendário da vila (tecla L, ou "Agenda" no celular):** os próximos 14 dias com festivais, desfiles, aniversários da turma, reuniões dos Alcoólatras Anônimos, exposições da Mylena e visitas do Rei Vini.
+- **Diário:** anota sozinho o que você viveu (namoro, casamento, filhos, casas, promoções, Guardiões, conquistas).
+- **Minijogos no festival:** Concurso de Tortas, Dança na Praça (ritmo) e Corrida de Sacos (apertar rápido). Até 120 de ouro e presentes para o 1º lugar.
+- **Ofícios fabricam de verdade:** padeiro, ferreiro, costureiro, cozinheiro, escriba, boticário, pintor e marceneiro às vezes ficam com o que fizeram (pão, ferramentas, roupas, livros, poções, quadros, móveis).
+- **Ciúmes na turma:** se você só dá atenção a um amigo, o outro fica emburrado. Fale com ele para fazer as pazes.
+- **Retratos com expressão:** quem tem rosto detalhado franze a testa, sorri, cora ou fica triste conforme a fala.
+
+## ⚔️ Batalha
+
+Cartão do jogador com retrato, vida, magia e fôlego; runas em botões grandes com a cor do elemento; aviso de **Super efetivo!** antes de lançar; faixas de **"Seu turno!"** e **"Vez do inimigo"**; vida do inimigo com rastro amarelo; números de dano maiores, e a tela pisca quando você acerta a fraqueza.
+
 ## 🛒 Lojas
 
 Cada loja é uma **vitrine**: o atendente aparece no canto e comenta o que você faz, os itens ficam numa **prateleira em leque** (o do meio grande, os vizinhos menores dos lados) com cor de **raridade** (Comum, Incomum, Raro, Épico, Lendário). Embaixo, um painel mostra descrição, **atributos** (fome, vida, dano, defesa...), preço com imposto e **quantidade**.
@@ -569,6 +582,13 @@ A Rainha Aurélia cobra **12% de imposto** em toda compra: lojas, roupas, bebida
 <br>
 
 ---
+
+## 🧪 Testes e organização
+
+- `npm run check`: confere a sintaxe de todos os scripts.
+- `npm test`: abre o jogo num navegador e passa pelas telas principais dos dois modos (13 verificações).
+- Os dois rodam sozinhos no **GitHub Actions** a cada push.
+- Os scripts estão em pastas por assunto (`js/nucleo`, `js/mundo`, `js/historia`, `js/pessoas`, `js/vida`, `js/interface`). O mapa completo, com quem modifica qual função, fica em [docs/ARQUITETURA.md](docs/ARQUITETURA.md) (gerado por `node tools/arquitetura.js`).
 
 ## 🗂️ Estrutura do Projeto
 
