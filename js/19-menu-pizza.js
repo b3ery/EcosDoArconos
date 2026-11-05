@@ -87,7 +87,7 @@ function renderPie(title, text, opts) {
   // Opções em arco dos dois lados do personagem: a metade da direita e a da esquerda.
   const right = Math.ceil(n / 2),
     left = n - right,
-    gap = 40;
+    gap = 2.75; // em: cresce junto com o texto, então os botões nunca se sobrepõem
   const items = shown
     .map((o, i) => {
       const onRight = i < right;
@@ -95,10 +95,10 @@ function renderPie(title, text, opts) {
       const cnt = onRight ? right : left;
       const dy = (k - (cnt - 1) / 2) * gap;
       const maxY = Math.max(1, ((cnt - 1) / 2) * gap + gap / 2);
-      const bow = 34 + 46 * (1 - (dy / maxY) ** 2);
+      const bow = 2.4 + 3 * (1 - (dy / maxY) ** 2);
       const dx = onRight ? bow : -bow;
       const ic = o.icon || choiceIcon(o.t) || PIE_GROUPS.find((q) => q.n === pieGroupOf(o.t))?.icon || "chat";
-      return `<button class="pie-opt ${o.cls || ""} ${onRight ? "r" : "l"}" data-i="${i}" ${o.off ? "disabled" : ""} style="transform:translate(calc(${onRight ? "0%" : "-100%"} + ${dx}px), calc(-50% + ${dy}px));animation-delay:${i * 18}ms"><span class="pie-ic">${iconHTML(ic, 18)}</span><span>${o.t}</span></button>`;
+      return `<button class="pie-opt ${o.cls || ""} ${onRight ? "r" : "l"}" data-i="${i}" ${o.off ? "disabled" : ""} style="transform:translate(calc(${onRight ? "0%" : "-100%"} + ${dx.toFixed(2)}em), calc(-50% + ${dy.toFixed(2)}em));animation-delay:${i * 18}ms"><span class="pie-ic">${iconHTML(ic, 18)}</span><span>${o.t}</span></button>`;
     })
     .join("");
   const name = title.split("·")[0].trim();

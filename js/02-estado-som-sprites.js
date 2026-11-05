@@ -1156,7 +1156,16 @@ const colorSeed = (text) =>
 const HERO_LOOKS = {};
 function wizardRects(robe, hat, hair, glow, dir, frame = 0, seed) {
   const special = HERO_LOOKS[`${robe}|${hat ?? null}|${hair}`];
-  if (special) return heroRects(special, dir, null, frame);
+  if (special) {
+    const r = heroRects(special, dir, null, frame);
+    // Detalhes extras desenhados à mão (cabelo, óculos, roupa) para personagens especiais.
+    if (special.extra) {
+      const ex = special.extra(dir, frame);
+      if (special.under) r.unshift(...special.under(dir, frame));
+      r.push(...ex);
+    }
+    return r;
+  }
   const s = seed ?? colorSeed(`${robe}${hat}${hair}`);
   const skin = SKIN_TONES[s % SKIN_TONES.length],
     gold = BELT_COLORS[(s >> 3) % BELT_COLORS.length],

@@ -2960,3 +2960,10 @@ body.mland #qpill {
 #pie .pie-opt.nav .pie-ic {
   background: radial-gradient(#5a4692, #2a1f44);
 }
+#pie .pie-ring,
+#pie.wide .pie-ring {
+  left: -12em;
+  top: -9em;
+  width: 24em;
+  height: 18em;
+}
