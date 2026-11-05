@@ -710,7 +710,7 @@ function checkQuest() {
 }
 function drawQuestArrow(t, camX, camY, Z = 1) {
   // Durante um turno de trabalho a seta mostra o próximo passo do trabalho.
-  const jt = player.job ? jobTarget() : null;
+  const jt = player.job ? jobTarget() : trappedTarget();
   if (player.job && !jt) return;
   if (!jt && lifeMode()) return;
   if (!jt && player.finished && !urgent() && !(game.raid && player.zone === "vila")) return;

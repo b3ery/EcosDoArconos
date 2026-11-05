@@ -420,6 +420,12 @@ Desde o primeiro treino você escolhe quem quer ser. Cada momento da história t
 
 O HUD mostra o seu **Caminho** (Herói, Dividido, Vilão, Tirano...). Escolhas sombrias deixam a magia mais forte, mas a vila tem medo: a **Guarda Real** passa a multar você. Com 3 escolhas de vilão (ou um Guardião possuído), o **Silenciador** oferece aliança antes da última luta e, se vencer, você pode **tomar a Canção Arcana** e conquistar o mundo. São dois **Fins Sombrios**.
 
+## 🗺️ Missões no farol e na mina (nos dois modos)
+
+- **Desabamento na Mina:** ao entrar na Mina de Cristal, o Anão Gorim pede socorro. Três mineiros estão presos lá no fundo: siga a seta, fique de frente e aperte E para cavar e resgatar cada um. Prêmio: 160 de ouro, 2 Grandes Poções, 2 Cristais Sombrios e +6 de reputação.
+- **A Lente Rachada:** no Farol de Brisamar, a Faroleira Lúcia precisa de 3 Cristais Sombrios e 2 Minérios de Ferro (da mina!). Volte à noite, acenda o farol e salve um navio mercante. Prêmio: 200 de ouro, 2 Grandes Essências e +8 de reputação.
+- **Vigia da noite:** depois de consertar o farol, dá para fazer a vigia com a Lúcia uma vez por noite (ouro e, às vezes, um barco salvo).
+
 ## ⛏️ Mina, trigo e pão (nos dois modos)
 
 - A **Mina de Cristal**, em Pedravale, virou uma caverna: E várias vezes numa pedra dá **Pedra de Golem, Minério de Ferro, Cristal Sombrio** ou, com sorte, um **Fragmento Arcano**.

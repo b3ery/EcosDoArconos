@@ -2639,6 +2639,18 @@ function paradeMenu() {
 
 const SIDEQ = [
   {
+    t: "Desabamento na Mina: resgate os 3 mineiros (Mina de Cristal)",
+    p: () => ((player.q && player.q.mina && player.q.mina.saved) || []).length,
+    n: 3,
+    r: 60,
+  },
+  {
+    t: "A Lente Rachada: conserte e acenda o Farol de Brisamar",
+    p: () => (player.q && player.q.farol && player.q.farol.st === 2 ? 1 : 0),
+    n: 1,
+    r: 60,
+  },
+  {
     t: "Fique amigo da turma de Cinzaluz",
     p: () => CREW.filter((id) => friendshipLevel(id) >= 1).length,
     n: 5,

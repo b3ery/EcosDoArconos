@@ -1724,7 +1724,7 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
-  const hx = houseExtraLabel(x, y);
+  const hx = houseExtraLabel(x, y) || questLabel(x, y);
   if (hx) return hx;
   if (crewActorAt(x, y)) return crewAtGathering(x, y) ? "Conversar com a turma" : "Falar com " + crewName(crewActorAt(x, y));
   const jl = animalLabel(x, y) || jobLabel(x, y) || gatherLabel(x, y) || forageLabel(x, y);
@@ -1985,7 +1985,7 @@ function interact() {
 function interactAt(x, y) {
   // Se for um personagem, os menus abrem em círculo ao redor dele (estilo The Sims).
   game.pieAnchor = characterAt(x, y) ? { x, y } : null;
-  if (houseExtraInteract(x, y)) return;
+  if (houseExtraInteract(x, y) || questInteract(x, y)) return;
   if (crewActorAt(x, y)) {
     game.pieAnchor = { x, y };
     if (crewAtGathering(x, y)) crewGroupMenu();

@@ -338,7 +338,7 @@ function rollWeather(announce) {
   }
 }
 function outdoorTheme(th) {
-  return !["torre", "escola", "casa", "interior"].includes(th);
+  return !["torre", "escola", "casa", "interior", "mina"].includes(th);
 }
 function currentHour() {
   return player.clock / 60;
