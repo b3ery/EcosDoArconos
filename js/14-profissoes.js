@@ -251,6 +251,28 @@ function guardTick(dt) {
   }
   j.thiefT -= dt * timeSpeed();
   const thief = (game.walkers || []).find((w) => w.thief);
+  // O ladrão corre de você quando chega perto: persiga!
+  if (thief && Math.abs(thief.x - player.x) + Math.abs(thief.y - player.y) <= 6) {
+    thief.fleeT = (thief.fleeT || 0) - dt;
+    if (thief.fleeT <= 0) {
+      thief.fleeT = 0.42;
+      let best = null;
+      for (const [a, b] of DIRS4) {
+        const nx = thief.x + a,
+          ny = thief.y + b;
+        if (!walkable(player.zone, nx, ny) || (nx === player.x && ny === player.y)) continue;
+        const d = Math.abs(nx - player.x) + Math.abs(ny - player.y);
+        if (!best || d > best[2]) best = [nx, ny, d, a, b];
+      }
+      if (best) {
+        thief.x = best[0];
+        thief.y = best[1];
+        thief.dir = best[3] > 0 ? "right" : best[3] < 0 ? "left" : best[4] > 0 ? "down" : "up";
+        thief.moving = true;
+        thief.timer = 2;
+      }
+    }
+  }
   if (!thief && j.thiefT <= 0) {
     const cands = (game.walkers || []).filter((w) => !w.inside && Math.abs(w.x - player.x) + Math.abs(w.y - player.y) > 5);
     if (cands.length) {
@@ -354,6 +376,60 @@ function customerAt(x, y) {
   return (game.jobCustomers || []).find((c) => c.x === x && c.y === y);
 }
 
+/* ===================== MEDIDOR DE FORÇA ===================== */
+
+/** Posição do marcador (0 a 1) que vai e volta sobre a cabeça do jogador. */
+function swingPos() {
+  return (Math.sin(game.t * 3.2) + 1) / 2;
+}
+/** 2 = golpe perfeito (faixa verde), 1 = bom (amarela), 0 = errou (vermelha). */
+function hitQuality() {
+  const p = swingPos();
+  if (p > 0.42 && p < 0.58) return 2;
+  if (p > 0.24 && p < 0.76) return 1;
+  return 0;
+}
+const HIT_VERBS = ["Cortar", "Colher", "Quebrar", "Minerar"];
+function hitTargetActive() {
+  if (game.mode !== "world" || game.dialog) return false;
+  const tg = findTarget();
+  return !!tg && HIT_VERBS.some((v) => tg.l.startsWith(v));
+}
+/** Aplica a qualidade do golpe; retorna quantas batidas contaram. */
+function swingFeedback(x, y, icon) {
+  const q = hitQuality();
+  if (q === 0) {
+    game.bubbles.push({ x: player.x, y: player.y, icon: "meh", t: 0.8 });
+    playSound(160, 0.08, "square");
+    toast("Errou! Aperte E quando o marcador estiver no verde.", 1400);
+    return 0;
+  }
+  game.shake = q === 2 ? 0.14 : 0.06;
+  game.bubbles.push({ x, y, icon: q === 2 ? "sparkle" : icon, t: 0.7 });
+  if (q === 2) toast("Golpe perfeito!", 900);
+  return q;
+}
+function drawSwingMeter(list) {
+  if (!hitTargetActive()) return;
+  list.push({
+    y: player.ry + 0.05,
+    draw: () => {
+      const X = player.rx * TILE - 8,
+        Y = player.ry * TILE - 22;
+      ctx.fillStyle = "rgba(10,6,18,.85)";
+      ctx.fillRect(X - 2, Y - 2, 52, 10);
+      ctx.fillStyle = "#c94a4a";
+      ctx.fillRect(X, Y, 48, 6);
+      ctx.fillStyle = "#e8c24a";
+      ctx.fillRect(X + 48 * 0.24, Y, 48 * 0.52, 6);
+      ctx.fillStyle = "#5ab04a";
+      ctx.fillRect(X + 48 * 0.42, Y, 48 * 0.16, 6);
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(X + 48 * swingPos() - 1, Y - 2, 3, 10);
+    },
+  });
+}
+
 /* ===================== INTERAÇÃO (tecla E) ===================== */
 
 /** Texto do "E · ..." quando você olha para algo do seu trabalho. */
@@ -403,9 +479,9 @@ function jobInteract(x, y) {
   // Coletar: cada E é uma batida; com batidas suficientes, vira um item.
   if (p && p.tile && label.startsWith(p.verb)) {
     const k = x + "," + y;
-    j.hits[k] = (j.hits[k] || 0) + 1;
-    game.shake = 0.08;
-    game.bubbles.push({ x, y, icon: p.icon, t: 0.6 });
+    const q = swingFeedback(x, y, p.icon);
+    if (!q) return true;
+    j.hits[k] = (j.hits[k] || 0) + q;
     playSound(j.id === "minerador" ? 260 : j.id === "lenhador" ? 180 : 520, 0.06, "square");
     if (j.hits[k] >= p.hits) {
       delete j.hits[k];
@@ -508,7 +584,13 @@ function jobStatusText() {
   if (p.tile || j.id === "pescador") {
     const drop = JOB_DROPS[j.id][j.zone];
     what = j.cargo >= p.carry ? `Cheio! Entregue em ${drop}` : `${j.cargo}/${p.carry} ${p.unit}(s) · entregue em ${drop}`;
-  } else if (j.id === "carregador") what = j.step === "pegar" ? `Pegue uma caixa no ${WAREHOUSES[j.zone]}` : `Leve a caixa até ${j.to.name}`;
+  } else if (j.id === "carregador") {
+    const tipLeft = j.step === "levar" ? Math.max(0, 40 - (absMinutes() - j.pickedAt)) : 0;
+    what =
+      j.step === "pegar"
+        ? `Pegue uma caixa no ${WAREHOUSES[j.zone]}`
+        : `Leve a caixa até ${j.to.name}${tipLeft > 0 ? ` · gorjeta se chegar em ${Math.round(tipLeft)} min` : " · sem gorjeta"}`;
+  }
   else if (j.id === "guarda")
     what = (game.walkers || []).some((w) => w.thief) ? "Ladrão à solta! Siga a seta" : "Patrulhe o ponto marcado";
   else if (j.id === "stall") what = `${j.product.n} a ${j.price} ouro · estoque ${j.stock}`;
@@ -548,6 +630,7 @@ function jobTarget() {
 }
 /** Clientes, ladrão e pontos de patrulha no mapa. */
 function jobDrawList(list, t) {
+  drawSwingMeter(list);
   const j = player.job;
   if (!j || player.zone !== j.zone) return;
   for (const c of game.jobCustomers || []) {
@@ -572,6 +655,19 @@ function jobDrawList(list, t) {
       },
     });
   }
+  if (j.id === "carregador" && j.step === "levar")
+    list.push({
+      y: player.ry + 0.04,
+      draw: () => drawPixelIcon("crate", player.rx * TILE + 16, player.ry * TILE - 4 + Math.sin(t * 8), 3),
+    });
+  if ((j.id === "lenhador" || j.id === "minerador" || j.id === "fazendeiro" || j.id === "pescador") && j.cargo > 0)
+    list.push({
+      y: player.ry + 0.04,
+      draw: () => {
+        const ic = PROFESSIONS[j.id].icon === "axe" ? "crate" : j.id === "fazendeiro" ? "wheat" : j.id === "pescador" ? "fish" : "gem";
+        for (let i = 0; i < Math.min(3, j.cargo); i++) drawPixelIcon(ic, player.rx * TILE + 8 + i * 8, player.ry * TILE - 2 - i * 2, 2);
+      },
+    });
   if (j.id === "guarda") {
     for (const w of game.walkers || [])
       if (w.thief)
@@ -658,9 +754,9 @@ function gatherInteract(x, y) {
   }
   game.gatherHits = game.gatherHits || {};
   const k = x + "," + y;
-  game.gatherHits[k] = (game.gatherHits[k] || 0) + 1;
-  game.shake = 0.06;
-  game.bubbles.push({ x, y, icon: c === "o" ? "pick" : "wheat", t: 0.6 });
+  const q = swingFeedback(x, y, c === "o" ? "pick" : "wheat");
+  if (!q) return true;
+  game.gatherHits[k] = (game.gatherHits[k] || 0) + q;
   playSound(c === "o" ? 260 : 520, 0.06, "square");
   if (game.gatherHits[k] < GATHER_HITS[c]) return true;
   delete game.gatherHits[k];
