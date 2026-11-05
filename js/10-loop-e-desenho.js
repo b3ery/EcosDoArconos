@@ -203,6 +203,7 @@ function update(dt) {
     collectorTick(dt);
     sicknessTick(dt);
     animalsTick(dt);
+    crewTick(dt);
     const nn = isNight();
     if (game.wasNight !== undefined && nn !== game.wasNight) {
       if (nn) {

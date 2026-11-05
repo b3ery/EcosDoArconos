@@ -233,7 +233,7 @@ const RESIDENT = [
 ];
 function bldAction(b) {
   if (!b) return;
-  if (lifeHouseDoor(b) || storyBuilding(b)) return;
+  if (crewDoor(b) || lifeHouseDoor(b) || storyBuilding(b)) return;
   if (sleepTime() && !festivalToday() && CLOSED_STYLES.has(b.style)) {
     say([["", `${b.name || "A loja"} está fechada. Todos foram dormir. Abre às 6h.`]]);
     return;

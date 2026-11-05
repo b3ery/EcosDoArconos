@@ -143,18 +143,26 @@ Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que
 
 ## 🍻 A Turma de Cinzaluz
 
-Os criadores do jogo viraram personagens importantes da história, com seus parceiros. Os cinco são amigos: em dia de festival à noite, e a cada 3 dias no fim da tarde, eles se encontram na fonte da praça.
+Os criadores do jogo viraram personagens importantes da história, com seus parceiros. Cada um tem **casa, trabalho e rotina**: sai de casa de manhã, vai para o seu estabelecimento, anda pela vila e volta à noite. Bata na porta da casa deles para visitar.
+
+- Os cinco se encontram na **fonte da praça** em dia de festival à noite e a cada 3 dias no fim da tarde.
+- **Mylena, Andressa e Júlia** tomam café na frente do **Ateliê** todo dia à tarde (14h30 às 17h).
+- O **Lucas** dorme até as 10h, passa a tarde na praça e a noite na porta da taverna.
 
 <div align="center">
 
 | | | | | |
 |:---:|:---:|:---:|:---:|:---:|
-| <img src="assets/personagens/turma_lucas.png" width="100"/><br><b>Lucas Marzocca</b><br><sub>O rolezeiro. Só conversa depois de ganhar um hidromel; sempre nas festas e falado por namorar demais.</sub> | <img src="assets/personagens/turma_matheus.png" width="100"/><br><b>Matheus</b><br><sub>O fazendeiro, melhor amigo do Lucas. Dá cesta da fazenda e chama para a colheita.</sub> | <img src="assets/personagens/turma_marcos.png" width="100"/><br><b>General Marcos</b><br><sub>General de grande porte que ajuda a vila. Treina você (+vida máxima).</sub> | <img src="assets/personagens/turma_andressa.png" width="100"/><br><b>Andressa</b><br><sub>Dona da maior rede de bibliotecas. Misteriosa, vende informações de segurança.</sub> | <img src="assets/personagens/turma_mylena.png" width="100"/><br><b>Mylena</b><br><sub>Artista do Ateliê de quadros e móveis. Engraçada e amada por todos.</sub> |
-| | <img src="assets/personagens/turma_malu.png" width="100"/><br><b>Duquesa Malu</b><br><sub>Esposa do Matheus</sub> | <img src="assets/personagens/turma_coral.png" width="100"/><br><b>Princesa Coral das Marés</b><br><sub>Esposa do Marcos</sub> | | <img src="assets/personagens/turma_leon.png" width="100"/><br><b>Príncipe Leon</b><br><sub>Filho da Rainha, marido da Mylena</sub> |
+| <img src="assets/personagens/turma_lucas.png" width="100"/><br><b>Lucas Marzocca</b><br><sub>O rolezeiro e o único solteiro. Só conversa depois de ganhar um hidromel; mora no Quartinho ao lado da taverna.</sub> | <img src="assets/personagens/turma_matheus.png" width="100"/><br><b>Matheus</b><br><sub>O fazendeiro, melhor amigo do Lucas. Trabalha na plantação e mora no Sítio.</sub> | <img src="assets/personagens/turma_marcos.png" width="100"/><br><b>General Marcos</b><br><sub>Treina ao amanhecer e guarda o portão do castelo. Treina você (+vida máxima).</sub> | <img src="assets/personagens/turma_andressa.png" width="100"/><br><b>Andressa</b><br><sub>Dona da maior rede de bibliotecas. Misteriosa, vende informações de segurança. Trabalha na Biblioteca.</sub> | <img src="assets/personagens/turma_mylena.png" width="100"/><br><b>Mylena</b><br><sub>Artista do Ateliê de quadros e móveis (a loja abre das 7h às 17h). Engraçada e amada por todos.</sub> |
+| | <img src="assets/personagens/turma_malu.png" width="100"/><br><b>Duquesa Malu</b><br><sub>Esposa do Matheus</sub> | <img src="assets/personagens/turma_julia.png" width="100"/><br><b>Princesa Julia das Marés</b><br><sub>Esposa do Marcos</sub> | <img src="assets/personagens/turma_gabriel.png" width="100"/><br><b>Gabriel, o Cartógrafo</b><br><sub>Marido da Andressa</sub> | <img src="assets/personagens/turma_pedro.png" width="100"/><br><b>Príncipe Pedro</b><br><sub>Filho da Rainha, marido da Mylena</sub> |
+
+| | |
+|:---:|:---:|
+| <img src="assets/personagens/turma_juliaO.png" width="100"/><br><b>Júlia Oliveira</b><br><sub>Homenagem: veterinária e dona dos bichos. Atende na <b>Clínica Veterinária</b> (consulta do mascote e adoção), mora na Mansão Oliveira. Super rica e feliz.</sub> | <img src="assets/personagens/turma_vini.png" width="100"/><br><b>Rei Vini do Sul</b><br><sub>Marido da Júlia. Visita Cinzaluz nos festivais e no fim de semana.</sub> |
 
 </div>
 
-> **Na história:** se você for amigo dos cinco, a turma aparece na batalha contra o Silenciador e luta com você (+25% de dano). Lucas e Andressa podem ser namorados.
+> **Na história:** se você for amigo dos cinco, a turma aparece na batalha contra o Silenciador e luta com você (+25% de dano). Só o Lucas pode ser namorado: o resto da turma é casado.
 
 <br>
 

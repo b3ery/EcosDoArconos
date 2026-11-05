@@ -1487,7 +1487,10 @@ function spawnEco() {
 }
 function enterZone(showBanner = true) {
   restoreContacts();
-  if (player.zone === "vila") setTimeout(villainReaction, 2500);
+  if (player.zone === "vila") {
+    crewInit();
+    setTimeout(villainReaction, 2500);
+  }
   if (ZONES[player.zone].town && game.lifeZone !== player.zone) initVilaLife();
   if (!player.visited.includes(player.zone)) player.visited.push(player.zone);
   if (player.zone === "torre") player.riding = false;
@@ -1681,7 +1684,7 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
-  if (crewActorAt(x, y)) return "Conversar com a turma";
+  if (crewActorAt(x, y)) return crewAtGathering(x, y) ? "Conversar com a turma" : "Falar com " + crewName(crewActorAt(x, y));
   const jl = animalLabel(x, y) || jobLabel(x, y) || gatherLabel(x, y) || forageLabel(x, y);
   if (jl) return jl;
   const elf = elfAt(x, y);
@@ -1942,7 +1945,8 @@ function interactAt(x, y) {
   game.pieAnchor = characterAt(x, y) ? { x, y } : null;
   if (crewActorAt(x, y)) {
     game.pieAnchor = { x, y };
-    crewGroupMenu();
+    if (crewAtGathering(x, y)) crewGroupMenu();
+    else socialMenu(crewActorAt(x, y));
     return;
   }
   if (animalInteract(x, y) || jobInteract(x, y) || gatherInteract(x, y) || forageInteract(x, y)) return;

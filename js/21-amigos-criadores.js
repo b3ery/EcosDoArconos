@@ -3,10 +3,11 @@
  * Os criadores do jogo viram personagens importantes de Cinzaluz, com seus parceiros:
  *  - Lucas Marzocca: o rolezeiro. Só conversa depois de ganhar um hidromel.
  *  - Matheus: o fazendeiro, melhor amigo do Lucas, casado com a Duquesa Malu.
- *  - Marcos: o General, casado com a Princesa Coral das Marés; ajuda na vila.
- *  - Andressa: dona da maior rede de bibliotecas, misteriosa, sabe tudo de segurança.
- *  - Mylena: artista do Ateliê de pinturas e móveis, casada com o Príncipe Leon.
- * Os cinco são amigos e às vezes aparecem juntos na fonte da praça.
+ *  - Marcos: o General, casado com a Princesa Julia das Marés; ajuda na vila.
+ *  - Andressa: dona da maior rede de bibliotecas, misteriosa, sabe tudo de segurança. Casada com o Gabriel.
+ *  - Mylena: artista do Ateliê de pinturas e móveis, casada com o Príncipe Pedro, filho da Rainha.
+ *  - Júlia Oliveira (homenagem): veterinária e dona dos bichos, casada com o Rei Vini do Sul.
+ * Cada um tem casa, trabalho e rotina: anda pela vila, vai trabalhar, se encontra e volta para casa.
  * (Visual inspirado nas fotos da equipe no README.)
  */
 
@@ -15,15 +16,158 @@
 /* ===================== VISUAL (estilo do jogador) ===================== */
 
 /** Cada um tem cores únicas: wizardRects reconhece e desenha o visual detalhado. */
+const PLAID = "#7d8478",
+  PLAID_D = "#5a6056",
+  PLAID_L = "#a3aa9c";
 const CREW_LOOKS = {
   lucas: { robe: "#a82a3a", hat: null, hair: "#2a1a10", look: { skin: "#d9a07a", hair: "#2a1a10", hstyle: "curto", hat: "nenhum", hatc: "#2a2f6e", outfit: "tunica", robe: "#a82a3a", eyes: "#2a1a10", acc: "nenhum" } },
   matheus: { robe: "#e8e4dd", hat: "#c9a03b", hair: "#2a1a11", look: { skin: "#f1c8a5", hair: "#2a1a11", hstyle: "cacheado", hat: "abas", hatc: "#c9a03b", outfit: "tunica", robe: "#e8e4dd", eyes: "#3a2414", acc: "nenhum" } },
   marcos: { robe: "#3a5aa8", hat: null, hair: "#1a1a1b", look: { skin: "#c08458", hair: "#1a1a1b", hstyle: "curto", hat: "nenhum", hatc: "#2a2f6e", outfit: "capa", robe: "#3a5aa8", eyes: "#222222", acc: "oculos" } },
-  andressa: { robe: "#7a8a7a", hat: null, hair: "#1a1a1c", look: { skin: "#a8704a", hair: "#1a1a1c", hstyle: "rabo", hat: "nenhum", hatc: "#2a2f6e", outfit: "gibao", robe: "#7a8a7a", eyes: "#222222", acc: "oculos" } },
+  // Andressa: cachos longos presos caindo no ombro, óculos pretos grossos, casaco xadrez sobre blusa verde.
+  andressa: {
+    robe: "#7d8479",
+    hat: null,
+    hair: "#1a1410",
+    look: {
+      skin: "#c08a64",
+      hair: "#1a1410",
+      hstyle: "cacheado",
+      hat: "nenhum",
+      hatc: "#2a2f6e",
+      outfit: "tunica",
+      robe: "#7d8479",
+      eyes: "#2a1a10",
+      acc: "nenhum",
+      extra: (dir) => {
+        const H = "#1a1410",
+          Hl = "#3a2a20";
+        if (dir === "up")
+          return [
+            [5, 3, 6, 2, H],
+            [7, 9, 3, 4, H],
+            [8, 10, 1, 1, Hl],
+            [8, 12, 1, 1, Hl],
+          ];
+        const side = dir === "left" || dir === "right";
+        const body = side
+          ? [
+              [5, 9, 6, 4, PLAID],
+              [8, 9, 2, 3, "#7a9a6a"],
+              [5, 10, 6, 1, PLAID_D],
+              [6, 9, 1, 4, PLAID_L],
+            ]
+          : [
+              [4, 9, 8, 4, PLAID],
+              [6, 9, 4, 4, "#7a9a6a"],
+              [4, 10, 2, 1, PLAID_D],
+              [10, 10, 2, 1, PLAID_D],
+              [4, 12, 2, 1, PLAID_D],
+              [10, 12, 2, 1, PLAID_D],
+              [5, 9, 1, 4, PLAID_L],
+              [10, 9, 1, 4, PLAID_L],
+              [3, 9, 1, 3, PLAID],
+              [12, 9, 1, 3, PLAID],
+            ];
+        const hair = side
+          ? [
+              [5, 3, 6, 2, H],
+              [4, 5, 2, 4, H],
+              [4, 9, 2, 3, H],
+              [4, 10, 1, 1, Hl],
+              [5, 12, 1, 1, H],
+            ]
+          : [
+              [5, 3, 6, 2, H],
+              [6, 3, 1, 1, Hl],
+              [9, 3, 1, 1, Hl],
+              // cachos caindo pelo ombro direito dela
+              [3, 7, 2, 2, H],
+              [2, 9, 3, 2, H],
+              [3, 11, 2, 2, H],
+              [3, 9, 1, 1, Hl],
+              [4, 11, 1, 1, Hl],
+              [11, 7, 1, 2, H],
+            ];
+        // Óculos pretos grossos: aro em cima de cada olho e ponte entre eles.
+        const eyes = side
+          ? [
+              [8, 7, 1, 1, "#4a4a4a"],
+              [6, 7, 1, 1, "#111"],
+            ]
+          : [
+              [7, 7, 2, 1, "#4a4a4a"],
+              [5, 7, 1, 1, "#111"],
+              [10, 7, 1, 1, "#111"],
+            ];
+        return [...body, ...hair, ...eyes];
+      },
+    },
+  },
   mylena: { robe: "#c94a8b", hat: null, hair: "#1a1a1d", look: { skin: "#a8704a", hair: "#1a1a1d", hstyle: "longo", hat: "flor", hatc: "#2a2f6e", outfit: "vestido", robe: "#c94a8b", eyes: "#2a1a10", acc: "brincos" } },
   malu: { robe: "#7a3a8a", hat: null, hair: "#8a3a1b", look: { skin: "#f1c8a5", hair: "#8a3a1b", hstyle: "longo", hat: "tiara", hatc: "#2a2f6e", outfit: "real", robe: "#7a3a8a", eyes: "#3a5a2a", acc: "colar" } },
-  coral: { robe: "#3a8ab1", hat: null, hair: "#d9a442", look: { skin: "#d9a07a", hair: "#d9a442", hstyle: "trancas", hat: "tiara", hatc: "#2a2f6e", outfit: "vestido", robe: "#3a8ab1", eyes: "#2a5a8a", acc: "colar" } },
-  leon: { robe: "#2a4a8b", hat: null, hair: "#d9a443", look: { skin: "#f1c8a5", hair: "#d9a443", hstyle: "curto", hat: "coroa", hatc: "#2a2f6e", outfit: "real", robe: "#2a4a8b", eyes: "#2a5a8a", acc: "nenhum" } },
+  julia: { robe: "#3a8ab1", hat: null, hair: "#d9a442", look: { skin: "#d9a07a", hair: "#d9a442", hstyle: "trancas", hat: "tiara", hatc: "#2a2f6e", outfit: "vestido", robe: "#3a8ab1", eyes: "#2a5a8a", acc: "colar" } },
+  pedro: { robe: "#2a4a8b", hat: null, hair: "#d9a443", look: { skin: "#f1c8a5", hair: "#d9a443", hstyle: "curto", hat: "coroa", hatc: "#2a2f6e", outfit: "real", robe: "#2a4a8b", eyes: "#2a5a8a", acc: "nenhum" } },
+  gabriel: { robe: "#4a4a6a", hat: null, hair: "#3a2414", look: { skin: "#d9a07a", hair: "#3a2414", hstyle: "curto", hat: "nenhum", hatc: "#2a2f6e", outfit: "capa", robe: "#4a4a6a", eyes: "#2a1a10", acc: "bigode" } },
+  // Júlia Oliveira: cachos volumosos na altura do ombro, óculos redondos finos, blusa caramelo, brincos.
+  juliaO: {
+    robe: "#c9773a",
+    hat: null,
+    hair: "#24160e",
+    look: {
+      skin: "#c8906a",
+      hair: "#24160e",
+      hstyle: "cacheado",
+      hat: "nenhum",
+      hatc: "#2a2f6e",
+      outfit: "vestido",
+      robe: "#c9773a",
+      eyes: "#2a1a10",
+      acc: "nenhum",
+      extra: (dir) => {
+        const H = "#24160e",
+          Hl = "#4a3020";
+        if (dir === "up") return [[4, 3, 8, 3, H], [3, 6, 10, 4, H], [5, 4, 1, 1, Hl], [9, 7, 1, 1, Hl]];
+        const side = dir === "left" || dir === "right";
+        const hair = side
+          ? [[5, 3, 7, 2, H], [4, 4, 3, 6, H], [5, 6, 1, 1, Hl], [4, 8, 1, 1, Hl]]
+          : [
+              [4, 3, 8, 2, H],
+              [3, 4, 2, 6, H],
+              [11, 4, 2, 6, H],
+              [4, 4, 1, 1, Hl],
+              [11, 5, 1, 1, Hl],
+              [3, 7, 1, 1, Hl],
+              [12, 8, 1, 1, Hl],
+              [6, 3, 1, 1, Hl],
+              [9, 3, 1, 1, Hl],
+            ];
+        // Óculos redondos finos dourados + jaleco branco de veterinária por cima.
+        const glasses = side
+          ? [[7, 7, 1, 1, "#d9c08a"], [9, 7, 2, 1, "#d9c08a"]]
+          : [[5, 7, 1, 1, "#d9c08a"], [7, 7, 2, 1, "#d9c08a"], [10, 7, 1, 1, "#d9c08a"], [5, 8, 1, 1, "#f2c14e"], [10, 8, 1, 1, "#f2c14e"]];
+        const coat = side ? [[5, 9, 2, 4, "#f2eee4"]] : [[4, 9, 2, 5, "#f2eee4"], [10, 9, 2, 5, "#f2eee4"], [7, 11, 2, 1, "#7ad36b"]];
+        return [...hair, ...glasses, ...coat];
+      },
+    },
+  },
+  // Rei Vini do Sul: coroa, barba curta, traje real verde e dourado.
+  vini: {
+    robe: "#2f7a4a",
+    hat: null,
+    hair: "#2a1a10",
+    look: {
+      skin: "#d9a07a",
+      hair: "#2a1a10",
+      hstyle: "curto",
+      hat: "coroa",
+      hatc: "#2a2f6e",
+      outfit: "real",
+      robe: "#2f7a4a",
+      eyes: "#2a1a10",
+      acc: "nenhum",
+      extra: (dir) => (dir === "up" ? [] : dir === "down" ? [[6, 8, 4, 1, "#2a1a10"], [5, 7, 1, 1, "#2a1a10"], [10, 7, 1, 1, "#2a1a10"]] : [[7, 8, 3, 1, "#2a1a10"]]),
+    },
+  },
 };
 for (const k in CREW_LOOKS) {
   const c = CREW_LOOKS[k];
@@ -53,11 +197,16 @@ Object.assign(NPCS, {
     ["Andressa", ["Tenho bibliotecas em três reinos. E em todas, alguém me conta alguma coisa.", "*ajeita os óculos* Eu sei o que você está procurando. A pergunta é: o que você me dá em troca?", "Segurança não é muralha. É informação no lugar certo."][Math.floor(Math.random() * 3)]],
   ]),
   mylena: crewNPC("mylena", "Mylena, a Artista", () => [
-    ["Mylena", ["Pintei a Rainha ontem. Ela pediu para tirar uma ruga. Eu tirei duas, de presente!", "Meu ateliê tem quadros e móveis feitos à mão. Cada um com uma história... e um pouco de tinta no lugar errado.", "O Leon diz que eu pinto a vila mais bonita do que ela é. Eu digo que pinto como ela merece ser."][Math.floor(Math.random() * 3)]],
+    ["Mylena", ["Pintei a Rainha ontem. Ela pediu para tirar uma ruga. Eu tirei duas, de presente!", "Meu ateliê tem quadros e móveis feitos à mão. Cada um com uma história... e um pouco de tinta no lugar errado.", "O Pedro diz que eu pinto a vila mais bonita do que ela é. Eu digo que pinto como ela merece ser."][Math.floor(Math.random() * 3)]],
   ]),
   malu: crewNPC("malu", "Duquesa Malu", () => [["Duquesa Malu", "Duquesa de dia, fazendeira à tarde. O Matheus me ensinou a plantar; eu ensinei ele a dançar valsa."]]),
-  coral: crewNPC("coral", "Princesa Coral das Marés", () => [["Princesa Coral", "Deixei o palácio das Marés para casar com o Marcos. Melhor decisão da minha vida... depois da de trazer meus sapatos."]]),
-  leon: crewNPC("leon", "Príncipe Leon", () => [["Príncipe Leon", "Minha mãe governa o reino. A Mylena governa o meu coração. E a minha agenda, pelo jeito."]]),
+  julia: crewNPC("julia", "Princesa Julia das Marés", () => [["Princesa Julia", "Deixei o palácio das Marés para casar com o Marcos. Melhor decisão da minha vida... depois da de trazer meus sapatos."]]),
+  pedro: crewNPC("pedro", "Príncipe Pedro", () => [["Príncipe Pedro", "Minha mãe governa o reino. A Mylena governa o meu coração. E a minha agenda, pelo jeito."]]),
+  gabriel: crewNPC("gabriel", "Gabriel, o Cartógrafo", () => [["Gabriel", ["A Andressa sabe tudo de todo mundo. Eu só sei onde fica cada lugar. Juntos, ninguém se perde.", "Casei com a mulher mais misteriosa de três reinos. Até hoje não sei o sobrenome inteiro dela."][Math.floor(Math.random() * 2)]]]),
+  juliaO: crewNPC("juliaO", "Júlia Oliveira, a Veterinária", () => [
+    ["Júlia Oliveira", ["Cachorro, gato, coruja, cavalo, até dragãozinho: se tem pata ou asa, eu cuido.", "O Vini diz que o Sul é o reino mais rico. Eu digo que é o mais feliz. E quem manda lá em casa sou eu.", "Hoje tem café com a Mylena e a Andressa. Fofoca de alto nível, com informação de segurança e quadro novo."][Math.floor(Math.random() * 3)]],
+  ]),
+  vini: crewNPC("vini", "Rei Vini do Sul", () => [["Rei Vini", ["Governo o Reino do Sul, mas quando venho a Cinzaluz eu só sou o marido da Júlia.", "Ouro a gente tem. Mas felicidade é ver a Júlia rindo com as amigas."][Math.floor(Math.random() * 2)]]]),
 });
 Object.assign(FRIENDS, {
   lucas: { fav: "hidromel", r80: ["vinho", 3] },
@@ -65,39 +214,55 @@ Object.assign(FRIENDS, {
   marcos: { fav: "carne", r80: ["escudo", 1] },
   andressa: { fav: "livro", r80: ["papiro", 3] },
   mylena: { fav: "flor", r80: ["m_retrato", 1] },
+  juliaO: { fav: "mel", r80: ["pocaoG", 2] },
 });
-Object.assign(PERSONALITIES, { lucas: "engracado", matheus: "gentil", marcos: "serio", andressa: "esperto", mylena: "engracado", malu: "gentil", coral: "orgulhoso", leon: "gentil" });
-ROMANCE.push("lucas", "andressa");
+Object.assign(PERSONALITIES, { lucas: "engracado", matheus: "gentil", marcos: "serio", andressa: "esperto", mylena: "engracado", malu: "gentil", julia: "orgulhoso", pedro: "gentil", gabriel: "sabio", juliaO: "gentil", vini: "aventureiro" });
+// Só o Lucas é solteiro.
+ROMANCE.push("lucas");
 
-/* ===================== LUGARES NA VILA ===================== */
+/* ===================== CASAS E LUGARES DE TRABALHO ===================== */
 
-const CREW_SPOTS = {
-  lucas: [14, 19],
-  matheus: [16, 32],
-  malu: [16, 34],
-  marcos: [36, 12],
-  coral: [38, 12],
-  andressa: [54, 9],
-  mylena: [22, 19],
-  leon: [23, 20],
+const BUILDING_EXTRA_STYLES = {
+  atelie: { roof: "#a83a6a", r2: "#c94a8b", wall: "#f6e6ee", beam: "#5a2a3a", sign: "flower", chim: 0, lantern: 1 },
+  clinica: { roof: "#2f7a5a", r2: "#3f9a6e", wall: "#eef2e6", beam: "#2a4a3a", sign: "paw", chim: 0 },
+  mansao: { roof: "#2a3a7a", r2: "#3a5aa8", wall: "#f2ecdc", beam: "#c9a03a", chim: 1, lantern: 1, stone: 1 },
+  sobrado: { roof: "#5a3a6a", r2: "#7a5a8a", wall: "#e8dcc8", beam: "#3a2a3a", chim: 1 },
+  casebre: { roof: "#a88a4a", r2: "#c9a85a", wall: "#a88a6a", beam: "#5a4a32", chim: 0 },
 };
-(function placeCrew() {
-  const z = ZONES.vila;
-  for (const [id, [x, y]] of Object.entries(CREW_SPOTS)) {
-    z.npcs[`${x},${y}`] = id;
-    z.map[y] = z.map[y].slice(0, x) + "N" + z.map[y].slice(x + 1);
-    z.npcList.push([x, y, id]);
+Object.assign(BUILDING_STYLES, BUILDING_EXTRA_STYLES);
+
+/** Casas da turma na vila (e os dois estabelecimentos novos). */
+const CREW_BUILDINGS = [
+  { id: "hLucas", style: "casebre", x: 21, y: 18, w: 4, h: 3, door: [22], name: "Quartinho do Lucas", home: ["lucas"] },
+  { id: "hMatheus", style: "casa2", x: 18, y: 42, w: 4, h: 3, door: [19], name: "Sítio do Matheus e da Malu", home: ["matheus", "malu"] },
+  { id: "hMarcos", style: "sobrado", x: 41, y: 9, w: 4, h: 3, door: [42], name: "Casa do General", home: ["marcos", "julia"] },
+  { id: "hAndressa", style: "sobrado", x: 47, y: 9, w: 4, h: 3, door: [48], name: "Casa da Andressa e do Gabriel", home: ["andressa", "gabriel"] },
+  { id: "atelie", style: "atelie", x: 30, y: 35, w: 4, h: 3, door: [31], name: "Ateliê da Mylena", home: ["mylena", "pedro"], work: "mylena" },
+  { id: "clinica", style: "clinica", x: 46, y: 30, w: 4, h: 3, door: [47], name: "Clínica Veterinária da Júlia", work: "juliaO" },
+  { id: "hJulia", style: "mansao", x: 23, y: 41, w: 5, h: 3, door: [25], name: "Mansão Oliveira", home: ["juliaO", "vini"] },
+];
+(function placeCrewBuildings() {
+  const z = ZONES.vila,
+    tw = z.town;
+  for (const b of CREW_BUILDINGS) {
+    for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) setTile("vila", x, y, "H");
+    for (const dx of b.door) {
+      setTile("vila", dx, b.y + b.h - 1, "D");
+      tw.doors[dx + "," + (b.y + b.h - 1)] = b;
+    }
+    tw.bld.push(b);
   }
 })();
-
-/* ===================== A TURMA SE REÚNE ===================== */
-
-/** Em dia de festival à noite, e a cada 3 dias no fim da tarde, os cinco se encontram na fonte. */
-function crewGathering() {
-  if (player.zone !== "vila") return false;
-  const h = currentHour();
-  return (festivalToday() && h >= 17 && h < 23) || (player.day % 3 === 1 && h >= 17 && h < 21);
+function crewHomeOf(id) {
+  return CREW_BUILDINGS.find((b) => (b.home || []).includes(id));
 }
+function doorOut(b) {
+  return [b.door[0], b.y + b.h];
+}
+
+/* ===================== ROTINA ===================== */
+
+const CREW_ALL = ["lucas", "matheus", "malu", "marcos", "julia", "andressa", "gabriel", "mylena", "pedro", "juliaO", "vini"];
 const CREW_GATHER_SPOTS = [
   [28, 22],
   [30, 22],
@@ -105,14 +270,239 @@ const CREW_GATHER_SPOTS = [
   [34, 22],
   [31, 17],
 ];
-function crewActorAt(x, y) {
-  if (!crewGathering()) return null;
-  const i = CREW_GATHER_SPOTS.findIndex(([a, b]) => a === x && b === y);
-  return i >= 0 ? CREW[i] : null;
+/** Em dia de festival à noite, e a cada 3 dias no fim da tarde, os cinco se encontram na fonte. */
+function crewGathering() {
+  const h = currentHour();
+  return (festivalToday() && h >= 17 && h < 23) || (player.day % 3 === 1 && h >= 17 && h < 21);
 }
+/** Café das amigas: Mylena, Andressa e Júlia na frente do Ateliê, à tarde. */
+function girlsCoffee() {
+  const h = currentHour();
+  return h >= 14.5 && h < 17;
+}
+/** Onde cada um deveria estar agora: [x, y] ou "home" (dentro de casa). */
+function crewTarget(id) {
+  const h = currentHour();
+  const home = crewHomeOf(id);
+  const out = home ? doorOut(home) : [31, 22];
+  const gi = CREW.indexOf(id);
+  if (gi >= 0 && crewGathering()) return CREW_GATHER_SPOTS[gi];
+  const atelie = doorOut(CREW_BUILDINGS.find((b) => b.id === "atelie"));
+  const coffee = { mylena: [atelie[0] - 1, atelie[1]], andressa: [atelie[0] + 1, atelie[1]], juliaO: [atelie[0], atelie[1] + 1] };
+  if (coffee[id] && girlsCoffee()) return coffee[id];
+  switch (id) {
+    case "lucas":
+      if (h >= 2 && h < 10) return "home";
+      if (h >= 18 || h < 2) return [16, 19]; // porta da taverna
+      return h < 14 ? [27, 25] : [37, 19]; // praça e mercado
+    case "matheus":
+      if (h < 5.5 || h >= 20) return "home";
+      return h < 17 ? [16, 34] : out;
+    case "malu":
+      if (h < 7 || h >= 20) return "home";
+      return h < 12 ? [16, 32] : h < 17 ? [30, 12] : out;
+    case "marcos":
+      if (h < 5 || h >= 21) return "home";
+      return h < 9 ? [12, 9] : h < 17 ? [33, 12] : [36, 21];
+    case "julia":
+      if (h < 8 || h >= 21) return "home";
+      return h < 16 ? [29, 13] : [35, 21];
+    case "andressa":
+      if (h < 7 || h >= 22) return "home";
+      return h < 17 ? [56, 9] : [44, 12];
+    case "gabriel":
+      if (h < 7 || h >= 22) return "home";
+      return h < 17 ? [52, 12] : [45, 12];
+    case "mylena":
+      if (h < 7 || h >= 22) return "home";
+      return h < 17 ? [atelie[0] + 2, atelie[1]] : [26, 22];
+    case "pedro":
+      if (h < 8 || h >= 22) return "home";
+      return h < 17 ? [31, 12] : [27, 22];
+    case "juliaO": {
+      if (h < 7 || h >= 21) return "home";
+      const cl = doorOut(CREW_BUILDINGS.find((b) => b.id === "clinica"));
+      return h < 17 ? [cl[0] + 1, cl[1]] : [38, 22];
+    }
+    case "vini":
+      if (!(festivalToday() || player.day % 7 === 6)) return "away";
+      if (h < 9 || h >= 21) return "home";
+      return h < 14 ? [30, 25] : [39, 22];
+  }
+  return out;
+}
+
+/** Um ator por pessoa: anda pelo caminho mais curto até onde a rotina manda. */
+function bfsPath(sx, sy, tx, ty) {
+  if (sx === tx && sy === ty) return [];
+  const key = (x, y) => x + "," + y;
+  const prev = new Map([[key(sx, sy), null]]);
+  const q = [[sx, sy]];
+  while (q.length) {
+    const [x, y] = q.shift();
+    if (x === tx && y === ty) break;
+    for (const [dx, dy] of DIRS4) {
+      const nx = x + dx,
+        ny = y + dy,
+        k = key(nx, ny);
+      if (prev.has(k)) continue;
+      if (!(nx === tx && ny === ty) && !walkable("vila", nx, ny)) continue;
+      prev.set(k, [x, y]);
+      q.push([nx, ny]);
+    }
+    if (prev.size > 4000) break;
+  }
+  if (!prev.has(key(tx, ty))) return null;
+  const path = [];
+  let cur = [tx, ty];
+  while (cur && !(cur[0] === sx && cur[1] === sy)) {
+    path.unshift(cur);
+    cur = prev.get(key(cur[0], cur[1]));
+  }
+  return path;
+}
+function crewInit() {
+  game.crewA = {};
+  for (const id of CREW_ALL) {
+    const tg = crewTarget(id);
+    const home = crewHomeOf(id);
+    const [x, y] = Array.isArray(tg) ? tg : home ? doorOut(home) : [31, 22];
+    game.crewA[id] = { id, x, y, rx: x, ry: y, dir: "down", path: [], inside: !Array.isArray(tg), tk: null, step: Math.random() * 0.3 };
+  }
+}
+function crewTick(dt) {
+  if (player.zone !== "vila" || game.mode === "title") return;
+  if (!game.crewA) crewInit();
+  for (const a of Object.values(game.crewA)) {
+    a.rx += (a.x - a.rx) * Math.min(1, dt * 7);
+    a.ry += (a.y - a.ry) * Math.min(1, dt * 7);
+    const tg = crewTarget(a.id);
+    const home = crewHomeOf(a.id);
+    const dest = Array.isArray(tg) ? tg : home ? doorOut(home) : null;
+    if (!dest) {
+      a.inside = true;
+      continue;
+    }
+    const k = dest.join(",");
+    if (a.inside && Array.isArray(tg)) {
+      // Sai de casa pela porta.
+      a.inside = false;
+      if (home) [a.x, a.y] = doorOut(home);
+      a.rx = a.x;
+      a.ry = a.y;
+    }
+    if (a.tk !== k) {
+      a.tk = k;
+      // Pulou muito tempo (dormiu, esperou): aparece direto no lugar.
+      const far = Math.abs(a.x - dest[0]) + Math.abs(a.y - dest[1]);
+      a.path = far > 45 ? null : bfsPath(a.x, a.y, dest[0], dest[1]);
+      if (!a.path) {
+        [a.x, a.y] = dest;
+        a.rx = a.x;
+        a.ry = a.y;
+        a.path = [];
+      }
+    }
+    if (!a.path.length) {
+      if (!Array.isArray(tg) && a.x === dest[0] && a.y === dest[1]) a.inside = true;
+      continue;
+    }
+    a.step -= dt * (game.timeSpeed || 1);
+    if (a.step > 0) continue;
+    a.step = 0.32;
+    const [nx, ny] = a.path[0];
+    if (nx === player.x && ny === player.y) continue;
+    if (Object.values(game.crewA).some((o) => o !== a && !o.inside && o.x === nx && o.y === ny) && a.path.length > 1) continue;
+    a.path.shift();
+    a.dir = nx > a.x ? "right" : nx < a.x ? "left" : ny > a.y ? "down" : "up";
+    a.x = nx;
+    a.y = ny;
+  }
+}
+function crewVisible(a) {
+  return a && !a.inside && player.zone === "vila";
+}
+function crewActorAt(x, y) {
+  if (player.zone !== "vila" || !game.crewA) return null;
+  const a = Object.values(game.crewA).find((q) => crewVisible(q) && q.x === x && q.y === y);
+  return a ? a.id : null;
+}
+/** A turma toda está reunida na fonte e você clicou num deles? */
+function crewAtGathering(x, y) {
+  return crewGathering() && CREW_GATHER_SPOTS.some(([a, b]) => a === x && b === y) && crewActorAt(x, y);
+}
+function crewSpot(id) {
+  const a = game.crewA && game.crewA[id];
+  return crewVisible(a) ? [a.x, a.y] : null;
+}
+const _npcSpotBase = npcSpot;
+npcSpot = function (id) {
+  if (CREW_ALL.includes(id)) return crewSpot(id);
+  return _npcSpotBase(id);
+};
+/** Porta de uma casa da turma: bate e quem estiver em casa atende. */
+function crewDoor(b) {
+  if (!b || !CREW_BUILDINGS.includes(b)) return false;
+  if (!game.crewA) crewInit();
+  if (b.work && !(b.home || []).length) {
+    const w = game.crewA[b.work];
+    const here = w && !w.inside && Math.abs(w.x - b.door[0]) + Math.abs(w.y - (b.y + b.h)) <= 2;
+    if (b.id === "clinica") {
+      if (!here) return say([["", `A clínica está fechada. A Júlia atende das 7h às 17h${girlsCoffee() ? " (agora ela está no café com as amigas, na frente do Ateliê)" : ""}.`]]), true;
+      return vetMenu(), true;
+    }
+  }
+  if (b.id === "atelie") {
+    const m = game.crewA.mylena;
+    const open = currentHour() >= 7 && currentHour() < 17;
+    if (open) return openShop("atelie"), true;
+  }
+  const atHome = (b.home || []).filter((id) => game.crewA[id] && game.crewA[id].inside && crewTarget(id) === "home");
+  if (!atHome.length) {
+    const who = (b.home || []).map((id) => crewName(id)).join(" e ");
+    say([["", `Toc, toc... Ninguém em casa. ${who} ${b.home.length > 1 ? "saíram" : "saiu"}.`]]);
+    return true;
+  }
+  const id = atHome[0];
+  const late = currentHour() >= 22 || currentHour() < 6;
+  say(
+    [
+      ["", "Toc, toc..."],
+      [crewName(id), late ? "*abre a porta de pijama* ...Sabe que horas são? Tá, entra rapidinho." : pickOne(["Oi! Entra, a casa é sua.", "Que surpresa boa! Quer um chá?", "Ah, é você! Pode entrar."])],
+    ],
+    () => {
+      game.pieAnchor = { x: b.door[0], y: b.y + b.h - 1 };
+      socialMenu(id);
+    },
+  );
+  return true;
+}
+/** Clínica da Júlia: cuidar dos mascotes e adotar. */
+function vetMenu() {
+  const pet = typeof activePet === "function" ? activePet() : null;
+  choice("Clínica Veterinária da Júlia", '"Bem-vindo! Aqui todo bicho é tratado como da família."', [
+    {
+      t: pet ? `Consulta para ${pet.name} (${withTax(15)} ouro)` : "Consulta (você não tem mascote)",
+      icon: "paw",
+      fn: () => {
+        if (!pet) return say([["Júlia Oliveira", "Sem bichinho? Passa no Abrigo dos Bichos, no mercado. Todos precisam de um lar!"]]);
+        if (player.gold < withTax(15)) return say([["Júlia Oliveira", "A consulta é 15 de ouro. Mas se for urgente, eu atendo e você me paga depois."]]);
+        payWithTax(15);
+        pet.love = Math.min(100, (pet.love || 0) + 30);
+        addFriendship("juliaO", 2);
+        saveGame();
+        say([["Júlia Oliveira", `${pet.name} está ótimo! Vacina em dia, pelo brilhando. Carinho do mascote +30.`]]);
+      },
+    },
+    { t: "Adotar um bichinho", icon: "heart", fn: () => petShelter() },
+    { t: "Conversar com a Júlia", icon: "chat", fn: () => socialMenu("juliaO") },
+    { t: "Sair", fn: null },
+  ]);
+}
+
 const _npcHiddenBase = npcHidden;
 npcHidden = function (id) {
-  if (CREW.includes(id) && crewGathering()) return true;
+  if (CREW_ALL.includes(id)) return true;
   return _npcHiddenBase(id);
 };
 const CREW_BANTER = [
@@ -150,25 +540,31 @@ function crewGroupMenu() {
   ]);
 }
 function crewDrawList(list, t) {
-  if (!crewGathering()) return;
-  CREW.forEach((id, i) => {
-    const [x, y] = CREW_GATHER_SPOTS[i];
-    const n = NPCS[id];
+  if (player.zone !== "vila" || !game.crewA) return;
+  const gather = crewGathering();
+  for (const a of Object.values(game.crewA)) {
+    if (!crewVisible(a)) continue;
+    const n = NPCS[a.id];
+    const moving = Math.abs(a.rx - a.x) + Math.abs(a.ry - a.y) > 0.05;
+    const i = CREW_ALL.indexOf(a.id);
+    let dir = a.dir;
+    if (!moving && gather && CREW.includes(a.id)) dir = a.x < 31 ? "right" : a.x > 31 ? "left" : "down";
+    if (!moving && Math.abs(a.x - player.x) + Math.abs(a.y - player.y) <= 2)
+      dir = Math.abs(player.x - a.x) >= Math.abs(player.y - a.y) ? (player.x > a.x ? "right" : "left") : player.y > a.y ? "down" : "up";
     list.push({
-      y,
+      y: a.ry,
       draw: () => {
-        const X = x * TILE,
-          Y = y * TILE + Math.abs(Math.sin(t * 3 + i)) * -1.5;
+        const X = a.rx * TILE,
+          Y = a.ry * TILE + (moving ? Math.abs(Math.sin(t * 12)) * -1.5 : Math.sin(t * 2 + i) * 0.5);
         ctx.fillStyle = "rgba(0,0,0,.22)";
         ctx.beginPath();
-        ctx.ellipse(X + 16, y * TILE + 30, 8, 3, 0, 0, 7);
+        ctx.ellipse(X + 16, a.ry * TILE + 30, 8, 3, 0, 0, 7);
         ctx.fill();
-        const dir = x < 31 ? "right" : x > 31 ? "left" : "down";
-        drawSprite(wizardRects(n.robe, n.hat, n.hair, null, dir), X, Y, 2, dir === "left");
-        if (Math.sin(t * 0.8 + i * 1.7) > 0.7) drawPixelIcon(["laugh", "chat", "heart", "note", "party"][i], X + 16, Y - 8, 2);
+        drawSprite(wizardRects(n.robe, n.hat, n.hair, null, dir, walkFrame(moving, t)), X, Y, 2, dir === "left");
+        if (!moving && Math.sin(t * 0.8 + i * 1.7) > 0.82) drawPixelIcon(["laugh", "chat", "heart", "note", "party", "smile"][i % 6], X + 16, Y - 8, 2);
       },
     });
-  });
+  }
 }
 
 /* ===================== PAPÉIS NA HISTÓRIA ===================== */
