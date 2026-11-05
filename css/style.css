@@ -1897,3 +1897,29 @@ body.mland #qpill {
   vertical-align: -3px;
   margin-right: 0.35em;
 }
+
+/* Minijogos do Simulador de Vida */
+#mini {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(88%, 30em);
+  display: none;
+  padding: 0.8em 1em;
+  text-align: center;
+  z-index: 30;
+}
+#mini h3 {
+  font-family: "Pixelify Sans", sans-serif;
+  color: var(--gold);
+  margin: 0 0 0.4em;
+}
+#mini .mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35em;
+}
+#mini button {
+  margin: 0;
+}

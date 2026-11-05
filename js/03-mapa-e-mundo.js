@@ -1334,6 +1334,7 @@ function drawTile(z, x, y, c, t) {
 
 function spawnMobs() {
   game.mobs = [];
+  if (lifeMode()) return; // Simulador de Vida: sem monstros.
   const z = ZONES[player.zone];
   if (!z.enemies.length || !z.spawn.length) return;
   const n = Math.round(
@@ -1441,6 +1442,7 @@ const CORRUPTED_ECHOES = {
   torre: "colosso",
 };
 function spawnEco() {
+  if (lifeMode()) return;
   const zid = player.zone,
     t = CORRUPTED_ECHOES[zid];
   if (!t || (player.ecos || []).includes(t)) return;

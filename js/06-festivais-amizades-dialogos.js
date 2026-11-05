@@ -854,6 +854,10 @@ function castleMenu() {
         },
       },
       {
+        t: `Turno na Guarda Real (4h) · ${guardRank().n}`,
+        fn: guardJob,
+      },
+      {
         t: player.spouse === "rainha" ? "Ver sua esposa, a Rainha ♥" : "Conversar com a Rainha (amizade)",
         fn: () => socialMenu("rainha"),
       },
@@ -985,6 +989,7 @@ function restMenu() {
         player.day++;
         player.hp = maxHp();
         player.mp = maxMp();
+        player.energy = 100;
         player.food = Math.max(0, player.food - 20);
         player.water = Math.max(0, player.water - 20);
         player.checkpoint = {
@@ -1014,6 +1019,7 @@ function restMenu() {
       t: "Guarda-roupa (trocar visual)",
       fn: () => showCreate("wardrobe"),
     },
+    ...lifeHomeItems(),
     {
       t: "Cochilar 2 horas (recupera metade)",
       fn: () => {
@@ -1022,9 +1028,10 @@ function restMenu() {
         player.mp = Math.min(maxMp(), player.mp + Math.round(maxMp() * 0.5));
         player.food = Math.max(0, player.food - 6);
         player.water = Math.max(0, player.water - 6);
+        addNeed("energy", 35);
         game.fade = 1;
         saveGame();
-        toast("Você cochila. HP e MP +50%. Jogo salvo.");
+        toast(lifeMode() ? "Você cochila. Energia +35. Jogo salvo." : "Você cochila. HP e MP +50%. Jogo salvo.");
       },
     },
     {

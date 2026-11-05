@@ -362,6 +362,10 @@ function showBattleScreen() {
   playSound(440, 0.18);
 }
 function startBattle(type, mob, opts = {}) {
+  if (lifeMode()) {
+    say([["", "Sem runas, sem batalha. No Simulador de Vida, a vida já é luta suficiente."]]);
+    return;
+  }
   const { enemy, night } = createEnemy(type);
   battle = createBattleState(type, mob, enemy, night, opts.tut);
   if (type === "silenciador") battle.e.weakNow = pickBossWeak(null);

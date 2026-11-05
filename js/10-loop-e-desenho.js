@@ -197,6 +197,7 @@ function update(dt) {
       player.water = Math.max(0, player.water - dt * 0.28 * difficulty().need * wm);
     }
     needsTick(dt);
+    lifeNeedsTick(dt);
     const nn = isNight();
     if (game.wasNight !== undefined && nn !== game.wasNight) {
       if (nn) {
@@ -2823,7 +2824,10 @@ function drawWorld(t) {
       ctx.beginPath();
       ctx.ellipse(player.rx * TILE + 16, player.ry * TILE + 30, 9, 3, 0, 0, 7);
       ctx.fill();
-      const glow = (player.look && player.look.staffc) || RUNES[player.runes[player.runes.length - 1]].cor;
+      // No Simulador de Vida não tem cajado: é só um morador.
+      const glow = lifeMode()
+        ? null
+        : (player.look && player.look.staffc) || RUNES[player.runes[player.runes.length - 1]].cor;
       if (player.riding) {
         const X = player.rx * TILE,
           Y = player.ry * TILE,

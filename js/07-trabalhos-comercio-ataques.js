@@ -89,7 +89,8 @@ function genJobs() {
 function guardiansFreed() {
   return player.guards.filter((z) => ["bosque", "pantano", "picos"].includes(z)).length;
 }
-function openJobs() {
+function openJobs(direct) {
+  if (lifeMode() && !direct) return lifeJobsMenu();
   if (!player.board || player.board.day !== player.day)
     player.board = {
       day: player.day,
@@ -486,6 +487,7 @@ function spawnRaidWave(n, leader) {
   }
 }
 function startRaid() {
+  if (lifeMode()) return;
   game.raid = {
     wave: 1,
     waves: 2,
@@ -930,7 +932,7 @@ function drawMinimap(big, t) {
       ctx.fillRect(ox + (x + 0.5) * s - r, oy + (y + 0.5) * s - r, r * 2, r * 2);
     }
   }
-  {
+  if (!lifeMode()) {
     const q = questTarget();
     const qr = Math.max(3, r * 1.8);
     ctx.save();

@@ -427,6 +427,19 @@ byId("btnNew").onclick = () => {
   playSound(440, 0.1, "sine");
   showCreate("new");
 };
+byId("btnLife").onclick = () => {
+  goFull();
+  player = newPlayer();
+  player.mode = "vida";
+  // Morador comum: sem chapéu de mago (dá para escolher outro na criação).
+  player.look.hat = "nenhum";
+  player.look.outfit = "tunica";
+  game.seenArr = {};
+  game.mm = {};
+  clearSave();
+  playSound(523, 0.1, "sine");
+  showCreate("new");
+};
 byId("btnCont").onclick = () => {
   goFull();
   const s = loadSave();

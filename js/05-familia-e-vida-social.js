@@ -654,7 +654,8 @@ function renderCreate() {
       player.diff = game.draftDiff || "normal";
       byId("create").style.display = "none";
       playSound(784, 0.15, "sine");
-      showStory();
+      if (lifeMode()) startLifeMode();
+      else showStory();
     } else {
       byId("create").style.display = "none";
       game.mode = "world";
@@ -1382,6 +1383,7 @@ function drink(amount, cost, nm) {
     return;
   }
   payWithTax(cost);
+  addNeed("fun", 15);
   player.drunk = Math.min(110, (player.drunk || 0) + amount);
   player.water = Math.min(100, player.water + 15);
   playSound(330, 0.1, "triangle");
@@ -1665,6 +1667,7 @@ function goOnDate(id, d) {
   if (d.cost) payWithTax(d.cost);
   player.famDay[dayKey] = player.day;
   d.fx();
+  addNeed("fun", 30);
   addFriendship(id, d.rel);
   player.clock = Math.min(1439, player.clock + 90);
   game.fade = 1;
@@ -1705,6 +1708,7 @@ function finishAffection() {
   if (player.famDay[dayKey] !== player.day) {
     player.famDay[dayKey] = player.day;
     if (a.target.id) addFriendship(a.target.id, action.rel);
+    addNeed("fun", 8);
     if (a.key === "dance") player.mp = maxMp();
   }
   saveGame();

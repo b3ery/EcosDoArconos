@@ -4068,6 +4068,11 @@ const NPCS = {
     robe: "#5b3fa8",
     hat: "#3a2878",
     talk() {
+      if (lifeMode())
+        return [
+          ["Arquimaga Odelia", "Magia? Ah, isso é coisa de livro antigo. Hoje eu só cuido do meu jardim e dou conselhos."],
+          ["Arquimaga Odelia", "Conselho do dia: trabalho dá ouro, mas amigos dão sentido. Não esqueça de dormir e de se divertir."],
+        ];
       if (player.guards.includes("bosque")) player.flags.r2 = true;
       if (player.guards.includes("pantano")) player.flags.r3 = true;
       if (player.guards.includes("picos")) player.flags.r4 = true;
