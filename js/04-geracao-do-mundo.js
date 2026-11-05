@@ -4087,10 +4087,12 @@ const NPCS = {
         2: [
           `Você trouxe ${RUNE_WITH_ARTICLE[o[1]]} de volta! Sinto o mundo respirar.`,
           `A leste, no Pântano das Brumas, a Serpente guarda a Runa ${RUNE_OF[o[2]]}. Ela é fraca contra ${RUNE_WITH_ARTICLE[o[1]]}.`,
+          "Mas antes... essa névoa tem cheiro de mar. Vá ao Porto Brisamar e fale com o Capitão Bento. Pegue a carruagem no estábulo.",
         ],
         3: [
           `${RUNE_WITH_ARTICLE[o[2]][0].toUpperCase() + RUNE_WITH_ARTICLE[o[2]].slice(1)} canta outra vez...`,
           `Ao norte ficam os Picos Uivantes. O Grifo de Pedra guarda a Runa ${RUNE_OF[o[3]]}, mas não resiste a ${RUNE_WITH_ARTICLE[o[2]]}.`,
+          "Antes de subir, passe em Pedravale. A Anciã Berta sabe algo sobre o meu irmão... digo, sobre Vesper.",
         ],
         4: [
           "As quatro runas... a barreira ao sul se desfez.",
@@ -4292,6 +4294,19 @@ const NPCS = {
     robe: "#2a3a6a",
     hat: "#1a1a2a",
     talk() {
+      if (!lifeMode() && player.flags.r2 && !player.flags.porto1) {
+        player.flags.porto1 = true;
+        saveGame();
+        return [
+          ["Capitão Bento", "Você é quem libertou o Ent? Então escuta. Essa névoa que cobre o pântano... ela veio do mar."],
+          ["Capitão Bento", "Meu avô era faroleiro. Ele contava de dois irmãos magos que brincavam aqui no cais. Um deles, Vesper, partiu num barco e voltou diferente."],
+          ["Capitão Bento", "O farol lembra de tudo que viu. Suba lá à noite e acenda a lanterna. Talvez ele mostre o que você precisa saber."],
+        ];
+      }
+      if (player.flags.porto1 && !player.flags.porto2)
+        return [["Capitão Bento", "O farol fica no fim do cais. Só funciona à noite, depois das 19h."]];
+      if (player.flags.porto2)
+        return [["Capitão Bento", "Dois irmãos que brigaram... O mar já viu muita família se separar e se reencontrar. Vá em frente."]];
       return [
         [
           "Capitão Bento",
@@ -4363,6 +4378,24 @@ const NPCS = {
     robe: "#7a6a8a",
     hair: "#e8e4dc",
     talk() {
+      if (!lifeMode() && player.flags.r3 && !player.flags.serra1) {
+        player.flags.serra1 = true;
+        saveGame();
+        return [
+          ["Anciã Berta", "Duas runas livres... Então é você. Sente aqui, criança. Vou contar o que Pedravale esconde."],
+          ["Anciã Berta", "Trezentos anos atrás, um mago chamado Vesper subiu esta serra e pediu aos anões um cajado capaz de trancar a magia."],
+          ["Anciã Berta", "Os anões forjaram, mas guardaram o molde. Para reabri-lo, precisamos de um Fragmento Arcano da Mina de Cristal. Traga um à Forja Anã."],
+        ];
+      }
+      if (player.flags.serra1 && !player.flags.serra3)
+        return [
+          [
+            "Anciã Berta",
+            itemCount("fragmento") ? "Você achou o fragmento! Leve à Forja Anã, ali no começo da vila." : "A Mina de Cristal fica no alto da vila. Procure o cristal que canta.",
+          ],
+        ];
+      if (player.flags.serra3)
+        return [["Anciã Berta", "Ele se trancou junto com a magia. Às vezes a gente faz isso com o que mais ama, criança."]];
       return [
         [
           "Anciã Berta",

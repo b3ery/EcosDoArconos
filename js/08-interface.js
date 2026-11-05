@@ -300,6 +300,16 @@ function npcPos(id) {
   for (const [x, y, n] of ZONES.vila.npcList) if (n === id) return [x, y];
   return [16, 12];
 }
+/** Posição de um morador fixo em qualquer vila (Porto, Pedravale...). */
+function zoneNpcPos(zone, id) {
+  for (const [x, y, n] of ZONES[zone].npcList || []) if (n === id) return [x, y];
+  const a = ZONES[zone].town.arrive;
+  return [a[0], a[1]];
+}
+function zoneDoorPos(zone, name) {
+  const d = findBuilding(zone, name);
+  return d ? [d.x, d.y + 1] : ZONES[zone].town.arrive;
+}
 const STEPS = [
   {
     id: "treino",
@@ -342,6 +352,25 @@ const STEPS = [
     done: () => player.flags.r2,
   },
   {
+    id: "porto1",
+    t: "Vá ao Porto Brisamar e fale com o Capitão Bento",
+    zone: "porto",
+    pos: () => {
+      const p = zoneNpcPos("porto", "capitao");
+      return [p[0], p[1] + 1];
+    },
+    d: "A névoa do pântano veio do mar. Pegue a carruagem no estábulo de Cinzaluz até o Porto Brisamar. O Capitão Bento viu Vesper partir de lá, anos atrás.",
+    done: () => player.flags.porto1,
+  },
+  {
+    id: "porto2",
+    t: "Acenda o Farol de Brisamar à noite",
+    zone: "porto",
+    pos: () => zoneDoorPos("porto", "Farol de Brisamar"),
+    d: "O farol só mostra o que guarda depois que escurece (a partir das 19h). Entre no farol à noite. Se precisar, espere com a tecla H.",
+    done: () => player.flags.porto2,
+  },
+  {
     id: "serp",
     t: "Liberte a Serpente de Névoa",
     zone: "pantano",
@@ -361,6 +390,33 @@ const STEPS = [
     pos: () => npcPos("odelia"),
     d: "Volte à vila e fale com a Arquimaga Odelia.",
     done: () => player.flags.r3,
+  },
+  {
+    id: "serra1",
+    t: "Vá a Pedravale e fale com a Anciã Berta",
+    zone: "serra",
+    pos: () => {
+      const p = zoneNpcPos("serra", "ancia");
+      return [p[0], p[1] + 1];
+    },
+    d: "Os anões de Pedravale forjaram algo para Vesper. Pegue a carruagem até a Vila da Serra e procure a Anciã Berta.",
+    done: () => player.flags.serra1,
+  },
+  {
+    id: "serra2",
+    t: "Ache um Fragmento Arcano na Mina de Cristal",
+    zone: "serra",
+    pos: () => zoneDoorPos("serra", "Mina de Cristal"),
+    d: "A Anciã Berta precisa de um Fragmento Arcano para reabrir o molde de Vesper. Entre na Mina de Cristal: a sorte melhora com a história em jogo.",
+    done: () => player.flags.serra2 || itemCount("fragmento") > 0,
+  },
+  {
+    id: "serra3",
+    t: "Leve o fragmento à Forja Anã",
+    zone: "serra",
+    pos: () => zoneDoorPos("serra", "Forja Anã"),
+    d: "Entre na Forja Anã com o Fragmento Arcano. Os anões vão reabrir o molde do cajado de Vesper.",
+    done: () => player.flags.serra3,
   },
   {
     id: "grif",
@@ -438,6 +494,15 @@ function route(zone, pos) {
       y: pos[1],
       hop: null,
     };
+  // Porto e Pedravale ficam longe: o caminho é a carruagem do estábulo.
+  if (ZONES[zone].town && zone !== "vila" && (player.zone === "vila" || ZONES[player.zone].town)) {
+    if (player.zone === "vila") {
+      const c = npcPos("cocheiro");
+      return { x: c[0], y: c[1] + 1, hop: `${ZONES[zone].nome} (carruagem)` };
+    }
+    const a = ZONES[player.zone].town.arrive;
+    return { x: a[0], y: a[1], hop: `${ZONES[zone].nome} (carruagem)` };
+  }
   if (player.zone === "casa")
     return {
       x: 6,

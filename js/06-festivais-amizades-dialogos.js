@@ -233,6 +233,7 @@ const RESIDENT = [
 ];
 function bldAction(b) {
   if (!b) return;
+  if (storyBuilding(b)) return;
   if (sleepTime() && !festivalToday() && CLOSED_STYLES.has(b.style)) {
     say([["", `${b.name || "A loja"} está fechada. Todos foram dormir. Abre às 6h.`]]);
     return;
@@ -2993,4 +2994,70 @@ function doWork(id) {
     [nm, "Bom trabalho! Volte amanhã se quiser mais."],
   ]);
   saveGame();
+}
+
+
+/* ===================== CAPÍTULOS NAS OUTRAS VILAS ===================== */
+
+/** Recompensa comum dos capítulos: XP, ouro e um item. */
+function chapterReward(xp, gold, item) {
+  gainXP(xp);
+  player.gold += gold;
+  if (item) addItem(item);
+  saveGame();
+  return `+${xp} XP, +${gold} ouro${item ? ` e ${ITEMS[item].nome}` : ""}.`;
+}
+
+/** Porto Brisamar e Pedravale: prédios que fazem parte da história. */
+function storyBuilding(b) {
+  if (lifeMode()) return false;
+  // Capítulo do Porto: o Farol que Lembra.
+  if (b.name === "Farol de Brisamar" && player.flags.porto1 && !player.flags.porto2) {
+    if (!isNight()) {
+      say([["", "O farol está apagado. O Capitão disse que ele só mostra o que guarda depois que escurece. Volte à noite (tecla H espera)."]]);
+      return true;
+    }
+    player.flags.porto2 = true;
+    game.flash = 1;
+    playSound(523, 0.4, "sine");
+    say([
+      ["", "Você sobe os degraus e acende a grande lanterna. A luz varre o mar... e a névoa forma duas figuras na areia."],
+      ["Odelia (eco)", "Vesper! Olha, o farol acendeu sozinho! Faz um pedido!"],
+      ["Vesper (eco)", "Eu peço que a Canção nunca acabe. E que a gente nunca brigue."],
+      ["Odelia (eco)", "Bobo. Irmãos brigam. Depois fazem as pazes. É a regra."],
+      ["", "As figuras se desfazem. Eram crianças. Eram Odelia e Vesper, há trezentos anos."],
+      ["Capitão Bento", "Viu? Meu avô dizia que o farol lembra de tudo que viu. Tome, isto estava guardado lá em cima."],
+      ["", chapterReward(70, 80, "amu2") + " Capítulo do Porto concluído!"],
+    ]);
+    return true;
+  }
+  // Capítulo de Pedravale: a Forja do Irmão.
+  if (b.name === "Mina de Cristal" && player.flags.serra1 && !player.flags.serra2 && !itemCount("fragmento")) {
+    player.flags.serra2 = true;
+    addItem("fragmento");
+    player.clock = Math.min(1439, player.clock + 120);
+    game.fade = 1;
+    saveGame();
+    say([
+      ["", "Lá no fundo da mina, um cristal pulsa no ritmo de uma canção que você quase reconhece."],
+      ["", "Você encontrou um Fragmento Arcano! Leve à Forja Anã."],
+    ]);
+    return true;
+  }
+  if (b.name === "Forja Anã" && player.flags.serra1 && !player.flags.serra3 && itemCount("fragmento")) {
+    removeItem("fragmento");
+    player.flags.serra3 = true;
+    game.flash = 1;
+    playSound(392, 0.3, "square");
+    say([
+      ["Anciã Berta", "Os anões guardaram o molde por trezentos anos. Ninguém tinha coragem de reabri-lo."],
+      ["", "O fragmento derrete no molde. Gravadas no metal, aparecem palavras numa letra apertada:"],
+      ["", '"Para proteger a Canção, eu a guardo. Para proteger Odelia, eu me guardo junto. — V."'],
+      ["Anciã Berta", "Ele não fez o cajado para destruir a magia. Fez para trancá-la... e se trancou junto. Leve esta lembrança da forja."],
+      ["", chapterReward(90, 120, "amu3") + " Capítulo de Pedravale concluído!"],
+      ["", "Agora vá aos Picos Uivantes libertar o Grifo de Pedra."],
+    ]);
+    return true;
+  }
+  return false;
 }

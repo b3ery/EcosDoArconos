@@ -202,6 +202,8 @@ Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que
 |:---:|:---|
 | **I** | O aprendiz desperta em **Cinzaluz** ouvindo o eco de uma runa. A Arquimaga **Odelia** o guia. |
 | **II** | Os **Guardiões** (Ent, Serpente e Grifo) guardam as runas aprisionadas. Cada um libertado devolve um elemento. |
+| **II·a** | **O Farol que Lembra** (Porto Brisamar): o Capitão Bento conta que a névoa veio do mar. Aceso à noite, o farol mostra Odelia e Vesper crianças, há trezentos anos. |
+| **II·b** | **A Forja do Irmão** (Pedravale): a Anciã Berta revela o molde do cajado que Vesper encomendou aos anões. Um Fragmento Arcano da mina reabre o molde e mostra a inscrição dele. |
 | **III** | Páginas do **diário de Vesper**, decifradas pelo **Professor Bruno Honda**, revelam quem ele era antes de se perder no Silêncio. |
 | **IV** | Na **Torre do Silêncio**, um eco do passado mostra a última discussão dos irmãos. |
 | **V** | No confronto final, o aprendiz lê as palavras do próprio Vesper e o liberta. **Epílogo:** os irmãos se reencontram. |
@@ -314,7 +316,11 @@ São **6 runas** e **27 feitiços** formados por combinações de 1 ou 2 runas:
 
 ## 🏡 Simulador de Vida
 
-No título, além do **modo História**, tem o botão **Simulador de Vida**: sem runas e sem batalhas, só a vida em Cinzaluz.
+No título, além do **modo História**, tem o botão **Simulador de Vida**: sem runas e sem batalhas da história, só a vida medieval.
+
+- 🎂 **Idade:** cada dia do jogo é um ano. Você começa com 18 e envelhece (Jovem, Adulto, Meia-idade, Idoso). Depois dos 70 a vida pode acabar: um filho adulto herda a casa e o ouro (menos o imposto sobre a herança) e você continua jogando com ele.
+- 👑 **Reinos:** Cinzaluz é do **Reino de Aurélia**, o Porto é do **Principado das Marés** e Pedravale dos **Clãs de Pedravale**. As relações mudam todo dia (tecla **K**).
+- ⚔️ **Guerras:** relações muito baixas viram guerra. Fronteira fechada (só com contrabandista, preço x3), imposto de guerra de 8%, saques à feira, Guarda ganhando 50% a mais e alistamento no exército (paga bem, mas você pode voltar ferido). Guerras acabam em tratados de paz.
 
 | Necessidade | Como cuidar |
 |:---|:---|
@@ -323,11 +329,35 @@ No título, além do **modo História**, tem o botão **Simulador de Vida**: sem
 | 🚿 Higiene | Tomar banho em casa |
 | 🎉 Diversão | Taverna, encontros, carinhos e festivais |
 
-Necessidades baixas diminuem o pagamento. Os trabalhos ficam no **Quadro de Trabalhos** da praça:
+Necessidades baixas diminuem o pagamento.
 
-- 🛒 **Atender na feira:** os clientes pedem um produto e você tem poucos segundos para entregar o certo.
-- 🏪 **Ter sua própria tendinha:** compre a licença, escolha o produto e o preço (de barato a abusivo) e anuncie na hora certa para vender. Paga imposto sobre as vendas.
-- 🛡️ **Guarda Real:** no portão do castelo, deixe entrar só quem mostra o selo do dia. Bons turnos dão promoção (Recruta → Soldado → Sargento → Capitão). Também funciona no modo História.
+## 🔨 Profissões (nos dois modos)
+
+No **Quadro de Trabalhos** de cada vila você escolhe uma profissão. O turno dura 4 horas do jogo e é feito **no mapa**: andando, apertando **E** e entregando. Uma seta mostra o próximo passo e o pagamento sai a cada entrega.
+
+| Profissão | O que você faz |
+|:---|:---|
+| 🪓 **Lenhador** | Corta árvores (E várias vezes) e leva as toras à marcenaria, serraria ou estaleiro |
+| 🌾 **Fazendeiro** | Colhe o trigo da plantação e leva os feixes ao moinho |
+| ⛏️ **Minerador** | Em Pedravale, quebra pedras e leva o minério à Mina de Cristal |
+| 🎣 **Pescador** | Pesca no rio ou no mar e entrega na peixaria (a peixaria empresta a vara) |
+| 📦 **Carregador** | Pega caixas no armazém e entrega nas casas e lojas. Entrega rápida dá gorjeta |
+| 🛡️ **Guarda Real** | Patrulha os pontos marcados e prende ladrões. Patentes: Recruta, Soldado, Sargento e Capitão |
+| 🛒 **Feirante** | Os clientes andam até você. Atenda antes que desistam |
+| 🏪 **Tendinha própria** | Compre a licença, escolha produto e preço e venda para os clientes. Paga imposto sobre as vendas |
+
+Árvores, trigo e pedras voltam no dia seguinte.
+
+## ⏯️ Controle do tempo
+
+| Tecla | O que faz |
+|:---:|:---|
+| **P** | Pausa o jogo |
+| **T** | Muda a velocidade do tempo: 1x, 2x, 4x e 8x |
+| **H** | Espera algumas horas (até o meio-dia, o anoitecer ou o amanhecer) |
+| **K** | Reinos e guerras (Simulador de Vida) |
+
+Os mesmos controles ficam nos botões à esquerda da tela.
 
 ## 💰 Imposto Real
 
