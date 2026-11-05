@@ -358,6 +358,9 @@ No título, além do **modo História**, tem o botão **Simulador de Vida**: sem
 - 💬 **Interações:** piada, conselho, fofoca, convite para beber, empréstimo, discussão, desculpas, terminar namoro e divórcio.
 - 🛁 **Móveis úteis:** banheira (higiene), mesa de xadrez (diversão), fogão a lenha (cozinhar ensopado), mesa (refeição em família) e mais.
 - 🎪 **Vila cheia de vida:** mais moradores nas ruas e um acontecimento por dia (casamentos, artistas de rua, procissões, incêndios, ladrões...).
+- 🗺️ **Reinos vizinhos de verdade:** saindo de Cinzaluz pelo **leste** você chega a pé ao **Porto Brisamar** (Principado das Marés), e pelo **norte** a **Pedravale** (Clãs de Pedravale). A caminhada leva 2 horas, com aviso de fronteira; em tempo de guerra só passa com contrabandista.
+- 🌲 **Floresta Grande** (saída **oeste**): uma mata enorme com **lobos, javalis e ursos** que atacam quem chega perto e **cervos** que fogem. Lute e cace com **E no verde do medidor**; os animais deixam carne e couro. Se a vida acabar, o Guarda-Florestal te leva ao hospital.
+- 🚫 **Sem magia:** no Simulador não há runas, cajado, grimório, páginas do diário, Academia nem Guardiões.
 - ⚔️ **Guerras:** relações muito baixas viram guerra. Fronteira fechada (só com contrabandista, preço x3), imposto de guerra de 8%, saques à feira, Guarda ganhando 50% a mais e alistamento no exército (paga bem, mas você pode voltar ferido). Guerras acabam em tratados de paz.
 
 | Necessidade | Como cuidar |

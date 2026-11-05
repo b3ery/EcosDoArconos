@@ -1522,6 +1522,8 @@ const GUIDE_SECTIONS = [
       ["Guarda Real", "Patrulha na vila e prisão de ladrões. Patentes: Recruta, Soldado, Sargento e Capitão. Vale nos dois modos."],
       ["Idade", "Cada dia é um ano. Você começa com 18. Depois dos 70 a vida pode acabar: um filho adulto herda e você continua com ele."],
       ["Reinos", "Cinzaluz é do Reino de Aurélia, o Porto das Marés e Pedravale dos Clãs. Tecla K mostra as relações."],
+      ["Saídas da vila", "Leste: Porto Brisamar (Marés). Norte: Pedravale (Clãs). Oeste: Floresta Grande. A pé leva 2h; na guerra, só com contrabandista."],
+      ["Floresta Grande", "Lobos, javalis e ursos atacam; cervos fogem. Lute com E no verde do medidor. Animais derrotados deixam carne e couro."],
       ["Casas", "Casas sem dono nas três vilas estão à venda. Compre, mude-se, alugue as outras ou venda."],
       ["Coletor Real", "Todo dia corre o imposto da casa e dos móveis. Um coletor do palácio vem até você cobrar."],
       ["Rei ou Rainha", "Casando com a Rainha você governa Aurélia: imposto do reino, festas reais, guerra e paz (tecla K)."],

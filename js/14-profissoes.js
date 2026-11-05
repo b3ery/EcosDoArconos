@@ -389,7 +389,7 @@ function hitQuality() {
   if (p > 0.24 && p < 0.76) return 1;
   return 0;
 }
-const HIT_VERBS = ["Cortar", "Colher", "Quebrar", "Minerar"];
+const HIT_VERBS = ["Cortar", "Colher", "Quebrar", "Minerar", "Lutar", "Caçar"];
 function hitTargetActive() {
   if (game.mode !== "world" || game.dialog) return false;
   const tg = findTarget();
