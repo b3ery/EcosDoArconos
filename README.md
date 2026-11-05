@@ -141,13 +141,14 @@ Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que
 
 ---
 
-## 🍻 A Turma de Cinzaluz
+## 🍻 A Turma de Cinzaluz: os Alcoólatras Anônimos
 
 Os criadores do jogo viraram personagens importantes da história, com seus parceiros. Cada um tem **casa, trabalho e rotina**: sai de casa de manhã, vai para o seu estabelecimento, anda pela vila e volta à noite. Bata na porta da casa deles para visitar.
 
 - Os cinco se encontram na **fonte da praça** em dia de festival à noite e a cada 3 dias no fim da tarde.
 - **Mylena, Andressa e Júlia** tomam café na frente do **Ateliê** todo dia à tarde (14h30 às 17h).
 - O **Lucas** dorme até as 10h, passa a tarde na praça e a noite na porta da taverna.
+- **Os Alcoólatras Anônimos** (Lucas, Matheus, Marcos, Andressa, Mylena e Júlia) têm **reunião semanal na Taverna Javali Dourado** (a cada 7 dias, das 19h às 23h). Sente com o grupo, pague uma rodada, leia a ata ou desafie o Marcos na queda de braço.
 
 <div align="center">
 
@@ -431,7 +432,7 @@ Na **alfaiataria e no salão** tem um **espelho**: o boneco já veste a peça en
 
 ## 🗨️ Mais de 100 interações (nos dois modos)
 
-Clique numa pessoa → **Interações…** abre um painel estilo The Sims com **120 ações** em 8 categorias: **Amigável, Engraçado, Conversa, Atividades, Ajudar, Romântico, Malvado e Fazer as pazes**. Cada pessoa reage conforme a **personalidade** (gentil, engraçado, tímido, orgulhoso...) e a amizade. Algumas custam ouro ou tempo, as malvadas derrubam a **reputação**, e as românticas mais fortes só aparecem para quem namora ou é casado. Cada ação vale uma vez por dia com cada pessoa.
+Clique numa pessoa → **Interações…** abre o menu em pizza com **152 ações** em 9 categorias: **Amigável, Engraçado, Conversa, Atividades, Na taverna, Ajudar, Romântico, Malvado e Fazer as pazes**. Cada pessoa reage conforme a **personalidade** (gentil, engraçado, tímido, orgulhoso...) e a amizade. Algumas custam ouro ou tempo, as malvadas derrubam a **reputação**, e as românticas mais fortes só aparecem para quem namora ou é casado. Cada ação vale uma vez por dia com cada pessoa.
 
 ## 💘 Namorar qualquer pessoa (nos dois modos)
 
@@ -509,6 +510,21 @@ Necessidades baixas diminuem o pagamento.
 - **Quintal:** porta verde no fundo da casa. Tem horta para colher, poço, árvores e banco para relaxar.
 - **Andar de cima:** escada no canto. Cada andar tem seus próprios móveis (decore com R).
 - **Nascimento:** quando nasce um bebê aparece **"Parabéns! É um menino!"** ou **"É uma menina!"**, com confete, e depois você escolhe o nome.
+
+## 💼 20 carreiras (Simulador de Vida)
+
+No Quadro de Trabalhos abre o painel de **Carreiras**. Cada uma tem 5 cargos (**Aprendiz → Ajudante → Oficial → Mestre → Lenda**) e cargo maior paga mais (até 230%).
+
+| Tipo | Carreiras |
+|---|---|
+| Coleta e entrega | Lenhador, Fazendeiro, Minerador, Pescador, Carregador |
+| Rua | Guarda Real, Carteiro, Acendedor de Lampiões, Enfermeiro |
+| Balcão (clientes vêm até você) | Feirante, Taverneiro |
+| Oficina (medidor de força na porta) | Padeiro, Ferreiro, Costureiro, Cozinheiro, Escriba, Boticário, Pintor, Marceneiro, Professor |
+
+## 📜 Pedidos
+
+29 pedidos de moradores e da turma (um de cada Alcoólatra Anônimo), com itens das lojas e da mina. Aparecem no menu da pessoa e em Missões (Q).
 
 ## 🔨 Profissões (nos dois modos)
 

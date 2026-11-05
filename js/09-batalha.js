@@ -378,7 +378,7 @@ function startBattle(type, mob, opts = {}) {
   battle = createBattleState(type, mob, enemy, night, opts.tut);
   if (type === "silenciador") battle.e.weakNow = pickBossWeak(null);
   if (type === "silenciador" && crewReady())
-    setTimeout(() => battle && battleLog("Lucas, Matheus, Marcos, Andressa e Mylena chegam correndo: a turma de Cinzaluz luta com você! (+25% de dano)"), 400);
+    setTimeout(() => battle && battleLog("Lucas, Matheus, Marcos, Andressa, Mylena e Júlia chegam correndo: os Alcoólatras Anônimos lutam com você! (+25% de dano)"), 400);
   if (!player.best[type])
     player.best[type] = {
       w: [],

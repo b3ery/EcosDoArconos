@@ -4511,3 +4511,69 @@ canvas.sv-pv {
 .ip-bar .pxi {
   margin: 0;
 }
+
+/* ===================== CAIXA DE ESCOLHAS (menus sem pizza) ===================== */
+#choice {
+  padding: 0 1em 0.9em;
+  border: 3px solid #8a5a2e !important;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(242, 193, 78, 0.1), transparent 60%),
+    linear-gradient(#241a38, #150f22) !important;
+  box-shadow:
+    inset 0 0 0 2px #2a1a0c,
+    0 14px 36px rgba(0, 0, 0, 0.6) !important;
+  max-height: 86%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+#choice h3 {
+  margin: 0 -1em 0.4em !important;
+  padding: 0.45em 1em;
+  color: #ffe6a8 !important;
+  text-shadow: 0 2px 0 #2a1a0c;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0 3px, transparent 3px 9px),
+    linear-gradient(#7a4e28, #4e3018);
+  border-bottom: 3px solid #2a1a0c;
+}
+#choice p {
+  color: #e9defa;
+  line-height: 1.25;
+}
+#choice .btns button {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  text-align: left;
+  padding: 0.4em 0.7em;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #33264d, #261c3c);
+  border: 2px solid #4a3a6a;
+}
+#choice .btns button:hover:not(:disabled),
+#choice .btns button:focus-visible {
+  border-color: var(--gold);
+  background: linear-gradient(90deg, #4a3870, #33264f);
+}
+#choice .btns button .pxi {
+  margin: 0;
+  background: rgba(239, 230, 255, 0.14);
+  border-radius: 4px;
+  padding: 2px;
+  box-sizing: content-box;
+  flex: none;
+}
+/* Caixa de diálogo */
+#dialog {
+  border: 3px solid #8a5a2e !important;
+  border-radius: 12px !important;
+  background: linear-gradient(rgba(36, 26, 56, 0.97), rgba(20, 14, 34, 0.97)) !important;
+  box-shadow:
+    inset 0 0 0 2px #2a1a0c,
+    0 10px 30px rgba(0, 0, 0, 0.55) !important;
+}
+#dwho {
+  font-family: "Pixelify Sans", sans-serif;
+  text-shadow: 0 2px 0 #0a0710;
+}

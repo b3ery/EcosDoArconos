@@ -208,6 +208,11 @@ renderInv = function () {
     const box = byId("inv");
     const old = box.querySelector(".tabs");
     if (old) old.outerHTML = invTabsHTML(t);
+    const gh = box.querySelector(".gh");
+    if (gh) gh.outerHTML = `<div class="gh"><h2>${iconHTML("bag", 22)} ${player.name}</h2><span class="inv-gold">${iconHTML("coin", 16)}<b>${player.gold}</b></span><button id="ivclose">Fechar (I)</button></div>`;
+    const sub = box.querySelector(".gsub");
+    if (sub) sub.remove();
+    byId("ivclose").onclick = closeInv;
     box.classList.add("inv-new");
     wireInvTabs();
     return;
