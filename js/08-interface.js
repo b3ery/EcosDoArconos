@@ -214,7 +214,7 @@ function drawDialogPortrait(d, talking) {
     return;
   }
   const rects = d.look.hero
-    ? heroRects(player.look, "down", player.look.staffc || "#ffe066")
+    ? heroRects(player.look, "down", lifeMode() ? null : player.look.staffc || "#ffe066")
     : d.look.kid
       ? heroRects(d.look.kid.look, "down", null)
       : d.look.elf
@@ -610,7 +610,31 @@ function questHint(q, r) {
     );
   return "Volte para a Vila de Cinzaluz pela saída por onde você entrou.";
 }
+function claimSide(i) {
+  player.sideClaim = player.sideClaim || {};
+  if (player.sideClaim[i]) return;
+  player.sideClaim[i] = 1;
+  player.gold += SIDEQ[i].r;
+  playSound(880, 0.15, "sine");
+  toast(`Missão secundária concluída! +${SIDEQ[i].r} de ouro`, 3000);
+  saveGame();
+  openQuests();
+}
+/** Missões no Simulador: pedidos dos moradores e metas da vida (sem a história). */
+function openLifeQuests() {
+  game.mode = "quests";
+  let h = `<div class="gh"><h2>Missões</h2><button id="qclose">Fechar (Q)</button></div>
+  <div class="qs cur">${iconHTML("house")}<b>${player.name}, ${playerAge()} anos</b> · ${KINGDOMS[kingdomOf(player.zone)].n}${player.job ? ` · ${PROFESSIONS[player.job.id] ? PROFESSIONS[player.job.id].n : "Tendinha"}` : ""}</div>`;
+  h += townQuestsHTML() + sideHTML();
+  byId("quests").innerHTML = h;
+  byId("quests").style.display = "block";
+  byId("qclose").onclick = closeQuests;
+  byId("quests")
+    .querySelectorAll("[data-side]")
+    .forEach((b) => (b.onclick = () => claimSide(+b.dataset.side)));
+}
 function openQuests() {
+  if (lifeMode()) return openLifeQuests();
   game.mode = "quests";
   const q = curStep();
   const ci = STEPS.indexOf(q);
@@ -772,7 +796,7 @@ function updateHUD() {
   const lifeRows = lifeMode()
     ? `<div class="hrow nd">${needBar("energy", "en")}${needBar("hygiene", "hy")}</div><div class="hrow nd">${needBar("fun", "fu")}<span style="font-size:.75em;color:#c9a8ff">${playerAge()} anos</span></div>`
     : "";
-  const s = `<div class="box hudL"><div class="hrow"><span class="lv">${iconHTML("star", 12)}Nv${player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
+  const s = `<div class="box hudL"><div class="hrow"><span class="lv">${lifeMode() ? iconHTML("heart", 12) + "Vida" : iconHTML("star", 12) + "Nv" + player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
   <div class="hrow"><span class="gd">${iconHTML("coin", 12)}${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
   <div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>
   ${lifeRows}${chips ? `<div class="chips">${chips}</div>` : ""}</div>
@@ -873,6 +897,7 @@ function spellDesc(s) {
   return p.join(", ");
 }
 function openGrim() {
+  if (lifeMode()) return toast("No Simulador de Vida não há magia nem grimório.", 2200);
   game.mode = "grimoire";
   let h = `<div class="gh"><h2>Grimório Arcano</h2><button id="gclose">Fechar (G)</button></div>
   <p class="gsub">Magias recuperadas: ${player.spells.length} de ${Object.keys(SPELLS).length}. Páginas encontradas: ${player.pages.length} de 5.</p>

@@ -700,7 +700,7 @@ function renderInv() {
   <div class="tabs">${[
     ["itens", "Itens"],
     ["equip", "Equipamento"],
-    ["hab", "Habilidades"],
+    ...(lifeMode() ? [] : [["hab", "Habilidades"]]),
     ["amigos", "Amizades"],
     ["familia", "Família"],
     ["visual", "Aparência"],

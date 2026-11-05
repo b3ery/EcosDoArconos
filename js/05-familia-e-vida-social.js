@@ -532,7 +532,7 @@ function drawPreview(cv, L, dir) {
   const u = Math.floor(cv.width / 18);
   const ox = (cv.width - 16 * u) / 2,
     oy = cv.height - 16 * u - 8;
-  for (const [x, y, w, h, col] of heroRects(L, dir || "down", L.staffc || "#ff7a3d")) {
+  for (const [x, y, w, h, col] of heroRects(L, dir || "down", lifeMode() ? null : L.staffc || "#ff7a3d")) {
     c2.fillStyle = col;
     c2.fillRect(ox + (dir === "left" ? 16 - x - w : x) * u, oy + y * u, w * u, h * u);
   }
@@ -2859,15 +2859,19 @@ const SIDEQ = [
     r: 400,
   },
 ];
+/** Metas que só fazem sentido no modo História (escondidas no Simulador). */
+const STORY_SIDE = /Guardiões|Ecos|runas|magias|magia \(|páginas|ataques|nível|Vença 2 concursos/;
+const sideVisible = (q) => !(lifeMode() && STORY_SIDE.test(q.t));
 function sideN(q) {
   return typeof q.n === "function" ? q.n() : q.n;
 }
 function nextSide() {
-  return SIDEQ.find((q, i) => !(player.sideClaim || {})[i] && q.p() < sideN(q)) || null;
+  return SIDEQ.find((q, i) => sideVisible(q) && !(player.sideClaim || {})[i] && q.p() < sideN(q)) || null;
 }
 function sideHTML() {
   let h = `<h3>${iconHTML("star")}Missões secundárias</h3>`;
   SIDEQ.forEach((q, i) => {
+    if (!sideVisible(q)) return;
     const v = Math.min(q.p(), sideN(q)),
       n = sideN(q),
       done = v >= n,

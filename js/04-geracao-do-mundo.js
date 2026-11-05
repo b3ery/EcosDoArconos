@@ -4067,6 +4067,10 @@ const NPCS = {
     hair: "#d9d9d9",
     talk() {
       const P = "Professor Bruno Honda";
+      if (lifeMode())
+        return [
+          [P, ["Aurélia, Marés e Pedravale já foram um só reino. Hoje brigam por causa de impostos e fronteiras. A história se repete, aprendiz.", "Quer um conselho de professor? Estude, trabalhe e guarde ouro para o Coletor Real.", "A Floresta Grande, a oeste, era chamada de Mata dos Reis. Hoje só tem lobos e ursos."][Math.floor(Math.random() * 3)]],
+        ];
       if (!player.flags.honda) {
         player.flags.honda = true;
         saveGame();

@@ -1309,7 +1309,7 @@ function drawTile(z, x, y, c, t) {
       break;
     }
     case "P":
-      if (!player.pages.includes(z)) {
+      if (!lifeMode() && !player.pages.includes(z)) {
         const b = Math.sin(t * 3) * 3;
         ctx.fillStyle = "rgba(242,193,78,.28)";
         circle(X + 16, Y + 16 + b, 12);
@@ -1596,6 +1596,10 @@ function onStep() {
     leaveBuilding();
     return;
   }
+  if (c === "E" && player.zone === "vila" && lifeMode()) {
+    toast("A velha Academia está fechada há séculos. Só ruínas e poeira.", 2600);
+    return;
+  }
   if (c === "E" && player.zone === "vila") {
     const o = ZONES.escola.open.n;
     player.zone = "escola";
@@ -1654,7 +1658,7 @@ function onStep() {
         saveGame();
       }
     }
-  if (c === "P" && !player.pages.includes(player.zone)) {
+  if (c === "P" && !lifeMode() && !player.pages.includes(player.zone)) {
     player.pages.push(player.zone);
     playSound(880, 0.15, "sine");
     playSound(1320, 0.2, "sine");
@@ -1745,7 +1749,7 @@ function targetAt(x, y) {
     }
   }
   if (c === "G" && !player.guards.includes(player.zone) && !lifeMode()) return "Enfrentar o Guardião";
-  if (c === "B" && player.runes.length < 4) return "Barreira";
+  if (c === "B" && player.runes.length < 4) return lifeMode() ? "Estrada do Sul (fechada)" : "Barreira";
   if (c === "S") return "Examinar";
   if (c === "K") return "Boneco de treino";
   if (c === "~") return itemCount("vara") ? "Pescar  / beber" : "Beber água";
@@ -2367,6 +2371,8 @@ function interactAt(x, y) {
       return;
     }
     say(GUARD_PRE[z.guard](), () => startBattle(z.guard, null));
+  } else if (c === "B" && lifeMode()) {
+    say([["Guarda Real", "A Estrada do Sul está fechada: um deslizamento derrubou a ponte. Siga para leste (Porto), norte (Pedravale) ou oeste (Floresta Grande)."]]);
   } else if (c === "B" && player.runes.length < 4) {
     say([
       [

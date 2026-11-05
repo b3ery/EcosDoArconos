@@ -1142,6 +1142,11 @@ function healerMenu() {
   );
 }
 function kaelTalk() {
+  if (lifeMode())
+    return [
+      ["Instrutor Kael", "Magia? Isso é lenda. Aqui eu treino a Guarda Real: espada, escudo e disciplina."],
+      ["Instrutor Kael", "Quer servir? Procure o castelo. E se for à Floresta Grande, leve um porrete: os ursos não perdoam."],
+    ];
   const n = "Instrutor Kael";
   if (!player.flags.treino) {
     say(
