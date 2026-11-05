@@ -4372,3 +4372,142 @@ canvas.sv-pv {
 #create .swb.on {
   transform: none;
 }
+
+/* ===================== CARREIRAS ===================== */
+#careers {
+  z-index: 60;
+}
+.cr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  margin-bottom: 0.6em;
+  color: #cbbfe3;
+}
+.cr-top b {
+  color: var(--gold);
+}
+.cr-x {
+  display: flex;
+  gap: 0.35em;
+  flex-wrap: wrap;
+}
+.cr-x button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  border-radius: 999px;
+}
+.cr-x .pxi {
+  margin: 0;
+}
+.cr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17em, 1fr));
+  gap: 0.5em;
+}
+.cr-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.3em 0.6em;
+  padding: 0.55em 0.7em;
+  border-radius: 12px;
+  border: 2px solid #3a2a5a;
+  background: linear-gradient(#2a1f42, #1c1530);
+}
+.cr-card.master {
+  border-color: var(--gold);
+  background: linear-gradient(rgba(242, 193, 78, 0.12), #1c1530);
+}
+.cr-ic {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 3.2em;
+  height: 3.2em;
+  border-radius: 10px;
+  background: radial-gradient(#fff6dc, #d9c08a);
+  border: 2px solid #8a5a2e;
+  align-self: start;
+}
+.cr-ic .pxi {
+  margin: 0;
+}
+.cr-i b {
+  font-family: "Pixelify Sans", sans-serif;
+  font-weight: normal;
+  font-size: 1.1em;
+  color: #fff;
+  margin-right: 0.4em;
+}
+.cr-rank {
+  color: var(--gold);
+  font-size: 0.8em;
+}
+.cr-i p {
+  margin: 0.2em 0 0.35em;
+  color: #cbbfe3;
+  font-size: 0.85em;
+  line-height: 1.15;
+}
+.cr-i .ip-bar {
+  max-width: none;
+}
+.cr-b {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4em;
+}
+.cr-b span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  color: var(--gold);
+  font-size: 0.9em;
+}
+.cr-b .pxi {
+  margin: 0;
+}
+.cr-b button:not(:disabled) {
+  background: linear-gradient(#ffd977, #e0a030);
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+  box-shadow: 0 2px 0 #8a5a1a;
+  font-family: "Pixelify Sans", sans-serif;
+}
+.ip-bar {
+  position: relative;
+  height: 1em;
+  margin-top: 0.2em;
+  border-radius: 999px;
+  background: #120c1e;
+  border: 1px solid #5a4a8a;
+  overflow: hidden;
+}
+.ip-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, #c98a2a, #f2c14e);
+}
+.fr-i .ip-bar i {
+  background: linear-gradient(90deg, #e0306a, #ff8aa8);
+}
+.ip-bar span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2em;
+  font-size: 0.75em;
+  line-height: 1.3;
+  color: #fff;
+  text-shadow: 0 1px 0 #000;
+}
+.ip-bar .pxi {
+  margin: 0;
+}
