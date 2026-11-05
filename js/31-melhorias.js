@@ -197,7 +197,7 @@ function showTut(text, i, n) {
       hideTut();
     };
   }
-  el.style.display = game.mode === "battle" ? "none" : "block";
+  el.style.display = ["world", "choice", "quests", "inv"].includes(game.mode) && !(game.mode === "inv" && player.tutStep !== 2) ? "block" : "none";
 }
 function hideTut() {
   const el = byId("coach");
