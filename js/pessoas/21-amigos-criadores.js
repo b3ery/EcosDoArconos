@@ -150,12 +150,14 @@ const CREW_LOOKS = {
       acc: "nenhum",
       extra: (dir) => {
         const B = "#5a3a22";
-        if (dir === "up") return [[5, 5, 6, 1, "#e0b898"]];
+        const S = "#f0c8a8";
+        const head = [[5, 4, 6, 2, S], [5, 6, 1, 2, S], [10, 6, 1, 2, S], [4, 6, 1, 2, "#e0b090"], [11, 6, 1, 2, "#e0b090"]];
+        if (dir === "up") return head.concat([[5, 6, 6, 3, S], [7, 4, 2, 1, "#ffe0c8"]]);
         const side = dir === "left" || dir === "right";
-        const beard = side ? [[7, 8, 4, 1, B], [8, 9, 3, 1, B], [8, 7, 2, 1, B]] : [[5, 8, 6, 1, B], [6, 9, 4, 1, B], [6, 7, 1, 1, B], [9, 7, 1, 1, B], [5, 7, 1, 1, B], [10, 7, 1, 1, B]];
-        const shine = side ? [[8, 5, 2, 1, "#ffe0c8"]] : [[6, 5, 2, 1, "#ffe0c8"], [10, 7, 1, 1, "#c9c0b8"]];
+        const beard = side ? [[7, 8, 4, 1, B], [8, 9, 3, 1, B]] : [[5, 8, 6, 1, B], [6, 9, 4, 1, B], [5, 7, 1, 1, B], [10, 7, 1, 1, B], [7, 8, 2, 1, "#3a2414"]];
+        const shine = side ? [[8, 4, 2, 1, "#ffe0c8"]] : [[6, 4, 2, 1, "#ffe0c8"], [11, 7, 1, 1, "#c9c0b8"]];
         const shirt = side ? [] : [[6, 9, 4, 4, "#1a1a1a"], [7, 10, 2, 1, "#e8e8e8"]];
-        return [...beard, ...shine, ...shirt];
+        return [...head, ...beard, ...shine, ...shirt];
       },
     },
   },
