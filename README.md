@@ -286,6 +286,10 @@ São **6 runas** e **27 feitiços** formados por combinações de 1 ou 2 runas:
 | 📖 **Guia do Aprendiz** | Explica cada sistema do jogo em uma linha: onde fica e como usar |
 | 🎓 **Escolas das vilas** | Aulas de navegação no Porto e de mineração em Pedravale |
 | 💍 **Casamento e adoção** | Cerimônia animada no Templo e adoção de crianças |
+| 👑 **Casar com a Rainha** | Corteje a Rainha Aurélia, vire Consorte Real: mesada de 50 ouro por dia e isenção do Imposto Real |
+| 💘 **Romance** | Carinhos (beijo, mãos dadas, serenata, flores, beijo na testa, girar nos braços), encontros românticos e relacionamento aberto |
+| 👨‍👩‍👧 **Filhos crescem** | Bebê → criança → adolescente → adulto. Filhos adultos namoram, casam (ou aceitam um casamento arranjado com dote) e dão netos |
+| 🎨 **Ícones em pixel art** | Comida, bebida, roupas, equipamentos, fome, sede e clima |
 | 💾 **Salvamento** | Progresso salvo automaticamente no navegador |
 
 </div>
@@ -308,12 +312,30 @@ São **6 runas** e **27 feitiços** formados por combinações de 1 ou 2 runas:
 
 > **Níveis dos monstros:** cada região tem uma faixa de níveis (Bosque 1–5, Pântano 4–8, Picos 6–10, Academia 8–12, Torre 9–14). Os monstros comuns aparecem perto do nível do aprendiz, dentro dessa faixa. Cada nível dá **+13% de vida, +10% de ataque e +10% de XP**. A defesa máxima dos equipamentos caiu de 75% para 60%.
 
+## 🏡 Simulador de Vida
+
+No título, além do **modo História**, tem o botão **Simulador de Vida**: sem runas e sem batalhas, só a vida em Cinzaluz.
+
+| Necessidade | Como cuidar |
+|:---|:---|
+| 🍗 Fome e 💧 sede | Comer e beber (mercado, taverna, rio) |
+| 💤 Energia | Dormir ou cochilar em casa |
+| 🚿 Higiene | Tomar banho em casa |
+| 🎉 Diversão | Taverna, encontros, carinhos e festivais |
+
+Necessidades baixas diminuem o pagamento. Os trabalhos ficam no **Quadro de Trabalhos** da praça:
+
+- 🛒 **Atender na feira:** os clientes pedem um produto e você tem poucos segundos para entregar o certo.
+- 🏪 **Ter sua própria tendinha:** compre a licença, escolha o produto e o preço (de barato a abusivo) e anuncie na hora certa para vender. Paga imposto sobre as vendas.
+- 🛡️ **Guarda Real:** no portão do castelo, deixe entrar só quem mostra o selo do dia. Bons turnos dão promoção (Recruta → Soldado → Sargento → Capitão). Também funciona no modo História.
+
 ## 💰 Imposto Real
 
 A Rainha Aurélia cobra **12% de imposto** em toda compra: lojas, roupas, bebidas da taverna, pousada e carruagem. Na venda, **10%** do valor fica com a Coroa. Cada loja mostra o preço com o imposto separado, e quanto você já pagou.
 
 - 🎉 **Dia de festival:** sem imposto.
 - ⭐ **Boa fama (80+):** paga metade (6%).
+- 👑 **Consorte Real** (casado com a Rainha): isento.
 
 <br>
 

@@ -1382,12 +1382,26 @@ const GUIDE_SECTIONS = [
     "Amizade e família",
     [
       ["Amizade", "Converse, dê presentes, elogie. Corações: Conhecido, Amigo, Melhor Amigo."],
-      ["Gestos", "Com amigos: abraço e toca aqui. Com namoro: beijo e dança."],
+      ["Gestos", "Com amigos: abraço e toca aqui. Com namoro: menu Carinhos (beijo, dança, mãos dadas, serenata, flores...)."],
+      ["Encontros", "Menu Encontros: piquenique, jantar à luz de velas, estrelas, pôr do sol no farol e carta de amor. Um por dia."],
+      ["Relação aberta", "Com cônjuge ou namoro (amizade 70+), proponha abrir a relação. Depende da personalidade de cada um."],
+      ["Rainha", "Converse com a Rainha Aurélia no castelo. Para namorar: reputação 70+ e servir ao reino. Para casar: reputação 80+."],
       ["Namoro", "Com amizade de Amigo (2 corações), use 'Convidar para namorar'."],
       ["Casamento", "Compre o Anel de Compromisso no Ourives e peça com amizade 75+."],
       ["Filhos", "Fale com seu cônjuge dentro de casa: 'Conversar sobre ter um filho'."],
       ["Adoção", "No Templo da Luz (ou Capela do Mar), por 50 de ouro, mesmo sem casar."],
       ["Escola", "Matricule os filhos na Escola de Cinzaluz. Aulas das 8h às 14h."],
+      ["Filhos crescem", "Bebê, criança, adolescente (10 dias) e adulto (16 dias). Adultos namoram, casam e dão netos."],
+      ["Casamento arranjado", "Fale com um filho adulto: escolha um pretendente e receba o dote. Filhos felizes aceitam mais."],
+    ],
+  ],
+  [
+    "Simulador de Vida",
+    [
+      ["O modo", "No título, escolha Simulador de Vida: sem runas nem batalhas, só a vida na vila."],
+      ["Necessidades", "Fome, sede, energia, higiene e diversão. Baixas, elas diminuem o pagamento."],
+      ["Trabalhos", "Quadro de Trabalhos da praça: feira (minijogo), tendinha própria (licença) e Guarda Real."],
+      ["Guarda Real", "Turnos no castelo com patentes: Recruta, Soldado, Sargento e Capitão. Vale nos dois modos."],
     ],
   ],
   [
