@@ -330,6 +330,15 @@ Ao ar livre, cada clima deixa **duas runas mais fortes e uma ou duas mais fracas
 | ❄️ Neve | Maré +15%, Terra +5% | Chama −15%, Vento −5% |
 | 🌫️ Neblina | Sombra +20%, Vento +5% | Luz −15% |
 
+## 🤢 Saúde
+
+- **Nos dois modos:** fome e sede caem com o tempo. **Frutas silvestres** (colhidas nas árvores do Bosque e do Pântano) e **água de rio ou fonte** podem causar **intoxicação**: a vida cai aos poucos e a magia enfraquece. Chá de Ervas, Ervas Medicinais, **Xarope de Ervas** (Bruno) ou a Curandeira curam. O poço e o cantil são seguros.
+- **No Simulador:** energia, higiene e diversão também contam, e dá para pegar **gripe** (chuva e cansaço), **disenteria** (pouca higiene), **febre** (idade e azar) e **peste** (tempos de guerra). Doente, você trabalha pior e perde energia e diversão.
+
+## 💬 Interação estilo The Sims
+
+Clique num personagem (ou aperte **E** perto dele): as opções aparecem **em círculo ao redor dele**, com ícones e agrupadas em **Amigável, Romântico, Engraçado, Malvado, Família e Serviços**. O ✕ no meio fecha.
+
 ## ⛏️ Mina, trigo e pão (nos dois modos)
 
 - A **Mina de Cristal**, em Pedravale, virou uma caverna: E várias vezes numa pedra dá **Pedra de Golem, Minério de Ferro, Cristal Sombrio** ou, com sorte, um **Fragmento Arcano**.

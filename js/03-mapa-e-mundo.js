@@ -1929,6 +1929,8 @@ function interact() {
   interactAt(tg.x, tg.y);
 }
 function interactAt(x, y) {
+  // Se for um personagem, os menus abrem em círculo ao redor dele (estilo The Sims).
+  game.pieAnchor = characterAt(x, y) ? { x, y } : null;
   if (jobInteract(x, y) || gatherInteract(x, y) || forageInteract(x, y)) return;
   game.talkTarget = talkTargetAt(x, y);
   const elf = elfAt(x, y);

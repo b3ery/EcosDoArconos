@@ -1013,6 +1013,8 @@ function choice(title, text, opts) {
   game.prevMode = game.mode === "choice" ? game.prevMode : game.mode;
   game.mode = "choice";
   game.choice = opts;
+  if (renderPie(title, text, opts)) return;
+  hidePie();
   byId("choice").innerHTML =
     `<h3>${title}</h3><p>${text}</p><div class="btns">${opts.map((o, i) => `<button data-i="${i}">${iconHTML(o.icon || choiceIcon(o.t) || "")}${i + 1}. ${o.t}</button>`).join("")}</div>`;
   byId("choice").style.display = "block";
@@ -1023,8 +1025,11 @@ function choice(title, text, opts) {
 function pickChoice(i) {
   const o = game.choice[i];
   byId("choice").style.display = "none";
+  hidePie();
   game.mode = "world";
   if (o && o.fn) o.fn();
+  // A interação com o personagem acabou (ninguém abriu outro menu): fecha o círculo.
+  if (game.mode !== "choice") game.pieAnchor = null;
 }
 function restMenu() {
   choice("Sua casa", "Uma cama quente, uma lareira e silêncio. O que você quer fazer?", [

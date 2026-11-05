@@ -2264,6 +2264,7 @@ function drawWorld(t) {
       z.h * TILE < VHz
         ? -Math.round((VHz - z.h * TILE) / 2)
         : Math.round(clampi(player.ry * TILE + 16 - VHz / 2, 0, z.h * TILE - VHz));
+  game.cam = { camX, camY, Z };
   const x0 = Math.max(0, Math.floor(camX / TILE)),
     y0 = Math.max(0, Math.floor(camY / TILE)),
     x1 = Math.min(z.w - 1, x0 + Math.ceil(VWz / TILE) + 1),
