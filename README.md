@@ -141,6 +141,25 @@ Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que
 
 ---
 
+## 🍻 A Turma de Cinzaluz
+
+Os criadores do jogo viraram personagens importantes da história, com seus parceiros. Os cinco são amigos: em dia de festival à noite, e a cada 3 dias no fim da tarde, eles se encontram na fonte da praça.
+
+<div align="center">
+
+| | | | | |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="assets/personagens/turma_lucas.png" width="100"/><br><b>Lucas Marzocca</b><br><sub>O rolezeiro. Só conversa depois de ganhar um hidromel; sempre nas festas e falado por namorar demais.</sub> | <img src="assets/personagens/turma_matheus.png" width="100"/><br><b>Matheus</b><br><sub>O fazendeiro, melhor amigo do Lucas. Dá cesta da fazenda e chama para a colheita.</sub> | <img src="assets/personagens/turma_marcos.png" width="100"/><br><b>General Marcos</b><br><sub>General de grande porte que ajuda a vila. Treina você (+vida máxima).</sub> | <img src="assets/personagens/turma_andressa.png" width="100"/><br><b>Andressa</b><br><sub>Dona da maior rede de bibliotecas. Misteriosa, vende informações de segurança.</sub> | <img src="assets/personagens/turma_mylena.png" width="100"/><br><b>Mylena</b><br><sub>Artista do Ateliê de quadros e móveis. Engraçada e amada por todos.</sub> |
+| | <img src="assets/personagens/turma_malu.png" width="100"/><br><b>Duquesa Malu</b><br><sub>Esposa do Matheus</sub> | <img src="assets/personagens/turma_coral.png" width="100"/><br><b>Princesa Coral das Marés</b><br><sub>Esposa do Marcos</sub> | | <img src="assets/personagens/turma_leon.png" width="100"/><br><b>Príncipe Leon</b><br><sub>Filho da Rainha, marido da Mylena</sub> |
+
+</div>
+
+> **Na história:** se você for amigo dos cinco, a turma aparece na batalha contra o Silenciador e luta com você (+25% de dano). Lucas e Andressa podem ser namorados.
+
+<br>
+
+---
+
 ## 🧙 Personagens Principais
 
 <div align="center">

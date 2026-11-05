@@ -2662,6 +2662,7 @@ function socialMenu(id) {
     despiseMenu(id);
     return;
   }
+  if (id === "lucas" && lucasGate()) return;
   const fr = FRIENDS[id],
     nm = NPCS[id].nome,
     opts = [];
@@ -2705,6 +2706,7 @@ function socialMenu(id) {
         fn: carriageMenu,
       },
     );
+  opts.push(...crewItems(id));
   opts.push(...townQuestMenuItems(id));
   opts.push(...affectionMenuItems({ id }));
   opts.push(...openRelationshipItems(id));

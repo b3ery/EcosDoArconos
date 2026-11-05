@@ -187,6 +187,8 @@ function dmgMul(els) {
   if (player.blessDay === player.day) m *= 1.1;
   if (player.injured) m *= 0.8;
   if (player.sick) m *= 0.85;
+  // A turma de Cinzaluz ajuda na batalha final.
+  if (battle && battle.type === "silenciador" && crewReady()) m *= 1.25;
   m *= 1 + 0.05 * (player.ecos || []).length;
   if ((player.drunk || 0) >= 40) m *= 1.1;
   if (player.liquidCourage && game.mode === "battle") m *= 1.15;
@@ -1142,7 +1144,14 @@ const colorSeed = (text) =>
  * Morador comum. A "semente" escolhe tom de pele, penteado, barba, óculos e
  * detalhes da roupa, para que duas pessoas com a mesma cor não fiquem iguais.
  */
+/**
+ * Personagens especiais (os criadores do jogo e seus parceiros) têm visual detalhado,
+ * igual ao do jogador. Eles são achados pelas cores: robe|chapéu|cabelo.
+ */
+const HERO_LOOKS = {};
 function wizardRects(robe, hat, hair, glow, dir, frame = 0, seed) {
+  const special = HERO_LOOKS[`${robe}|${hat ?? null}|${hair}`];
+  if (special) return heroRects(special, dir, null, frame);
   const s = seed ?? colorSeed(`${robe}${hat}${hair}`);
   const skin = SKIN_TONES[s % SKIN_TONES.length],
     gold = BELT_COLORS[(s >> 3) % BELT_COLORS.length],

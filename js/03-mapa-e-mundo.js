@@ -1679,6 +1679,7 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
+  if (crewActorAt(x, y)) return "Conversar com a turma";
   const jl = animalLabel(x, y) || jobLabel(x, y) || gatherLabel(x, y) || forageLabel(x, y);
   if (jl) return jl;
   const elf = elfAt(x, y);
@@ -1937,6 +1938,11 @@ function interact() {
 function interactAt(x, y) {
   // Se for um personagem, os menus abrem em círculo ao redor dele (estilo The Sims).
   game.pieAnchor = characterAt(x, y) ? { x, y } : null;
+  if (crewActorAt(x, y)) {
+    game.pieAnchor = { x, y };
+    crewGroupMenu();
+    return;
+  }
   if (animalInteract(x, y) || jobInteract(x, y) || gatherInteract(x, y) || forageInteract(x, y)) return;
   game.talkTarget = talkTargetAt(x, y);
   const elf = elfAt(x, y);

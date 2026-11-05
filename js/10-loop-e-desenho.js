@@ -2901,6 +2901,7 @@ function drawWorld(t) {
   jobDrawList(list, t);
   lifeDrawList(list, t);
   animalsDrawList(list, t);
+  crewDrawList(list, t);
   list.sort((a, b) => a.y - b.y).forEach((s) => s.draw());
   if (ZONES[player.zone].town) drawVilaLife(t, x0, y0, x1, y1);
   if (player.zone === "vila") {

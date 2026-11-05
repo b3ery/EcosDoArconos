@@ -2727,6 +2727,12 @@ function paradeMenu() {
 
 const SIDEQ = [
   {
+    t: "Fique amigo da turma de Cinzaluz",
+    p: () => CREW.filter((id) => friendshipLevel(id) >= 1).length,
+    n: 5,
+    r: 250,
+  },
+  {
     t: "Liberte os 5 Guardiões",
     p: () => guardiansFreed(),
     n: 5,
