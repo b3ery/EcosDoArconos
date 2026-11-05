@@ -475,6 +475,96 @@ const TOWN_QUESTS = [
     intro: "O inverno vem forte. Preciso de 4 Couros de Lobo para os casacos da vila.",
     done: "Agora ninguém passa frio. Leve esta armadura de pele, fiz pensando em você.",
   },
+  {
+    id: "monge",
+    town: "Picos Uivantes",
+    giver: "monge",
+    title: "Pão para o Monge",
+    need: { pao: 3 },
+    reward: { gold: 90, rep: 2 },
+    intro: "Aqui em cima só tem neve e silêncio. Se você assar uns pães em casa e me trouxer 3, eu medito por você.",
+    done: "Ainda quentinho! A montanha agradece. Que o vento esteja sempre a seu favor.",
+  },
+  {
+    id: "brann",
+    town: "Cinzaluz",
+    giver: "ferreiro",
+    title: "Minério para o Brann",
+    need: { minerio: 5 },
+    reward: { gold: 140, item: "escudo", rep: 1 },
+    intro: "A forja está parada sem ferro. Desça na Mina de Cristal, em Pedravale, e me traga 5 Minérios de Ferro.",
+    done: "Ferro de primeira! Tome este broquel: fiz pensando em você.",
+  },
+  {
+    id: "colheita",
+    town: "Pedravale",
+    giver: "ancia",
+    title: "A Colheita da Anciã",
+    need: { trigo: 6 },
+    reward: { gold: 80, rep: 2 },
+    intro: "Minhas costas não deixam mais eu colher. Pode me trazer 6 feixes de trigo? A plantação fica no fim da vila.",
+    done: "Que fartura! Vou fazer broa para a vila inteira. Você tem bom coração, criança.",
+  },
+  {
+    id: "dourado",
+    town: "Porto Brisamar",
+    giver: "capitao",
+    title: "O Peixe Dourado do Capitão",
+    need: { peixeR: 1 },
+    reward: { gold: 160, rep: 3 },
+    intro: "Dizem que quem pesca um Peixe Dourado nunca mais naufraga. Já sou velho, mas quero ver um antes de me aposentar.",
+    done: "Pelas sete marés! É ainda mais bonito do que contavam. Vou pendurar no leme.",
+  },
+  {
+    id: "papiros",
+    town: "Cinzaluz",
+    giver: "iara",
+    title: "Papiros para a Biblioteca",
+    need: { papiro: 3 },
+    reward: { gold: 110, item: "livro" },
+    intro: "Os Grimórios Vivos da Academia carregam Papiros Encantados. Se trouxer 3, consigo restaurar um livro antigo.",
+    done: "Olha só a letra desses papiros... Fique com este livro de contos, é uma cópia que sobrou.",
+  },
+  {
+    id: "doce",
+    town: "Cinzaluz",
+    giver: "cocada",
+    title: "Mel para os Doces",
+    need: { mel: 2 },
+    reward: { gold: 60, rel: 8 },
+    intro: "Meu doce de abóbora precisa de mel e o meu acabou! Me traz 2 potes?",
+    done: "Agora sim! O primeiro doce do tacho é seu. Mentira, é meu. Mas o segundo é seu!",
+  },
+  {
+    id: "couros",
+    town: "Cinzaluz",
+    giver: "peleiro",
+    title: "Couros para o Inverno",
+    need: { couro: 3 },
+    reward: { gold: 90, item: "armCouro" },
+    intro: "O inverno vem aí e eu preciso de 3 Couros de Lobo para os casacos da vila. Os lobos ficam no Bosque.",
+    done: "Couro bom. Leve esta armadura de couro, fiz com as sobras.",
+  },
+  {
+    id: "harpa",
+    town: "Cinzaluz",
+    giver: "bardo",
+    title: "Cordas de Cristal",
+    need: { cristal: 2 },
+    reward: { gold: 100, rel: 8, rep: 1 },
+    intro: "Minha harpa perdeu o brilho. Com 2 Cristais Sombrios eu faço cordas que cantam sozinhas!",
+    done: "*toca um acorde* Ouviu? Vou compor uma balada sobre você. Pode ser meio exagerada.",
+  },
+  {
+    id: "selene",
+    town: "Academia Arcana",
+    giver: "selene",
+    title: "O Fragmento da Professora",
+    need: { fragmento: 1 },
+    reward: { gold: 150, item: "pocaoG" },
+    intro: "Para reacender a lousa encantada da Academia, preciso de um Fragmento Arcano. A Mina de Cristal às vezes esconde um.",
+    done: "A lousa voltou a escrever sozinha! Os alunos fantasmas vão adorar. Tome, para a sua jornada.",
+  },
 ];
 
 const townQuestState = (q) => (player.townQ || {})[q.id] || "novo";
@@ -538,8 +628,29 @@ function townQuestMenuItems(id) {
   return items;
 }
 
+/** Moradores que não são "amigos": se tiverem pedido, mostram um menu. */
+function npcTalkOrQuests(id) {
+  const items = townQuestMenuItems(id);
+  if (!items.length) {
+    const l = NPCS[id].talk();
+    if (l) say(l);
+    return;
+  }
+  choice(NPCS[id].nome, "Parece que tem algo a pedir.", [
+    {
+      t: "Conversar",
+      fn: () => {
+        const l = NPCS[id].talk();
+        if (l) say(l);
+      },
+    },
+    ...items,
+    { t: "Sair", fn: null },
+  ]);
+}
+
 function townQuestsHTML() {
-  let html = "<h3>Pedidos de Porto Brisamar e Pedravale</h3>";
+  let html = "<h3>Pedidos dos moradores</h3>";
   for (const q of TOWN_QUESTS) {
     const state = townQuestState(q);
     const who = NPCS[q.giver].nome.split(",")[0];

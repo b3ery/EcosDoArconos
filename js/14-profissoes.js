@@ -207,6 +207,7 @@ function endJob(reason) {
   const j = player.job;
   if (!j) return;
   if (j.lentRod && itemCount("vara")) removeItem("vara");
+  if (j.done > 0) player.shiftsDone = (player.shiftsDone || 0) + 1;
   if (j.id === "guarda" && j.done >= 4) player.guardShifts = (player.guardShifts || 0) + 1;
   if (j.id === "guarda") player.flags.guardaReal = true;
   if (j.id === "stall" && j.stock > 0 && j.product.k === "ring") player.gold += j.stock * j.product.cost;
@@ -410,6 +411,8 @@ function jobInteract(x, y) {
       delete j.hits[k];
       deplete(player.zone, x, y, c, p.after);
       j.cargo++;
+      if (c === "o") player.mined = (player.mined || 0) + 1;
+      if (c === "g") player.harvested = (player.harvested || 0) + 1;
       toast(`+1 ${p.unit} (${j.cargo}/${p.carry})${j.cargo >= p.carry ? " · cheio! Vá entregar." : ""}`, 1600);
     }
     return true;
@@ -664,6 +667,8 @@ function gatherInteract(x, y) {
   deplete(player.zone, x, y, c, c === "o" ? "." : ",");
   const it = c === "o" ? mineLoot() : "trigo";
   addItem(it);
+  if (c === "o") player.mined = (player.mined || 0) + 1;
+  else player.harvested = (player.harvested || 0) + 1;
   addNeed("energy", c === "o" ? -2 : -0.5);
   player.clock = Math.min(1439, player.clock + (c === "o" ? 10 : 3));
   toast(`Você conseguiu: ${ITEMS[it].nome}!${it === "fragmento" ? " Que sorte!" : ""}`, 1800);

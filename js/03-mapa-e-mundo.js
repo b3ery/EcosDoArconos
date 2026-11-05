@@ -2004,10 +2004,7 @@ function interactAt(x, y) {
   if (ro) {
     const id = ro.id;
     if (FRIENDS[id]) socialMenu(id);
-    else {
-      const l = NPCS[id].talk();
-      if (l) say(l);
-    }
+    else npcTalkOrQuests(id);
     return;
   }
   const wk = tw && walkerAt(x, y);
@@ -2249,10 +2246,7 @@ function interactAt(x, y) {
   if (c === "N" && !npcHidden(z.npcs[`${x},${y}`])) {
     const id = z.npcs[`${x},${y}`];
     if (FRIENDS[id]) socialMenu(id);
-    else {
-      const l = NPCS[id].talk();
-      if (l) say(l);
-    }
+    else npcTalkOrQuests(id);
   } else if (c === "J") {
     openJobs();
   } else if (c === "K") {

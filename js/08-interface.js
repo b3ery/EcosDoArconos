@@ -640,6 +640,7 @@ function openQuests() {
   <div class="qtip">· À noite (☾) os monstros ficam mais fortes, mas dão mais ouro e XP. Durma em casa para pular para a manhã.</div>
   <div class="qtip">· Fome e sede caem com o tempo. Ferimentos graves só são curados no hospital.</div>`;
   h += townQuestsHTML();
+  if (!player.finished) h += sideHTML();
   byId("quests").innerHTML = h;
   byId("quests").style.display = "block";
   byId("quests")

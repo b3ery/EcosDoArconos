@@ -2724,6 +2724,42 @@ function paradeMenu() {
 
 const SIDEQ = [
   {
+    t: "Liberte os 5 Guardiões",
+    p: () => guardiansFreed(),
+    n: 5,
+    r: 400,
+  },
+  {
+    t: "Asse 10 pães em casa",
+    p: () => player.breadBaked || 0,
+    n: 10,
+    r: 120,
+  },
+  {
+    t: "Quebre 30 pedras na mina",
+    p: () => player.mined || 0,
+    n: 30,
+    r: 150,
+  },
+  {
+    t: "Colha 30 feixes de trigo",
+    p: () => player.harvested || 0,
+    n: 30,
+    r: 100,
+  },
+  {
+    t: "Complete 10 turnos de trabalho",
+    p: () => player.shiftsDone || 0,
+    n: 10,
+    r: 200,
+  },
+  {
+    t: "Atenda 5 pedidos de moradores",
+    p: () => Object.values(player.townQ || {}).filter((v) => v === "feito").length,
+    n: 5,
+    r: 250,
+  },
+  {
     t: "Liberte os 5 Ecos Corrompidos",
     p: () => (player.ecos || []).length,
     n: 5,
