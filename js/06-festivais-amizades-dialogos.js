@@ -633,6 +633,11 @@ function tavernMenu() {
         t: " Pedir bebidas",
         fn: drinksMenu,
       },
+      {
+        t: "Mural dos Corações (namoro e casamento)",
+        icon: "heart",
+        fn: heartBoardMenu,
+      },
       ...(party
         ? [
             {

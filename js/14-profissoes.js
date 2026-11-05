@@ -161,6 +161,7 @@ function professionsMenu() {
       fn: stallMenu,
     });
   if (!lifeMode()) opts.push({ t: "Ver tarefas do quadro (missões)", fn: () => openJobs(true) });
+  opts.push({ t: "Mural dos Corações (namoro e casamento)", icon: "heart", fn: heartBoardMenu });
   opts.push({ t: "Sair", fn: null });
   choice(
     "Trabalhos da vila",

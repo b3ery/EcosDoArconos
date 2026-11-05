@@ -1486,6 +1486,7 @@ function spawnEco() {
   });
 }
 function enterZone(showBanner = true) {
+  restoreContacts();
   if (ZONES[player.zone].town && game.lifeZone !== player.zone) initVilaLife();
   if (!player.visited.includes(player.zone)) player.visited.push(player.zone);
   if (player.zone === "torre") player.riding = false;
@@ -2022,8 +2023,13 @@ function interactAt(x, y) {
     return;
   }
   const wk = tw && walkerAt(x, y);
+  if (wk && wk.cid && NPCS[wk.cid]) {
+    socialMenu(wk.cid);
+    return;
+  }
   if (wk) {
     choice(wk.nm + ", morador" + (player.zone === "vila" ? " de Cinzaluz" : ""), "Para e olha para você.", [
+      ...walkerContactItems(wk),
       {
         t: "Cumprimentar",
         fn: () => {
@@ -2215,12 +2221,7 @@ function interactAt(x, y) {
       return;
     }
     if (pe) {
-      say([
-        [
-          pe.nm,
-          pe.guard ? "O castelo está seguro enquanto estivermos aqui." : pickUnheard("inter", WALKER_POOL),
-        ],
-      ]);
+      interiorPersonMenu(pe);
       return;
     }
   }

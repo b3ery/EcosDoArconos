@@ -27,7 +27,7 @@ function pieGroupOf(text) {
 function characterAt(x, y) {
   const z = ZONES[player.zone];
   if (!z) return false;
-  if (elfAt(x, y) || crewActorAt(x, y)) return true;
+  if (elfAt(x, y) || crewActorAt(x, y) || interPersonAt(x, y)) return true;
   if (z.town && familyList().some((f) => f.x === x && f.y === y)) return true;
   if (z.town && roamAt(x, y)) return true;
   if (z.town && walkerAt(x, y)) return true;

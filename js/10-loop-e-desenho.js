@@ -1402,6 +1402,7 @@ function initVilaLife() {
       elf: i % 9 === 4,
     });
   }
+  addContactWalkers();
   game.farmers = [];
   if (farm.length && player.zone === "vila")
     for (let i = 0; i < 3; i++) {
