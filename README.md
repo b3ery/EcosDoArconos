@@ -184,6 +184,8 @@ Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que
 | <img src="assets/personagens/boss_ent.png" width="90"/> | **Ent Silenciado**<br><sub>Guardião</sub> | 🌲 Bosque Murmurante | **Nv 4+** | ★★☆☆☆ | 158 / 221 / 316 | 12 / 16 / 21 | 66 |
 | <img src="assets/personagens/boss_serpente.png" width="90"/> | **Serpente de Névoa**<br><sub>Guardião</sub> | 🌫️ Pântano das Brumas | **Nv 6+** | ★★★☆☆ | 186 / 260 / 372 | 14 / 19 / 24 | 94 |
 | <img src="assets/personagens/boss_grifo.png" width="90"/> | **Grifo de Pedra**<br><sub>Guardião</sub> | 🏔️ Picos Uivantes | **Nv 8+** | ★★★☆☆ | 239 / 335 / 478 | 18 / 24 / 31 | 120 |
+| <img src="assets/personagens/boss_basilisco.png" width="90"/> | **Basilisco de Cristal**<br><sub>Guardião</sub> | ⛏️ Mina de Cristal (Pedravale) | **Nv 9+** | ★★★★☆ | 271 / 379 / 542 | 18 / 24 / 31 | 150 |
+| <img src="assets/personagens/boss_leviata.png" width="90"/> | **Leviatã do Cais**<br><sub>Guardião</sub> | ⚓ Píer do Porto Brisamar | **Nv 10+** | ★★★★☆ | 296 / 414 / 592 | 19 / 26 / 33 | 168 |
 | <img src="assets/personagens/boss_vitral.png" width="90"/> | **Espírito do Vitral**<br><sub>Chefe secreto</sub> | ⛪ Templo da Luz (opcional) | **Nv 8+** | ★★★★☆ | 265 / 371 / 530 | 18 / 24 / 31 | 156 |
 | <img src="assets/personagens/boss_diretor.png" width="90"/> | **Diretor Espectral**<br><sub>Chefe da masmorra</sub> | 📚 Academia Arcana | **Nv 10+** | ★★★★☆ | 328 / 459 / 656 | 19 / 26 / 33 | 180 |
 | <img src="assets/personagens/boss_silenciador.png" width="90"/> | **O Silenciador**<br><sub>Chefe final</sub> | 🗼 Torre do Silêncio | **Nv 12+** | ★★★★★ | 612 / 857 / 1224 | 21 / 28 / 35 | — |
@@ -204,6 +206,7 @@ Faz quarenta anos que estuda as ruínas da **Academia Arcana** e é o único que
 | **II** | Os **Guardiões** (Ent, Serpente e Grifo) guardam as runas aprisionadas. Cada um libertado devolve um elemento. |
 | **II·a** | **O Farol que Lembra** (Porto Brisamar): o Capitão Bento conta que a névoa veio do mar. Aceso à noite, o farol mostra Odelia e Vesper crianças, há trezentos anos. |
 | **II·b** | **A Forja do Irmão** (Pedravale): a Anciã Berta revela o molde do cajado que Vesper encomendou aos anões. Um Fragmento Arcano da mina reabre o molde e mostra a inscrição dele. |
+| **II·c** | **Os Guardiões perdidos**: o **Basilisco de Cristal** dorme no fundo da Mina de Cristal e o **Leviatã do Cais** na ponta do píer do Porto. Cada um guarda uma das runas que faltam. |
 | **III** | Páginas do **diário de Vesper**, decifradas pelo **Professor Bruno Honda**, revelam quem ele era antes de se perder no Silêncio. |
 | **IV** | Na **Torre do Silêncio**, um eco do passado mostra a última discussão dos irmãos. |
 | **V** | No confronto final, o aprendiz lê as palavras do próprio Vesper e o liberta. **Epílogo:** os irmãos se reencontram. |
@@ -314,12 +317,38 @@ São **6 runas** e **27 feitiços** formados por combinações de 1 ou 2 runas:
 
 > **Níveis dos monstros:** cada região tem uma faixa de níveis (Bosque 1–5, Pântano 4–8, Picos 6–10, Academia 8–12, Torre 9–14). Os monstros comuns aparecem perto do nível do aprendiz, dentro dessa faixa. Cada nível dá **+13% de vida, +10% de ataque e +10% de XP**. A defesa máxima dos equipamentos caiu de 75% para 60%.
 
+## 🌦️ Clima e poder das runas (História)
+
+Ao ar livre, cada clima deixa **duas runas mais fortes e uma ou duas mais fracas**. À noite a **Sombra** cresce e a **Luz** enfraquece; de dia é o contrário. Os botões das runas na batalha mostram **▲ verde** ou **▼ vermelho** com a porcentagem, e o topo da tela marca as runas do momento.
+
+| Clima | Mais fortes | Mais fracas |
+|:---|:---|:---|
+| ☀️ Sol | Chama +15%, Luz +20% | Maré −15%, Sombra −20% |
+| ☁️ Nublado | Vento +10%, Sombra +10% | Luz −10% |
+| 🌧️ Chuva | Maré +20%, Terra +10% | Chama −20% |
+| ⛈️ Tempestade | Vento +25%, Maré +10% | Chama −15%, Terra −10% |
+| ❄️ Neve | Maré +15%, Terra +5% | Chama −15%, Vento −5% |
+| 🌫️ Neblina | Sombra +20%, Vento +5% | Luz −15% |
+
+## ⛏️ Mina, trigo e pão (nos dois modos)
+
+- A **Mina de Cristal**, em Pedravale, virou uma caverna: E várias vezes numa pedra dá **Pedra de Golem, Minério de Ferro, Cristal Sombrio** ou, com sorte, um **Fragmento Arcano**.
+- **E no trigo** da plantação dá Feixes de Trigo. Na **lareira de casa**, 3 feixes + 1 cantil de água viram **2 pães**.
+- **Pedidos dos moradores** (Missões, Q): pão para o Monge, minério para o Brann, colheita da Anciã, Peixe Dourado do Capitão e mais.
+
 ## 🏡 Simulador de Vida
 
 No título, além do **modo História**, tem o botão **Simulador de Vida**: sem runas e sem batalhas da história, só a vida medieval.
 
 - 🎂 **Idade:** cada dia do jogo é um ano. Você começa com 18 e envelhece (Jovem, Adulto, Meia-idade, Idoso). Depois dos 70 a vida pode acabar: um filho adulto herda a casa e o ouro (menos o imposto sobre a herança) e você continua jogando com ele.
 - 👑 **Reinos:** Cinzaluz é do **Reino de Aurélia**, o Porto é do **Principado das Marés** e Pedravale dos **Clãs de Pedravale**. As relações mudam todo dia (tecla **K**).
+- 🏠 **Casas:** as casas sem dono das três vilas estão à venda. Compre, mude-se, alugue as outras para render ouro todo dia, ou venda.
+- 🧾 **Coletor Real:** o imposto da casa e dos móveis corre todo dia, e uma pessoa do palácio vem andando até você cobrar. Dá para pagar, pedir prazo (com juros) ou recusar — três recusas e os guardas levam um móvel.
+- 👑 **Rei ou Rainha:** casando com a Rainha Aurélia você governa o reino: escolhe o imposto (baixo, normal, alto), dá festas reais, declara guerra ou propõe paz.
+- 💔 **Romance de verdade:** convidar para namorar e pedir em casamento podem ser **recusados**. A chance aparece no botão e depende de amizade, fama, higiene, humor, dinheiro, diferença de idade e da personalidade da pessoa. A resposta diz o que pesou contra.
+- 💬 **Interações:** piada, conselho, fofoca, convite para beber, empréstimo, discussão, desculpas, terminar namoro e divórcio.
+- 🛁 **Móveis úteis:** banheira (higiene), mesa de xadrez (diversão), fogão a lenha (cozinhar ensopado), mesa (refeição em família) e mais.
+- 🎪 **Vila cheia de vida:** mais moradores nas ruas e um acontecimento por dia (casamentos, artistas de rua, procissões, incêndios, ladrões...).
 - ⚔️ **Guerras:** relações muito baixas viram guerra. Fronteira fechada (só com contrabandista, preço x3), imposto de guerra de 8%, saques à feira, Guarda ganhando 50% a mais e alistamento no exército (paga bem, mas você pode voltar ferido). Guerras acabam em tratados de paz.
 
 | Necessidade | Como cuidar |

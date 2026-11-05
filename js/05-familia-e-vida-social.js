@@ -35,6 +35,7 @@ function onNewDay() {
     ageTick();
     worldTick();
     houseDaily();
+    villageEventOfDay();
   }
   restoreWorkTiles();
 }

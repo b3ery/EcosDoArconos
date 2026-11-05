@@ -2254,6 +2254,7 @@ function leaveHouse() {
 }
 function furnUse(f) {
   const id = f.id;
+  if (furnUseExtra(f)) return;
   if (id === "cama" || id === "m_camaLux") {
     restMenu();
     return;
@@ -2391,6 +2392,7 @@ function drawFurn(f, t) {
       ctx.fillStyle = "rgba(0,0,0,.22)";
       ctx.fillRect(X + 3, Y + 27, 26, 4);
     };
+  if (drawFurnExtra(f, t)) return;
   switch (id) {
     case "tapete":
     case "m_tapete":

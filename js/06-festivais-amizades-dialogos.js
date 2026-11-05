@@ -2673,6 +2673,7 @@ function socialMenu(id) {
   opts.push(...townQuestMenuItems(id));
   opts.push(...affectionMenuItems({ id }));
   opts.push(...openRelationshipItems(id));
+  opts.push(...lifeSocialItems(id));
   opts.push({
     t: "Conversar…",
     fn: () => talkMenu(id),
