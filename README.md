@@ -594,22 +594,18 @@ A Rainha Aurélia cobra **12% de imposto** em toda compra: lojas, roupas, bebida
 
 ```
 ecos-do-arcano/
-├── index.html                          estrutura da página e telas
-├── css/
-│   └── style.css                       visual da interface, por seções
-└── js/
-    ├── 01-dados.js                     runas, feitiços, inimigos, itens, lojas, NPCs
-    ├── 02-estado-som-sprites.js        estado do jogador, salvamento, sons, sprites
-    ├── 03-mapa-e-mundo.js              mapa, clima, interação com o mundo
-    ├── 04-geracao-do-mundo.js          geração das regiões, vilas e interiores
-    ├── 05-familia-e-vida-social.js     família, mascotes, fofocas, brigas, escola
-    ├── 06-festivais-amizades-dialogos.js
-    ├── 07-trabalhos-comercio-ataques.js
-    ├── 08-interface.js                 diálogos, missões, HUD, grimório
-    ├── 09-batalha.js                   sistema de batalha
-    ├── 10-loop-e-desenho.js            loop principal e desenho
-    ├── 11-opcoes-musica-missoes.js     opções, música, guia, créditos, vilas, casamento
-    └── 12-entrada.js                   teclado, joystick e inicialização
+├── index.html              estrutura da página e ordem dos scripts
+├── css/style.css           visual de todas as telas
+├── js/
+│   ├── nucleo/             dados, estado, laço principal, teclado, gerador de ícones
+│   ├── mundo/              mapas, vilas, reinos, casas, floresta, quintal, clima
+│   ├── historia/           batalha, caminho do vilão, missões da mina e do farol
+│   ├── pessoas/            família, amizades, diálogos, turma, contatos, interações
+│   ├── vida/               Simulador de Vida, profissões, carreiras, saúde, calendário
+│   └── interface/          inventário, lojas, criador, menus, opções, conquistas
+├── tests/smoke.js          teste automático (npm test)
+├── tools/                  build num arquivo só e gerador do mapa de arquitetura
+└── docs/ARQUITETURA.md     cada script, o que faz e quais funções modifica
 ```
 
 > Os scripts são carregados **nessa ordem** pelo `index.html`.
