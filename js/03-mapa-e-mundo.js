@@ -1484,7 +1484,10 @@ function enterZone(showBanner = true) {
   reveal();
   if (showBanner)
     game.banner = {
-      text: ZONES[player.zone].nome,
+      text:
+        lifeMode() && ZONES[player.zone].town
+          ? `${ZONES[player.zone].nome} · ${KINGDOMS[kingdomOf(player.zone)].short}${kingdomAtWar(kingdomOf(player.zone)) ? " (em guerra)" : ""}`
+          : ZONES[player.zone].nome,
       t: 2.2,
     };
 }

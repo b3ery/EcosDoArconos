@@ -378,12 +378,14 @@ function carriageMenu() {
     dests
       .map((z) => ({
         t: ZONES[z].nome + (ZONES[z].town ? " (vila)" : ""),
-        fn: () => {
-          if (player.gold < withTax(cost)) {
+        fn: () =>
+          borderCheck(z, (mul) => {
+          const price = Math.max(cost * mul, mul > 1 ? 30 : 0);
+          if (player.gold < withTax(price)) {
             say([["Cocheiro", "Sem ouro, sem viagem."]]);
             return;
           }
-          payWithTax(cost);
+          payWithTax(price);
           player.flags.rode = true;
           player.clock = (player.clock + 60) % 1440;
           const zz = ZONES[z];
@@ -397,7 +399,7 @@ function carriageMenu() {
           saveGame();
           playSound(330, 0.2, "triangle");
           toast(`A carruagem deixa você em ${zz.nome}.`, 3000);
-        },
+          }),
       }))
       .concat([
         {

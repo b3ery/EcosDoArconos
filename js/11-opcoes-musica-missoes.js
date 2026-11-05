@@ -1400,8 +1400,12 @@ const GUIDE_SECTIONS = [
     [
       ["O modo", "No título, escolha Simulador de Vida: sem runas nem batalhas, só a vida na vila."],
       ["Necessidades", "Fome, sede, energia, higiene e diversão. Baixas, elas diminuem o pagamento."],
-      ["Trabalhos", "Quadro de Trabalhos da praça: feira (minijogo), tendinha própria (licença) e Guarda Real."],
-      ["Guarda Real", "Turnos no castelo com patentes: Recruta, Soldado, Sargento e Capitão. Vale nos dois modos."],
+      ["Trabalhos", "Quadro de Trabalhos (E): lenhador, fazendeiro, minerador, pescador, carregador, feirante e Guarda. Tudo feito no mapa."],
+      ["Tempo", "P pausa, T acelera (1x, 2x, 4x, 8x) e H espera algumas horas. Também nos botões à esquerda."],
+      ["Guarda Real", "Patrulha na vila e prisão de ladrões. Patentes: Recruta, Soldado, Sargento e Capitão. Vale nos dois modos."],
+      ["Idade", "Cada dia é um ano. Você começa com 18. Depois dos 70 a vida pode acabar: um filho adulto herda e você continua com ele."],
+      ["Reinos", "Cinzaluz é do Reino de Aurélia, o Porto das Marés e Pedravale dos Clãs. Tecla K mostra as relações."],
+      ["Guerras", "Reinos em guerra fecham a fronteira (só contrabandista), cobram imposto de guerra e pagam bem quem se alista."],
     ],
   ],
   [

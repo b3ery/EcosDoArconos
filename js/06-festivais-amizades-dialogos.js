@@ -1334,7 +1334,7 @@ function discount(shop) {
 const TAX = { buy: 0.12, sell: 0.1 };
 function taxRate() {
   if (festivalToday() || player.spouse === "rainha") return 0;
-  return (player.rep ?? 50) >= 80 ? TAX.buy / 2 : TAX.buy;
+  return ((player.rep ?? 50) >= 80 ? TAX.buy / 2 : TAX.buy) + warTax();
 }
 function taxOf(price) {
   return price > 0 ? Math.ceil(price * taxRate()) : 0;
@@ -1357,7 +1357,7 @@ function taxNote() {
   if (player.spouse === "rainha") return '<span style="color:#f2c14e">Consorte Real: isento do Imposto Real!</span>';
   if (festivalToday()) return '<span style="color:#7ad36b">Dia de festival: sem Imposto Real!</span>';
   const pct = Math.round(taxRate() * 100);
-  return `Imposto Real: ${pct}% na compra · ${Math.round(TAX.sell * 100)}% na venda${pct < 12 ? " (desconto por boa fama)" : ""}`;
+  return `Imposto Real: ${pct}% na compra · ${Math.round(TAX.sell * 100)}% na venda${warTax() ? " (inclui 8% de imposto de guerra)" : pct < 12 ? " (desconto por boa fama)" : ""}`;
 }
 
 function addFriendship(id, n) {

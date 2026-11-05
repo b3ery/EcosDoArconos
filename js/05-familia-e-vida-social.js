@@ -31,6 +31,10 @@ function onNewDay() {
     setTimeout(() => toast("Mesada real: +50 de ouro do tesouro da Coroa.", 3500), 2200);
   }
   if (typeof growKids === "function") growKids();
+  if (lifeMode()) {
+    ageTick();
+    worldTick();
+  }
   restoreWorkTiles();
 }
 const FAM_SPOTS = {

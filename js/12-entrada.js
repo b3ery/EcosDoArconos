@@ -38,6 +38,7 @@ const WORLD_SHORTCUTS = {
   escape: openOptions,
   r: () => player.zone === "casa" && openDecor(),
   p: togglePause,
+  k: kingdomsMenu,
   t: cycleSpeed,
   h: waitMenu,
 };

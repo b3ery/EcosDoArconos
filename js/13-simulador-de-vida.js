@@ -64,6 +64,8 @@ function startLifeMode() {
   player.energy = 100;
   player.hygiene = 100;
   player.fun = 80;
+  player.age = START_AGE;
+  worldState();
   game.seenArr = {};
   game.mm = {};
   startGame(false);
@@ -183,6 +185,7 @@ function lifeGoalText() {
   const low = Object.keys(LIFE_NEEDS).find((k) => lifeNeed(k) < 20);
   if (low) return `! ${LIFE_NEEDS[low].n} baixa: ${LIFE_NEEDS[low].low}`;
   if (starving()) return "! Coma e beba alguma coisa!";
-  const r = guardRank();
-  return `Simulador de Vida · ${player.gold} ouro · Guarda: ${r.n}${player.flags.stall ? " · Tem tendinha" : ""}`;
+  const here = kingdomOf(player.zone);
+  if (kingdomAtWar(here)) return `! ${KINGDOMS[here].short} está em guerra · K: ver reinos e alistar-se`;
+  return `${player.name}, ${playerAge()} anos · ${KINGDOMS[here].short} · ${player.gold} ouro · E no Quadro de Trabalhos · K: reinos`;
 }

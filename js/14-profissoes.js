@@ -123,8 +123,9 @@ function randomRoadTile(minDist = 6) {
   return null;
 }
 function jobPay(base) {
-  const rank = player.job && player.job.id === "guarda" ? guardRank().pay : 1;
-  return Math.max(1, Math.round(base * rank * needsPayMul()));
+  const rank = player.job && player.job.id === "guarda" ? guardRank().pay * warGuardMul() : 1;
+  const age = lifeMode() ? ageWorkMul() : 1;
+  return Math.max(1, Math.round(base * rank * age * needsPayMul()));
 }
 function earn(amount, why) {
   player.gold += amount;

@@ -667,7 +667,7 @@ function updateHUD() {
   const needBar = (k, cls) =>
     `<span title="${LIFE_NEEDS[k].n}">${iconHTML(LIFE_NEEDS[k].icon, 14)}</span><div class="bar ${cls}"><i style="width:${lifeNeed(k)}%"></i></div>`;
   const lifeRows = lifeMode()
-    ? `<div class="hrow nd">${needBar("energy", "mp")}${needBar("hygiene", "wt")}</div><div class="hrow nd">${needBar("fun", "fd")}<span style="font-size:.75em;color:#c9a8ff">Vida</span></div>`
+    ? `<div class="hrow nd">${needBar("energy", "mp")}${needBar("hygiene", "wt")}</div><div class="hrow nd">${needBar("fun", "fd")}<span style="font-size:.75em;color:#c9a8ff">${playerAge()} anos</span></div>`
     : "";
   const s = `<div class="box hudL"><div class="hrow"><span class="lv">Nv${player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
   <div class="hrow"><span class="gd">◆${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
