@@ -87,7 +87,7 @@ function genJobs() {
   return list;
 }
 function guardiansFreed() {
-  return player.guards.filter((z) => ["bosque", "pantano", "picos"].includes(z)).length;
+  return player.guards.filter((z) => ["bosque", "pantano", "picos", "mina", "porto"].includes(z)).length;
 }
 function openJobs(direct) {
   if (!direct) return professionsMenu();

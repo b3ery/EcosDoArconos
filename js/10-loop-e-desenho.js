@@ -2313,7 +2313,7 @@ function drawWorld(t) {
       },
     });
   }
-  if (z.guard && z.guardPos && !player.guards.includes(player.zone) && inView(z.guardPos[0], z.guardPos[1])) {
+  if (z.guard && z.guardPos && !lifeMode() && !player.guards.includes(player.zone) && inView(z.guardPos[0], z.guardPos[1])) {
     const [x, y] = z.guardPos;
     list.push({
       y,

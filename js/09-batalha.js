@@ -210,6 +210,12 @@ function applyStoryAdjustments(enemy, type) {
     enemy.rune = player.order[i + 1];
   }
   if (type === "boneco") enemy.weak = [player.aff];
+  // Guardiões da Mina e do Cais guardam as runas que ainda faltam.
+  if (type === "basilisco" || type === "leviata") {
+    enemy.rune = missingRune(type === "basilisco" ? 4 : 5);
+    enemy.weak = [player.aff];
+    enemy.resist = enemy.rune ? [enemy.rune] : [];
+  }
   if (type === "lider") {
     const freed = guardiansFreed();
     enemy.hp = Math.round(enemy.hp * (1 + freed * 0.45));
@@ -247,6 +253,8 @@ const ENEMY_LEVELS = {
   sentinela: { base: 9, range: [9, 14] },
   eco: { base: 9, range: [9, 14] },
   ent: { base: 3, min: 4, boss: true },
+  basilisco: { base: 7, min: 9, boss: true },
+  leviata: { base: 8, min: 10, boss: true },
   serpente: { base: 5, min: 6, boss: true },
   grifo: { base: 6, min: 8, boss: true },
   vitral: { base: 6, min: 8, boss: true },
@@ -1513,9 +1521,10 @@ function rewardSpectralDirector() {
 }
 function rewardGuardian(enemy, type) {
   player.guards.push(player.zone);
-  player.runes.push(enemy.rune);
+  if (enemy.rune && !player.runes.includes(enemy.rune)) player.runes.push(enemy.rune);
   addItem(GUARD_DROP[type]);
-  const lines = GUARD_POST(type);
+  const lines = GUARD_POST(type, enemy.rune);
+  if (!enemy.rune) lines.splice(-2, 1);
   if (player.runes.length === 4)
     lines.push(["", "Ao longe, ao sul de Cinzaluz, algo se rompe com um estalo."]);
   say(lines, saveGame);

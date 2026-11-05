@@ -1744,7 +1744,7 @@ function targetAt(x, y) {
       return u || "Ver: " + furnName(fu.id);
     }
   }
-  if (c === "G" && !player.guards.includes(player.zone)) return "Enfrentar o Guardião";
+  if (c === "G" && !player.guards.includes(player.zone) && !lifeMode()) return "Enfrentar o Guardião";
   if (c === "B" && player.runes.length < 4) return "Barreira";
   if (c === "S") return "Examinar";
   if (c === "K") return "Boneco de treino";
@@ -2361,7 +2361,12 @@ function interactAt(x, y) {
       ]);
       saveGame();
     }
-  } else if (c === "G" && !player.guards.includes(player.zone)) {
+  } else if (c === "G" && !player.guards.includes(player.zone) && !lifeMode()) {
+    // Os Guardiões da Mina e do Cais só acordam depois dos três primeiros.
+    if ((z.guard === "basilisco" || z.guard === "leviata") && guardiansFreed() < 3) {
+      say([["", "Algo enorme dorme aqui. Ainda não é a sua hora: liberte primeiro o Ent, a Serpente e o Grifo."]]);
+      return;
+    }
     say(GUARD_PRE[z.guard](), () => startBattle(z.guard, null));
   } else if (c === "B" && player.runes.length < 4) {
     say([

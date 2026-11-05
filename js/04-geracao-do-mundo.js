@@ -1324,6 +1324,7 @@ function genMine() {
     seed: 7717,
     exits: {},
     enemies: [],
+    guard: "basilisco",
   };
   const z = genDungeon("mina", ZONE_DEFS.mina);
   const R = rng(4242);
@@ -1331,15 +1332,14 @@ function genMine() {
   const open = (x, y) => rows[y] && rows[y][x] === ".";
   for (let y = 4; y < z.h - 1; y++)
     for (let x = 1; x < z.w - 1; x++) {
-      if (rows[y][x] === "G" || rows[y][x] === "N") rows[y][x] = ".";
+      if (rows[y][x] === "N") rows[y][x] = ".";
       // Pedra só no meio das salas, para nunca fechar um corredor.
       let around = 0;
       for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (open(x + dx, y + dy)) around++;
       if (rows[y][x] === "." && around === 9 && R() < 0.3) rows[y][x] = "o";
     }
   z.map = rows.map((r) => r.join(""));
-  z.feats = [];
-  z.guardPos = null;
+  z.feats = z.feats.filter((f) => f[2] === "G");
   z.npcs = {};
   z.npcList = [];
   return z;
@@ -4741,6 +4741,14 @@ const NPCS = {
   },
 };
 const GUARD_PRE = {
+  basilisco: () => [
+    ["Basilisco de Cristal", "Ninguém desce tanto na mina... e volta. A runa que dorme aqui é minha."],
+    ["", "O Basilisco se enrola e cristais brotam das escamas!"],
+  ],
+  leviata: () => [
+    ["Leviatã do Cais", "O mar esqueceu a Canção. E eu esqueci o mar. Volte para a terra, pequeno mago!"],
+    ["", "Uma onda gigante quebra no píer!"],
+  ],
   diretor: () => [
     ["Diretor Espectral", "SILÊNCIO NA BIBLIOTECA! Nenhum aluno sai daqui com os meus livros!"],
     ["", "O Diretor ergue seu cetro sombrio!"],
@@ -4776,14 +4784,16 @@ const GUARD_DROP = {
   ent: "coroa",
   serpente: "escama",
   grifo: "pena",
+  basilisco: "armMithril",
+  leviata: "amuPerola",
 };
-function GUARD_POST(type) {
+function GUARD_POST(type, rune) {
   const i = {
       ent: 0,
       serpente: 1,
       grifo: 2,
     }[type],
-    r = player.order[i + 1],
+    r = rune || player.order[i + 1],
     it = ITEMS[GUARD_DROP[type]].nome;
   const L = {
     ent: [
@@ -4798,6 +4808,20 @@ function GUARD_POST(type) {
       [
         "Serpente das Águas",
         `Sssinto o sol de novo... Leve a Runa ${RUNE_OF[r]}. E minhas escamas: elas vão te proteger.`,
+      ],
+    ],
+    basilisco: [
+      ["", "Os cristais do Basilisco estalam e caem. Por baixo, há uma serpente prateada e cansada."],
+      [
+        "Basilisco Prateado",
+        `Trezentos anos guardando o escuro da mina... Leve a Runa ${RUNE_OF[r]}. E esta armadura: os anões a fizeram para mim.`,
+      ],
+    ],
+    leviata: [
+      ["", "A maré recua. O Leviatã afunda devagar e volta à tona com olhos claros."],
+      [
+        "Leviatã das Marés",
+        `O farol me chamou de volta. Leve a Runa ${RUNE_OF[r]}, aprendiz, e esta pérola do fundo do mar.`,
       ],
     ],
     grifo: [
@@ -4894,3 +4918,16 @@ const EPILOGUE = [
   ],
   ["Narrador", "A Canção Arcana voltou."],
 ];
+
+/** Leviatã do Cais: Guardião na ponta do píer do Porto Brisamar. */
+(function addPortGuardian() {
+  const z = ZONES.porto;
+  let best = null;
+  for (let y = 0; y < z.h; y++)
+    for (let x = 0; x < z.w; x++) if (z.map[y][x] === "=" && (!best || y > best[1])) best = [x, y];
+  if (!best) return;
+  const [x, y] = best;
+  z.map[y] = z.map[y].slice(0, x) + "G" + z.map[y].slice(x + 1);
+  z.guard = "leviata";
+  z.guardPos = [x, y];
+})();

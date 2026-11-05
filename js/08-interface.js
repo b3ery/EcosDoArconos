@@ -438,6 +438,22 @@ const STEPS = [
     done: () => player.flags.r4,
   },
   {
+    id: "basil",
+    t: "Liberte o Basilisco de Cristal",
+    zone: "mina",
+    pos: () => ZONES.mina.guardPos,
+    d: "No fundo da Mina de Cristal, em Pedravale, dorme o quinto Guardião. Ele endurece a pele: use feitiços fortes e o clima a seu favor.",
+    done: () => player.guards.includes("mina"),
+  },
+  {
+    id: "levi",
+    t: "Liberte o Leviatã do Cais",
+    zone: "porto",
+    pos: () => ZONES.porto.guardPos,
+    d: "Na ponta do píer do Porto Brisamar, o sexto Guardião se esconde nas ondas. Ele se regenera: ataque sem parar.",
+    done: () => player.guards.includes("porto"),
+  },
+  {
     id: "sile",
     t: "Enfrente o Silenciador",
     zone: "torre",
@@ -494,6 +510,18 @@ function route(zone, pos) {
       y: pos[1],
       hop: null,
     };
+  // A Mina fica dentro de Pedravale; de dentro dela, a saída é pelo topo.
+  if (player.zone === "mina") {
+    const o = ZONES.mina.open.n;
+    return { x: o[0], y: 0, hop: "Pedravale" };
+  }
+  if (zone === "mina") {
+    if (player.zone === "serra") {
+      const d = zoneDoorPos("serra", "Mina de Cristal");
+      return { x: d[0], y: d[1], hop: "Mina de Cristal" };
+    }
+    return route("serra", zoneDoorPos("serra", "Mina de Cristal"));
+  }
   // Porto e Pedravale ficam longe: o caminho é a carruagem do estábulo.
   if (ZONES[zone].town && zone !== "vila" && (player.zone === "vila" || ZONES[player.zone].town)) {
     if (player.zone === "vila") {
