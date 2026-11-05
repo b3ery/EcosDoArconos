@@ -597,6 +597,7 @@ function openShop(id) {
   game.shopTab = "buy";
   game.shopIdx = 0;
   game.shopQty = 1;
+  game.shopCat = null;
   game.keeperLine = null;
   renderShop();
   byId("shop").style.display = "block";

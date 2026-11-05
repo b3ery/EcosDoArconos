@@ -83,11 +83,26 @@ function itemStatChips(it) {
 
 /* ===================== LOJA DE ITENS ===================== */
 
-function shopList() {
+function shopAll() {
   const sh = SHOPS[game.shopId];
   return game.shopTab === "buy"
-    ? sh.items
+    ? sh.items.filter((id) => ITEMS[id])
     : Object.keys(player.inv).filter((id) => ITEMS[id] && itemCount(id) > (Object.values(player.eq).includes(id) ? 1 : 0));
+}
+/** Categoria de um item (para os filtros da loja). */
+function itemCat(id) {
+  const it = ITEMS[id];
+  return it.cat || (it.slot ? { cajado: "Cajados", manto: "Roupas e armaduras", armadura: "Roupas e armaduras", amuleto: "Joias" }[it.slot] : null) || { movel: "Móveis", cons: "Poções", gift: "Presentes", mat: "Materiais", tool: "Ferramentas", food: "Comida", pet: "Mascotes" }[it.tipo] || "Outros";
+}
+function shopCats() {
+  const seen = [];
+  for (const id of shopAll()) if (!seen.includes(itemCat(id))) seen.push(itemCat(id));
+  return seen;
+}
+function shopList() {
+  const all = shopAll();
+  if (!game.shopCat || !shopCats().includes(game.shopCat)) game.shopCat = null;
+  return game.shopCat ? all.filter((id) => itemCat(id) === game.shopCat) : all;
 }
 function shopPrice(id) {
   const it = ITEMS[id];
@@ -135,6 +150,13 @@ function renderShop() {
       </div>
     </div>
     ${
+      shopCats().length > 1
+        ? `<div class="st-cats"><button data-scat="" class="${!game.shopCat ? "on" : ""}">Tudo <em>${shopAll().length}</em></button>${shopCats()
+            .map((c) => `<button data-scat="${c}" class="${game.shopCat === c ? "on" : ""}">${iconHTML(itemIcon(shopAll().find((id) => itemCat(id) === c)), 16)}${c} <em>${shopAll().filter((id) => itemCat(id) === c).length}</em></button>`)
+            .join("")}</div>`
+        : ""
+    }
+    ${
       list.length
         ? `<div class="st-stage">
       <button class="st-nav" data-nav="-1" ${list.length < 2 ? "disabled" : ""} aria-label="Anterior">‹</button>
@@ -143,7 +165,7 @@ function renderShop() {
       <div class="st-shelf"></div>
     </div>
     <div class="st-detail" id="stdetail"></div>
-    <div class="st-dots">${list.map((_, i) => `<i data-go="${i}"></i>`).join("")}</div>`
+    ${list.length > 24 ? `<div class="st-count"><b id="stcount">${game.shopIdx + 1}</b> de ${list.length}<span class="st-bar"><i id="stbar" style="width:${((game.shopIdx + 1) / list.length) * 100}%"></i></span></div>` : `<div class="st-dots">${list.map((_, i) => `<i data-go="${i}"></i>`).join("")}</div>`}`
         : `<div class="st-empty">${iconHTML("bag", 40)}<p>Você não tem nada para vender aqui.</p></div>`
     }
     <footer class="st-keys"><span><kbd>←</kbd><kbd>→</kbd> passar</span><span><kbd>↑</kbd><kbd>↓</kbd> quantidade</span><span><kbd>Enter</kbd> ${game.shopTab === "buy" ? "comprar" : "vender"}</span><span><kbd>Tab</kbd> comprar/vender</span><span><kbd>Esc</kbd> sair</span></footer>
@@ -155,6 +177,16 @@ function renderShop() {
     (b) =>
       (b.onclick = () => {
         shopSwitchTab(b.dataset.t);
+      }),
+  );
+  root.querySelectorAll("[data-scat]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        game.shopCat = b.dataset.scat || null;
+        game.shopIdx = 0;
+        game.shopQty = 1;
+        playSound(600, 0.03, "sine");
+        renderShop();
       }),
   );
   root.querySelectorAll("[data-nav]").forEach((b) => (b.onclick = () => shopSlide(+b.dataset.nav)));
@@ -198,9 +230,16 @@ function shopFocus() {
   const cards = root.querySelectorAll(".st-card");
   cards.forEach((c, i) => {
     let d = i - game.shopIdx;
-    if (n > 4) {
+    if (n > 2) {
       if (d > n / 2) d -= n;
       if (d < -n / 2) d += n;
+    }
+    // Cartão que dá a volta (do fim para o começo) troca de lado sem atravessar a prateleira.
+    const prev = c.dataset.d == null ? d : +c.dataset.d;
+    c.dataset.d = d;
+    if (Math.abs(d - prev) > 2) {
+      c.style.transition = "none";
+      requestAnimationFrame(() => requestAnimationFrame(() => (c.style.transition = "")));
     }
     const a = Math.abs(d);
     c.classList.toggle("on", d === 0);
@@ -211,6 +250,10 @@ function shopFocus() {
     c.tabIndex = d === 0 ? 0 : -1;
   });
   root.querySelectorAll(".st-dots i").forEach((dot, i) => dot.classList.toggle("on", i === game.shopIdx));
+  if (byId("stcount")) {
+    byId("stcount").textContent = game.shopIdx + 1;
+    byId("stbar").style.width = ((game.shopIdx + 1) / n) * 100 + "%";
+  }
   const id = list[game.shopIdx],
     it = ITEMS[id];
   const r = rarityOf(it.preco, it.lend);
@@ -261,6 +304,7 @@ function shopQty(d) {
 }
 function shopSwitchTab(t) {
   game.shopTab = t || (game.shopTab === "buy" ? "sell" : "buy");
+  game.shopCat = null;
   game.shopIdx = 0;
   game.shopQty = 1;
   keeperSays(game.shopTab === "buy" ? "hello" : "look");

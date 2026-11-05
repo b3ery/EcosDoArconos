@@ -3400,3 +3400,70 @@ button:active:not(:disabled) {
   color: var(--text);
   font-family: inherit;
 }
+.st-cats {
+  display: flex;
+  gap: 0.3em;
+  padding: 0.45em 0.9em 0.1em;
+  overflow-x: auto;
+  flex: none;
+  scrollbar-width: thin;
+}
+.st-cats button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  flex: none;
+  border-radius: 999px;
+  padding: 0.15em 0.7em 0.15em 0.35em;
+  background: #241a38;
+  color: var(--muted);
+  box-shadow: none;
+  font-size: 0.85em;
+}
+.st-cats button .pxi {
+  margin: 0;
+}
+.st-cats button em {
+  font-style: normal;
+  font-size: 0.8em;
+  padding: 0 0.4em;
+  border-radius: 999px;
+  background: #1a1028;
+}
+.st-cats button.on {
+  background: linear-gradient(#ffd977, #e0a030);
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+}
+.st-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding-top: 0.5em;
+  color: var(--muted);
+}
+.st-count b {
+  color: var(--gold);
+  font-family: "Pixelify Sans", sans-serif;
+}
+.st-bar {
+  width: 10em;
+  height: 0.45em;
+  border-radius: 999px;
+  background: #2a1f3d;
+  overflow: hidden;
+}
+.st-bar i {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.2s;
+}
+.pxi.gx {
+  image-rendering: pixelated;
+}
+.st-cats button.on em {
+  background: #2a1a0c;
+  color: #ffe6a8;
+}

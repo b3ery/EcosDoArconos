@@ -378,6 +378,31 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 
 Clique num personagem (ou aperte **E** perto dele): as opções aparecem **em círculo ao redor dele**, com ícones e agrupadas em **Amigável, Romântico, Engraçado, Malvado, Família e Serviços**. O ✕ no meio fecha.
 
+## 🎒 500 itens, cada um com seu ícone
+
+<div align="center"><img src="assets/itens_500.png" width="720" alt="Os 500 itens novos"/></div>
+
+Todo item tem um ícone em pixel art próprio, desenhado por um gerador com mais de 110 formas (espadas, cajados, poções, frutas, peixes, móveis, joias, ferramentas...) e contorno e brilho automáticos. Os itens antigos também ganharam ícones novos: cada cajado tem a cor do seu elemento, cada comida tem o seu desenho.
+
+| Grupo | Quantos | Onde comprar |
+|---|---:|---|
+| Frutas e legumes | 42 | Rosa, Frutas da Ilha, Armazém |
+| Pães, bolos, tortas e doces | 30 | Padarias e Doceria |
+| Carnes, ovos, peixes e frutos do mar | 28 | Açougue e peixarias |
+| Pratos quentes e bebidas | 40 | Tavernas e casas de chá |
+| Poções e elixires (vida, mana, fôlego, energia, banho, alegria, calor, antídoto...) | 30 | Bruno e Boticário |
+| Ervas, minérios, gemas, lingotes, madeira, tecidos e couros | 70 | Ervanárias, minérios, cristais, Forja Anã, Armazém |
+| Partes de monstros | 20 | Peles, Bazar |
+| Cajados, varinhas, cetros e bastões | 30 | Doran |
+| Roupas, armaduras, elmos, botas e escudos | 30 | Ferreiro, Forja Anã, Alfaiate |
+| Anéis, amuletos, colares, pulseiras e tiaras | 30 | Ourives e Joalheria Pérola |
+| Flores, brinquedos, instrumentos, livros e perfumes | 50 | Floricultura, Brinquedos, Livraria, Bazar, Empório |
+| Ferramentas | 20 | Armazém, Ferreiro, Redes e Anzóis |
+| Móveis (aparecem na casa com o próprio desenho) | 50 | Marcenaria do Tonico |
+| Curiosidades e relíquias | 30 | Bazar, Empório, Conchas |
+
+Nas lojas com muitos itens aparecem **filtros por categoria** em cima do carrossel.
+
 ## 🛒 Lojas
 
 Cada loja é uma **vitrine**: o atendente aparece no canto e comenta o que você faz, os itens ficam numa **prateleira em leque** (o do meio grande, os vizinhos menores dos lados) com cor de **raridade** (Comum, Incomum, Raro, Épico, Lendário). Embaixo, um painel mostra descrição, **atributos** (fome, vida, dano, defesa...), preço com imposto e **quantidade**.
