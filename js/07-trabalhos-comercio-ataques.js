@@ -401,6 +401,7 @@ function carriageMenu() {
           toast(`A carruagem deixa você em ${zz.nome}.`, 3000);
           }),
       }))
+      .concat(walkHomeItems())
       .concat([
         {
           t: "Cancelar",

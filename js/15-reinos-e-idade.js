@@ -232,3 +232,52 @@ function enlist() {
   addNeed("energy", -40);
   saveGame();
 }
+
+/* ===================== VIAGEM A PÉ ENTRE OS REINOS ===================== */
+
+/** No Simulador, as saídas de Cinzaluz levam aos reinos vizinhos e à Floresta Grande. */
+const SIM_EXITS = { e: "porto", n: "serra", w: "floresta" };
+function simTravel(dir) {
+  if (player.zone !== "vila") return false;
+  const dest = SIM_EXITS[dir];
+  if (!dest) return false;
+  if (dest === "floresta") {
+    changeZone("floresta", "w");
+    return true;
+  }
+  walkTo(dest);
+  return true;
+}
+/** Caminhar até outra vila: 2 horas, e na guerra só com contrabandista. */
+function walkTo(dest) {
+  borderCheck(dest, (mul) => {
+    if (mul > 1) {
+      const price = 30;
+      if (player.gold < price) return say([["Contrabandista", "Sem 30 de ouro, sem trilha escondida. Volte quando tiver."]]);
+      player.gold -= price;
+    }
+    const a = ZONES[dest].town.arrive;
+    passTime(2, `Você caminha 2 horas pela estrada até ${ZONES[dest].nome}.`);
+    player.zone = dest;
+    player.x = a[0];
+    player.y = a[1];
+    player.dir = "down";
+    enterZone();
+    addNeed("energy", -8);
+    saveGame();
+    setTimeout(() => announceBorder(dest), 600);
+  });
+}
+function announceBorder(dest) {
+  const k = KINGDOMS[kingdomOf(dest)];
+  toast(`Fronteira: você entrou no ${k.n}. Governante: ${k.ruler}.`, 3600);
+}
+/** Opção "ir a pé" no estábulo das vilas vizinhas. */
+function walkHomeItems() {
+  if (!lifeMode()) return [];
+  const towns = ["vila", "porto", "serra"].filter((z) => z !== player.zone);
+  return towns.map((z) => ({
+    t: `Ir a pé para ${ZONES[z].nome} (grátis, 2h)`,
+    fn: () => walkTo(z),
+  }));
+}

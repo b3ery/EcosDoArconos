@@ -1574,6 +1574,7 @@ function tryMove(dir) {
       "0,-1": "n",
       "0,1": "s",
     }[dx + "," + dy];
+    if (lifeMode() && simTravel(ex)) return;
     const dest = z.exits[ex];
     if (dest) changeZone(dest, ex);
     return;

@@ -2860,7 +2860,7 @@ const SIDEQ = [
   },
 ];
 /** Metas que só fazem sentido no modo História (escondidas no Simulador). */
-const STORY_SIDE = /Guardiões|Ecos|runas|magias|magia \(|páginas|ataques|nível|Vença 2 concursos/;
+const STORY_SIDE = /Guardiões|Ecos|runas|magias|magia \(|páginas|ataques|nível/;
 const sideVisible = (q) => !(lifeMode() && STORY_SIDE.test(q.t));
 function sideN(q) {
   return typeof q.n === "function" ? q.n() : q.n;

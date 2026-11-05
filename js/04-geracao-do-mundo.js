@@ -1275,6 +1275,7 @@ const ZONES = {
   torre: genDungeon("torre", ZONE_DEFS.torre),
   escola: genDungeon("escola", ZONE_DEFS.escola),
   mina: genMine(),
+  floresta: genForest(),
 };
 (function fixSchool() {
   const z = ZONES.escola;
@@ -1313,6 +1314,26 @@ const ZONES = {
     }
   z.spawn = z.spawn.filter(([x, y]) => z.map[y][x] === ".");
 })();
+/** Floresta Grande (Simulador de Vida): mata enorme a oeste de Cinzaluz, cheia de animais. */
+function genForest() {
+  ZONE_DEFS.floresta = {
+    nome: "Floresta Grande",
+    theme: "bosque",
+    w: 100,
+    h: 76,
+    side: "e",
+    seed: 2402,
+    wall: 0.42,
+    water: 0.35,
+    exits: { e: "vila" },
+    enemies: [],
+    guardF: [0.06, 0.5],
+    altarF: [0.55, 0.5],
+    pageF: [0.3, 0.15],
+    npc: "florestal",
+  };
+  return genNatural("floresta", ZONE_DEFS.floresta);
+}
 /** Mina de Cristal: cavernas com pedras para minerar (nos dois modos). */
 function genMine() {
   ZONE_DEFS.mina = {
@@ -4388,6 +4409,18 @@ const NPCS = {
     talk() {
       openShop("minerios");
       return null;
+    },
+  },
+  florestal: {
+    nome: "Guarda-Florestal Brás",
+    robe: "#3a5a2a",
+    hat: "#5a3a22",
+    hair: "#3a2414",
+    talk() {
+      return [
+        ["Guarda-Florestal Brás", "Bem-vindo à Floresta Grande. Cervos são mansos e fogem. Lobos, javalis e ursos atacam quem chega perto."],
+        ["Guarda-Florestal Brás", "Para lutar, fique de frente para o bicho e aperte E no verde do medidor. Se a vida ficar baixa, corra para o altar ou volte para a vila!"],
+      ];
     },
   },
   peleiro: {
