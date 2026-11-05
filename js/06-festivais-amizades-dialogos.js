@@ -321,6 +321,10 @@ function bldService(b) {
     return;
   }
   if (b.style === "mina") {
+    enterMine();
+    return;
+  }
+  if (b.style === "minaVelha") {
     if (player.relDay["mina"] === player.day) {
       say([["", "Seus braços ainda doem da mineração de hoje. Volte amanhã."]]);
       return;

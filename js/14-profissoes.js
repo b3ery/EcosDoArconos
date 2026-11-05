@@ -45,7 +45,7 @@ const PROFESSIONS = {
   minerador: {
     n: "Minerador",
     icon: "pick",
-    desc: "Em Pedravale, quebre as pedras (E várias vezes) e leve o minério à Mina de Cristal.",
+    desc: "Em Pedravale ou dentro da Mina de Cristal, quebre as pedras (E várias vezes) e entregue na porta da mina.",
     tile: "o",
     hits: 4,
     carry: 3,
@@ -358,7 +358,7 @@ function customerAt(x, y) {
 /** Texto do "E · ..." quando você olha para algo do seu trabalho. */
 function jobLabel(x, y) {
   const j = player.job;
-  if (!j || player.zone !== j.zone && j.id !== "lenhador") return null;
+  if (!j || (player.zone !== j.zone && !(j.id === "lenhador" || (j.id === "minerador" && player.zone === "mina")))) return null;
   const c = tileAt(player.zone, x, y);
   const p = PROFESSIONS[j.id];
   if (p && p.tile && j.cargo < p.carry) {
@@ -593,4 +593,110 @@ function jobDrawList(list, t) {
         },
       });
   }
+}
+
+/* ===================== MINA, TRIGO E PÃO (nos dois modos) ===================== */
+
+function enterMine() {
+  const o = ZONES.mina.open.n;
+  player.zone = "mina";
+  player.x = o[0];
+  player.y = o[1] + 1;
+  player.riding = false;
+  game.fade = 1;
+  enterZone();
+  saveGame();
+  playSound(220, 0.2, "triangle");
+  if (!player.flags.minaVisitada) {
+    player.flags.minaVisitada = true;
+    setTimeout(
+      () =>
+        say([
+          ["", "Você desce pela boca da mina. Lá embaixo, os cristais brilham nas paredes."],
+          ["", "Fique de frente para uma pedra e aperte E várias vezes para minerar. Saia pelo topo do mapa."],
+        ]),
+      500,
+    );
+  }
+}
+function leaveMine() {
+  const d = findBuilding("serra", "Mina de Cristal");
+  player.zone = "serra";
+  player.x = d.x;
+  player.y = d.y + 1;
+  player.dir = "down";
+  game.fade = 1;
+  enterZone();
+  saveGame();
+}
+/** O que sai de cada pedra da mina. */
+function mineLoot() {
+  const r = Math.random();
+  if (r < 0.04) return "fragmento";
+  if (r < 0.2) return "cristal";
+  if (r < 0.55) return "minerio";
+  return "pedra";
+}
+const GATHER_HITS = { o: 4, g: 1 };
+/** Minerar e colher fora de um turno de trabalho. */
+function gatherLabel(x, y) {
+  const c = tileAt(player.zone, x, y);
+  if (c === "o" && player.zone === "mina") return `Minerar (${(game.gatherHits?.[x + "," + y] || 0) + 1}/4)`;
+  if (c === "g" && ZONES[player.zone].town) return "Colher trigo";
+  return null;
+}
+function gatherInteract(x, y) {
+  const label = gatherLabel(x, y);
+  if (!label) return false;
+  const c = tileAt(player.zone, x, y);
+  if (lifeMode() && lifeNeed("energy") < 8) {
+    say([["", "Você está cansado demais. Durma antes de trabalhar."]]);
+    return true;
+  }
+  game.gatherHits = game.gatherHits || {};
+  const k = x + "," + y;
+  game.gatherHits[k] = (game.gatherHits[k] || 0) + 1;
+  game.shake = 0.06;
+  game.bubbles.push({ x, y, icon: c === "o" ? "pick" : "wheat", t: 0.6 });
+  playSound(c === "o" ? 260 : 520, 0.06, "square");
+  if (game.gatherHits[k] < GATHER_HITS[c]) return true;
+  delete game.gatherHits[k];
+  deplete(player.zone, x, y, c, c === "o" ? "." : ",");
+  const it = c === "o" ? mineLoot() : "trigo";
+  addItem(it);
+  addNeed("energy", c === "o" ? -2 : -0.5);
+  player.clock = Math.min(1439, player.clock + (c === "o" ? 10 : 3));
+  toast(`Você conseguiu: ${ITEMS[it].nome}!${it === "fragmento" ? " Que sorte!" : ""}`, 1800);
+  saveGame();
+  return true;
+}
+/** Lareira de casa: esquentar-se ou assar pão com o trigo colhido. */
+function fireplaceMenu() {
+  choice("Lareira", `Feixes de trigo: ${itemCount("trigo")} · Cantis de água: ${itemCount("agua")}`, [
+    {
+      t: "Esquentar-se (+20 MP)",
+      fn: () => {
+        player.mp = Math.min(maxMp(), player.mp + 20);
+        addNeed("fun", 5);
+        toast("Você se esquenta perto do fogo.");
+      },
+    },
+    {
+      t: "Assar pão (3 trigo + 1 água = 2 pães)",
+      fn: () => {
+        if (itemCount("trigo") < 3 || !itemCount("agua"))
+          return say([["", "Faltam ingredientes. Colha trigo na plantação (E no trigo) e compre um cantil de água."]]);
+        removeItem("trigo", 3);
+        removeItem("agua");
+        addItem("pao", 2);
+        player.clock = Math.min(1439, player.clock + 60);
+        player.breadBaked = (player.breadBaked || 0) + 2;
+        addNeed("fun", 6);
+        game.fade = 1;
+        saveGame();
+        say([["", "Você sova a massa, espera crescer e assa na lareira. A casa inteira cheira a pão quente! +2 Pães de Cinzaluz."]]);
+      },
+    },
+    { t: "Sair", fn: null },
+  ]);
 }

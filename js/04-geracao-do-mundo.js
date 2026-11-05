@@ -1274,6 +1274,7 @@ const ZONES = {
   picos: genNatural("picos", ZONE_DEFS.picos),
   torre: genDungeon("torre", ZONE_DEFS.torre),
   escola: genDungeon("escola", ZONE_DEFS.escola),
+  mina: genMine(),
 };
 (function fixSchool() {
   const z = ZONES.escola;
@@ -1312,6 +1313,37 @@ const ZONES = {
     }
   z.spawn = z.spawn.filter(([x, y]) => z.map[y][x] === ".");
 })();
+/** Mina de Cristal: cavernas com pedras para minerar (nos dois modos). */
+function genMine() {
+  ZONE_DEFS.mina = {
+    nome: "Mina de Cristal",
+    theme: "mina",
+    w: 36,
+    h: 30,
+    side: "n",
+    seed: 7717,
+    exits: {},
+    enemies: [],
+  };
+  const z = genDungeon("mina", ZONE_DEFS.mina);
+  const R = rng(4242);
+  const rows = z.map.map((r) => r.split(""));
+  const open = (x, y) => rows[y] && rows[y][x] === ".";
+  for (let y = 4; y < z.h - 1; y++)
+    for (let x = 1; x < z.w - 1; x++) {
+      if (rows[y][x] === "G" || rows[y][x] === "N") rows[y][x] = ".";
+      // Pedra só no meio das salas, para nunca fechar um corredor.
+      let around = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (open(x + dx, y + dy)) around++;
+      if (rows[y][x] === "." && around === 9 && R() < 0.3) rows[y][x] = "o";
+    }
+  z.map = rows.map((r) => r.join(""));
+  z.feats = [];
+  z.guardPos = null;
+  z.npcs = {};
+  z.npcList = [];
+  return z;
+}
 function hutsFrom(st) {
   const h = [];
   for (const k in st) {
@@ -2228,8 +2260,7 @@ function furnUse(f) {
     return;
   }
   if (id === "lareira" || id === "m_lareira") {
-    player.mp = Math.min(maxMp(), player.mp + 20);
-    toast("Você se esquenta perto do fogo. +20 MP.");
+    fireplaceMenu();
     return;
   }
   if (id === "m_estante") {

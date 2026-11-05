@@ -617,6 +617,18 @@ const ITEMS = {
     preco: 14,
     desc: "Material da Academia.",
   },
+  trigo: {
+    nome: "Feixe de Trigo",
+    tipo: "mat",
+    preco: 3,
+    desc: "Colhido na plantação. Em casa, 3 feixes e 1 cantil de água viram 2 pães (lareira).",
+  },
+  minerio: {
+    nome: "Minério de Ferro",
+    tipo: "mat",
+    preco: 8,
+    desc: "Tirado da Mina de Cristal. A Forja compra.",
+  },
   fragmento: {
     nome: "Fragmento Arcano",
     tipo: "mat",

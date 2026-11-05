@@ -30,6 +30,12 @@ const THEMES = {
     dot: "#a8a6a0",
     water: "#5aa0c8",
   },
+  mina: {
+    g1: "#4a3f36",
+    g2: "#463b33",
+    dot: "#5a4d42",
+    water: "#2f3a4a",
+  },
   torre: {
     g1: "#3e3556",
     g2: "#3a3251",
@@ -265,6 +271,17 @@ function drawWall(theme, X, Y, h, t) {
         ctx.fillStyle = "#6b4a2a";
         ctx.fillRect(X + 4 + i * 5, Y + 8 + o, 2, 4);
       }
+    }
+  } else if (theme === "mina") {
+    ctx.fillStyle = "#2a221c";
+    ctx.fillRect(X, Y, TILE, TILE);
+    ctx.fillStyle = "#3a3029";
+    fillPolygon(X, Y + 20, X + 10, Y + 8, X + 22, Y + 12, X + 32, Y + 4, X + 32, Y + 32, X, Y + 32);
+    if (h > 0.82) {
+      ctx.fillStyle = h > 0.92 ? "#c9a0ff" : "#7fd0ff";
+      fillPolygon(X + 12, Y + 26, X + 16, Y + 12, X + 20, Y + 26);
+      ctx.fillStyle = "rgba(255,255,255,.6)";
+      ctx.fillRect(X + 15, Y + 16, 1, 6);
     }
   } else if (theme === "picos") {
     ctx.fillStyle = "#5d5a56";
@@ -1540,6 +1557,7 @@ function tryMove(dir) {
     ny = player.y + dy;
   const z = ZONES[player.zone];
   if (nx < 0 || ny < 0 || nx >= z.w || ny >= z.h) {
+    if (player.zone === "mina") return leaveMine();
     if (player.zone === "escola") {
       player.zone = "vila";
       player.x = VILLAGE_POINTS.escolaRet[0];
@@ -1655,7 +1673,7 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
-  const jl = jobLabel(x, y);
+  const jl = jobLabel(x, y) || gatherLabel(x, y);
   if (jl) return jl;
   const elf = elfAt(x, y);
   if (elf) return "Conversar com " + elf.nm;
@@ -1911,7 +1929,7 @@ function interact() {
   interactAt(tg.x, tg.y);
 }
 function interactAt(x, y) {
-  if (jobInteract(x, y)) return;
+  if (jobInteract(x, y) || gatherInteract(x, y)) return;
   game.talkTarget = talkTargetAt(x, y);
   const elf = elfAt(x, y);
   if (elf) {
