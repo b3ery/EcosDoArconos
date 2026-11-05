@@ -404,6 +404,10 @@ Todo item tem um ícone em pixel art próprio, desenhado por um gerador com mais
 
 Nas lojas com muitos itens aparecem **filtros por categoria** em cima do carrossel.
 
+## 🪞 Criador de personagem
+
+Na criação e no guarda-roupa: **barra lateral com ícones** (Perfil, Rosto, Cabelo, Chapéu, Roupa, Acessórios, Cajado), **abas** em cada parte (ex.: Penteado | Cor do cabelo), **grade de miniaturas** com cada opção já desenhada no seu personagem, **fileira de cores com "+"** para escolher qualquer cor na criação e o **personagem grande** à direita com poses (Frente, Lado, Costas, Andando). No guarda-roupa, o que você ainda não tem aparece com cadeado e preço.
+
 ## ✨ Qualidade de vida
 
 - **Tutorial jogável:** nos primeiros minutos um cartão mostra o próximo passo (andar, conversar, abrir a bolsa, ver as missões) e marca quando você faz. Dá para pular.

@@ -4577,3 +4577,430 @@ canvas.sv-pv {
   font-family: "Pixelify Sans", sans-serif;
   text-shadow: 0 2px 0 #0a0710;
 }
+
+/* ==========================================================================
+   CRIADOR DE PERSONAGEM
+   ========================================================================== */
+#create.cc {
+  padding: 2%;
+  justify-content: center;
+  align-items: center;
+}
+.cc-win {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(15em, 0.85fr);
+  width: min(100%, 64em);
+  height: min(100%, 40em);
+  border: 3px solid #8a5a2e;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(#211733, #140e20);
+  box-shadow:
+    inset 0 0 0 2px #2a1a0c,
+    0 18px 50px rgba(0, 0, 0, 0.6);
+  text-align: left;
+}
+.cc-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  padding: 0.7em 0.45em;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0 3px, transparent 3px 9px),
+    linear-gradient(90deg, #5a381c, #4a2e16);
+  border-right: 3px solid #2a1a0c;
+}
+.cc-side button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  width: 5em;
+  padding: 0.45em 0.2em;
+  border-radius: 10px;
+  background: rgba(20, 12, 6, 0.35);
+  border: 2px solid transparent;
+  color: #e8cfa0;
+  box-shadow: none;
+  font-size: 0.82em;
+}
+.cc-side button .pxi {
+  margin: 0;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.4));
+}
+.cc-side button.on {
+  background: linear-gradient(#ffd977, #e0a030);
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+  box-shadow: 0 0 12px rgba(242, 193, 78, 0.4);
+}
+.cc-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.9em 1em 0.8em;
+}
+.cc-main h2 {
+  margin: 0 0 0.3em !important;
+  font-size: 1.6em !important;
+  text-align: left;
+}
+.cc-main h2 small {
+  font-size: 0.55em;
+  color: var(--muted);
+  text-shadow: none;
+}
+.cc-subs {
+  display: flex;
+  gap: 1em;
+  border-bottom: 2px solid #3a2a5a;
+  margin-bottom: 0.6em;
+}
+.cc-subs button {
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0.25em 0.1em;
+  color: var(--muted);
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1em;
+}
+.cc-subs button.on {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+.cc-panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.3em;
+  scrollbar-width: thin;
+}
+.cc-pal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  padding: 0.45em 0.6em;
+  margin-bottom: 0.6em;
+  border-radius: 999px;
+  background: #1a1028;
+  border: 1px solid #3a2a5a;
+  width: fit-content;
+}
+.cc-sw {
+  width: 1.7em;
+  height: 1.7em;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #0a0710;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+}
+.cc-sw.on {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.cc-sw.plus {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#e0303a, #f2c14e, #5ab04a, #3a78d9, #9a4ad9, #e0303a);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 0 #000;
+  cursor: pointer;
+  overflow: hidden;
+}
+.cc-sw.plus.off {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.cc-sw.plus input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.cc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.4em, 1fr));
+  gap: 0.5em;
+}
+.cc-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0.35em 0.25em 0.4em;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 50% 30%, #3a2c58, #1d1530 75%);
+  border: 2px solid #3a2a5a;
+  box-shadow: 0 3px 0 #0a0710;
+  transition:
+    transform 0.1s,
+    border-color 0.1s;
+}
+.cc-tile:hover {
+  transform: translateY(-2px);
+  border-color: #a58ae0;
+}
+.cc-tile.on {
+  border-color: var(--gold);
+  box-shadow:
+    0 3px 0 #0a0710,
+    0 0 0 2px var(--gold),
+    0 0 14px rgba(242, 193, 78, 0.4);
+}
+.cc-tile canvas {
+  position: static;
+  width: 4.6em;
+  height: 4.6em;
+  image-rendering: pixelated;
+}
+.cc-tile span {
+  font-size: 0.78em;
+  color: #e9defa;
+  text-align: center;
+  line-height: 1.05;
+  min-height: 1.6em;
+}
+.cc-tile.lock canvas {
+  filter: grayscale(0.7) brightness(0.6);
+}
+.cc-tile em {
+  position: absolute;
+  top: 0.3em;
+  right: 0.3em;
+  display: flex;
+  align-items: center;
+  gap: 0.15em;
+  font-style: normal;
+  font-size: 0.7em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  background: #2a1a0c;
+  color: var(--gold);
+}
+.cc-tile em .pxi {
+  margin: 0;
+}
+.cc-note {
+  margin-top: 0.6em;
+  color: var(--muted);
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+}
+.cc-note .pxi {
+  margin: 0;
+}
+.cc-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5em;
+  padding: 0.8em;
+  background: linear-gradient(#2a1f42, #1a1230);
+  border-left: 2px solid #3a2a5a;
+}
+.cc-pose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+.cc-pose span {
+  min-width: 7em;
+  text-align: center;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  background: #1a1028;
+  border: 1px solid #4a3a6a;
+  font-family: "Pixelify Sans", sans-serif;
+}
+.cc-pose button {
+  border-radius: 50%;
+  width: 1.8em;
+  height: 1.8em;
+  padding: 0;
+}
+.cc-room {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  border-radius: 12px;
+  overflow: hidden;
+  background:
+    linear-gradient(transparent 70%, rgba(0, 0, 0, 0.35) 70%),
+    radial-gradient(ellipse at 50% 35%, #5a4a8a, #241a3a 70%);
+  border: 2px solid #c98a4a;
+}
+.cc-room::before {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 8%;
+  height: 48%;
+  border-radius: 50% 50% 8px 8px / 30% 30% 8px 8px;
+  background: linear-gradient(rgba(191, 224, 240, 0.12), rgba(191, 224, 240, 0.04));
+  border: 2px solid rgba(201, 138, 74, 0.5);
+}
+.cc-room canvas {
+  position: relative;
+  width: 13em;
+  height: 13em;
+  image-rendering: pixelated;
+}
+.cc-name {
+  position: relative;
+  margin: 0.2em 0 0.5em;
+  padding: 0.1em 0.8em;
+  border-radius: 999px;
+  background: rgba(10, 7, 16, 0.7);
+  color: var(--gold);
+  font-family: "Pixelify Sans", sans-serif;
+}
+.cc-btns {
+  display: flex;
+  gap: 0.4em;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.cc-btns button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  border-radius: 8px;
+  padding: 0.3em 0.8em;
+}
+.cc-btns button .pxi {
+  margin: 0;
+}
+.cc-btns button.go {
+  background: linear-gradient(#ffd977, #e0a030);
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+  box-shadow: 0 3px 0 #8a5a1a;
+  font-family: "Pixelify Sans", sans-serif;
+}
+.cc-prof {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.cc-prof label,
+.cc-lbl {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  color: #f3e2b8;
+  font-family: "Pixelify Sans", sans-serif;
+}
+.cc-prof .pxi {
+  margin: 0;
+}
+.cc-prof input {
+  flex: 1;
+  max-width: 14em;
+  background: #1a1028;
+  border: 2px solid #7a62b8;
+  border-radius: 8px;
+  color: #fff;
+  padding: 0.3em 0.6em;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1em;
+}
+.cc-seg {
+  display: flex;
+  gap: 0.35em;
+  flex-wrap: wrap;
+}
+.cc-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  border-radius: 999px;
+  padding: 0.3em 0.9em 0.3em 0.4em;
+}
+.cc-seg button .pxi {
+  margin: 0;
+}
+.cc-seg button.on,
+.cc-difs button.on {
+  background: linear-gradient(#ffd977, #e0a030);
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+}
+.cc-difs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+  gap: 0.4em;
+}
+.cc-difs button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2em;
+  text-align: left;
+  padding: 0.5em 0.7em;
+  border-radius: 10px;
+}
+.cc-difs b {
+  font-family: "Pixelify Sans", sans-serif;
+  font-weight: normal;
+  font-size: 1.1em;
+}
+.cc-difs small {
+  font-size: 0.8em;
+  opacity: 0.85;
+}
+@media (max-width: 720px), (max-height: 520px) {
+  .cc-win {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+  }
+  .cc-stage {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    border-left: 0;
+    border-top: 2px solid #3a2a5a;
+  }
+  .cc-room {
+    flex: none;
+  }
+  .cc-room canvas {
+    width: 6em;
+    height: 6em;
+  }
+  .cc-side button span {
+    display: none;
+  }
+  .cc-side button {
+    width: 3em;
+  }
+}
+.cc-room {
+  justify-content: center;
+}
+.cc-room::before {
+  top: 9%;
+  bottom: 16%;
+  height: auto;
+}
+.cc-room canvas {
+  width: 14em;
+  height: 14em;
+}
+.cc-name {
+  position: absolute;
+  bottom: 0.6em;
+}
