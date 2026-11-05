@@ -3720,12 +3720,17 @@ function draw() {
   for (const p of game.parts) drawParticle(p);
   ctx.globalAlpha = 1;
   if (game.proj) drawProjectile(game.proj, t);
-  ctx.font = '700 20px "Pixelify Sans", sans-serif';
   ctx.textAlign = "center";
+  ctx.lineJoin = "round";
   for (const f of game.floats) {
+    // Número "pula" ao aparecer e vai sumindo; textos longos ficam menores.
+    const pop = Math.max(0, (f.life - 0.85) / 0.25);
+    const big = /^\d+$/.test(f.txt) ? 26 : 16;
+    ctx.font = `700 ${Math.round(big * (1 + pop * 0.6))}px "Pixelify Sans", sans-serif`;
     ctx.globalAlpha = Math.min(1, f.life * 2);
-    ctx.fillStyle = "#000";
-    ctx.fillText(f.txt, f.x + 2, f.y + 2);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#140a1e";
+    ctx.strokeText(f.txt, f.x, f.y);
     ctx.fillStyle = f.col;
     ctx.fillText(f.txt, f.x, f.y);
   }

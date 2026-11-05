@@ -5004,3 +5004,616 @@ canvas.sv-pv {
   position: absolute;
   bottom: 0.6em;
 }
+
+/* ==========================================================================
+   BATALHA
+   ========================================================================== */
+#ebox {
+  width: 38%;
+  padding: 0.45em 0.8em 0.5em !important;
+  border: 3px solid #8a5a2e !important;
+  border-radius: 12px !important;
+  background: linear-gradient(rgba(42, 30, 66, 0.95), rgba(20, 14, 34, 0.95)) !important;
+  box-shadow:
+    inset 0 0 0 2px #2a1a0c,
+    0 8px 20px rgba(0, 0, 0, 0.45) !important;
+}
+#ebox.boss {
+  border-color: #c9302a !important;
+  box-shadow:
+    inset 0 0 0 2px #2a0a0a,
+    0 0 24px rgba(201, 48, 42, 0.45) !important;
+}
+#elv {
+  float: right;
+  padding: 0 0.5em;
+  border-radius: 999px;
+  background: #c9302a;
+  color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 0.8em;
+}
+#ename {
+  font-size: 1.05em !important;
+  color: #ffe6d6 !important;
+}
+#ebox .bar {
+  position: relative;
+  height: 0.85em !important;
+  border-radius: 999px;
+  background: #1a0a10;
+  overflow: hidden;
+}
+#ebox .bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+}
+#ehp {
+  background: linear-gradient(#ff6a5a, #c9302a) !important;
+  transition: width 0.25s;
+}
+#ehpg {
+  background: #ffe066;
+  opacity: 0.75;
+  transition: width 0.9s 0.35s;
+}
+#bpanel {
+  display: grid !important;
+  grid-template-columns: 15em 1fr;
+  grid-auto-rows: auto;
+  gap: 0.4em 0.8em !important;
+  padding: 0.55em 0.7em !important;
+  border: 3px solid #8a5a2e !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(242, 193, 78, 0.08), transparent 60%),
+    linear-gradient(rgba(36, 26, 56, 0.97), rgba(18, 12, 30, 0.97)) !important;
+  box-shadow:
+    inset 0 0 0 2px #2a1a0c,
+    0 -6px 24px rgba(0, 0, 0, 0.45) !important;
+}
+#bpanel > :not(#bplayer) {
+  grid-column: 2;
+}
+#bplayer {
+  grid-row: 1 / span 4;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  padding: 0.45em;
+  border-radius: 12px;
+  background: linear-gradient(#2e2150, #1a1230);
+  border: 2px solid #5a4a8a;
+}
+#bplayer.low {
+  border-color: #ff5a5a;
+  animation: lowHp 0.9s ease-in-out infinite;
+}
+@keyframes lowHp {
+  50% {
+    box-shadow: 0 0 16px rgba(255, 90, 90, 0.55);
+  }
+}
+#bpport {
+  position: static;
+  width: 4em;
+  height: 4em;
+  flex: none;
+  image-rendering: pixelated;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: radial-gradient(#5a4692, #1a1028);
+}
+.bp-i {
+  flex: 1;
+  min-width: 0;
+}
+.bp-i b {
+  display: block;
+  font-family: "Pixelify Sans", sans-serif;
+  font-weight: normal;
+  color: var(--gold);
+}
+.bp-bar {
+  position: relative;
+  height: 1em;
+  margin-top: 0.2em;
+  border-radius: 999px;
+  background: #120c1e;
+  border: 1px solid #3a2a5a;
+  overflow: hidden;
+}
+.bp-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  transition: width 0.3s;
+}
+.bp-bar.hp i {
+  background: linear-gradient(#ff7a6a, #d9403a);
+}
+.bp-bar.mp i {
+  background: linear-gradient(#6ab0ff, #3a68d9);
+}
+.bp-bar span {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 0.72em;
+  line-height: 1.35;
+  color: #fff;
+  text-shadow: 0 1px 0 #000;
+}
+#bpchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em;
+  margin-top: 0.25em;
+}
+#bpchips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0 0.4em;
+  border-radius: 999px;
+  background: #241a38;
+  font-size: 0.7em;
+  color: #e9defa;
+}
+#bpchips .pxi {
+  margin: 0;
+}
+.rbtn {
+  position: relative;
+  flex-direction: column;
+  min-width: 5.2em;
+  padding: 0.35em 0.6em 0.3em !important;
+  border-radius: 12px !important;
+  border: 2px solid color-mix(in srgb, var(--rc, #7a62b8) 70%, #000) !important;
+  background: radial-gradient(ellipse at 50% 20%, color-mix(in srgb, var(--rc, #7a62b8) 45%, #2a1f42), #1c1530) !important;
+  box-shadow:
+    0 3px 0 #0a0710,
+    inset 0 0 12px color-mix(in srgb, var(--rc, #7a62b8) 25%, transparent) !important;
+  font-family: "Pixelify Sans", sans-serif;
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+.rbtn svg {
+  width: 26px !important;
+  height: 26px !important;
+  filter: drop-shadow(0 0 6px var(--rc));
+}
+.rbtn:hover:not(:disabled) {
+  transform: translateY(-3px);
+}
+.rbtn.pick {
+  border-color: #fff !important;
+  box-shadow:
+    0 3px 0 #0a0710,
+    0 0 18px var(--rc) !important;
+  transform: translateY(-3px);
+}
+.rbtn .k {
+  position: absolute;
+  top: 0.15em;
+  left: 0.35em;
+  font-size: 0.7em;
+}
+.rbtn .wtag {
+  position: absolute;
+  top: -0.6em;
+  right: -0.3em;
+}
+#weave {
+  gap: 0.5em !important;
+}
+.slot {
+  width: 2.6em !important;
+  height: 2.6em !important;
+  border: 2px dashed #8a7ac9 !important;
+  background: radial-gradient(#2a1f42, #120c1e);
+}
+.slot svg {
+  width: 26px;
+  height: 26px;
+}
+#prev {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.05em;
+}
+#prev em {
+  display: inline-block;
+  margin-top: 0.15em;
+  padding: 0 0.5em;
+  border-radius: 999px;
+  font-style: normal;
+  font-size: 0.75em;
+}
+#prev em.good {
+  background: #3ab04a;
+  color: #fff;
+  animation: blink 0.8s steps(2) infinite;
+}
+#prev em.bad {
+  background: #5a4a6a;
+  color: #ddd;
+}
+#bpanel .brow:last-child button {
+  border-radius: 999px;
+  padding: 0.3em 0.9em;
+}
+#bCast.ready {
+  background: linear-gradient(#ffd977, #e0a030) !important;
+  color: #2a1a0c !important;
+  border-color: #ffe6a8 !important;
+  box-shadow:
+    0 3px 0 #8a5a1a,
+    0 0 16px rgba(242, 193, 78, 0.55) !important;
+  font-family: "Pixelify Sans", sans-serif;
+  animation: castPulse 1.2s ease-in-out infinite;
+}
+@keyframes castPulse {
+  50% {
+    box-shadow:
+      0 3px 0 #8a5a1a,
+      0 0 26px rgba(242, 193, 78, 0.85);
+  }
+}
+#battle #blog {
+  position: absolute;
+  left: 50%;
+  top: 2%;
+  transform: translateX(-60%);
+  width: min(44%, 26em);
+  min-height: 0 !important;
+  padding: 0.4em 0.8em;
+  border-radius: 10px;
+  background: #f3e2b8;
+  color: #3a2414 !important;
+  border: 2px solid #8a5a2e;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  font-size: 0.9em;
+}
+#battle #blog .old {
+  color: #8a6a4a !important;
+  font-size: 0.85em;
+}
+#battle #blog.pop {
+  animation: logPop 0.3s ease-out;
+}
+@keyframes logPop {
+  from {
+    transform: translateX(-60%) scale(0.92);
+  }
+}
+#resw {
+  color: #cbbfe3 !important;
+}
+#resw .bar {
+  height: 0.65em !important;
+  border-radius: 999px;
+}
+#tbanner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38%;
+  text-align: center;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 2.4em;
+  color: #ffe066;
+  text-shadow:
+    0 4px 0 #3a1d5a,
+    0 0 24px rgba(242, 193, 78, 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+#tbanner.enemy {
+  color: #ff8a7a;
+  text-shadow:
+    0 4px 0 #3a0a0a,
+    0 0 24px rgba(255, 90, 90, 0.6);
+}
+#tbanner.show {
+  animation: tBanner 1.1s ease-out;
+}
+@keyframes tBanner {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+    letter-spacing: 0.3em;
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+    letter-spacing: 0.05em;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+@media (max-width: 720px) {
+  #bpanel {
+    grid-template-columns: 1fr !important;
+  }
+  #bpanel > :not(#bplayer) {
+    grid-column: 1;
+  }
+  #bplayer {
+    grid-row: auto;
+  }
+}
+
+/* ===================== CALENDÁRIO E DIÁRIO ===================== */
+#cal {
+  z-index: 60;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14em, 1fr));
+  gap: 0.5em;
+}
+.cal-day {
+  padding: 0.5em 0.6em;
+  border-radius: 12px;
+  background: linear-gradient(#2a1f42, #1c1530);
+  border: 2px solid #3a2a5a;
+}
+.cal-day.today {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px rgba(242, 193, 78, 0.3);
+}
+.cal-day.fest {
+  background: linear-gradient(rgba(255, 138, 208, 0.18), #1c1530);
+}
+.cal-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.3em;
+  border-bottom: 1px dashed #4a3a6a;
+}
+.cal-h b {
+  font-family: "Pixelify Sans", sans-serif;
+  font-weight: normal;
+  color: var(--gold);
+}
+.cal-h small,
+.cal-none {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.cal-ev {
+  display: flex;
+  gap: 0.4em;
+  align-items: flex-start;
+  margin: 0.25em 0;
+}
+.cal-ev .pxi {
+  margin: 0.1em 0 0;
+  flex: none;
+}
+.cal-ev b {
+  display: block;
+  font-weight: normal;
+  color: #fff;
+}
+.cal-ev small {
+  color: #b9add6;
+  font-size: 0.8em;
+}
+.dia {
+  border-left: 3px solid #8a5a2e;
+  padding-left: 0.8em;
+}
+.dia-e {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.35em 0;
+  border-bottom: 1px dashed #33264d;
+}
+.dia-e .pxi {
+  margin: 0;
+}
+.dia-d {
+  min-width: 4.5em;
+  color: var(--gold);
+  font-family: "Pixelify Sans", sans-serif;
+}
+
+/* ===================== MINIJOGOS ===================== */
+#mgame {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+  background: rgba(10, 7, 16, 0.65);
+}
+.mg-card {
+  width: min(90%, 26em);
+  padding: 1em 1.2em;
+  text-align: center;
+  border-radius: 16px;
+  border: 3px solid #8a5a2e;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 138, 208, 0.18), transparent 60%),
+    linear-gradient(#2a1f42, #150f22);
+  box-shadow:
+    inset 0 0 0 2px #2a1a0c,
+    0 14px 40px rgba(0, 0, 0, 0.6);
+}
+.mg-ic {
+  display: inline-grid;
+  place-items: center;
+  width: 4em;
+  height: 4em;
+  border-radius: 50%;
+  background: radial-gradient(#fff6dc, #d9c08a);
+  border: 3px solid #8a5a2e;
+}
+.mg-ic .pxi {
+  margin: 0;
+}
+.mg-card h3 {
+  margin: 0.3em 0;
+  font-family: "Pixelify Sans", sans-serif;
+  color: var(--gold);
+  font-size: 1.5em;
+}
+.mg-step {
+  font-family: "Pixelify Sans", sans-serif;
+  margin: 0.4em 0;
+  color: #fff;
+}
+.mg-bar {
+  position: relative;
+  height: 1.6em;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #c94a4a;
+  border: 2px solid #0a0710;
+}
+.mg-bar .y {
+  position: absolute;
+  left: 24%;
+  width: 52%;
+  top: 0;
+  bottom: 0;
+  background: #e8c24a;
+}
+.mg-bar .g {
+  position: absolute;
+  left: 42%;
+  width: 16%;
+  top: 0;
+  bottom: 0;
+  background: #5ab04a;
+}
+.mg-bar b {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 6px;
+  margin-left: -3px;
+  background: #fff;
+  box-shadow: 0 0 6px #fff;
+}
+.mg-sack {
+  height: 1.4em;
+  border-radius: 999px;
+  background: #1a1028;
+  border: 2px solid #4a3a6a;
+  overflow: hidden;
+}
+.mg-sack div {
+  height: 100%;
+  background: linear-gradient(90deg, #c98a2a, #f2c14e);
+}
+.mg-score {
+  margin: 0.4em 0;
+  color: var(--muted);
+}
+.mg-res {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 2em;
+  color: #ffe066;
+}
+.mg-card button {
+  margin: 0.3em;
+  border-radius: 999px;
+  padding: 0.35em 1.2em;
+}
+.mg-card button.go {
+  background: linear-gradient(#ffd977, #e0a030);
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+  box-shadow: 0 3px 0 #8a5a1a;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.1em;
+}
+
+/* ===================== CARTÃO DE CHEGADA ===================== */
+#zcard {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+}
+#zcard.show {
+  animation: zShow 3s ease-in-out;
+}
+@keyframes zShow {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  15%,
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.zc-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  padding: 0.6em 1.6em;
+  border-radius: 14px;
+  background: radial-gradient(ellipse at center, rgba(20, 14, 34, 0.92), rgba(20, 14, 34, 0.7));
+  border-top: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+}
+.zc-in small {
+  color: var(--muted);
+}
+.zc-in b {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.9em;
+  color: var(--gold);
+  text-shadow: 0 3px 0 #3a1d5a;
+}
+.zc-in span {
+  color: #e9defa;
+  font-size: 0.9em;
+}
+.zc-in .pxi {
+  margin: 0;
+}
+#battle #blog {
+  left: 2%;
+  top: 2%;
+  transform: none;
+  width: min(54%, 30em);
+}
+@keyframes logPop {
+  from {
+    transform: scale(0.94);
+  }
+}
+#tbanner {
+  top: 34%;
+  font-size: 2.8em;
+  -webkit-text-stroke: 2px #2a1240;
+}
+body.in-battle .hudL,
+body.in-battle #achtoast {
+  visibility: hidden;
+}
