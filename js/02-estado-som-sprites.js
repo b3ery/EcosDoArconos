@@ -186,6 +186,7 @@ function dmgMul(els) {
   if (starving()) m *= 0.75;
   if (player.blessDay === player.day) m *= 1.1;
   if (player.injured) m *= 0.8;
+  if (player.sick) m *= 0.85;
   m *= 1 + 0.05 * (player.ecos || []).length;
   if ((player.drunk || 0) >= 40) m *= 1.1;
   if (player.liquidCourage && game.mode === "battle") m *= 1.15;
@@ -895,6 +896,9 @@ function useItemEffect(id) {
     player.hp = Math.min(maxHp(), player.hp + 20);
     out.push("ferimentos curados");
   }
+  const med = medicineEffect(id);
+  if (med) out.push(med);
+  if (id === "frutaS") riskyIntake("frutaS");
   removeItem(id);
   return out.join(", ");
 }

@@ -1673,7 +1673,7 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
-  const jl = jobLabel(x, y) || gatherLabel(x, y);
+  const jl = jobLabel(x, y) || gatherLabel(x, y) || forageLabel(x, y);
   if (jl) return jl;
   const elf = elfAt(x, y);
   if (elf) return "Conversar com " + elf.nm;
@@ -1929,7 +1929,7 @@ function interact() {
   interactAt(tg.x, tg.y);
 }
 function interactAt(x, y) {
-  if (jobInteract(x, y) || gatherInteract(x, y)) return;
+  if (jobInteract(x, y) || gatherInteract(x, y) || forageInteract(x, y)) return;
   game.talkTarget = talkTargetAt(x, y);
   const elf = elfAt(x, y);
   if (elf) {
@@ -2261,6 +2261,7 @@ function interactAt(x, y) {
     saveGame();
     playSound(660, 0.2, "sine");
     say([["", "Você bebe da Fonte de Cinzaluz. Sede saciada. Jogo salvo."]]);
+    riskyIntake("fonte");
   } else if (c === "F") {
     player.hp = maxHp();
     player.mp = maxMp();
@@ -2283,7 +2284,8 @@ function interactAt(x, y) {
         t: "Beber água",
         fn: () => {
           player.water = 100;
-          toast("Você bebe água fresca.");
+          toast("Você bebe água do rio.");
+          riskyIntake("rio");
         },
       },
       {
@@ -2295,7 +2297,8 @@ function interactAt(x, y) {
   } else if (c === "~") {
     player.water = Math.min(100, player.water + 35);
     playSound(500, 0.1, "sine");
-    toast("Você bebe água. Sede +35.");
+    toast("Você bebe água do rio. Sede +35.");
+    riskyIntake("rio");
   } else if (c === "C") {
     const k = `${player.zone}:${x},${y}`;
     if (player.taken.includes(k)) say([["", "O baú está vazio."]]);

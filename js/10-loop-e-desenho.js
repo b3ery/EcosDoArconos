@@ -201,6 +201,7 @@ function update(dt) {
     lifeNeedsTick(dt * timeSpeed());
     jobTick(dt);
     collectorTick(dt);
+    sicknessTick(dt);
     const nn = isNight();
     if (game.wasNight !== undefined && nn !== game.wasNight) {
       if (nn) {

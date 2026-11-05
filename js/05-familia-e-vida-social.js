@@ -36,6 +36,7 @@ function onNewDay() {
     worldTick();
     houseDaily();
     villageEventOfDay();
+    dailySicknessRoll();
   }
   restoreWorkTiles();
 }

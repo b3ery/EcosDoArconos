@@ -752,7 +752,8 @@ function questIcon(text) {
 }
 function updateHUD() {
   let chips = "";
-  if (player.injured) chips += `<span class="chip" style="color:#ff6b6b">Ferido</span>`;
+  if (player.injured) chips += `<span class="chip" style="color:#ff6b6b">${iconHTML("anger", 12)}Ferido</span>`;
+  if (sickness()) chips += `<span class="chip" style="color:${sickness().color}" title="${sickness().desc}">${iconHTML(sickness().icon, 12)}${sickness().n}</span>`;
   if (starving()) chips += `<span class="chip" style="color:#ffb35a">Fraco de fome/sede</span>`;
   if (game.mode === "battle" && battle) {
     if (battle.shield > 0)

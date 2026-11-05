@@ -1090,6 +1090,10 @@ function restMenu() {
 function healerMenu() {
   const n = "Curandeira Maíra",
     cost = friendshipLevel("curandeira") >= 2 ? 0 : 15 + 5 * player.lvl;
+  if (sickness() && !player.injured) {
+    choice(n, `${sickness().desc}`, [...sickHealerItems(), { t: "Agora não", fn: null }]);
+    return;
+  }
   if (!player.injured && player.hp >= maxHp()) {
     say([
       [n, "Você está inteiro, aprendiz. Volte se os monstros pegarem pesado."],
@@ -1124,6 +1128,7 @@ function healerMenu() {
           say([[n, msg]]);
         },
       },
+      ...sickHealerItems(),
       {
         t: "Agora não",
         fn: null,
