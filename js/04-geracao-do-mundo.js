@@ -4161,6 +4161,14 @@ const NPCS = {
           "Descanse em casa e compre suprimentos antes de ir. E, aprendiz... volte.",
         ],
       };
+      if (player.villain >= 1 && !player.flags["odeliaAviso" + player.villain]) {
+        player.flags["odeliaAviso" + player.villain] = true;
+        saveGame();
+        return [
+          ["Arquimaga Odelia", "Eu senti. Você arrancou a runa de um Guardião... como o meu irmão fazia antes de se perder."],
+          ["Arquimaga Odelia", "Ainda dá tempo de escolher outro caminho. Os próximos Guardiões podem ser libertados."],
+        ];
+      }
       if (player.flags.flash && player.runes.length === 4)
         return [
           ["Arquimaga Odelia", "Então você viu o eco. Sim... Vesper é meu irmão."],

@@ -777,6 +777,8 @@ function questIcon(text) {
 function updateHUD() {
   let chips = "";
   if (player.injured) chips += `<span class="chip" style="color:#ff6b6b">${iconHTML("anger", 12)}Ferido</span>`;
+  if (player.villain && !lifeMode())
+    chips += `<span class="chip" style="color:#ff7a7a" title="Você possuiu ${player.villain} Guardião(ões).">${iconHTML("skull", 12)}Caminho sombrio</span>`;
   if (sickness()) chips += `<span class="chip" style="color:${sickness().color}" title="${sickness().desc}">${iconHTML(sickness().icon, 12)}${sickness().n}</span>`;
   if (starving()) chips += `<span class="chip" style="color:#ffb35a">Fraco de fome/sede</span>`;
   if (game.mode === "battle" && battle) {

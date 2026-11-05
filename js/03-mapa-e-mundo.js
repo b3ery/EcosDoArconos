@@ -2378,7 +2378,9 @@ function interactAt(x, y) {
       say([["", "Algo enorme dorme aqui. Ainda não é a sua hora: liberte primeiro o Ent, a Serpente e o Grifo."]]);
       return;
     }
-    say(GUARD_PRE[z.guard](), () => startBattle(z.guard, null));
+    say(GUARD_PRE[z.guard](), () =>
+      z.guard === "silenciador" ? silencerMeeting(() => startBattle("silenciador", null)) : startBattle(z.guard, null),
+    );
   } else if (c === "B" && lifeMode()) {
     say([["Guarda Real", "A Estrada do Sul está fechada: um deslizamento derrubou a ponte. Siga para leste (Porto), norte (Pedravale) ou oeste (Floresta Grande)."]]);
   } else if (c === "B" && player.runes.length < 4) {

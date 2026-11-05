@@ -187,6 +187,7 @@ function dmgMul(els) {
   if (player.blessDay === player.day) m *= 1.1;
   if (player.injured) m *= 0.8;
   if (player.sick) m *= 0.85;
+  m *= 1 + (player.darkPower || 0);
   // A turma de Cinzaluz ajuda na batalha final.
   if (battle && battle.type === "silenciador" && crewReady()) m *= 1.25;
   m *= 1 + 0.05 * (player.ecos || []).length;

@@ -1539,7 +1539,7 @@ function applyPostBattleRewards(enemy, type, mob, levelsGained) {
   maybeInjure(enemy);
   if (type === "vitral") rewardStainedGlass();
   else if (type === "diretor") rewardSpectralDirector();
-  else if (enemy.boss) rewardGuardian(enemy, type);
+  else if (enemy.boss) guardianChoice(enemy, type);
   saveGame();
   checkRaid();
 }
@@ -1550,7 +1550,7 @@ function win() {
   if (type === "silenciador") {
     endBattle();
     playSound(523, 0.3, "sine");
-    say(FINALE, startEpilogue);
+    silencerDefeated(() => say(FINALE, startEpilogue));
     return;
   }
   if (type === "boneco") return winTraining();
@@ -1627,7 +1627,15 @@ function showEnd() {
   const ending = completed
     ? "<b>Final completo: você reescreveu o Grimório inteiro.</b>"
     : "Ainda há magias e páginas esquecidas por aí.";
+  const villain = player.villainEnd;
+  byId("end").querySelector("h1").textContent = villain ? "Fim Sombrio" : "Fim";
+  byId("end").querySelector(".sub-note").textContent = villain
+    ? villain === "alianca"
+      ? "Você se aliou ao Silenciador. O mundo se calou."
+      : "Você tomou a Canção Arcana. Os reinos se ajoelharam."
+    : "A Canção Arcana voltou.";
   byId("estats").innerHTML = [
+    villain ? `<b style="color:#ff7a7a">Caminho do vilão: ${player.villain} Guardião(ões) possuído(s).</b>` : `Guardiões libertados: <b>${guardiansFreed() - (player.villain || 0)}</b>`,
     `Tempo: <b>${minutes}:${secs}</b>`,
     `Nível final: <b>${player.lvl}</b>`,
     `Magias recuperadas: <b>${player.spells.length}/${totalSpells}</b>`,
