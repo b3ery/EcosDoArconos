@@ -141,114 +141,10 @@ const LIFE_ADVICE = [
   "Se for pedir alguém em casamento, tome banho antes. Sério.",
   "Amigos valem mais que ouro. Mas ouro paga o aluguel.",
 ];
-function lifeSocialItems(id) {
-  if (!lifeMode()) return [];
-  return [{ t: "Interações…", fn: () => interactionsMenu(id) }];
-}
-function interactionsMenu(id) {
+/** Terminar namoro e divórcio (aparecem no menu da pessoa). */
+function relationEndItems(id) {
   const n = NPCS[id].nome.split(",")[0];
-  const ps = PERSONALITIES[id] || "gentil";
-  const once = (k) => {
-    if (player.relDay[id + "i" + k] === player.day) {
-      say([[n, "De novo? Já fizemos isso hoje!"]]);
-      return false;
-    }
-    player.relDay[id + "i" + k] = player.day;
-    return true;
-  };
-  const opts = [
-    {
-      t: "Contar uma piada",
-      fn: () => {
-        if (!once("piada")) return;
-        const laughs = ps === "engracado" || ps === "aventureiro" || Math.random() < 0.55;
-        addFriendship(id, laughs ? 3 : -1);
-        addNeed("fun", laughs ? 8 : 0);
-        say([
-          ["Você", LIFE_JOKES[Math.floor(Math.random() * LIFE_JOKES.length)]],
-          [n, laughs ? "HAHAHA! Essa foi boa!" : "*silêncio constrangedor* ...Entendi. Acho."],
-        ]);
-      },
-    },
-    {
-      t: "Pedir um conselho",
-      fn: () => {
-        if (!once("conselho")) return;
-        addFriendship(id, 2);
-        say([[n, LIFE_ADVICE[Math.floor(Math.random() * LIFE_ADVICE.length)]]]);
-      },
-    },
-    {
-      t: "Fofocar sobre alguém",
-      fn: () => {
-        if (!once("fofoca")) return;
-        const others = Object.keys(FRIENDS).filter((k) => k !== id);
-        const o = NPCS[others[Math.floor(Math.random() * others.length)]].nome.split(",")[0];
-        const likes = ps !== "serio" && ps !== "sabio";
-        addFriendship(id, likes ? 3 : -2);
-        if (Math.random() < 0.25) repAdd(-1);
-        say([[n, likes ? `Não acredito! ${o} fez isso?! Conta mais!` : `Não gosto de falar dos outros pelas costas. Nem de ${o}.`]]);
-      },
-    },
-    {
-      t: `Convidar para beber na taverna (${withTax(8)} ouro)`,
-      fn: () => {
-        if (!once("beber")) return;
-        if (player.gold < withTax(8)) return say([["", "Você não tem ouro nem para uma caneca."]]);
-        payWithTax(8);
-        addFriendship(id, 5);
-        addNeed("fun", 15);
-        player.drunk = Math.min(110, (player.drunk || 0) + 15);
-        player.clock = Math.min(1439, player.clock + 90);
-        game.fade = 1;
-        say([["", `Você e ${n} passam a tarde na taverna, rindo e cantando desafinado.`]]);
-      },
-    },
-    {
-      t: "Pedir dinheiro emprestado",
-      fn: () => {
-        if (!once("emprestimo")) return;
-        if (friendship(id) < 60 || player.debtTo) {
-          addFriendship(id, -2);
-          return say([[n, player.debtTo ? "Você ainda me deve! Paga primeiro." : "Emprestar? A gente nem é tão próximo assim."]]);
-        }
-        player.gold += 50;
-        player.debtTo = id;
-        say([[n, "Tá bom, 50 de ouro. Mas me devolve, hein!"], ["", "Você pegou 50 de ouro emprestado. Pague pelo menu de Interações."]]);
-      },
-    },
-  ];
-  if (player.debtTo === id)
-    opts.push({
-      t: "Pagar a dívida (50 ouro)",
-      fn: () => {
-        if (player.gold < 50) return say([["", "Você não tem 50 de ouro ainda."]]);
-        player.gold -= 50;
-        player.debtTo = null;
-        addFriendship(id, 4);
-        say([[n, "Pagou certinho! Gente honesta é rara."]]);
-      },
-    });
-  opts.push(
-    {
-      t: "Discutir",
-      fn: () => {
-        addFriendship(id, -8);
-        repAdd(-1);
-        addNeed("fun", -5);
-        say([[n, ["Você acha que manda em tudo, né?", "Não fale assim comigo!", "Saia daqui antes que eu chame a Guarda!"][Math.floor(Math.random() * 3)]]]);
-      },
-    },
-    {
-      t: "Pedir desculpas",
-      fn: () => {
-        if (!once("desculpa")) return;
-        const ok = friendship(id) > 20 || Math.random() < 0.5;
-        addFriendship(id, ok ? 6 : 1);
-        say([[n, ok ? "Tudo bem. Eu também exagerei." : "Desculpas aceitas... mais ou menos."]]);
-      },
-    },
-  );
+  const opts = [];
   if (player.dating === id)
     opts.push({
       t: "Terminar o namoro",
@@ -286,8 +182,7 @@ function interactionsMenu(id) {
           { t: "Não, pensando bem...", fn: null },
         ]),
     });
-  opts.push({ t: "Voltar", fn: () => socialMenu(id) });
-  choice(`${n} · Interações`, `Amizade ${friendship(id)}/100 · Idade ${npcAge(id)} anos`, opts);
+  return opts;
 }
 
 /* ===================== ACONTECIMENTOS DO DIA ===================== */

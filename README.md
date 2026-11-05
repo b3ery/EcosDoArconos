@@ -358,18 +358,47 @@ Ao ar livre, cada clima deixa **duas runas mais fortes e uma ou duas mais fracas
 
 Clique num personagem (ou aperte **E** perto dele): as opções aparecem **em círculo ao redor dele**, com ícones e agrupadas em **Amigável, Romântico, Engraçado, Malvado, Família e Serviços**. O ✕ no meio fecha.
 
-## 🛒 Lojas em carrossel
+## 🛒 Lojas
 
-Todas as lojas (mercado, ferreiro, alfaiataria, ateliê, marcenaria...) mostram **um item por vez**, grande, com ícone, nome, descrição e preço. Passe com **← →** (ou A/D, ou arrastando no celular) e compre com **Enter**. Embaixo ficam miniaturas para pular direto. Na **alfaiataria** o boneco já veste a peça enquanto você passa.
+Cada loja é uma **vitrine**: o atendente aparece no canto e comenta o que você faz, os itens ficam numa **prateleira em leque** (o do meio grande, os vizinhos menores dos lados) com cor de **raridade** (Comum, Incomum, Raro, Épico, Lendário). Embaixo, um painel mostra descrição, **atributos** (fome, vida, dano, defesa...), preço com imposto e **quantidade**.
+
+| Tecla | O que faz |
+|---|---|
+| ← → (A/D, ou arrastar) | Passa os itens |
+| ↑ ↓ | Muda a quantidade |
+| Enter | Compra / vende |
+| Tab | Troca entre Comprar e Vender (ou categoria, na alfaiataria) |
+
+Na **alfaiataria e no salão** tem um **espelho**: o boneco já veste a peça enquanto você passa, e cada cartão mostra a prévia da roupa.
+
+## 🗨️ Mais de 100 interações (nos dois modos)
+
+Clique numa pessoa → **Interações…** abre um painel estilo The Sims com **120 ações** em 8 categorias: **Amigável, Engraçado, Conversa, Atividades, Ajudar, Romântico, Malvado e Fazer as pazes**. Cada pessoa reage conforme a **personalidade** (gentil, engraçado, tímido, orgulhoso...) e a amizade. Algumas custam ouro ou tempo, as malvadas derrubam a **reputação**, e as românticas mais fortes só aparecem para quem namora ou é casado. Cada ação vale uma vez por dia com cada pessoa.
 
 ## 💘 Namorar qualquer pessoa (nos dois modos)
 
 - **Moradores da rua e clientes da taverna:** escolha **Conhecer melhor ♥** e a pessoa vira um **contato fixo**, com amizade, presentes, namoro e casamento, igual aos personagens principais.
 - **Mural dos Corações** (na taverna e no Quadro de Trabalhos): anúncios do dia de quem procura **namoro** ou **casamento**. Responda e marque o primeiro encontro.
 
-## 🖤 Caminho do vilão (História)
+## 🖤 Caminho do vilão (História, do começo ao fim)
 
-Ao vencer cada Guardião você escolhe: **libertar** (herói) ou **possuir o poder à força** (vilão: magia +10% por runa, reputação −12, e a Turma deixa de lutar com você). Quem escolheu ser vilão recebe uma oferta do **Silenciador** antes da última luta e, se vencer, pode **tomar a Canção Arcana** e conquistar o mundo. São dois **Fins Sombrios** novos.
+Desde o primeiro treino você escolhe quem quer ser. Cada momento da história tem uma escolha de **herói** ou **vilão**, e **todas mexem na sua reputação**:
+
+| Momento | Herói | Vilão |
+|---|---|---|
+| Treino com Kael | Lutar para proteger a vila | "Ninguém nunca mais manda em mim" |
+| Mercado | Comprar | Furtar da barraca |
+| Primeira runa | Deixar Odelia examinar | Esconder a runa |
+| Capitão Bento | Respeitar o segredo dele | Ameaçar e abrir o baú |
+| Farol de Brisamar | Guiar o navio | Apagar o farol e saquear o naufrágio |
+| Segredo de Odelia | Contar com carinho | Chantagear |
+| Anciã Berta | Pedir a bênção | Arrancar o mapa |
+| Mina de Cristal | Avisar os mineiros | Esconder o veio |
+| Forja Anã | Deixar o molde para a vila | Forjar uma lâmina sombria |
+| Cada Guardião | Libertar | Possuir a runa à força |
+| Antes da Torre | Prometer voltar | Prometer tomar a Canção |
+
+O HUD mostra o seu **Caminho** (Herói, Dividido, Vilão, Tirano...). Escolhas sombrias deixam a magia mais forte, mas a vila tem medo: a **Guarda Real** passa a multar você. Com 3 escolhas de vilão (ou um Guardião possuído), o **Silenciador** oferece aliança antes da última luta e, se vencer, você pode **tomar a Canção Arcana** e conquistar o mundo. São dois **Fins Sombrios**.
 
 ## ⛏️ Mina, trigo e pão (nos dois modos)
 

@@ -89,6 +89,7 @@ const KEY_HANDLERS = {
     else if (k === "escape") pickChoice(game.choice.length - 1);
   },
   inv: (k) => (k === "i" || k === "escape") && closeInv(),
+  ipanel: (k) => k === "escape" && closeInterPanel(),
   shop: (k) => {
     if (k === "escape") return closeShop();
     if (game.shopId === "__jobs" || !byId("shop").querySelector(".slider")) return;
