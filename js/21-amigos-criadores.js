@@ -175,7 +175,7 @@ function crewDrawList(list, t) {
 
 /** A turma ajuda na batalha final se você for amigo dos cinco (e não tiver virado vilão). */
 function crewReady() {
-  return CREW.every((id) => friendshipLevel(id) >= 1) && !(player.villain >= 2);
+  return CREW.every((id) => friendshipLevel(id) >= 1) && !(possessedCount() >= 2);
 }
 /** Opções especiais de cada um no menu de interação. */
 function crewItems(id) {

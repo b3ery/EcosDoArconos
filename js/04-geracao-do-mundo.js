@@ -4134,9 +4134,9 @@ const NPCS = {
           ["Arquimaga Odelia", "Magia? Ah, isso é coisa de livro antigo. Hoje eu só cuido do meu jardim e dou conselhos."],
           ["Arquimaga Odelia", "Conselho do dia: trabalho dá ouro, mas amigos dão sentido. Não esqueça de dormir e de se divertir."],
         ];
-      if (player.guards.includes("bosque")) player.flags.r2 = true;
-      if (player.guards.includes("pantano")) player.flags.r3 = true;
-      if (player.guards.includes("picos")) player.flags.r4 = true;
+      if (player.guards.includes("bosque") && !player.flags.r2) (player.flags.r2 = true), queueMoral("odelia2");
+      if (player.guards.includes("pantano") && !player.flags.r3) (player.flags.r3 = true), player.flags.porto2 && queueMoral("odelia3");
+      if (player.guards.includes("picos") && !player.flags.r4) (player.flags.r4 = true), queueMoral("odelia4");
       saveGame();
       const o = player.order;
       const L = {
@@ -4161,8 +4161,8 @@ const NPCS = {
           "Descanse em casa e compre suprimentos antes de ir. E, aprendiz... volte.",
         ],
       };
-      if (player.villain >= 1 && !player.flags["odeliaAviso" + player.villain]) {
-        player.flags["odeliaAviso" + player.villain] = true;
+      if (possessedCount() >= 1 && !player.flags["odeliaAviso" + possessedCount()]) {
+        player.flags["odeliaAviso" + possessedCount()] = true;
         saveGame();
         return [
           ["Arquimaga Odelia", "Eu senti. Você arrancou a runa de um Guardião... como o meu irmão fazia antes de se perder."],
@@ -4365,6 +4365,7 @@ const NPCS = {
     talk() {
       if (!lifeMode() && player.flags.r2 && !player.flags.porto1) {
         player.flags.porto1 = true;
+        queueMoral("bento");
         saveGame();
         return [
           ["Capitão Bento", "Você é quem libertou o Ent? Então escuta. Essa névoa que cobre o pântano... ela veio do mar."],
@@ -4461,6 +4462,7 @@ const NPCS = {
     talk() {
       if (!lifeMode() && player.flags.r3 && !player.flags.serra1) {
         player.flags.serra1 = true;
+        queueMoral("berta");
         saveGame();
         return [
           ["Anciã Berta", "Duas runas livres... Então é você. Sente aqui, criança. Vou contar o que Pedravale esconde."],

@@ -278,6 +278,7 @@ function advanceDialog() {
     byId("dialog").style.display = "none";
     game.dialog = null;
     if (d.cb) d.cb();
+    if (game.pendingMoral) setTimeout(runPendingMoral, 50);
   } else {
     d.chars = 0;
     renderDialogLine();
@@ -777,8 +778,9 @@ function questIcon(text) {
 function updateHUD() {
   let chips = "";
   if (player.injured) chips += `<span class="chip" style="color:#ff6b6b">${iconHTML("anger", 12)}Ferido</span>`;
-  if (player.villain && !lifeMode())
-    chips += `<span class="chip" style="color:#ff7a7a" title="Você possuiu ${player.villain} Guardião(ões).">${iconHTML("skull", 12)}Caminho sombrio</span>`;
+  const ml = !lifeMode() && moralLabel();
+  if (ml)
+    chips += `<span class="chip" style="color:${ml.c}" title="Escolhas de herói: ${player.heroPts || 0} · de vilão: ${player.villain || 0}. Elas mexem na sua reputação.">${iconHTML(ml.icon, 12)}${ml.n}</span>`;
   if (sickness()) chips += `<span class="chip" style="color:${sickness().color}" title="${sickness().desc}">${iconHTML(sickness().icon, 12)}${sickness().n}</span>`;
   if (starving()) chips += `<span class="chip" style="color:#ffb35a">Fraco de fome/sede</span>`;
   if (game.mode === "battle" && battle) {

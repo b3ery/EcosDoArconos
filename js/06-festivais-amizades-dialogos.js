@@ -2712,6 +2712,7 @@ function socialMenu(id) {
       },
     );
   opts.push(...crewItems(id));
+  opts.push(...moralItems(id));
   opts.push(...townQuestMenuItems(id));
   opts.push(...affectionMenuItems({ id }));
   opts.push(...openRelationshipItems(id));
@@ -3069,6 +3070,7 @@ function storyBuilding(b) {
       return true;
     }
     player.flags.porto2 = true;
+    queueMoral("farol");
     game.flash = 1;
     playSound(523, 0.4, "sine");
     say([
@@ -3085,6 +3087,7 @@ function storyBuilding(b) {
   // Capítulo de Pedravale: a Forja do Irmão.
   if (b.name === "Mina de Cristal" && player.flags.serra1 && !player.flags.serra2 && !itemCount("fragmento")) {
     player.flags.serra2 = true;
+    queueMoral("mina");
     addItem("fragmento");
     player.clock = Math.min(1439, player.clock + 120);
     game.fade = 1;
@@ -3098,6 +3101,7 @@ function storyBuilding(b) {
   if (b.name === "Forja Anã" && player.flags.serra1 && !player.flags.serra3 && itemCount("fragmento")) {
     removeItem("fragmento");
     player.flags.serra3 = true;
+    queueMoral("forja");
     game.flash = 1;
     playSound(392, 0.3, "square");
     say([

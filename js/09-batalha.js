@@ -1382,6 +1382,7 @@ function winTraining() {
     player.hp = Math.max(player.hp, Math.round(maxHp() * 0.6));
     if (!isFirstTime) return toast("Treino concluído!");
     player.flags.treino = true;
+    queueMoral("juramento");
     player.gold += 30;
     addItem("pocao", 2);
     saveGame();
@@ -1635,7 +1636,10 @@ function showEnd() {
       : "Você tomou a Canção Arcana. Os reinos se ajoelharam."
     : "A Canção Arcana voltou.";
   byId("estats").innerHTML = [
-    villain ? `<b style="color:#ff7a7a">Caminho do vilão: ${player.villain} Guardião(ões) possuído(s).</b>` : `Guardiões libertados: <b>${guardiansFreed() - (player.villain || 0)}</b>`,
+    villain
+      ? `<b style="color:#ff7a7a">Caminho do vilão: ${player.villain || 0} escolha(s) sombria(s), ${possessedCount()} Guardião(ões) possuído(s).</b>`
+      : `Guardiões libertados: <b>${guardiansFreed() - possessedCount()}</b> · Escolhas de herói: <b>${player.heroPts || 0}</b> · de vilão: <b>${player.villain || 0}</b>`,
+    `Reputação final: <b>${player.rep ?? 50}</b> (${repLabel()})`,
     `Tempo: <b>${minutes}:${secs}</b>`,
     `Nível final: <b>${player.lvl}</b>`,
     `Magias recuperadas: <b>${player.spells.length}/${totalSpells}</b>`,

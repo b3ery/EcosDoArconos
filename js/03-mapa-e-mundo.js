@@ -1487,6 +1487,7 @@ function spawnEco() {
 }
 function enterZone(showBanner = true) {
   restoreContacts();
+  if (player.zone === "vila") setTimeout(villainReaction, 2500);
   if (ZONES[player.zone].town && game.lifeZone !== player.zone) initVilaLife();
   if (!player.visited.includes(player.zone)) player.visited.push(player.zone);
   if (player.zone === "torre") player.riding = false;
