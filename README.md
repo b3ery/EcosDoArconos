@@ -403,6 +403,19 @@ Todo item tem um ícone em pixel art próprio, desenhado por um gerador com mais
 
 Nas lojas com muitos itens aparecem **filtros por categoria** em cima do carrossel.
 
+## ✨ Qualidade de vida
+
+- **Tutorial jogável:** nos primeiros minutos um cartão mostra o próximo passo (andar, conversar, abrir a bolsa, ver as missões) e marca quando você faz. Dá para pular.
+- **3 espaços de jogo salvo**, cada um com o retrato do personagem, modo, dia, ouro e a hora em que foi salvo.
+- **Música para cada lugar:** floresta, mina, porto, serra, casa, pântano e torre têm faixas próprias.
+- **Expressões nos diálogos:** o retrato ficou maior e mostra se a pessoa está rindo, brava, triste, apaixonada ou surpresa.
+- **32 conquistas** com tela de troféus (tecla **U**, ou Opções → Conquistas).
+- **Mapa do mundo ilustrado:** abra o mapa (M) e aperte **Tab**. Mostra onde você está, o que já visitou e, no Simulador, as estradas em guerra em vermelho.
+- **Celular:** segure o dedo num personagem para abrir o menu em pizza; botões de toque maiores.
+- **Eventos da turma:** aniversários (festa na fonte, presentes valem o dobro), exposição da Mylena no Ateliê a cada 7 dias (com um quadro único) e, se você for amigo do Lucas sem namorar com ele, o casamento do Lucas.
+- **Clínica da Júlia:** missões de resgate de animais machucados no Bosque (História) ou na Floresta Grande (Simulador).
+- **Versão rápida:** `node tools/build.js` junta todos os scripts num arquivo só em `dist/`. Para usar, publique a pasta `dist/` no GitHub Pages.
+
 ## 🛒 Lojas
 
 Cada loja é uma **vitrine**: o atendente aparece no canto e comenta o que você faz, os itens ficam numa **prateleira em leque** (o do meio grande, os vizinhos menores dos lados) com cor de **raridade** (Comum, Incomum, Raro, Épico, Lendário). Embaixo, um painel mostra descrição, **atributos** (fome, vida, dano, defesa...), preço com imposto e **quantidade**.
