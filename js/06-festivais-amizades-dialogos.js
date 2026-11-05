@@ -2628,6 +2628,7 @@ function socialMenu(id) {
     );
   opts.push(...townQuestMenuItems(id));
   opts.push(...affectionMenuItems({ id }));
+  opts.push(...openRelationshipItems(id));
   opts.push({
     t: "Conversar…",
     fn: () => talkMenu(id),
@@ -2703,8 +2704,18 @@ function socialMenu(id) {
   player.skids = player.skids || [];
   if (ROMANCE.includes(id) && (player.spouse || player.dating) && !isPartner(id) && friendshipLevel(id) >= 2)
     opts.push({
-      t: "Namorar em segredo ",
+      t: openRelationship() ? "Namorar também ♥ (relação aberta)" : "Namorar em segredo ",
       fn: () => {
+        if (openRelationship()) {
+          player.lovers.push(id);
+          addFriendship(id, 5);
+          saveGame();
+          say([
+            [nm, "Você tem uma relação aberta? Que moderno! Então... sim, vamos sair juntos."],
+            ["", `Agora vocês namoram. ${NPCS[player.spouse || player.dating].nome.split(",")[0]} já sabe e está tudo bem.`],
+          ]);
+          return;
+        }
         if ((player.rep ?? 50) < 25 && friendship(id) < 60) {
           say([[nm, "Com a fama que você tem? Nem pensar."]]);
           return;

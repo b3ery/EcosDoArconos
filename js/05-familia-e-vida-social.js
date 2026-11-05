@@ -156,6 +156,7 @@ function familyMenu(f) {
           ]),
       },
       ...affectionMenuItems({ id }),
+      ...openRelationshipItems(id),
       {
         t: "Pedir uma refeição caseira",
         fn: () => {
@@ -310,7 +311,9 @@ function familyHTML() {
   else h += '<div class="irow"><div class="ds">Você ainda não está namorando.</div></div>';
   h += `<div class="irow"><div><div class="nm">Reputação: ${player.rep ?? 50}/100 · ${repLabel()}</div><div class="ds">Ajudar a vila, vencer ataques e ser gentil melhora sua fama. Traição descoberta, bebedeira e grosseria pioram. Com má fama, preços sobem e ninguém quer namorar você.</div></div></div>`;
   (player.lovers || []).forEach((id) => {
-    h += `<div class="irow"><div><div class="nm"> Namoro secreto: ${NPCS[id].nome}</div><div class="ds">Amizade ${friendship(id)}/100. Risco de ser descoberto todo dia.</div></div></div>`;
+    h += openRelationship()
+      ? `<div class="irow"><div><div class="nm">${iconHTML("heart")}Namoro aberto: ${NPCS[id].nome}</div><div class="ds">Amizade ${friendship(id)}/100. Relação aberta: sem risco de ser descoberto.</div></div></div>`
+      : `<div class="irow"><div><div class="nm"> Namoro secreto: ${NPCS[id].nome}</div><div class="ds">Amizade ${friendship(id)}/100. Risco de ser descoberto todo dia.</div></div></div>`;
   });
   (player.sspouses || []).forEach((id) => {
     h += `<div class="irow"><div><div class="nm"> Família secreta: ${NPCS[id].nome}</div><div class="ds">${
@@ -327,7 +330,7 @@ function familyHTML() {
     "<h3>Pessoas especiais</h3>" +
     ROMANCE.map(
       (id) =>
-        `<div class="irow"><div class="nm">${NPCS[id].nome} <span style="color:#ff8aa8">${hearts(id)}</span></div><span class="pr">${player.spouse === id ? "Casados" : player.dating === id ? "Namorando" : (player.sspouses || []).includes(id) ? "Casados em segredo" : (player.lovers || []).includes(id) ? "Namoro secreto" : friendshipLevel(id) >= 2 ? "Pode namorar" : ""}</span></div>`,
+        `<div class="irow"><div class="nm">${NPCS[id].nome} <span style="color:#ff8aa8">${hearts(id)}</span></div><span class="pr">${player.spouse === id ? "Casados" : player.dating === id ? "Namorando" : (player.sspouses || []).includes(id) ? "Casados em segredo" : (player.lovers || []).includes(id) ? (openRelationship() ? "Namoro aberto" : "Namoro secreto") : friendshipLevel(id) >= 2 ? "Pode namorar" : ""}</span></div>`,
     ).join("");
   return h;
 }
@@ -1050,6 +1053,64 @@ function drawPet(p, X, Y, flip, t, moving) {
 
 /* ===================== TRAIÇÃO E FAMÍLIAS SECRETAS ===================== */
 
+/* ---- Relacionamento aberto ----
+ * Com o acordo do par (cônjuge ou namoro), os outros namoros deixam de ser
+ * traição: ninguém flagra, a vila não fofoca e a fama não cai.
+ */
+function openRelationship() {
+  const main = player.spouse || player.dating;
+  return !!main && player.openRel === main;
+}
+/** Quem topa abrir a relação, conforme a personalidade. */
+const OPEN_REL_CHANCE = {
+  aventureiro: 0.85,
+  engracado: 0.7,
+  esperto: 0.6,
+  gentil: 0.45,
+  sabio: 0.5,
+  timido: 0.25,
+  serio: 0.2,
+  orgulhoso: 0.15,
+};
+function proposeOpenRelationship(id) {
+  const n = NPCS[id].nome.split(",")[0];
+  if (player.famDay["openAsk" + id] === player.day)
+    return say([[n, "A gente já conversou sobre isso hoje. Me dá um tempo pra pensar."]]);
+  player.famDay["openAsk" + id] = player.day;
+  if (friendship(id) < 70)
+    return say([[n, "Abrir a relação? A gente nem se entende direito ainda... (amizade 70+)"]]);
+  const chance = OPEN_REL_CHANCE[PERSONALITIES[id]] ?? 0.4;
+  if (Math.random() < chance) {
+    player.openRel = id;
+    player.lovers = player.lovers || [];
+    addFriendship(id, 2);
+    saveGame();
+    return say([
+      [n, "*pensa um pouco* Sabe... confiança é isso. Tudo bem. Mas a gente continua sendo prioridade um do outro, combinado?"],
+      ["", "Agora vocês têm um relacionamento aberto. Outros namoros não contam como traição e a vila não vai fofocar."],
+    ]);
+  }
+  addFriendship(id, -8);
+  saveGame();
+  say([[n, "*fica em silêncio* ...Não. Eu quero você só pra mim. Não pergunta isso de novo tão cedo."]]);
+}
+function closeOpenRelationship(id) {
+  const n = NPCS[id].nome.split(",")[0];
+  player.openRel = null;
+  addFriendship(id, 3);
+  saveGame();
+  say([
+    [n, "Só nós dois de novo? *sorri* Eu gosto da ideia."],
+    ["", "O relacionamento voltou a ser fechado. Namoros com outras pessoas agora são segredo de novo."],
+  ]);
+}
+function openRelationshipItems(id) {
+  if (player.spouse !== id && player.dating !== id) return [];
+  if (openRelationship())
+    return [{ t: "Fechar o relacionamento", fn: () => closeOpenRelationship(id) }];
+  return [{ t: "Propor relacionamento aberto", fn: () => proposeOpenRelationship(id) }];
+}
+
 function secretCount() {
   return (player.lovers || []).length + (player.sspouses || []).length;
 }
@@ -1072,6 +1133,7 @@ function npcSpot(id) {
   return e ? [e[0], e[1]] : null;
 }
 function witnessCheck(culprit) {
+  if (openRelationship()) return;
   const off = player.spouse || player.dating;
   if (!off || off === culprit) return;
   if (off === player.spouse && player.zone === "casa") return discover(culprit, true);
@@ -1080,6 +1142,7 @@ function witnessCheck(culprit) {
     discover(culprit, true);
 }
 function discover(culprit, caught) {
+  if (openRelationship()) return;
   const secrets = [...(player.lovers || []), ...(player.sspouses || [])];
   if (!secrets.length) return;
   culprit = culprit || secrets[Math.floor(Math.random() * secrets.length)];
@@ -1181,6 +1244,7 @@ function discover(culprit, caught) {
   );
 }
 function dailyCheat() {
+  if (openRelationship()) return;
   const sc = secretCount();
   if (!sc) return;
   if (!(player.spouse || player.dating) && sc < 2) return;
@@ -1395,7 +1459,35 @@ const AFFECTION_ACTIONS = {
     rel: 2,
     lines: ["HAHAHA! Para! Para!", "Não vale! Hahaha!", "Agora é minha vez!"],
   },
+  handhold: {
+    label: "Andar de mãos dadas",
+    rel: 3,
+    lines: ["*aperta sua mão* Não solta, tá?", "Todo mundo está olhando... e eu nem ligo.", "Sua mão é tão quentinha."],
+  },
+  serenade: {
+    label: "Fazer uma serenata",
+    rel: 4,
+    lines: ["*tapa o rosto, rindo* Você desafinou... e foi perfeito.", "Ninguém nunca cantou pra mim antes.", "Canta mais uma? Só pra mim?"],
+  },
+  flowers: {
+    label: "Entregar flores",
+    rel: 4,
+    lines: ["São lindas! Vou colocar na janela.", "*cheira as flores* Você lembrou que eu gosto dessas!", "Flores do nada? Você está aprontando alguma..."],
+  },
+  forehead: {
+    label: "Beijo na testa",
+    rel: 3,
+    lines: ["*fecha os olhos* ...Que paz.", "Você sabe me acalmar como ninguém.", "Isso vale mais que mil poções."],
+  },
+  spin: {
+    label: "Girar nos braços",
+    rel: 3,
+    lines: ["Me põe no chão! ...Não, espera, mais uma volta!", "Tô tonto de tanto rir!", "*segura forte* Você é doido! Adoro."],
+  },
 };
+
+/** Gestos que só aparecem para quem você namora ou com quem é casado. */
+const ROMANTIC_GESTURES = ["hug", "kiss", "dance", "handhold", "serenade", "flowers", "forehead", "spin", "highfive"];
 
 /** Reação ao beijo conforme a personalidade de quem foi beijado. */
 const KISS_REACTIONS = {
@@ -1434,17 +1526,126 @@ function affectionOptionsFor(target) {
       player.dating === target.id ||
       (player.lovers || []).includes(target.id) ||
       (player.sspouses || []).includes(target.id));
-  if (romantic) return ["hug", "kiss", "dance", "highfive"];
+  if (romantic) return ROMANTIC_GESTURES;
   if (target.id && friendshipLevel(target.id) >= 2) return ["hug", "highfive"];
   if (target.id && friendshipLevel(target.id) >= 1) return ["highfive"];
   return [];
 }
 
 function affectionMenuItems(target, onBack) {
-  return affectionOptionsFor(target).map((key) => ({
+  const items = affectionOptionsFor(target).map((key) => ({
     t: AFFECTION_ACTIONS[key].label,
     fn: () => playAffection(key, target),
   }));
+  if (items.length <= 4) return items;
+  // Muitos gestos: ficam num submenu para não lotar a conversa.
+  const name = target.id ? NPCS[target.id].nome.split(",")[0] : target.k.name;
+  return [
+    {
+      t: "Carinhos ♥",
+      fn: () => choice("Carinhos ♥", `O que você quer fazer com ${name}?`, items),
+    },
+    ...romanticDateItems(target.id),
+  ];
+}
+
+/* ---- Encontros românticos: uma vez por dia com cada pessoa ---- */
+const ROMANTIC_DATES = [
+  {
+    key: "picnic",
+    t: "Piquenique no campo",
+    cost: 12,
+    rel: 6,
+    ok: () => !isNight() && !["chuva", "tempestade", "neve"].includes(player.weather),
+    no: "Hoje não dá: piquenique é de dia e com tempo bom.",
+    fx: () => {
+      player.food = 100;
+      player.water = Math.min(100, player.water + 40);
+    },
+    text: (n) => `Vocês estendem uma toalha xadrez na grama. ${n} trouxe bolo e você trouxe a fome. Fome cheia!`,
+  },
+  {
+    key: "dinner",
+    t: "Jantar à luz de velas",
+    cost: 30,
+    rel: 8,
+    ok: () => currentHour() >= 18 || currentHour() < 2,
+    no: "Jantar à luz de velas é à noite, depois das 18h.",
+    fx: () => {
+      player.hp = maxHp();
+      player.mp = maxMp();
+    },
+    text: (n) => `O Gus reserva a mesa do canto e acende duas velas. ${n} não para de sorrir. HP e MP cheios!`,
+  },
+  {
+    key: "stars",
+    t: "Ver as estrelas juntos",
+    cost: 0,
+    rel: 7,
+    ok: () => isNight() && !["chuva", "tempestade", "neblina"].includes(player.weather),
+    no: "Precisa ser à noite e com o céu limpo.",
+    fx: () => {
+      player.mp = maxMp();
+    },
+    text: (n) => `Deitados na grama, ${n} aponta uma estrela cadente. "Faz um pedido!" Vocês dois pedem a mesma coisa. MP cheio!`,
+  },
+  {
+    key: "sunset",
+    t: "Pôr do sol no farol",
+    cost: 0,
+    rel: 9,
+    ok: () => player.zone === "porto" && currentHour() >= 16.5 && currentHour() < 19.5,
+    no: "Só no Porto Brisamar, no fim da tarde (16h30 às 19h30).",
+    fx: () => {
+      player.blessDay = player.day;
+    },
+    text: (n) => `O céu fica laranja e rosa sobre o mar. ${n} encosta a cabeça no seu ombro. Vocês ficam abençoados pelo resto do dia!`,
+  },
+  {
+    key: "letter",
+    t: "Escrever uma carta de amor",
+    cost: 0,
+    rel: 5,
+    ok: () => true,
+    fx: () => {},
+    text: (n) => `Você escreve três páginas, risca duas e entrega a última. ${n} lê, guarda no bolso e diz que vai ler de novo antes de dormir.`,
+  },
+];
+function romanticDateItems(id) {
+  if (!id) return [];
+  const n = NPCS[id].nome.split(",")[0];
+  return [
+    {
+      t: "Encontros ♥",
+      fn: () =>
+        choice(
+          "Encontros ♥",
+          `Um encontro por dia com ${n}. Cada um tem sua hora certa.`,
+          ROMANTIC_DATES.map((d) => ({
+            t: d.t + (d.cost ? ` (${withTax(d.cost)} ouro)` : ""),
+            fn: () => goOnDate(id, d),
+          })),
+        ),
+    },
+  ];
+}
+function goOnDate(id, d) {
+  const n = NPCS[id].nome.split(",")[0];
+  const dayKey = "date" + id;
+  if (player.famDay[dayKey] === player.day) return say([[n, "Já tivemos nosso encontro hoje. Amanhã tem mais!"]]);
+  if (!d.ok()) return say([["", d.no]]);
+  if (d.cost && player.gold < withTax(d.cost)) return say([["", "Você não tem ouro suficiente para esse encontro."]]);
+  if (d.cost) payWithTax(d.cost);
+  player.famDay[dayKey] = player.day;
+  d.fx();
+  addFriendship(id, d.rel);
+  player.clock = Math.min(1439, player.clock + 90);
+  game.fade = 1;
+  bubble(id, "heart");
+  saveGame();
+  say([["", d.text(n)]], () => {
+    if ((player.lovers || []).includes(id) || (player.sspouses || []).includes(id)) witnessCheck(id);
+  });
 }
 
 function targetLook(target) {
@@ -1622,7 +1823,19 @@ function drawAffectionScene(t) {
 
   const approach = Math.min(1, p / 0.35);
   const gapStart = 140;
-  const gapEnd = { hug: 6, kiss: 30, highfive: 60, dance: 56, lift: 40, tickle: 40 }[a.key];
+  const gapEnd = {
+    hug: 6,
+    kiss: 30,
+    highfive: 60,
+    dance: 56,
+    lift: 40,
+    tickle: 40,
+    handhold: 34,
+    serenade: 90,
+    flowers: 50,
+    forehead: 24,
+    spin: 20,
+  }[a.key];
   let gap = gapStart + (gapEnd - gapStart) * approach;
   const u = 5;
   const smallScale = a.look.small ? 0.7 : 1;
@@ -1644,6 +1857,14 @@ function drawAffectionScene(t) {
     gap = 10;
   }
   if (a.key === "hug" && hold) gap -= Math.sin((p - 0.35) * 20) * 3;
+  if (a.key === "spin" && hold) {
+    otherY -= 40 + Math.sin(t * 9) * 6;
+    otherDir = ["left", "down", "right", "up"][Math.floor(t * 8) % 4];
+  }
+  if (a.key === "handhold" && hold) {
+    myY -= Math.abs(Math.sin(t * 6)) * 3;
+    otherY -= Math.abs(Math.sin(t * 6 + 1.5)) * 3;
+  }
   if (a.key === "tickle" && hold) otherY -= Math.abs(Math.sin(t * 20)) * 5;
 
   const myX = cx - gap / 2 - 16 * u + 30,
@@ -1702,8 +1923,21 @@ function drawAffectionScene(t) {
     for (let i = 0; i < 3; i++)
       drawPixelIcon("note", cx - 80 + i * 80, groundY - 140 - Math.abs(Math.sin(t * 3 + i)) * 20, 3);
   if (a.key === "tickle" && hold) drawPixelIcon("laugh", otherX + 40, otherY - 20, 3);
+  if (a.key === "handhold" && hold) {
+    ctx.fillStyle = player.look.skin;
+    ctx.fillRect(cx - 18, groundY - 30, 18, 7);
+    ctx.fillStyle = "#f1c8a5";
+    ctx.fillRect(cx, groundY - 30, 18, 7);
+  }
+  if (a.key === "serenade" && hold)
+    for (let i = 0; i < 4; i++) {
+      const q = (t * 0.8 + i / 4) % 1;
+      drawPixelIcon("note", myX + 80 + q * (gap + 40), myY + 10 - q * 60 - Math.sin(q * 9) * 10, 3);
+    }
+  if (a.key === "flowers" && p > 0.4) drawPixelIcon("flower", cx, groundY - 70 - Math.min(1, (p - 0.4) * 4) * 10, 4);
+  if (a.key === "forehead" && p > 0.45 && p < 0.85) drawPixelIcon("heart", otherX + 40, otherY - 16, 3);
 
-  if (hold && (a.key === "hug" || a.key === "kiss" || a.key === "lift")) {
+  if (hold && ["hug", "kiss", "lift", "spin", "forehead", "flowers"].includes(a.key)) {
     for (let i = 0; i < 6; i++) {
       const q = (t * 0.7 + i / 6) % 1;
       ctx.globalAlpha = 1 - q;
