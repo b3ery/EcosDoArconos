@@ -1644,6 +1644,82 @@ function enemyRects(shape, c, t, accent) {
         [7, 5, 2, 2, "#fff"],
         [4, 1, 8, 2, "#c9a050"],
       ];
+    case "griffin":
+      // Grifo: corpo de leão, cabeça de águia, asas batendo.
+      return [
+        [0, 7, 1, 1, d],
+        [0, 8, 3, 1, d],
+        [3, 8, 9, 5, c],
+        [4, 12, 7, 1, l],
+        [3, 13, 2, 3, d],
+        [9, 13, 2, 3, d],
+        [3, 15, 2, 1, "#e0b040"],
+        [9, 15, 2, 1, "#e0b040"],
+        f ? [4, 1, 6, 6, l] : [4, 5, 7, 3, l],
+        f ? [4, 1, 1, 6, d] : [4, 7, 7, 1, d],
+        [10, 4, 4, 5, l],
+        [10, 2, 2, 2, l],
+        [12, 3, 1, 1, l],
+        [14, 6, 2, 2, "#e0b040"],
+        [12, 5, 1, 1, "#222"],
+      ];
+    case "basilisk":
+      // Basilisco: lagarto de quatro patas, espinhos e coroa de cristal.
+      return [
+        [0, 10, 2, 2, c],
+        [0, 12, 1, 1, d],
+        [2, 9, 11, 4, c],
+        [3, 12, 9, 1, l],
+        [4, 7, 1, 2, "#e0f6ff"],
+        [7, 6, 1, 3, "#e0f6ff"],
+        [10, 7, 1, 2, "#e0f6ff"],
+        [3, 13, 2, 2 + f, d],
+        [7, 13, 2, 3 - f, d],
+        [10, 13, 2, 2 + f, d],
+        [12, 7, 4, 4, c],
+        [12, 5, 1, 2, "#c9a0ff"],
+        [14, 4, 1, 3, "#c9a0ff"],
+        [14, 8, 1, 1, "#ff3"],
+        [15, 10, 1, 1, "#e44"],
+      ];
+    case "leviathan":
+      // Leviatã: cabeça e pescoço saindo das ondas, barbatanas e tentáculos.
+      return [
+        [1, 10, 2, 3, d],
+        [13, 10, 2, 3, d],
+        [6, 6, 4, 7, c],
+        [3, 8 + f, 3, 2, l],
+        [10, 8 - f, 3, 2, l],
+        [4, 2, 8, 5, c],
+        [2, 1, 2, 3, l],
+        [12, 1, 2, 3, l],
+        [5, 6, 7, 1, d],
+        [6, 7, 1, 1, "#fff"],
+        [9, 7, 1, 1, "#fff"],
+        [5, 3, 1, 1, "#ff5"],
+        [10, 3, 1, 1, "#ff5"],
+        [0, 13, 16, 3, "#3a8ab0"],
+        [1 + f * 2, 13, 3, 1, "#cfeaff"],
+        [9 - f, 13, 3, 1, "#cfeaff"],
+      ];
+    case "stainedglass":
+      // Espírito do Vitral: uma janela colorida com auréola.
+      return [
+        [6, 0, 4, 1, "#fff3b0"],
+        [4, 1, 8, 1, "#3a3048"],
+        [3, 2, 10, 12, "#3a3048"],
+        [4, 3, 4, 4, "#e0306a"],
+        [8, 3, 4, 4, "#4fb8ff"],
+        [4, 7, 4, 4, "#f2c14e"],
+        [8, 7, 4, 4, "#7ad36b"],
+        [4, 11, 8, 2, c],
+        [8, 3, 1, 10, "#1a1424"],
+        [4, 7, 8, 1, "#1a1424"],
+        [7, 4, 2, 2, "#fff"],
+        [2, 6 + f, 1, 3, "#fff3b0"],
+        [13, 6 - f, 1, 3, "#fff3b0"],
+        [5, 14, 6, 1, "#1a1424"],
+      ];
     case "diretor": {
       // Diretor da Academia: capelo de formatura, óculos, barba longa e um grimório na mão.
       const cap = "#1a1430",
