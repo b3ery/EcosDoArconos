@@ -90,7 +90,7 @@ function guardiansFreed() {
   return player.guards.filter((z) => ["bosque", "pantano", "picos"].includes(z)).length;
 }
 function openJobs(direct) {
-  if (lifeMode() && !direct) return lifeJobsMenu();
+  if (!direct) return professionsMenu();
   if (!player.board || player.board.day !== player.day)
     player.board = {
       day: player.day,

@@ -31,6 +31,7 @@ function onNewDay() {
     setTimeout(() => toast("Mesada real: +50 de ouro do tesouro da Coroa.", 3500), 2200);
   }
   if (typeof growKids === "function") growKids();
+  restoreWorkTiles();
 }
 const FAM_SPOTS = {
   spouse: [11, 7],

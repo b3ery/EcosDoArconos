@@ -1652,6 +1652,8 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
+  const jl = jobLabel(x, y);
+  if (jl) return jl;
   const elf = elfAt(x, y);
   if (elf) return "Conversar com " + elf.nm;
   if (tw && familyList().some((f) => f.x === x && f.y === y)) return "Família";
@@ -1788,6 +1790,7 @@ function fishAction() {
     }
     game.fish = null;
     addItem(it);
+    jobOnFish(it);
     player.fishCaught = (player.fishCaught || 0) + (it === "bota" ? 0 : 1);
     saveGame();
     game.bubbles.push({
@@ -1905,6 +1908,7 @@ function interact() {
   interactAt(tg.x, tg.y);
 }
 function interactAt(x, y) {
+  if (jobInteract(x, y)) return;
   game.talkTarget = talkTargetAt(x, y);
   const elf = elfAt(x, y);
   if (elf) {

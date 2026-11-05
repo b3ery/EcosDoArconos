@@ -854,8 +854,12 @@ function castleMenu() {
         },
       },
       {
-        t: `Turno na Guarda Real (4h) · ${guardRank().n}`,
-        fn: guardJob,
+        t: `Trabalhar na Guarda Real (patrulha) · ${guardRank().n}`,
+        fn: () => {
+          if (player.job) return professionsMenu();
+          if (currentHour() < 6 || currentHour() >= 19) return say([["Guarda Real", "O turno da Guarda começa entre 6h e 19h."]]);
+          startJob("guarda");
+        },
       },
       {
         t: player.spouse === "rainha" ? "Ver sua esposa, a Rainha ♥" : "Conversar com a Rainha (amizade)",

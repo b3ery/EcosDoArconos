@@ -590,9 +590,12 @@ function checkQuest() {
   game.lastStep = id;
 }
 function drawQuestArrow(t, camX, camY, Z = 1) {
-  if (lifeMode()) return;
-  if (player.finished && !urgent() && !(game.raid && player.zone === "vila")) return;
-  const r = questTarget();
+  // Durante um turno de trabalho a seta mostra o próximo passo do trabalho.
+  const jt = player.job ? jobTarget() : null;
+  if (player.job && !jt) return;
+  if (!jt && lifeMode()) return;
+  if (!jt && player.finished && !urgent() && !(game.raid && player.zone === "vila")) return;
+  const r = jt || questTarget();
   const tx = (r.x * TILE + 16 - camX) * Z,
     ty = (r.y * TILE + 16 - camY) * Z;
   ctx.save();
@@ -695,6 +698,14 @@ function updateHUD() {
     qp.style.display = "block";
   } else if (game.mode === "world" && !game.dialog && player.zone === "casa") {
     const qs = " Sua casa · R: decorar · porta embaixo para sair";
+    if (qp.dataset.s !== qs) {
+      qp.textContent = qs;
+      qp.dataset.s = qs;
+    }
+    qp.className = "box ui";
+    qp.style.display = "block";
+  } else if (game.mode === "world" && !game.dialog && player.job) {
+    const qs = jobStatusText();
     if (qp.dataset.s !== qs) {
       qp.textContent = qs;
       qp.dataset.s = qs;
