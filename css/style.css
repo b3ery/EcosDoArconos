@@ -2967,3 +2967,93 @@ body.mland #qpill {
   width: 24em;
   height: 18em;
 }
+
+/* ===================== NASCIMENTO ===================== */
+#birth {
+  position: absolute;
+  inset: 0;
+  display: none;
+  z-index: 40;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, rgba(20, 14, 34, 0.55), rgba(10, 7, 16, 0.85));
+}
+#birth i {
+  position: absolute;
+  top: -5%;
+  width: 0.5em;
+  height: 0.8em;
+  animation: confFall linear infinite;
+}
+@keyframes confFall {
+  to {
+    transform: translateY(115vh) rotate(720deg);
+  }
+}
+.birth-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(86%, 22em);
+  padding: 1.2em 1em 1em;
+  text-align: center;
+  border-radius: 16px;
+  border: 3px solid var(--gold);
+  box-shadow:
+    0 0 0 4px #0a0710,
+    0 0 40px rgba(242, 193, 78, 0.45);
+  animation: birthPop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+}
+#birth.boy .birth-card {
+  background: linear-gradient(#2a4a8a, #1a2a5a);
+}
+#birth.girl .birth-card {
+  background: linear-gradient(#8a2a5a, #5a1a3a);
+}
+.birth-ic {
+  display: inline-grid;
+  place-items: center;
+  width: 4.2em;
+  height: 4.2em;
+  border-radius: 50%;
+  background: radial-gradient(#ffffff, #f3e2b8);
+  border: 3px solid var(--gold);
+}
+.birth-ic .pxi {
+  margin: 0;
+}
+.birth-top {
+  margin-top: 0.4em;
+  font-family: "Pixelify Sans", sans-serif;
+  color: var(--gold);
+  font-size: 1.2em;
+}
+.birth-big {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 2.1em;
+  color: #fff;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
+}
+.birth-sub {
+  color: #f3e2ff;
+  margin: 0.3em 0 0.8em;
+}
+.birth-sub .pxi {
+  margin: 0;
+}
+.birth-ok {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.1em;
+  padding: 0.35em 1.2em;
+  border-radius: 8px;
+  color: #2a1a0c;
+  border-color: #ffe6a8;
+  background: linear-gradient(#ffd977, #e0a030);
+  box-shadow: 0 3px 0 #8a5a1a;
+}
+@keyframes birthPop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+}

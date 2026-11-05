@@ -376,3 +376,41 @@ function doInteraction(id, key) {
 function lifeSocialItems(id) {
   return [{ t: `Interações… (${INTERACTIONS.filter((r) => interAvailable(r, id)).length})`, icon: "chat", fn: () => ((game.ipAnchor = null), openInterPanel(id)) }];
 }
+
+/* ===================== NASCIMENTO ===================== */
+
+/** "Parabéns! É um menino!" / "É uma menina!" com confete. */
+function celebrateBirth(g, after) {
+  const boy = g === "m";
+  let el = byId("birth");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "birth";
+    el.className = "ui";
+    byId("screen").appendChild(el);
+  }
+  const conf = Array.from({ length: 36 }, (_, i) => {
+    const c = boy ? ["#5aa8ff", "#9fd0ff", "#f2c14e", "#ffffff"][i % 4] : ["#ff8aa8", "#ffc0d4", "#f2c14e", "#ffffff"][i % 4];
+    return `<i style="left:${(i * 37) % 100}%;background:${c};animation-delay:${(i % 9) * 0.12}s;animation-duration:${2 + (i % 5) * 0.4}s"></i>`;
+  }).join("");
+  el.className = "ui " + (boy ? "boy" : "girl");
+  el.innerHTML = `${conf}<div class="birth-card">
+      <div class="birth-ic">${iconHTML("baby", 48)}</div>
+      <div class="birth-top">Parabéns!</div>
+      <div class="birth-big">${boy ? "É um menino!" : "É uma menina!"}</div>
+      <div class="birth-sub">Um novo ${boy ? "herdeiro" : "amor"} chegou à família ${iconHTML("heart", 14)}</div>
+      <button class="birth-ok">Escolher o nome</button>
+    </div>`;
+  el.style.display = "block";
+  game.mode = "birth";
+  playSound(784, 0.2, "sine");
+  setTimeout(() => playSound(988, 0.2, "sine"), 160);
+  setTimeout(() => playSound(1175, 0.35, "sine"), 320);
+  const done = () => {
+    el.style.display = "none";
+    game.mode = "world";
+    if (after) after();
+  };
+  el.querySelector(".birth-ok").onclick = done;
+  game.birthDone = done;
+}

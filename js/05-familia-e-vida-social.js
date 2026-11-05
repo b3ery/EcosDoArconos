@@ -233,19 +233,21 @@ function familyMenu(f) {
       opts.push({
         t: "Conversar sobre ter um filho",
         fn: () => {
-          say([[n, "Eu também sonho com uma família maior... Vamos escolher um nome?"]], () =>
-            promptName("Nome do bebê", "Como vai se chamar?", (nm) => {
+          const g = Math.random() < 0.5 ? "m" : "f";
+          say([[n, "Eu também sonho com uma família maior..."], ["", "Alguns meses depois..."]], () =>
+            celebrateBirth(g, () => promptName(g === "m" ? "Nome do menino" : "Nome da menina", "Como vai se chamar?", (nm) => {
               const L = {
                 skin: Math.random() < 0.5 ? player.look.skin : "#d9a07a",
                 hair: Math.random() < 0.5 ? player.look.hair : NPCS[id].hair,
                 hstyle: ["curto", "longo", "cacheado", "rabo"][Math.floor(Math.random() * 4)],
                 hat: "nenhum",
                 hatc: "#2a2f6e",
-                outfit: ["tunica", "vestido", "manto"][Math.floor(Math.random() * 3)],
-                robe: ["#e86ab0", "#4a7ad9", "#7ab04a", "#f2c14e"][Math.floor(Math.random() * 4)],
+                outfit: g === "f" ? ["vestido", "tunica"][Math.floor(Math.random() * 2)] : ["tunica", "manto"][Math.floor(Math.random() * 2)],
+                robe: g === "f" ? ["#e86ab0", "#c94a8a", "#f2c14e"][Math.floor(Math.random() * 3)] : ["#4a7ad9", "#7ab04a", "#3d4fa8"][Math.floor(Math.random() * 3)],
               };
               player.kids.push({
                 name: nm,
+                g,
                 born: player.day,
                 look: L,
               });
@@ -255,9 +257,9 @@ function familyMenu(f) {
               say([
                 ["", `Um bebê chegou à família! Bem-vindo ao mundo, ${nm}!`],
                 [n, "Olha... tem os seus olhos."],
-                ["", "O bebê fica dentro de casa. Em 2 dias ele vira uma criança."],
+                ["", `O bebê fica dentro de casa. Em 2 dias ${g === "f" ? "ela" : "ele"} vira uma criança.`],
               ]);
-            }),
+            })),
           );
         },
       });
@@ -2858,8 +2860,9 @@ function growKids() {
     }
     if (k.spouse && player.day - (k.married || 0) >= 4 && Math.random() < 0.18 && (k.grandkids || 0) < 4) {
       k.grandkids = (k.grandkids || 0) + 1;
+      const gb = Math.random() < 0.5;
       setTimeout(
-        () => toast(`${k.name} teve um bebê! Você virou ${genderWord("avô", "avó", "avô/avó")} (${k.grandkids} neto(s)).`, 4500),
+        () => toast(`Parabéns! ${k.name} teve ${gb ? "um menino" : "uma menina"}! Você virou ${genderWord("avô", "avó", "avô/avó")} (${k.grandkids} neto(s)).`, 4500),
         3800,
       );
     }

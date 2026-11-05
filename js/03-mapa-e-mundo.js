@@ -93,7 +93,7 @@ function walkable(z, x, y) {
       return false;
   }
   if (z === "casa") {
-    if (c === "X") return true;
+    if (c === "X") return !curFloor();
     if (c === "." && furnAt(x, y, true)) return false;
   }
   if (
@@ -550,6 +550,19 @@ function drawPine(X, Y, h) {
   }
 }
 
+/** Interior da casa conforme a riqueza: casebre, casa, sobrado ou mansão. */
+const HOME_PAL = {
+  casebre: { f1: "#7a6448", f2: "#6e5a40", line: "#5a4a32", wall: "#a8946e", wallLine: "#8a7a5a", base: "#4a3a22", trim: "#5a4a32", dirt: 1 },
+  casa: { f1: "#8a6038", f2: "#946840", line: "#6b4423", wall: "#e8d8b8", wallLine: "#d4c09a", base: "#6b4423", trim: "#8a5a2e" },
+  sobrado: { f1: "#6a3a2a", f2: "#74422e", line: "#4a2a1a", wall: "#efe2f0", wallLine: "#d8c4e0", base: "#4a2a3a", trim: "#7a5a8a" },
+  mansao: { f1: "#efeae0", f2: "#d8d0c2", line: "#bdb3a2", wall: "#f6ecd2", wallLine: "#e8d8b0", base: "#5a2a2a", trim: "#c9a03a", marble: 1 },
+};
+const HOME_PAL_UP = {
+  casa: HOME_PAL.casa,
+  casebre: HOME_PAL.casebre,
+  sobrado: { f1: "#5a3a4a", f2: "#644252", line: "#3a2230", wall: "#dfe8f6", wallLine: "#c4d4ea", base: "#2a3a5a", trim: "#5a7ab9" },
+  mansao: { f1: "#8a2a3a", f2: "#7e2434", line: "#5a1a24", wall: "#f2e2ec", wallLine: "#e2c8d8", base: "#3a1a2a", trim: "#c9a03a" },
+};
 function drawTile(z, x, y, c, t) {
   const theme = ZONES[z].theme,
     th = THEMES[theme],
@@ -707,14 +720,34 @@ function drawTile(z, x, y, c, t) {
     return;
   }
   if (theme === "casa") {
+    const tier = typeof homeTier === "function" ? homeTier() : "casa";
+    const P = (curFloor() ? HOME_PAL_UP[tier] : HOME_PAL[tier]) || HOME_PAL.casa;
     if (c === "." || c === "X") {
-      ctx.fillStyle = y % 2 ? "#8a6038" : "#946840";
-      ctx.fillRect(X, Y, TILE, TILE);
-      ctx.fillStyle = "#6b4423";
-      ctx.fillRect(X, Y + 15, TILE, 1);
-      ctx.fillRect(X + ((x + y) % 2 ? 8 : 24), Y, 1, 15);
-      ctx.fillRect(X + ((x + y) % 2 ? 20 : 4), Y + 16, 1, 16);
-      if (c === "X") {
+      if (P.marble) {
+        ctx.fillStyle = (x + y) % 2 ? P.f1 : P.f2;
+        ctx.fillRect(X, Y, TILE, TILE);
+        ctx.fillStyle = P.line;
+        ctx.fillRect(X, Y, TILE, 1);
+        ctx.fillRect(X, Y, 1, TILE);
+        if (x === 6 || x === 7) {
+          ctx.fillStyle = "#a8282a";
+          ctx.fillRect(X + (x === 6 ? 6 : 0), Y, 26, TILE);
+          ctx.fillStyle = "#f2c14e";
+          ctx.fillRect(X + (x === 6 ? 6 : 30), Y, 2, TILE);
+        }
+      } else {
+        ctx.fillStyle = y % 2 ? P.f1 : P.f2;
+        ctx.fillRect(X, Y, TILE, TILE);
+        ctx.fillStyle = P.line;
+        ctx.fillRect(X, Y + 15, TILE, 1);
+        ctx.fillRect(X + ((x + y) % 2 ? 8 : 24), Y, 1, 15);
+        ctx.fillRect(X + ((x + y) % 2 ? 20 : 4), Y + 16, 1, 16);
+        if (P.dirt && (x * 7 + y * 3) % 5 === 0) {
+          ctx.fillStyle = "rgba(0,0,0,.18)";
+          ctx.fillRect(X + 10, Y + 8, 6, 3);
+        }
+      }
+      if (c === "X" && !curFloor()) {
         ctx.fillStyle = "#4a3a6a";
         ctx.fillRect(X + 2, Y + 18, 28, 12);
         ctx.fillStyle = "#f2c14e";
@@ -723,14 +756,20 @@ function drawTile(z, x, y, c, t) {
       return;
     }
     if (y === 1 && x > 0 && x < ZONES.casa.w - 1) {
-      ctx.fillStyle = "#e8d8b8";
+      ctx.fillStyle = P.wall;
       ctx.fillRect(X, Y, TILE, TILE);
-      ctx.fillStyle = "#d4c09a";
+      ctx.fillStyle = P.wallLine;
       for (let k = 0; k < 4; k++) ctx.fillRect(X + k * 8 + 3, Y, 2, 22);
-      ctx.fillStyle = "#6b4423";
+      ctx.fillStyle = P.base;
       ctx.fillRect(X, Y + 22, TILE, 10);
-      ctx.fillStyle = "#8a5a2e";
+      ctx.fillStyle = P.trim;
       ctx.fillRect(X, Y + 22, TILE, 2);
+      if (P.marble && x % 3 === 0) {
+        ctx.fillStyle = "#c9a03a";
+        ctx.fillRect(X + 13, Y + 2, 6, 4);
+        ctx.fillStyle = "#fff3b0";
+        ctx.fillRect(X + 15, Y + 3, 2, 2);
+      }
       if (x === 3 || x === 8 || x === 11) {
         ctx.fillStyle = "#4a2e17";
         ctx.fillRect(X + 5, Y + 3, 22, 16);
@@ -1487,6 +1526,7 @@ function spawnEco() {
 }
 function enterZone(showBanner = true) {
   restoreContacts();
+  if (player.zone === "quintal" && (!ZONES.quintal || ZONES.quintal.tier !== homeTier())) ZONES.quintal = genQuintal(homeTier());
   if (player.zone === "vila") {
     crewInit();
     setTimeout(villainReaction, 2500);
@@ -1684,6 +1724,8 @@ function targetAt(x, y) {
     c = tileAt(player.zone, x, y),
     tw = z.town;
   if (c == null) return null;
+  const hx = houseExtraLabel(x, y);
+  if (hx) return hx;
   if (crewActorAt(x, y)) return crewAtGathering(x, y) ? "Conversar com a turma" : "Falar com " + crewName(crewActorAt(x, y));
   const jl = animalLabel(x, y) || jobLabel(x, y) || gatherLabel(x, y) || forageLabel(x, y);
   if (jl) return jl;
@@ -1943,6 +1985,7 @@ function interact() {
 function interactAt(x, y) {
   // Se for um personagem, os menus abrem em círculo ao redor dele (estilo The Sims).
   game.pieAnchor = characterAt(x, y) ? { x, y } : null;
+  if (houseExtraInteract(x, y)) return;
   if (crewActorAt(x, y)) {
     game.pieAnchor = { x, y };
     if (crewAtGathering(x, y)) crewGroupMenu();

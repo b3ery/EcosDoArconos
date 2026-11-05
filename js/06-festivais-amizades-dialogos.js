@@ -2941,10 +2941,12 @@ function socialMenu(id) {
             born: player.day,
           });
           saveGame();
-          say([
-            [nm, "Nasceu! Olha que coisinha linda..."],
-            ["", `${name} nasceu! Mais um segredo para guardar.`],
-          ]);
+          celebrateBirth(g, () =>
+            say([
+              [nm, "Nasceu! Olha que coisinha linda..."],
+              ["", `${name} nasceu! Mais um segredo para guardar.`],
+            ]),
+          );
         },
       });
   }

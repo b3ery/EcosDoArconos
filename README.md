@@ -441,6 +441,19 @@ No título, além do **modo História**, tem o botão **Simulador de Vida**: sem
 
 Necessidades baixas diminuem o pagamento.
 
+## 🏠 Casas de pobres e de ricos, com quintal e andares
+
+| Casa | Como é | Quintal | Andar de cima |
+|---|---|:---:|:---:|
+| **Casebre** | Telhado de palha, tábuas remendadas, chão de terra. Barato, descansa menos. | — | — |
+| **Casa** | Casa simples de família, piso de madeira. | ✔ | — |
+| **Sobrado** | Janelas grandes, papel de parede, descansa e diverte mais. | ✔ | ✔ |
+| **Mansão** | Pedra, colunas, frisos dourados, bandeira; por dentro mármore e tapete vermelho. +1 de reputação por dia morando nela. | ✔ (com laguinho) | ✔ |
+
+- **Quintal:** porta verde no fundo da casa. Tem horta para colher, poço, árvores e banco para relaxar.
+- **Andar de cima:** escada no canto. Cada andar tem seus próprios móveis (decore com R).
+- **Nascimento:** quando nasce um bebê aparece **"Parabéns! É um menino!"** ou **"É uma menina!"**, com confete, e depois você escolhe o nome.
+
 ## 🔨 Profissões (nos dois modos)
 
 No **Quadro de Trabalhos** de cada vila você escolhe uma profissão. O turno dura 4 horas do jogo e é feito **no mapa**: andando, apertando **E** e entregando. Uma seta mostra o próximo passo e o pagamento sai a cada entrega.

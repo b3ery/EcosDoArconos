@@ -225,9 +225,9 @@ ROMANCE.push("lucas");
 const BUILDING_EXTRA_STYLES = {
   atelie: { roof: "#a83a6a", r2: "#c94a8b", wall: "#f6e6ee", beam: "#5a2a3a", sign: "flower", chim: 0, lantern: 1 },
   clinica: { roof: "#2f7a5a", r2: "#3f9a6e", wall: "#eef2e6", beam: "#2a4a3a", sign: "paw", chim: 0 },
-  mansao: { roof: "#2a3a7a", r2: "#3a5aa8", wall: "#f2ecdc", beam: "#c9a03a", chim: 1, lantern: 1, stone: 1 },
+  mansao: { roof: "#2a3a7a", r2: "#3a5aa8", wall: "#f2ecdc", beam: "#c9a03a", chim: 2, lantern: 1, stone: 1, rich: 1, flag: "#f2c14e" },
   sobrado: { roof: "#5a3a6a", r2: "#7a5a8a", wall: "#e8dcc8", beam: "#3a2a3a", chim: 1 },
-  casebre: { roof: "#a88a4a", r2: "#c9a85a", wall: "#a88a6a", beam: "#5a4a32", chim: 0 },
+  casebre: { roof: "#a88a4a", r2: "#c9a85a", wall: "#a88a6a", beam: "#5a4a32", chim: 0, thatch: 1, poor: 1 },
 };
 Object.assign(BUILDING_STYLES, BUILDING_EXTRA_STYLES);
 

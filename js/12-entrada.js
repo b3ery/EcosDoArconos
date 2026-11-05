@@ -90,6 +90,7 @@ const KEY_HANDLERS = {
   },
   inv: (k) => (k === "i" || k === "escape") && closeInv(),
   ipanel: (k) => k === "escape" && closeInterPanel(),
+  birth: (k) => (k === "enter" || k === " " || k === "e" || k === "escape") && game.birthDone && game.birthDone(),
   shop: (k) => {
     if (k === "escape") return closeShop();
     if (game.shopId === "__jobs" || !byId("shop").querySelector(".slider")) return;

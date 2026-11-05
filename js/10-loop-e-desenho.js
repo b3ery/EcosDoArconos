@@ -632,6 +632,10 @@ function signIcon(k, x, y) {
     ctx.fillStyle = col;
     ctx.fillRect(x + a, y + b, w, h);
   };
+  if (PIXEL_ICONS[k] && ["flower", "paw", "heart"].includes(k)) {
+    drawPixelIcon(k, x, y - 1, 2);
+    return;
+  }
   if (k === "mug") {
     c("#f2c14e", -5, -5, 8, 9);
     c("#fff", -5, -6, 8, 3);
@@ -1319,6 +1323,49 @@ function drawBuilding(b, t) {
       ctx.fillRect(dx - 2, dy + 4, 6, 8);
       ctx.fillRect(dx + 28, dy + 4, 6, 8);
     }
+  }
+  if (S.poor) {
+    // Casebre: tábuas remendadas, palha caindo e um balde velho.
+    ctx.fillStyle = "#6a5a3a";
+    ctx.fillRect(X + 6, Y + roofH + 6, 14, 6);
+    ctx.fillRect(X + W - 22, Y + roofH + 14, 12, 5);
+    ctx.fillStyle = "#4a3a22";
+    ctx.fillRect(X + 6, Y + roofH + 8, 14, 1);
+    ctx.fillRect(X + W - 22, Y + roofH + 16, 12, 1);
+    ctx.fillStyle = "#c9a85a";
+    for (let k = 0; k < W / 6; k++) ctx.fillRect(X - 6 + k * 6, Y + roofH - 1, 2, 4 + ((k * 7) % 5));
+    ctx.fillStyle = "#7a6a5a";
+    ctx.fillRect(X + W + 2, dy + 18, 8, 10);
+    ctx.fillStyle = "#5a4a3a";
+    ctx.fillRect(X + W + 2, dy + 18, 8, 2);
+  }
+  if (S.rich) {
+    // Mansão: colunas na porta, frisos dourados, vasos de flores e bandeira.
+    ctx.fillStyle = "#c9a03a";
+    ctx.fillRect(X - 6, Y + roofH - 6, W + 12, 3);
+    ctx.fillRect(X, Y + Hh - 11, W, 3);
+    for (const dxx of b.door) {
+      const dx = X + (dxx - b.x) * TILE;
+      ctx.fillStyle = "#f2eee4";
+      ctx.fillRect(dx - 4, dy - 4, 6, 36);
+      ctx.fillRect(dx + 30, dy - 4, 6, 36);
+      ctx.fillStyle = "#d8d0c0";
+      ctx.fillRect(dx - 6, dy - 6, 10, 3);
+      ctx.fillRect(dx + 28, dy - 6, 10, 3);
+    }
+    for (const px of [X + 2, X + W - 14]) {
+      ctx.fillStyle = "#8a5a2e";
+      ctx.fillRect(px, Y + Hh - 2, 12, 8);
+      ctx.fillStyle = "#3a7a3a";
+      ctx.fillRect(px + 1, Y + Hh - 8, 10, 6);
+      ctx.fillStyle = ["#ff6b8a", "#f2c14e"][px > X + 10 ? 1 : 0];
+      ctx.fillRect(px + 3, Y + Hh - 9, 2, 2);
+      ctx.fillRect(px + 7, Y + Hh - 7, 2, 2);
+    }
+    ctx.fillStyle = "#5a3a22";
+    ctx.fillRect(X + W / 2 - 1, Y - 34, 2, 26);
+    ctx.fillStyle = S.flag || "#c94a4a";
+    fillPolygon(X + W / 2 + 1, Y - 34, X + W / 2 + 18, Y - 28 + Math.sin(t * 4 + X) * 2, X + W / 2 + 1, Y - 22);
   }
   if (S.sign) {
     const sx = X + (b.door[0] - b.x) * TILE + (b.door[0] - b.x < b.w - 1 ? 44 : -12);
@@ -2494,8 +2541,9 @@ function drawWorld(t) {
           },
         });
     }
+    if (player.zone === "casa" || player.zone === "quintal") list.push({ y: -5, draw: () => drawHouseExtras(t) });
     if (player.zone === "casa")
-      for (const fu of player.furn || [])
+      for (const fu of (player.furn || []).filter((f) => (f.fl || 0) === curFloor()))
         list.push({
           y: fu.y - (furnWalk(fu.id) ? 0.9 : 0.02),
           draw: () => drawFurn(fu, t),

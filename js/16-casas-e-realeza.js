@@ -14,6 +14,27 @@
 
 const HOUSE_ZONE_MUL = { vila: 1.2, porto: 1, serra: 0.9 };
 const STARTER_HOUSE = "vila:5,17";
+/* Casas de pobres e de ricos: Casebre, Casa, Sobrado e Mansão. */
+const HOUSE_TIERS = {
+  casebre: { n: "Casebre", cls: "pobre", base: 110, per: 6, comfort: 0.85, desc: "Chão de terra, telhado de palha e goteira. Barato, mas descansa menos." },
+  casa: { n: "Casa", cls: "simples", base: 240, per: 14, comfort: 1, desc: "Casa simples de família: piso de madeira e lareira." },
+  sobrado: { n: "Sobrado", cls: "confortável", base: 600, per: 24, comfort: 1.3, desc: "Dois andares, janelas grandes e tapetes. Descansa e diverte mais." },
+  mansao: { n: "Mansão", cls: "rica", base: 1500, per: 40, comfort: 1.6, desc: "Piso de mármore, tapete vermelho e criados. Dá status: +1 de reputação por dia morando nela." },
+};
+/** Cada casa sem nome tem um padrão de riqueza fixo (pelo tamanho e pelo lugar). */
+const HOUSE_TIER_FIXED = { c12: "mansao", p16: "mansao", c1: "casebre" };
+function houseTierOf(b) {
+  if (HOUSE_TIER_FIXED[b.id]) return HOUSE_TIER_FIXED[b.id];
+  const area = b.w * b.h,
+    h = (b.x * 7 + b.y * 13) % 10;
+  if (area >= 30) return h < 5 ? "mansao" : "sobrado";
+  if (area >= 16) return h < 3 ? "casebre" : h < 8 ? "casa" : "sobrado";
+  return h < 6 ? "casebre" : "casa";
+}
+(function styleHouses() {
+  for (const zone of ["vila", "porto", "serra"])
+    for (const b of ZONES[zone].town.bld) if (!b.name && (b.style === "casa" || b.style === "casa2")) b.style = houseTierOf(b) === "casa" ? b.style : houseTierOf(b);
+})();
 /** Todas as casas: a sua casa inicial e as casas sem nome (de moradores) das vilas. */
 function allHouses() {
   if (game.houseList) return game.houseList;
@@ -22,14 +43,15 @@ function allHouses() {
     for (const b of ZONES[zone].town.bld) {
       const key = `${zone}:${b.door[0]},${b.y + b.h - 1}`;
       if (key === STARTER_HOUSE)
-        list[key] = { key, zone, x: b.door[0], y: b.y + b.h - 1, n: "Casebre da família", price: 300, size: "pequena" };
+        list[key] = { key, zone, x: b.door[0], y: b.y + b.h - 1, n: "Casebre da família", price: 300, size: "pequena", tier: "casebre" };
       else if (!b.name) {
         const area = b.w * b.h;
+        const tier = houseTierOf(b),
+          T = HOUSE_TIERS[tier];
         const size = area >= 30 ? "grande" : area >= 18 ? "média" : "pequena";
-        const price = Math.round(((150 + area * 22) * HOUSE_ZONE_MUL[zone]) / 10) * 10;
+        const price = Math.round(((T.base + area * T.per) * HOUSE_ZONE_MUL[zone]) / 10) * 10;
         const where = zone === "vila" ? "em Cinzaluz" : zone === "porto" ? "no Porto" : "na Serra";
-        const kind = size === "grande" ? "Sobrado" : size === "média" ? "Casa" : "Chalé";
-        list[key] = { key, zone, x: b.door[0], y: b.y + b.h - 1, n: `${kind} ${where}`, price, size };
+        list[key] = { key, zone, x: b.door[0], y: b.y + b.h - 1, n: `${T.n} ${where}`, price, size, tier };
       }
     }
   }
@@ -49,7 +71,13 @@ function homeHouse() {
 /** Conforto da casa onde você mora: casas maiores descansam e divertem mais. */
 function homeComfort() {
   const h = homeHouse();
-  return h && h.size === "grande" ? 1.5 : h && h.size === "média" ? 1.25 : 1;
+  return h ? HOUSE_TIERS[h.tier || "casa"].comfort : 1;
+}
+/** Padrão da casa onde você está morando (o interior muda com ele). */
+function homeTier() {
+  if (!lifeMode()) return "casa";
+  const h = homeHouse();
+  return (h && h.tier) || "casa";
 }
 /** Porta de uma casa sem nome no Simulador: comprar, morar, alugar ou entrar. */
 function lifeHouseDoor(b) {
@@ -61,7 +89,7 @@ function lifeHouseDoor(b) {
   if (!mine) {
     choice(
       `${h.n} (à venda)`,
-      `Casa ${h.size}. Preço: ${withTax(h.price)} ouro com Imposto Real. Imposto da casa: ${houseTax(h)} ouro por dia, cobrado pelo Coletor Real.`,
+      `${HOUSE_TIERS[h.tier].n} (casa ${HOUSE_TIERS[h.tier].cls}). ${HOUSE_TIERS[h.tier].desc}<br>Preço: ${withTax(h.price)} ouro com Imposto Real. Imposto: ${houseTax(h)} ouro por dia.`,
       [
         {
           t: `Comprar por ${withTax(h.price)} ouro`,
@@ -141,6 +169,7 @@ function houseDaily() {
   }
   const tax = dailyPropertyTax();
   player.taxDue = (player.taxDue || 0) + tax;
+  if (homeTier() === "mansao") repAdd(1);
   if (isMonarch()) royalDaily();
 }
 const COLLECTOR_NAMES = ["Coletor Real Osvaldo", "Coletora Real Benedita", "Fiscal da Coroa Eustáquio"];

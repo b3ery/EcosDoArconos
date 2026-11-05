@@ -2216,7 +2216,7 @@ const FURN_DEF = {
 };
 function furnAt(x, y, solidOnly) {
   return player.zone === "casa"
-    ? (player.furn || []).find((f) => f.x === x && f.y === y && (!solidOnly || !furnWalk(f.id)))
+    ? (player.furn || []).find((f) => f.x === x && f.y === y && (f.fl || 0) === curFloor() && (!solidOnly || !furnWalk(f.id)))
     : null;
 }
 function furnWalk(id) {
@@ -2240,6 +2240,7 @@ function enterHouse(h) {
   // Lembra por qual porta você entrou (no Simulador dá para ter várias casas).
   player.homeReturn = h ? { zone: h.zone, x: h.x, y: h.y + 1 } : { zone: "vila", x: 5, y: 18 };
   player.zone = "casa";
+  player.floor = 0;
   player.x = 6;
   player.y = 7;
   player.dir = "up";
@@ -2263,6 +2264,7 @@ function enterHouse(h) {
   }
 }
 function leaveHouse() {
+  player.floor = 0;
   const r = player.homeReturn || { zone: "vila", x: 5, y: 18 };
   player.zone = r.zone;
   player.x = r.x;
@@ -2340,6 +2342,7 @@ function canPlace(x, y) {
   if (x < 1 || y < 2 || x >= z.w - 1 || y >= z.h - 1) return false;
   if (z.map[y][x] !== ".") return false;
   if (y === z.h - 2 && (x === 6 || x === 7)) return false;
+  if ((x === STAIRS[0] && y === STAIRS[1]) || (x === BACKDOOR[0] && y === BACKDOOR[1] + 1)) return false;
   if (x === player.x && y === player.y) return false;
   if (familyList().some((f) => f.x === x && f.y === y)) return false;
   return !furnAt(x, y);
@@ -2394,6 +2397,7 @@ function renderDecor() {
             id,
             x: fx,
             y: fy,
+            fl: curFloor(),
           });
           playSound(700, 0.1, "sine");
           saveGame();
