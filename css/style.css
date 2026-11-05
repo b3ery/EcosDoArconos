@@ -1923,3 +1923,23 @@ body.mland #qpill {
 #mini button {
   margin: 0;
 }
+
+/* Pausa, velocidade e esperar */
+.tbtn {
+  position: absolute;
+  left: 1%;
+  z-index: 6;
+  font-size: 0.8em;
+  padding: 0.1em 0.45em;
+  opacity: 0.75;
+  min-width: 2.2em;
+}
+#pauseb {
+  top: 27%;
+}
+#speedb {
+  top: 33%;
+}
+#waitb {
+  top: 39%;
+}

@@ -737,6 +737,50 @@ const PIXEL_ICONS = {
   },
 };
 
+/* ---- trabalho, viagem e tempo (acrescentados aos ícones acima) ---- */
+Object.assign(PIXEL_ICONS, {
+  axe: {
+    c: { s: "#cfd3e6", b: "#8a5a2e" },
+    p: ["..sss...", ".ssss...", "..ssb...", "....b...", "....b...", "....b..."],
+  },
+  pick: {
+    c: { s: "#9aa0b0", b: "#8a5a2e" },
+    p: [".sssss..", "s..b..s.", "...b....", "...b....", "...b....", "...b...."],
+  },
+  wheat: {
+    c: { y: "#e8c24a", g: "#7a9a3a" },
+    p: [".y.y.y..", "yyyyyy..", ".yyyy...", "..gg....", "..g.....", "..g....."],
+  },
+  hammer: {
+    c: { s: "#9aa0b0", b: "#8a5a2e" },
+    p: ["sssss...", "sssss...", "..b.....", "..b.....", "..b.....", "..b....."],
+  },
+  horse: {
+    c: { b: "#8a5a3a", k: "#3a2414" },
+    p: ["....kb..", "...bbbb.", "bbbbbb..", "bbbbbb..", "b.b.b.b.", "b.b.b.b."],
+  },
+  crate: {
+    c: { b: "#b07a40", d: "#7a5230" },
+    p: ["dddddd..", "dbbbbd..", "dbddbd..", "dbbbbd..", "dddddd..", "........"],
+  },
+  clock: {
+    c: { w: "#e8e4dc", k: "#3a3a44" },
+    p: [".kkkk...", "kwwkwk..", "kwwkwk..", "kwwkkk..", "kwwwwk..", ".kkkk..."],
+  },
+  pause: {
+    c: { w: "#e8e4dc" },
+    p: ["........", ".ww.ww..", ".ww.ww..", ".ww.ww..", ".ww.ww..", "........"],
+  },
+  flag: {
+    c: { r: "#c94a4a", b: "#5a3a22" },
+    p: ["brrrr...", "brrrrr..", "brrrr...", "b.......", "b.......", "b......."],
+  },
+  bath: {
+    c: { w: "#e8e4dc", b: "#4fb8ff" },
+    p: ["........", ".b.b.b..", "wwwwwww.", "wbbbbbw.", ".wwwww..", ".w...w.."],
+  },
+});
+
 /** Ícone de cada item. Os que não estão aqui usam o ícone do tipo (veja itemIcon). */
 const ITEM_ICONS = {
   pocao: "potion", pocaoG: "potion", perfume: "potion",

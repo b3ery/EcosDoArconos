@@ -943,10 +943,27 @@ function templeMenu() {
 /* ---- escolhas, casa, curandeira, treino ---- */
 
 /** Ícone de cada opção de menu, pelo que ela faz. */
+// A ordem importa: a primeira regra que bater define o ícone. Sem regra, o botão fica sem ícone.
 const CHOICE_ICONS = [
-  [/^(Sair|Cancelar|Voltar|Fugir)/, "door"],
-  [/Comprar|Vender|Loja|ouro\)/, "coin"],
-  [/Abraçar|Beijar|namorar|casamento|Namorar|Dançar juntos/, "heart"],
+  [/^(Sair|Cancelar|Voltar|Fugir|Desistir|Fechar)/, "door"],
+  [/Guarda Real|Patrulh|Vigiar|portão/i, "sword"],
+  [/Lenhador|lenha|Cortar/i, "axe"],
+  [/Minera|mina\b|Minerar/i, "pick"],
+  [/Fazend|Colheita|Plantar|campo/i, "wheat"],
+  [/Ferreir|Forja|Martel/i, "hammer"],
+  [/Carregador|Entreg|caixa|Carga/i, "crate"],
+  [/Carruagem|cavalo|Viajar|Montar/i, "horse"],
+  [/^Esperar|Passar o tempo|Avançar/i, "clock"],
+  [/banho|Banho/, "bath"],
+  [/tendinha|tenda|feira|Feira|Feirante/i, "bag"],
+  [/Reino|guerra|Guerra|Alistar|exército/i, "flag"],
+  [/Comprar|Vender|Loja|ouro\)|imposto|dote/, "coin"],
+  [/Abraçar|Beijar|namorar|casamento|Namorar|Dançar juntos|Carinhos|Encontros|relacionamento|Rainha/, "heart"],
+  [/Comer|refeição|Piquenique|Jantar|comida/i, "bread"],
+  [/Beber água|Cantil/, "water"],
+  [/Ler|livro|Estudar|Biblioteca/i, "book"],
+  [/Visual|Guarda-roupa|roupa|Roupa|cabelo/i, "shirt"],
+  [/Mascote|ração|Passear com/i, "paw"],
   [/Toca aqui/, "wave"],
   [/presente|Presente/, "gift"],
   [/Conversar|Falar|Ouvir|Perguntar|Fofoca|fofoca|Bater papo/, "chat"],
@@ -961,14 +978,14 @@ const CHOICE_ICONS = [
   [/Elixir|Poção|poção|Curar|Tratar/, "potion"],
   [/casa|Casa|Decorar/, "house"],
 ];
-const choiceIcon = (text) => (CHOICE_ICONS.find(([re]) => re.test(text)) || [null, "star"])[1];
+const choiceIcon = (text) => (CHOICE_ICONS.find(([re]) => re.test(text)) || [null, null])[1];
 
 function choice(title, text, opts) {
   game.prevMode = game.mode === "choice" ? game.prevMode : game.mode;
   game.mode = "choice";
   game.choice = opts;
   byId("choice").innerHTML =
-    `<h3>${title}</h3><p>${text}</p><div class="btns">${opts.map((o, i) => `<button data-i="${i}">${iconHTML(choiceIcon(o.t))}${i + 1}. ${o.t}</button>`).join("")}</div>`;
+    `<h3>${title}</h3><p>${text}</p><div class="btns">${opts.map((o, i) => `<button data-i="${i}">${iconHTML(o.icon || choiceIcon(o.t) || "")}${i + 1}. ${o.t}</button>`).join("")}</div>`;
   byId("choice").style.display = "block";
   byId("choice")
     .querySelectorAll("button")

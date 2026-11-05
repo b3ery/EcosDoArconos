@@ -37,6 +37,9 @@ const WORLD_SHORTCUTS = {
   o: openOptions,
   escape: openOptions,
   r: () => player.zone === "casa" && openDecor(),
+  p: togglePause,
+  t: cycleSpeed,
+  h: waitMenu,
 };
 
 const BATTLE_SHORTCUTS = {
@@ -95,6 +98,7 @@ const KEY_HANDLERS = {
   grimoire: (k) => (k === "g" || k === "escape") && closeGrim(),
   quests: (k) => (k === "q" || k === "j" || k === "escape") && closeQuests(),
   world: (k, e) => {
+    if (game.paused && !["p", "t", "escape", "o", "f"].includes(k)) return;
     pressedKeys[k] = true;
     if (e.repeat) return;
     if (CONFIRM_KEYS.has(k)) interact();
@@ -501,5 +505,8 @@ addEventListener("pointerdown", startMusicOnce);
 addEventListener("keydown", startMusicOnce);
 
 byId("btnGuide").onclick = openGuide;
+byId("pauseb").onclick = togglePause;
+byId("speedb").onclick = cycleSpeed;
+byId("waitb").onclick = waitMenu;
 byId("btnCredits").onclick = openCredits;
 byId("btnEndCredits").onclick = openCredits;

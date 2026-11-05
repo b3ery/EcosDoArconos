@@ -103,12 +103,12 @@ function update(dt) {
     checkMobs();
     {
       const oc = player.clock;
-      player.clock = (player.clock + dt * 5) % 1440;
+      player.clock = (player.clock + dt * 5 * timeSpeed()) % 1440;
       const od = player.day;
       if (player.clock < oc) player.day++;
-      if (game.raid) game.raid.left -= dt * 5;
+      if (game.raid) game.raid.left -= dt * 5 * timeSpeed();
       if (!player.weather) rollWeather(false);
-      player.wLeft = (player.wLeft || 300) - dt * 5;
+      player.wLeft = (player.wLeft || 300) - dt * 5 * timeSpeed();
       if (player.wLeft <= 0) rollWeather(true);
       if (player.day !== od && seasonDay() === 1) {
         const se = season();
@@ -193,11 +193,12 @@ function update(dt) {
         outd = outdoorTheme(ZONES[player.zone].theme);
       const fm = (sid === "inv" ? 1.3 : 1) * (wt === "neve" && outd ? 1.2 : 1),
         wm = (sid === "ver" ? 1.3 : 1) * ((wt === "chuva" || wt === "tempestade") && outd ? 0.6 : 1);
-      player.food = Math.max(0, player.food - dt * 0.2 * difficulty().need * fm);
-      player.water = Math.max(0, player.water - dt * 0.28 * difficulty().need * wm);
+      const sdt = dt * timeSpeed();
+      player.food = Math.max(0, player.food - sdt * 0.2 * difficulty().need * fm);
+      player.water = Math.max(0, player.water - sdt * 0.28 * difficulty().need * wm);
     }
-    needsTick(dt);
-    lifeNeedsTick(dt);
+    needsTick(dt * timeSpeed());
+    lifeNeedsTick(dt * timeSpeed());
     const nn = isNight();
     if (game.wasNight !== undefined && nn !== game.wasNight) {
       if (nn) {
@@ -3644,8 +3645,79 @@ function loop(now) {
   const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
   lastFrameTime = now;
   game.t += dt;
-  update(dt);
+  // Pausado: o mundo congela (só o desenho continua).
+  if (!(game.paused && game.mode === "world" && !game.dialog)) update(dt);
   draw();
+  if (game.paused && game.mode === "world" && !game.dialog) drawPauseOverlay();
   touchUI();
   requestAnimationFrame(loop);
+}
+
+
+/* ===================== PAUSA E VELOCIDADE DO TEMPO ===================== */
+
+const TIME_SPEEDS = [1, 2, 4, 8];
+/** Multiplicador do relógio: só acelera andando pelo mundo. */
+function timeSpeed() {
+  return game.mode === "world" && !game.dialog ? game.speed || 1 : 1;
+}
+function togglePause() {
+  if (game.mode !== "world" || game.dialog) return;
+  game.paused = !game.paused;
+  playSound(game.paused ? 330 : 523, 0.06, "sine");
+  updateTimeButtons();
+}
+function cycleSpeed() {
+  const i = TIME_SPEEDS.indexOf(game.speed || 1);
+  game.speed = TIME_SPEEDS[(i + 1) % TIME_SPEEDS.length];
+  game.paused = false;
+  toast(game.speed === 1 ? "Tempo normal" : `Tempo acelerado: ${game.speed}x`, 1500);
+  updateTimeButtons();
+}
+function updateTimeButtons() {
+  const pb = byId("pauseb"),
+    sb = byId("speedb");
+  if (pb) pb.innerHTML = game.paused ? "▶" : "❚❚";
+  if (sb) sb.textContent = `${game.speed || 1}x`;
+}
+function drawPauseOverlay() {
+  ctx.save();
+  ctx.fillStyle = "rgba(10,6,18,.55)";
+  ctx.fillRect(0, 0, viewWidth, 480);
+  ctx.fillStyle = "#f2c14e";
+  ctx.font = '700 28px "Pixelify Sans", sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText("PAUSADO", viewWidth / 2, 220);
+  ctx.fillStyle = "#e8e4dc";
+  ctx.font = '16px "VT323", monospace';
+  ctx.fillText("Aperte P (ou ▶) para continuar · T muda a velocidade do tempo · H espera algumas horas", viewWidth / 2, 252);
+  ctx.restore();
+}
+/** Passa o tempo de uma vez, gastando fome, sede e necessidades como se você tivesse esperado. */
+function passTime(hours, why) {
+  const mins = Math.round(hours * 60);
+  const dtEq = mins / 5;
+  player.food = Math.max(0, player.food - dtEq * 0.2 * difficulty().need);
+  player.water = Math.max(0, player.water - dtEq * 0.28 * difficulty().need);
+  lifeNeedsTick(dtEq);
+  const total = player.clock + mins;
+  if (total >= 1440) player.day += Math.floor(total / 1440);
+  player.clock = total % 1440;
+  game.fade = 1;
+  rollWeather(false);
+  saveGame();
+  toast(why || `Você esperou ${hours}h. Agora são ${clockStr()}.`, 2600);
+}
+function waitMenu() {
+  if (game.mode !== "world" || game.dialog) return;
+  const h = currentHour();
+  const until = (target) => ((target - h + 24) % 24) || 24;
+  choice("Passar o tempo", `Agora: ${clockStr()}. Esperar gasta fome, sede${lifeMode() ? ", higiene e diversão" : ""}, mas não descansa.`, [
+    { t: "Esperar 1 hora", fn: () => passTime(1) },
+    { t: "Esperar 3 horas", fn: () => passTime(3) },
+    { t: "Esperar até o meio-dia", fn: () => passTime(until(12)) },
+    { t: "Esperar até o anoitecer (19h)", fn: () => passTime(until(19)) },
+    { t: "Esperar até o amanhecer (6h)", fn: () => passTime(until(6)) },
+    { t: "Sair", fn: null },
+  ]);
 }
