@@ -25,7 +25,7 @@
 
 <br><br>
 
-### 🎮 [Jogar agora no navegador](https://b3ery.github.io/eco/)
+### 🎮 [Jogar agora no navegador](https://b3ery.github.io/Eco/)
 
 </div>
 
@@ -383,12 +383,12 @@ ecos-do-arcano/
 
 ## 🚀 Como Executar
 
-**🌐 Online:** [b3ery.github.io/eco](https://b3ery.github.io/eco/)
+**🌐 Online:** [b3ery.github.io/Eco](https://b3ery.github.io/Eco/)
 
 **💻 Local:**
 ```bash
-git clone https://github.com/b3ery/eco.git
-cd EcosDoArconos
+git clone https://github.com/b3ery/Eco.git
+cd Eco
 # Abra o index.html no navegador
 ```
 
