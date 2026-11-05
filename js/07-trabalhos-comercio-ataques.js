@@ -613,7 +613,7 @@ function renderShop() {
       const base = Math.round(it.preco * discount(game.shopId));
       const pr = withTax(base);
       const can = !lock && player.gold >= pr;
-      h += `<div class="irow"><div><div class="nm">${it.nome}${itemCount(id) ? ` <span class="ds">(tem ${itemCount(id)})</span>` : ""}</div><div class="ds">${lock ? `Disponível após libertar ${it.req} Guardião(ões).` : it.desc}</div></div>
+      h += `<div class="irow"><div><div class="nm">${iconHTML(itemIcon(id))}${it.nome}${itemCount(id) ? ` <span class="ds">(tem ${itemCount(id)})</span>` : ""}</div><div class="ds">${lock ? `Disponível após libertar ${it.req} Guardião(ões).` : it.desc}</div></div>
       <div><span class="pr">${pr} ouro</span>${pr > base ? ` <span class="ds">(${base} + ${pr - base} imposto)</span>` : ""} <button data-b="${id}" ${can ? "" : "disabled"}>Comprar</button></div></div>`;
     }
   } else {
@@ -624,7 +624,7 @@ function renderShop() {
     for (const id of ids) {
       const it = ITEMS[id];
       const pr = saleAfterTax(Math.floor(it.preco / 2));
-      h += `<div class="irow"><div><div class="nm">${it.nome} <span class="ds">(tem ${itemCount(id)})</span></div><div class="ds">${it.desc}</div></div><div><span class="pr">${pr} ouro</span> <button data-s="${id}">Vender</button></div></div>`;
+      h += `<div class="irow"><div><div class="nm">${iconHTML(itemIcon(id))}${it.nome} <span class="ds">(tem ${itemCount(id)})</span></div><div class="ds">${it.desc}</div></div><div><span class="pr">${pr} ouro</span> <button data-s="${id}">Vender</button></div></div>`;
     }
   }
   byId("shop").innerHTML = h;
@@ -723,7 +723,7 @@ function renderInv() {
                   : id === "fenix"
                     ? '<span class="pr">automático</span>'
                     : `<button data-u="${id}">${it.tipo === "food" ? "Consumir" : "Usar"}</button>`;
-      h += `<div class="irow"><div><div class="nm" style="${it.lend ? "color:#ffe066" : ""}">${it.nome} ×${itemCount(id)}</div><div class="ds">${it.desc}</div></div>${act}</div>`;
+      h += `<div class="irow"><div><div class="nm" style="${it.lend ? "color:#ffe066" : ""}">${iconHTML(itemIcon(id))}${it.nome} ×${itemCount(id)}</div><div class="ds">${it.desc}</div></div>${act}</div>`;
     }
   } else if (t === "equip") {
     h +=
@@ -739,7 +739,7 @@ function renderInv() {
     for (const id of ids) {
       const it = ITEMS[id],
         on = player.eq[it.slot] === id;
-      h += `<div class="irow ${on ? "eqd" : ""}"><div><div class="nm">${it.nome} <span class="ds">(${it.slot})</span></div><div class="ds">${it.desc}</div></div>${on ? '<span class="pr">Equipado</span>' : `<button data-e="${id}">Equipar</button>`}</div>`;
+      h += `<div class="irow ${on ? "eqd" : ""}"><div><div class="nm">${iconHTML(itemIcon(id))}${it.nome} <span class="ds">(${it.slot})</span></div><div class="ds">${it.desc}</div></div>${on ? '<span class="pr">Equipado</span>' : `<button data-e="${id}">Equipar</button>`}</div>`;
     }
     h +=
       '<div class="qtip">Equipamentos melhores são vendidos pelo Doran no mercado. Os Guardiões também deixam presentes poderosos.</div>';

@@ -591,6 +591,177 @@ const PIXEL_ICONS = {
     c: { w: "#e8e4dc", k: "#222" },
     p: [".wwwww..", "wwwwwww.", "wkkwkkw.", "wwwwwww.", ".wwkww..", ".w.w.w.."],
   },
+  /* ---- comida e bebida ---- */
+  bread: {
+    c: { b: "#a8662a", B: "#d9a050", w: "#f2d8a0" },
+    p: ["........", ".bbbbb..", "bBBBBBb.", "bBwBwBb.", "bBBBBBb.", ".bbbbb.."],
+  },
+  meat: {
+    c: { r: "#b0502a", R: "#d9703a", w: "#f0e6d0" },
+    p: ["....ww..", "...wwww.", ".rrRw...", "rRRrr...", "rrrr....", ".rr....."],
+  },
+  cheese: {
+    c: { y: "#f2c94e", o: "#c99a2a" },
+    p: ["........", "....yyy.", "..yyyyy.", "yyoyyoy.", "yyyyyyy.", "yoyyyyy."],
+  },
+  stew: {
+    c: { s: "#d9d9e8", b: "#8a5a2e", o: "#c9602a" },
+    p: [".s.s.s..", "..s.s...", "bbbbbbb.", "booooob.", ".bbbbb..", "..bbb..."],
+  },
+  cake: {
+    c: { w: "#fff6e8", p: "#ff9ab0", b: "#c98a4a", r: "#e0303a" },
+    p: ["...r....", ".wwwwww.", ".pppppp.", ".bbbbbb.", ".pppppp.", ".bbbbbb."],
+  },
+  pie: {
+    c: { b: "#d9a050", B: "#f2c880", d: "#8a5a2e" },
+    p: ["........", "..bbbb..", ".bBBBBb.", "bBbBbBBb", "bbbbbbbb", ".dddddd."],
+  },
+  water: {
+    c: { b: "#4fb8ff", w: "#cfeaff" },
+    p: ["...b....", "..bbb...", ".bbwbb..", "bbwbbbb.", "bbbbbbb.", ".bbbbb.."],
+  },
+  canteen: {
+    c: { k: "#8a5a2e", c: "#6a4a2a", b: "#4fb8ff", w: "#cfeaff" },
+    p: ["..kk....", "..cc....", ".cbbc...", "cbwbbc..", "cbbbbc..", ".cccc..."],
+  },
+  tea: {
+    c: { w: "#f2f2f2", g: "#7ab04a", s: "#d9d9e8" },
+    p: [".s..s...", "..s.....", "wwwwww..", "wggggww.", "wggggw..", ".wwww..."],
+  },
+  wine: {
+    c: { g: "#3a5a3a", r: "#8a2a4a", k: "#5a3a22" },
+    p: ["...k....", "...g....", "..ggg...", "..grg...", "..grg...", "..ggg..."],
+  },
+  honey: {
+    c: { y: "#f2c14e", b: "#a8662a" },
+    p: ["..yyy...", ".bbbbb..", "byyyyyb.", "byyyyyb.", "byyyyyb.", ".bbbbb.."],
+  },
+  potionB: {
+    c: { g: "#cfd8e8", b: "#4f7aff", w: "#b8ccff" },
+    p: ["..gg....", "..gg....", ".bbbb...", "bbwbbb..", "bbbbbb..", ".bbbb..."],
+  },
+  herb: {
+    c: { g: "#5a9a4a", G: "#3a6a2a" },
+    p: ["....gg..", "...ggg..", "..gGg...", ".gGg....", ".Gg.....", "G......."],
+  },
+  /* ---- roupas e aparência ---- */
+  shirt: {
+    c: { r: "#4a7ad9", d: "#f2c14e" },
+    p: ["rr...rr.", "rrrrrrr.", ".rrrrr..", ".rrdrr..", ".rrrrr..", ".rrrrr.."],
+  },
+  hat: {
+    c: { h: "#3a2878", y: "#f2c14e" },
+    p: ["...h....", "..hh....", "..hhh...", ".hhhhh..", ".yyyyy..", "hhhhhhh."],
+  },
+  robe: {
+    c: { r: "#5b3fa8", y: "#f2c14e", k: "#f1c8a5" },
+    p: ["..kkk...", ".rrrrr..", "rrryrrr.", "rrryrrr.", "rrrrrrr.", "rrrrrrr."],
+  },
+  hair: {
+    c: { h: "#8a3a1a", s: "#f1c8a5", k: "#222" },
+    p: [".hhhh...", "hhhhhh..", "hssssh..", "hskskh..", "hssssh..", "h....h.."],
+  },
+  glasses: {
+    c: { k: "#222", b: "#bfe0f0" },
+    p: ["........", "........", "kkk.kkk.", "kbkkkbk.", "kkk.kkk.", "........"],
+  },
+  staff: {
+    c: { g: "#ffe066", b: "#8a5a2e" },
+    p: [".....gg.", ".....gg.", "....b...", "...b....", "..b.....", ".b......"],
+  },
+  armor: {
+    c: { s: "#5a6a7a", S: "#cfd3e6", y: "#f2c14e" },
+    p: [".ssssss.", ".sSSSSs.", ".sSySSs.", ".sSSSSs.", "..sSSs..", "...ss..."],
+  },
+  amulet: {
+    c: { y: "#f2c14e", p: "#c77dff", w: "#f0e0ff" },
+    p: [".y...y..", "..y.y...", "...y....", "..ppp...", ".pwppp..", "..ppp..."],
+  },
+  /* ---- outros itens ---- */
+  gem: {
+    c: { c: "#6ab0d0", w: "#e0f6ff" },
+    p: ["........", "..ccc...", ".cwccc..", "ccccccc.", ".ccccc..", "..ccc..."],
+  },
+  chair: {
+    c: { b: "#8a5a2e", B: "#b07a40" },
+    p: [".b......", ".b......", ".b......", ".BBBBB..", ".b...b..", ".b...b.."],
+  },
+  paw: {
+    c: { k: "#8a5a3a" },
+    p: [".k..k...", "........", "k.kk.k..", "..kkk...", ".kkkkk..", ".kk.kk.."],
+  },
+  rod: {
+    c: { k: "#8a5a2e", w: "#d9d9d9", o: "#e0303a" },
+    p: [".....k..", "....k.w.", "...k..w.", "..k...w.", ".k....w.", "k.....o."],
+  },
+  ring: {
+    c: { w: "#e0f6ff", y: "#f2c14e" },
+    p: ["...w....", "..yyy...", ".y...y..", ".y...y..", "..yyy...", "........"],
+  },
+  book: {
+    c: { r: "#8a3a7a", w: "#efe2c0", k: "#888" },
+    p: [".rrrrr..", ".rwwwwr.", ".rwkkwr.", ".rwwwwr.", ".rrrrr..", "........"],
+  },
+  flower: {
+    c: { p: "#ff6b8a", y: "#f2c14e", g: "#5a9a4a" },
+    p: [".p.p....", "ppypp...", ".ppp....", "..g.....", ".gg.....", "..g....."],
+  },
+  feather: {
+    c: { w: "#f2c14e", y: "#a8862a" },
+    p: [".....ww.", "....wwy.", "...wwy..", "..wwy...", ".wy.....", "y......."],
+  },
+  /* ---- clima ---- */
+  sun: {
+    c: { y: "#f2c14e", o: "#ff9a3c" },
+    p: ["y..y..y.", ".yyyyy..", "yyoooyy.", ".yyyyy..", "y..y..y.", "........"],
+  },
+  cloud: {
+    c: { w: "#d9d9e8" },
+    p: ["........", "..www...", ".wwwww..", "wwwwwww.", ".wwwww..", "........"],
+  },
+  rain: {
+    c: { g: "#9a9aa8", b: "#4fb8ff" },
+    p: ["..ggg...", ".ggggg..", "ggggggg.", "........", ".b.b.b..", "b.b.b..."],
+  },
+  storm: {
+    c: { g: "#6a6a7a", y: "#f2c14e" },
+    p: ["..ggg...", ".ggggg..", "ggggggg.", "...y....", "..y.....", ".y......"],
+  },
+  snow: {
+    c: { w: "#e8f4ff" },
+    p: ["w..w..w.", ".w.w.w..", "..www...", "wwwwwww.", "..www...", ".w.w.w.."],
+  },
+  fog: {
+    c: { g: "#b8b8c8" },
+    p: ["........", "ggggg...", "..ggggg.", "ggggg...", "..ggggg.", "........"],
+  },
+};
+
+/** Ícone de cada item. Os que não estão aqui usam o ícone do tipo (veja itemIcon). */
+const ITEM_ICONS = {
+  pocao: "potion", pocaoG: "potion", perfume: "potion",
+  eter: "potionB", eterG: "potionB", elixir: "potionB",
+  ervas: "herb", ervaS: "herb", fenix: "feather", pena: "feather", penaH: "feather",
+  pao: "bread", carne: "meat", linguica: "meat", assado: "meat", torta: "pie",
+  queijo: "cheese", vinho: "wine", doce: "cake", bolo: "cake", mel: "honey",
+  maca: "apple", ensopado: "stew", caldeirada: "stew", agua: "canteen", cha: "tea",
+  hidromel: "mug", carpa: "fish", peixeR: "fish", peixe: "fish",
+  vara: "rod", perolaN: "gem", bota: "bag", lenco: "gift", livro: "book", papiro: "scroll",
+  flor: "flower", brinquedo: "gift", racao: "paw", petisco: "paw",
+  anel: "ring", coroa: "crown", oculosHonda: "glasses",
+};
+const SLOT_ICONS = { cajado: "staff", manto: "robe", armadura: "armor", amuleto: "amulet" };
+const TYPE_ICONS = { food: "bread", cons: "potion", gift: "gift", pet: "paw", movel: "chair", mat: "gem", tool: "rod" };
+function itemIcon(id) {
+  const it = ITEMS[id];
+  if (!it) return "bag";
+  return ITEM_ICONS[id] || SLOT_ICONS[it.slot] || TYPE_ICONS[it.tipo] || "bag";
+}
+const WEATHER_ICONS = { sol: "sun", nublado: "cloud", chuva: "rain", tempestade: "storm", neve: "snow", neblina: "fog" };
+/** Ícone de cada parte da aparência nas lojas de roupa e cabelo. */
+const COSMETIC_ICONS = {
+  hstyle: "hair", hair: "hair", hat: "hat", outfit: "shirt", robe: "robe",
+  eyes: "eye", acc: "glasses", staffc: "staff", aura: "sparkle",
 };
 
 const pixelIconCache = {};

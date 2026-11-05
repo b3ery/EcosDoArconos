@@ -662,9 +662,9 @@ function updateHUD() {
   }
   const s = `<div class="box hudL"><div class="hrow"><span class="lv">Nv${player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
   <div class="hrow"><span class="gd">◆${player.gold}</span><div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div></div>
-  <div class="hrow nd"><span title="Fome"></span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede"></span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>
+  <div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>
   ${chips ? `<div class="chips">${chips}</div>` : ""}</div>
-  <div class="box hudR"><span class="clock">${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""}" title="${RUNES[r].nome}">${runeSVG(r, 16)}</span>`).join("")}</div>`;
+  <div class="box hudR"><span class="clock">${iconHTML(WEATHER_ICONS[player.weather] || "sun", 14)}${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""}" title="${RUNES[r].nome}">${runeSVG(r, 16)}</span>`).join("")}</div>`;
   if (s !== hudCache) {
     byId("hud").innerHTML = s;
     hudCache = s;

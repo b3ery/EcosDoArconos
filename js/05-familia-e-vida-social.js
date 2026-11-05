@@ -647,7 +647,7 @@ function renderCosmetic() {
   let h = `<div class="gh"><h2>${sh.nome}</h2><button id="shclose">Fechar (Esc)</button></div><div class="gsub">${sh.sub} · Seu ouro: <b style="color:var(--gold)">${player.gold}</b></div>
   <div class="crow"><div class="pv"><canvas id="cosc" width="160" height="160"></canvas><button id="cosrot">↻ Girar</button>${game.tryOn ? `<div class="qtip" style="text-align:center">Provando: <b>${(COSMETICS[game.tryOn.c].find((o) => o[0] === game.tryOn.id) || [])[1]}</b><br><button id="costry0">Tirar</button></div>` : '<div class="qtip" style="text-align:center">Clique em Provar para ver antes de comprar</div>'}</div><div class="cform">`;
   for (const cat of sh.cats) {
-    h += `<h3>${COS_NAMES[cat]}</h3>`;
+    h += `<h3>${iconHTML(COSMETIC_ICONS[cat] || "shirt")}${COS_NAMES[cat]}</h3>`;
     for (const [id, nm, pr] of COSMETICS[cat]) {
       if (pr === 0 && game.cosKind !== "roupa" && game.cosKind !== "cabelo") continue;
       if (pr >= 9999 && !cosOwned(cat, id)) continue;

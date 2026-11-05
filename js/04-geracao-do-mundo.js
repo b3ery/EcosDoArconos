@@ -2311,7 +2311,7 @@ function renderDecor() {
     h +=
       '<div class="qtip">Nenhum móvel guardado. Compre na Marcenaria do Tonico (praça oeste de Cinzaluz).</div>';
   for (const id of ids)
-    h += `<div class="irow"><div><div class="nm">${ITEMS[id].nome} ×${itemCount(id)}</div><div class="ds">${ITEMS[id].desc}</div></div><button data-pl="${id}" ${ok ? "" : "disabled"}>Colocar à frente</button></div>`;
+    h += `<div class="irow"><div><div class="nm">${iconHTML(itemIcon(id))}${ITEMS[id].nome} ×${itemCount(id)}</div><div class="ds">${ITEMS[id].desc}</div></div><button data-pl="${id}" ${ok ? "" : "disabled"}>Colocar à frente</button></div>`;
   h += `<h3>Na sua casa (${(player.furn || []).length} móveis)</h3><div class="qtip">${(player.furn || []).map((f) => furnName(f.id)).join(", ") || "vazia"}</div>
   <div class="qtip">Dica: feche esta janela, ande até outro lugar e abra de novo (R) para colocar em outro ponto.</div>`;
   byId("shop").innerHTML = h;
