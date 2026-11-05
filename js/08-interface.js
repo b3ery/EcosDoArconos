@@ -642,11 +642,11 @@ function openQuests() {
   const totalC = Object.values(ZONES).reduce((a, z) => a + z.feats.filter((f) => f[2] === "C").length, 0);
   let h = `<div class="gh"><h2>Missões</h2><button id="qclose">Fechar (Q)</button></div>${player.finished ? '<div class="qs cur"> <b>História concluída!</b> A Canção Arcana voltou. Continue com as missões secundárias.</div>' + sideHTML() : ""}<h3>${iconHTML("scroll")}História principal</h3>`;
   STEPS.forEach((s, i) => {
-    if (i < ci) h += `<div class="qs done">✓ ${s.t}</div>`;
+    if (i < ci) h += `<div class="qs done">${s.t}</div>`;
     else if (i === ci)
       h += `<div class="qs cur">▶ <b>${s.t}</b><div class="qd">${s.d}${s.lvl ? ` Nível sugerido: ${s.lvl}.` : ""}</div>${route(s.zone, s.pos()).hop ? `<div class="qd" style="color:var(--gold)">Agora: ${questHint(s, route(s.zone, s.pos()))}</div>` : ""}</div>`;
-    else h += `<div class="qs fut">· ???</div>`;
   });
+  if (ci < STEPS.length - 1) h += `<div class="qs fut">${iconHTML("eye", 12)} Mais ${STEPS.length - 1 - ci} capítulos ainda por descobrir...</div>`;
   h += `<h3>Missões opcionais</h3>
   <div class="qs ${player.pages.length === 5 ? "done" : ""}">Diário de Vesper: ${player.pages.length}/5 páginas<div class="qtip">Procure papéis brilhando em cada região. Eles contam o segredo da história.</div></div>
   <div class="qs ${player.spells.length === 14 ? "done" : ""}">Grimório completo: ${player.spells.length}/14 magias<div class="qtip">Teste combinações de duas runas na batalha. Cada combinação nova é uma magia recuperada.</div></div>
