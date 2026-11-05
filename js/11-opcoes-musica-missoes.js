@@ -1541,6 +1541,11 @@ const GUIDE_SECTIONS = [
       ["Festivais", "A cada 7 dias a praça vira festa. A família real desfila a cada 5 dias."],
       ["Reputação", "Boas ações sobem, brigas e traições descem. Muda preços e conversas."],
       ["Elfos", "No Bosque. Dão bênção em troca de flores e trocam ervas por elixir."],
+      ["Lojas", "Todas as lojas são um carrossel: ← → (ou A/D) passam os itens, Enter compra. Na alfaiataria o boneco já mostra a roupa."],
+      ["Conhecer gente", "Qualquer morador da rua ou cliente da taverna: \"Conhecer melhor\" vira contato, com amizade, presentes, namoro e casamento."],
+      ["Mural dos Corações", "Na taverna e no Quadro de Trabalhos: anúncios de quem procura namoro ou casamento. Muda todo dia."],
+      ["A Turma", "Lucas, Matheus, Marcos, Andressa e Mylena andam pela vila e se reúnem na fonte à noite e nos festivais. Lucas só conversa por um hidromel!"],
+      ["Caminho do vilão", "No modo História, ao vencer um Guardião você escolhe libertar ou possuir a runa. Quem possui pode se aliar ao Silenciador no fim."],
     ],
   ],
 ];

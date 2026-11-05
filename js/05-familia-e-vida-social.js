@@ -684,34 +684,61 @@ function renderCreate() {
     }
   };
 }
+/** Passa o slider de roupas/cabelo. */
+function cosSlide(d) {
+  const n = (game.cosList || []).length;
+  if (!n) return;
+  game.cosIdx = (game.cosIdx + d + n) % n;
+  playSound(520, 0.03, "sine");
+  renderCosmetic();
+}
 function openCosmetic(kind) {
   game.mode = "shop";
   game.shopId = "__cos";
   game.cosKind = kind;
+  game.cosIdx = 0;
+  game.cosCat = null;
   renderCosmetic();
   byId("shop").style.display = "block";
   playSound(440, 0.1, "sine");
 }
 function renderCosmetic() {
   const sh = COS_SHOPS[game.cosKind];
-  let h = `<div class="gh"><h2>${sh.nome}</h2><button id="shclose">Fechar (Esc)</button></div><div class="gsub">${sh.sub} · Seu ouro: <b style="color:var(--gold)">${player.gold}</b></div>
-  <div class="crow"><div class="pv"><canvas id="cosc" width="160" height="160"></canvas><button id="cosrot">↻ Girar</button>${game.tryOn ? `<div class="qtip" style="text-align:center">Provando: <b>${(COSMETICS[game.tryOn.c].find((o) => o[0] === game.tryOn.id) || [])[1]}</b><br><button id="costry0">Tirar</button></div>` : '<div class="qtip" style="text-align:center">Clique em Provar para ver antes de comprar</div>'}</div><div class="cform">`;
-  for (const cat of sh.cats) {
-    h += `<h3>${iconHTML(COSMETIC_ICONS[cat] || "shirt")}${COS_NAMES[cat]}</h3>`;
-    for (const [id, nm, pr] of COSMETICS[cat]) {
-      if (pr === 0 && game.cosKind !== "roupa" && game.cosKind !== "cabelo") continue;
-      if (pr >= 9999 && !cosOwned(cat, id)) continue;
-      const own = cosOwned(cat, id),
-        on = player.look[cat] === id;
-      const sw =
-        cat === "hair" || cat === "robe"
-          ? `<span class="swb" style="background:${id};display:inline-block;vertical-align:middle;margin-right:.3em"></span>`
-          : "";
-      h += `<div class="irow ${on ? "eqd" : ""}"><div class="nm">${sw}${nm}</div><div>${own ? (on ? '<span class="pr">Usando</span>' : `<button data-wear="${cat}:${id}">Vestir</button>`) : `<span class="pr">${withTax(pr)} ouro</span> <button data-try="${cat}:${id}" ${game.tryOn && game.tryOn.c === cat && game.tryOn.id === id ? 'class="on"' : ""}>Provar</button> <button data-buy="${cat}:${id}" ${player.gold >= withTax(pr) ? "" : "disabled"}>Comprar</button>`}</div></div>`;
-    }
-  }
-  h +=
-    '</div></div><div class="qtip">Você pode trocar o visual quando quiser pelo guarda-roupa: inventário (I) → Aparência, ou na sua casa.</div>';
+  // Slider: uma categoria por vez, um item por vez, já vestido no boneco.
+  game.cosCat = sh.cats.includes(game.cosCat) ? game.cosCat : sh.cats[0];
+  const cat = game.cosCat;
+  const list = COSMETICS[cat].filter(
+    ([id, , pr]) => !((pr === 0 && game.cosKind !== "roupa" && game.cosKind !== "cabelo") || (pr >= 9999 && !cosOwned(cat, id))),
+  );
+  game.cosList = list;
+  game.cosIdx = Math.max(0, Math.min(list.length - 1, game.cosIdx || 0));
+  const [cid, cnm, cpr] = list[game.cosIdx] || [];
+  const own = cid != null && cosOwned(cat, cid),
+    on = player.look[cat] === cid;
+  game.tryOn = cid != null && !on ? { c: cat, id: cid } : null;
+  const sw = cat === "hair" || cat === "robe" ? `<span class="swb" style="background:${cid};display:inline-block;vertical-align:middle;margin-right:.3em"></span>` : "";
+  let h = `<div class="gh"><h2>${sh.nome}</h2><button id="shclose">Fechar (Esc)</button></div><div class="gsub">${sh.sub} · ${iconHTML("coin")}Seu ouro: <b style="color:var(--gold)">${player.gold}</b></div>
+  <div class="tabs">${sh.cats.map((c) => `<button data-cat="${c}" class="${c === cat ? "on" : ""}">${iconHTML(COSMETIC_ICONS[c] || "shirt")}${COS_NAMES[c]}</button>`).join("")}</div>
+  <div class="slider">
+    <button class="sl-nav" data-cnav="-1" ${list.length < 2 ? "disabled" : ""}>◀</button>
+    <div class="sl-card">
+      <canvas id="cosc" width="160" height="160"></canvas>
+      <button id="cosrot" style="font-size:.8em">↻ Girar</button>
+      <div class="sl-name">${sw}${cnm || "—"}</div>
+      <div class="sl-price">${own ? (on ? '<span class="pr">Você está usando</span>' : '<span class="ds">Já é seu</span>') : `<span class="pr">${withTax(cpr)} ouro</span>`}</div>
+      ${own ? (on ? "" : `<button class="sl-buy" data-wear="${cat}:${cid}">${iconHTML("shirt")}Vestir (Enter)</button>`) : `<button class="sl-buy" data-buy="${cat}:${cid}" ${player.gold >= withTax(cpr) ? "" : "disabled"}>${iconHTML("coin")}Comprar (Enter)</button>`}
+    </div>
+    <button class="sl-nav" data-cnav="1" ${list.length < 2 ? "disabled" : ""}>▶</button>
+  </div>
+  <div class="sl-count">${game.cosIdx + 1} / ${list.length} · ← → para passar · o boneco já mostra como fica</div>
+  <div class="sl-thumbs">${list
+    .map(([id, nm], i) =>
+      cat === "hair" || cat === "robe"
+        ? `<button class="sl-th ${i === game.cosIdx ? "on" : ""}" data-cgo="${i}" title="${nm}"><span class="swb" style="background:${id};display:inline-block"></span></button>`
+        : `<button class="sl-th ${i === game.cosIdx ? "on" : ""}" data-cgo="${i}" title="${nm}">${nm}</button>`,
+    )
+    .join("")}</div>
+  <div class="qtip">Você pode trocar o visual quando quiser pelo guarda-roupa: inventário (I) → Aparência, ou na sua casa.</div>`;
   byId("shop").innerHTML = h;
   byId("shclose").onclick = () => {
     game.tryOn = null;
@@ -735,25 +762,15 @@ function renderCosmetic() {
     game.cosDir = o[(o.indexOf(game.cosDir) + 1) % 4];
     dr();
   };
-  if (byId("costry0"))
-    byId("costry0").onclick = () => {
-      game.tryOn = null;
-      renderCosmetic();
-    };
   byId("shop")
-    .querySelectorAll("[data-try]")
-    .forEach(
-      (b) =>
-        (b.onclick = () => {
-          const [c, id] = b.dataset.try.split(":");
-          game.tryOn = {
-            c,
-            id,
-          };
-          playSound(660, 0.05, "sine");
-          renderCosmetic();
-        }),
-    );
+    .querySelectorAll("[data-cat]")
+    .forEach((b) => (b.onclick = () => ((game.cosCat = b.dataset.cat), (game.cosIdx = 0), renderCosmetic())));
+  byId("shop")
+    .querySelectorAll("[data-cnav]")
+    .forEach((b) => (b.onclick = () => cosSlide(+b.dataset.cnav)));
+  byId("shop")
+    .querySelectorAll("[data-cgo]")
+    .forEach((b) => (b.onclick = () => ((game.cosIdx = +b.dataset.cgo), renderCosmetic())));
   byId("shop")
     .querySelectorAll("[data-buy]")
     .forEach(

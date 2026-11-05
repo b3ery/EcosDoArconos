@@ -358,6 +358,19 @@ Ao ar livre, cada clima deixa **duas runas mais fortes e uma ou duas mais fracas
 
 Clique num personagem (ou aperte **E** perto dele): as opções aparecem **em círculo ao redor dele**, com ícones e agrupadas em **Amigável, Romântico, Engraçado, Malvado, Família e Serviços**. O ✕ no meio fecha.
 
+## 🛒 Lojas em carrossel
+
+Todas as lojas (mercado, ferreiro, alfaiataria, ateliê, marcenaria...) mostram **um item por vez**, grande, com ícone, nome, descrição e preço. Passe com **← →** (ou A/D, ou arrastando no celular) e compre com **Enter**. Embaixo ficam miniaturas para pular direto. Na **alfaiataria** o boneco já veste a peça enquanto você passa.
+
+## 💘 Namorar qualquer pessoa (nos dois modos)
+
+- **Moradores da rua e clientes da taverna:** escolha **Conhecer melhor ♥** e a pessoa vira um **contato fixo**, com amizade, presentes, namoro e casamento, igual aos personagens principais.
+- **Mural dos Corações** (na taverna e no Quadro de Trabalhos): anúncios do dia de quem procura **namoro** ou **casamento**. Responda e marque o primeiro encontro.
+
+## 🖤 Caminho do vilão (História)
+
+Ao vencer cada Guardião você escolhe: **libertar** (herói) ou **possuir o poder à força** (vilão: magia +10% por runa, reputação −12, e a Turma deixa de lutar com você). Quem escolheu ser vilão recebe uma oferta do **Silenciador** antes da última luta e, se vencer, pode **tomar a Canção Arcana** e conquistar o mundo. São dois **Fins Sombrios** novos.
+
 ## ⛏️ Mina, trigo e pão (nos dois modos)
 
 - A **Mina de Cristal**, em Pedravale, virou uma caverna: E várias vezes numa pedra dá **Pedra de Golem, Minério de Ferro, Cristal Sombrio** ou, com sorte, um **Fragmento Arcano**.

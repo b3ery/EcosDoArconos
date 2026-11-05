@@ -595,9 +595,23 @@ function openShop(id) {
   game.mode = "shop";
   game.shopId = id;
   game.shopTab = "buy";
+  game.shopIdx = 0;
   renderShop();
   byId("shop").style.display = "block";
   playSound(440, 0.1, "sine");
+}
+/** Passa o slider da loja para o próximo (1) ou anterior (-1) item. */
+function shopSlide(d) {
+  const n = (game.shopList || []).length;
+  if (!n) return;
+  game.shopIdx = (game.shopIdx + d + n) % n;
+  playSound(520, 0.03, "sine");
+  renderShop();
+}
+/** Enter compra ou vende o item mostrado no slider. */
+function shopConfirm() {
+  const b = byId("shop").querySelector(".sl-buy:not([disabled])");
+  if (b) b.click();
 }
 function closeShop() {
   byId("shop").style.display = "none";
@@ -611,26 +625,46 @@ function renderShop() {
   <div class="gsub">${sh.sub} · Seu ouro: <b style="color:var(--gold)">${player.gold}</b></div>
   <div class="gsub">${taxNote()}${player.taxPaid ? ` · Você já pagou ${player.taxPaid} de imposto` : ""}</div>
   <div class="tabs"><button data-t="buy" class="${game.shopTab === "buy" ? "on" : ""}">${iconHTML("coin")}Comprar</button><button data-t="sell" class="${game.shopTab === "sell" ? "on" : ""}">${iconHTML("bag")}Vender</button></div>`;
-  if (game.shopTab === "buy") {
-    for (const id of sh.items) {
-      const it = ITEMS[id];
+  // Lista do slider: itens à venda (Comprar) ou do seu inventário (Vender).
+  const list =
+    game.shopTab === "buy"
+      ? sh.items
+      : Object.keys(player.inv).filter((id) => itemCount(id) > (Object.values(player.eq).includes(id) ? 1 : 0));
+  game.shopList = list;
+  game.shopIdx = Math.max(0, Math.min(list.length - 1, game.shopIdx || 0));
+  if (!list.length) h += '<div class="qtip" style="text-align:center;margin:2em 0">Nada para vender.</div>';
+  else {
+    const id = list[game.shopIdx],
+      it = ITEMS[id];
+    let price, action;
+    if (game.shopTab === "buy") {
       const lock = it.req && guardiansFreed() < it.req;
       const base = Math.round(it.preco * discount(game.shopId));
       const pr = withTax(base);
-      const can = !lock && player.gold >= pr;
-      h += `<div class="irow"><div><div class="nm">${iconHTML(itemIcon(id))}${it.nome}${itemCount(id) ? ` <span class="ds">(tem ${itemCount(id)})</span>` : ""}</div><div class="ds">${lock ? `Disponível após libertar ${it.req} Guardião(ões).` : it.desc}</div></div>
-      <div><span class="pr">${pr} ouro</span>${pr > base ? ` <span class="ds">(${base} + ${pr - base} imposto)</span>` : ""} <button data-b="${id}" ${can ? "" : "disabled"}>Comprar</button></div></div>`;
+      price = `<span class="pr">${pr} ouro</span>${pr > base ? `<span class="ds"> (${base} + ${pr - base} de imposto)</span>` : ""}`;
+      action = lock
+        ? `<div class="ds">Disponível após libertar ${it.req} Guardião(ões).</div>`
+        : `<button class="sl-buy" data-b="${id}" ${player.gold >= pr ? "" : "disabled"}>${iconHTML("coin")}Comprar (Enter)</button>`;
+    } else {
+      price = `<span class="pr">${saleAfterTax(Math.floor(it.preco / 2))} ouro</span>`;
+      action = `<button class="sl-buy" data-s="${id}">${iconHTML("bag")}Vender (Enter)</button>`;
     }
-  } else {
-    const ids = Object.keys(player.inv).filter(
-      (id) => itemCount(id) > (Object.values(player.eq).includes(id) ? 1 : 0),
-    );
-    if (!ids.length) h += '<div class="qtip">Nada para vender.</div>';
-    for (const id of ids) {
-      const it = ITEMS[id];
-      const pr = saleAfterTax(Math.floor(it.preco / 2));
-      h += `<div class="irow"><div><div class="nm">${iconHTML(itemIcon(id))}${it.nome} <span class="ds">(tem ${itemCount(id)})</span></div><div class="ds">${it.desc}</div></div><div><span class="pr">${pr} ouro</span> <button data-s="${id}">Vender</button></div></div>`;
-    }
+    h += `<div class="slider">
+      <button class="sl-nav" data-nav="-1" ${list.length < 2 ? "disabled" : ""}>◀</button>
+      <div class="sl-card" style="${it.lend ? "border-color:#ffe066" : ""}">
+        <div class="sl-icon">${iconHTML(itemIcon(id), 72)}</div>
+        <div class="sl-name">${it.nome}</div>
+        <div class="ds">${itemCount(id) ? `Você tem ${itemCount(id)} · ` : ""}${{ food: "Comida", cons: "Consumível", equip: "Equipamento", movel: "Móvel", gift: "Presente", mat: "Material", pet: "Mascote", tool: "Ferramenta" }[it.tipo] || ""}</div>
+        <div class="sl-desc">${it.desc}</div>
+        <div class="sl-price">${price}</div>
+        ${action}
+      </div>
+      <button class="sl-nav" data-nav="1" ${list.length < 2 ? "disabled" : ""}>▶</button>
+    </div>
+    <div class="sl-count">${game.shopIdx + 1} / ${list.length} · ← → para passar</div>
+    <div class="sl-thumbs">${list
+      .map((k, i) => `<button class="sl-th ${i === game.shopIdx ? "on" : ""}" data-go="${i}" title="${ITEMS[k].nome}">${iconHTML(itemIcon(k), 22)}</button>`)
+      .join("")}</div>`;
   }
   byId("shop").innerHTML = h;
   byId("shclose").onclick = closeShop;
@@ -640,9 +674,25 @@ function renderShop() {
       (b) =>
         (b.onclick = () => {
           game.shopTab = b.dataset.t;
+          game.shopIdx = 0;
           renderShop();
         }),
     );
+  byId("shop")
+    .querySelectorAll("[data-nav]")
+    .forEach((b) => (b.onclick = () => shopSlide(+b.dataset.nav)));
+  byId("shop")
+    .querySelectorAll("[data-go]")
+    .forEach((b) => (b.onclick = () => ((game.shopIdx = +b.dataset.go), renderShop())));
+  const card = byId("shop").querySelector(".sl-card");
+  if (card) {
+    // Deslizar o dedo para os lados troca de item.
+    card.onpointerdown = (e) => (game.swipeX = e.clientX);
+    card.onpointerup = (e) => {
+      const dx = e.clientX - (game.swipeX ?? e.clientX);
+      if (Math.abs(dx) > 40) shopSlide(dx < 0 ? 1 : -1);
+    };
+  }
   byId("shop")
     .querySelectorAll("[data-b]")
     .forEach(

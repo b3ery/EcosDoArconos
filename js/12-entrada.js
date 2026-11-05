@@ -89,7 +89,14 @@ const KEY_HANDLERS = {
     else if (k === "escape") pickChoice(game.choice.length - 1);
   },
   inv: (k) => (k === "i" || k === "escape") && closeInv(),
-  shop: (k) => k === "escape" && closeShop(),
+  shop: (k) => {
+    if (k === "escape") return closeShop();
+    if (game.shopId === "__jobs" || !byId("shop").querySelector(".slider")) return;
+    const slide = game.shopId === "__cos" ? cosSlide : shopSlide;
+    if (k === "arrowleft" || k === "a") slide(-1);
+    else if (k === "arrowright" || k === "d") slide(1);
+    else if (k === "enter" || k === " " || k === "e") shopConfirm();
+  },
   story: (k, e) => {
     if (!e.repeat && (k === "enter" || k === " " || k === "e")) storyNext();
     else if (k === "escape") storyEnd();

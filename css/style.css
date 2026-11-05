@@ -2155,3 +2155,107 @@ body.mland #qpill {
     opacity: 1;
   }
 }
+
+/* ==========================================================================
+   LOJAS EM SLIDER
+   ========================================================================== */
+.slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  margin: 0.8em 0 0.3em;
+}
+.sl-nav {
+  font-size: 1.6em;
+  padding: 0.2em 0.45em;
+  border-radius: 50%;
+}
+.sl-card {
+  flex: 0 1 22em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  padding: 1em 1.2em;
+  background: radial-gradient(ellipse at top, #3a2f5a, #1d1630 70%);
+  border: 2px solid var(--edge);
+  border-radius: 8px;
+  text-align: center;
+  touch-action: pan-y;
+  animation: slIn 0.18s ease-out;
+}
+.sl-icon {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  box-shadow: inset 0 0 18px rgba(176, 108, 255, 0.35);
+}
+.sl-icon .pxi {
+  margin: 0;
+}
+.sl-name {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.35em;
+  color: var(--gold);
+}
+.sl-desc {
+  min-height: 2.4em;
+}
+.sl-price {
+  font-size: 1.15em;
+}
+.sl-buy {
+  font-size: 1.1em;
+  padding: 0.3em 1.2em;
+}
+.sl-count {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.sl-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3em;
+  margin-top: 0.5em;
+}
+.sl-th {
+  padding: 0.15em 0.25em;
+  opacity: 0.65;
+}
+.sl-th.on {
+  opacity: 1;
+  border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(242, 193, 78, 0.5);
+}
+.sl-th .pxi {
+  margin: 0;
+}
+@keyframes slIn {
+  from {
+    opacity: 0.3;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sl-card #cosc {
+  position: static;
+  inset: auto;
+  flex: none;
+  width: 9em;
+  height: 9em;
+  image-rendering: pixelated;
+  background: #1a1328;
+  border: 2px solid var(--edge);
+  border-radius: 6px;
+}
