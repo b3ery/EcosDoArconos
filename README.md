@@ -357,6 +357,18 @@ Ao ar livre, cada clima deixa **duas runas mais fortes e uma ou duas mais fracas
 | ❄️ Neve | Maré +15%, Terra +5% | Chama −15%, Vento −5% |
 | 🌫️ Neblina | Sombra +20%, Vento +5% | Luz −15% |
 
+## ⛈️ O clima no corpo e o fôlego
+
+- **Calor** (sol forte do meio-dia): a sede cai bem mais rápido.
+- **Encharcado** (chuva ou tempestade ao ar livre): a fome e o cansaço aumentam até você secar dentro de casa.
+- **Congelando** (neve sem um manto reforçado): a vida cai aos poucos. Entre em casa ou vista um manto.
+- **Tempestade de trovões:** raios caem de verdade. Um círculo amarelo pisca no chão antes do raio: saia de cima! Se acertar, tira 18% da vida.
+- **Fôlego (modo História):** cada luta gasta fôlego (9, ou 22 contra Guardiões). Sem fôlego você não consegue lutar e precisa **voltar para dormir** em casa ou numa pousada. Com menos de 30, você luta 15% mais fraco. Dá umas 11 lutas por dia: a aventura não acaba num dia só.
+
+### Equilíbrio das runas
+
+As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42→36 de poder e 16→18 de mana; Coração de Magma, Fogo Negro, Chama Solar, Água Benta, Florescer, Raio Divino, Abismo e Prisma também foram ajustados). Os bônus de dano (cajado, afinidade, poder sombrio, bebida, bênção...) agora têm teto: acima de +80% rendem metade, e o total nunca passa de +160%. O poder do caminho do vilão vai até +35%.
+
 ## 🤢 Saúde
 
 - **Nos dois modos:** fome e sede caem com o tempo. **Frutas silvestres** (colhidas nas árvores do Bosque e do Pântano) e **água de rio ou fonte** podem causar **intoxicação**: a vida cai aos poucos e a magia enfraquece. Chá de Ervas, Ervas Medicinais, **Xarope de Ervas** (Bruno) ou a Curandeira curam. O poço e o cantil são seguros.

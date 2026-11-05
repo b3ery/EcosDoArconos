@@ -265,6 +265,7 @@ function bldService(b) {
           player.day++;
           player.hp = maxHp();
           player.mp = maxMp();
+          player.stamina = 100;
           player.food = Math.max(0, player.food - 15);
           player.water = Math.max(0, player.water - 15);
           player.checkpoint =
@@ -753,6 +754,7 @@ function tavernMenu() {
           player.day++;
           player.hp = maxHp();
           player.mp = maxMp();
+          player.stamina = 100;
           player.food = Math.max(0, player.food - 15);
           player.water = Math.max(0, player.water - 15);
           game.fade = 1;
@@ -1046,6 +1048,7 @@ function restMenu() {
         player.hp = maxHp();
         player.mp = maxMp();
         player.energy = 100;
+        player.stamina = 100;
         if (lifeMode()) addNeed("fun", Math.round((homeComfort() - 1) * 40));
         player.food = Math.max(0, player.food - 20);
         player.water = Math.max(0, player.water - 20);

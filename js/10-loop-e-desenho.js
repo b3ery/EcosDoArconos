@@ -204,6 +204,7 @@ function update(dt) {
     sicknessTick(dt);
     animalsTick(dt);
     crewTick(dt);
+    bodyWeatherTick(dt);
     const nn = isNight();
     if (game.wasNight !== undefined && nn !== game.wasNight) {
       if (nn) {
@@ -3111,6 +3112,7 @@ function drawWorld(t) {
   }
   drawAmbience(t, th);
   drawWeather(t, th, psx, psy);
+  if (outdoorTheme(th)) drawLightning(t);
   if (game.raid && player.zone === "vila") {
     const a = 0.18 + 0.1 * Math.sin(t * 4),
       g = ctx.createRadialGradient(viewWidth / 2, 240, 180, viewWidth / 2, 240, viewWidth * 0.7);

@@ -3057,3 +3057,12 @@ body.mland #qpill {
     transform: translate(-50%, -50%) scale(0.5);
   }
 }
+.hrow .bar.en.low i {
+  background: #e0a030;
+  animation: lowPulse 1s ease-in-out infinite;
+}
+@keyframes lowPulse {
+  50% {
+    opacity: 0.5;
+  }
+}

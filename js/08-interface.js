@@ -783,6 +783,9 @@ function updateHUD() {
     chips += `<span class="chip" style="color:${ml.c}" title="Escolhas de herói: ${player.heroPts || 0} · de vilão: ${player.villain || 0}. Elas mexem na sua reputação.">${iconHTML(ml.icon, 12)}${ml.n}</span>`;
   if (sickness()) chips += `<span class="chip" style="color:${sickness().color}" title="${sickness().desc}">${iconHTML(sickness().icon, 12)}${sickness().n}</span>`;
   if (starving()) chips += `<span class="chip" style="color:#ffb35a">Fraco de fome/sede</span>`;
+  const body = bodyState();
+  if (body) chips += `<span class="chip" style="color:${body.c}" title="${body.d}">${iconHTML(body.icon, 12)}${body.n}</span>`;
+  if (!lifeMode() && stamina() < 30) chips += `<span class="chip" style="color:#ffd66b" title="Volte para a vila e durma.">${iconHTML("zzz", 12)}Exaust${genderWord("o", "a", "e")}</span>`;
   if (game.mode === "battle" && battle) {
     if (battle.shield > 0)
       chips += `<span class="chip" style="color:#e0ab62">Muralha ${battle.shield}</span>`;
@@ -797,13 +800,16 @@ function updateHUD() {
   }
   const needBar = (k, cls) =>
     `<span title="${LIFE_NEEDS[k].n}">${iconHTML(LIFE_NEEDS[k].icon, 14)}</span><div class="bar ${cls}"><i style="width:${lifeNeed(k)}%"></i></div>`;
+  const storyRow = !lifeMode()
+    ? `<div class="hrow nd"><span title="Fôlego: cada luta cansa. Durma para recuperar.">${iconHTML("bolt", 14)}</span><div class="bar en${stamina() < 30 ? " low" : ""}" title="Fôlego ${Math.round(stamina())}/100"><i style="width:${stamina()}%"></i></div></div>`
+    : "";
   const lifeRows = lifeMode()
     ? `<div class="hrow nd">${needBar("energy", "en")}${needBar("hygiene", "hy")}</div><div class="hrow nd">${needBar("fun", "fu")}<span style="font-size:.75em;color:#c9a8ff">${playerAge()} anos</span></div>`
     : "";
   const s = `<div class="box hudL"><div class="hrow"><span class="lv">${lifeMode() ? iconHTML("heart", 12) + "Vida" : iconHTML("star", 12) + "Nv" + player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
   <div class="hrow"><span class="gd">${iconHTML("coin", 12)}${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
   <div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>
-  ${lifeRows}${chips ? `<div class="chips">${chips}</div>` : ""}</div>
+  ${storyRow}${lifeRows}${chips ? `<div class="chips">${chips}</div>` : ""}</div>
   <div class="box hudR"><span class="clock">${iconHTML(WEATHER_ICONS[player.weather] || "sun", 14)}${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${lifeMode() ? "" : ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""} ${weatherMark(r)}" title="${RUNES[r].nome}${weatherMark(r) ? ` (${weatherMark(r) === "up" ? "forte" : "fraca"} com este clima)` : ""}">${runeSVG(r, 16)}${weatherMark(r) ? `<i class="wmk">${weatherMark(r) === "up" ? "▲" : "▼"}</i>` : ""}</span>`).join("")}</div>`;
   if (s !== hudCache) {
     byId("hud").innerHTML = s;
