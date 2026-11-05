@@ -222,81 +222,64 @@ function interactionCount() {
   return INTERACTIONS.length;
 }
 
-/* ===================== PAINEL ===================== */
+/* ===================== MENU EM PIZZA ===================== */
 
-function openInterPanel(id, cat) {
+/** Onde a pessoa está agora (para o círculo abrir em volta dela). */
+function interAnchorFor(id) {
+  if (game.pieAnchor) return { x: game.pieAnchor.x, y: game.pieAnchor.y };
+  const sp = (typeof crewSpot === "function" && crewSpot(id)) || npcSpot(id);
+  if (sp && Math.abs(sp[0] - player.x) + Math.abs(sp[1] - player.y) <= 8) return { x: sp[0], y: sp[1] };
+  const w = (game.walkers || []).find((q) => q.cid === id);
+  if (w) return { x: w.x, y: w.y };
+  return { x: player.x, y: player.y };
+}
+const IP_PAGE = 7;
+const PSN = { gentil: "Gentil", engracado: "Engraçado", aventureiro: "Aventureiro", timido: "Tímido", serio: "Sério", orgulhoso: "Orgulhoso", esperto: "Esperto", sabio: "Sábio", crianca: "Criança" };
+
+/** Abre as interações em círculo: primeiro as categorias, depois as ações (7 por vez). */
+function openInterPanel(id, cat, page = 0) {
   if (!NPCS[id]) return;
   game.ipId = id;
-  game.ipCat = cat || game.ipCat || "amigo";
-  game.mode = "ipanel";
-  hidePie();
-  byId("choice").style.display = "none";
-  let el = byId("ipanel");
-  if (!el) {
-    el = document.createElement("div");
-    el.id = "ipanel";
-    el.className = "box ui";
-    byId("screen").appendChild(el);
-  }
-  renderInterPanel();
-  el.style.display = "flex";
-}
-function closeInterPanel() {
-  const el = byId("ipanel");
-  if (el) el.style.display = "none";
-  clearInterval(game.ipAnim);
-  if (game.mode === "ipanel") game.mode = "world";
-  game.pieAnchor = null;
-}
-function renderInterPanel() {
-  const id = game.ipId,
-    el = byId("ipanel");
+  game.ipAnchor = game.ipAnchor && game.ipAnchor.id === id ? game.ipAnchor : { ...interAnchorFor(id), id };
   const n = NPCS[id].nome.split(",")[0];
   const ps = PERSONALITIES[id] || "gentil";
-  const PSN = { gentil: "Gentil", engracado: "Engraçado", aventureiro: "Aventureiro", timido: "Tímido", serio: "Sério", orgulhoso: "Orgulhoso", esperto: "Esperto", sabio: "Sábio", crianca: "Criança" };
   const status = player.spouse === id ? "Casados" : player.dating === id ? "Namorando" : isRomanticWith(id) ? "Romance" : REL_LV[friendshipLevel(id)][1];
-  const cat = game.ipCat;
-  const list = INTERACTIONS.filter((r) => r[1] === cat && interAvailable(r, id));
-  const total = INTERACTIONS.filter((r) => interAvailable(r, id)).length;
-  const fr = friendship(id);
-  el.innerHTML = `
-    <div class="ip-head">
-      <canvas id="ipport" width="80" height="80"></canvas>
-      <div class="ip-who">
-        <b>${n}</b>
-        <small>${PSN[ps] || ps} · ${status}${typeof npcAge === "function" && lifeMode() ? ` · ${npcAge(id)} anos` : ""}</small>
-        <div class="ip-bar" title="Amizade ${fr}/100"><i style="width:${fr}%"></i><span>${iconHTML("heart", 12)}${fr}/100</span></div>
-      </div>
-      <button class="st-x" id="ipclose" title="Fechar (Esc)">✕</button>
-    </div>
-    <div class="ip-cats">${INTER_CATS.map((c) => {
+  const info = `<span class="pie-info">${PSN[ps] || ps} · ${status} · <span class="pie-heart">${iconHTML("heart", 12)}${friendship(id)}/100</span></span>`;
+  if (!cat) {
+    game.pieAnchor = { x: game.ipAnchor.x, y: game.ipAnchor.y, group: "Interações", ring: "cats" };
+    const opts = INTER_CATS.map((c) => {
       const cnt = INTERACTIONS.filter((r) => r[1] === c.k && interAvailable(r, id)).length;
-      return `<button data-cat="${c.k}" class="${c.k === cat ? "on" : ""} ${c.k === "mal" ? "mean" : c.k === "amor" ? "love" : ""}" ${cnt ? "" : "disabled"}>${iconHTML(c.icon, 16)}<span>${c.n}</span><em>${cnt}</em></button>`;
-    }).join("")}</div>
-    <div class="ip-grid">${
-      list.length
-        ? list
-            .map((r) => {
-              const x = r[9];
-              const done = interDoneToday(id, r[0]);
-              const tags = [];
-              if (x.cost) tags.push(`${iconHTML("coin", 10)}${withTax(x.cost)}`);
-              if (x.time) tags.push(`${iconHTML("clock", 10)}${x.time >= 60 ? x.time / 60 + "h" : x.time + "min"}`);
-              if (x.item) tags.push(`${iconHTML(itemIcon(x.item), 10)}${ITEMS[x.item].nome}`);
-              if (x.rep && x.rep < 0) tags.push(`<span class="neg">fama ${x.rep}</span>`);
-              return `<button class="ip-act ${cat === "mal" ? "mean" : cat === "amor" ? "love" : ""}" data-k="${r[0]}" ${done ? "disabled" : ""}>${iconHTML(r[3], 18)}<span class="ip-t">${r[2]}${tags.length ? `<small>${tags.join(" ")}</small>` : ""}</span>${done ? "<em>amanhã</em>" : ""}</button>`;
-            })
-            .join("")
-        : `<p class="ip-empty">Nada aqui por enquanto. ${cat === "amor" ? "Fique mais amigo (2 corações) para flertar." : ""}</p>`
-    }</div>
-    <div class="ip-foot">${total} interações com ${n} · cada uma uma vez por dia · <kbd>Esc</kbd> fecha</div>`;
-  byId("ipclose").onclick = closeInterPanel;
-  el.querySelectorAll("[data-cat]").forEach((b) => (b.onclick = () => ((game.ipCat = b.dataset.cat), playSound(520, 0.03, "sine"), renderInterPanel())));
-  el.querySelectorAll("[data-k]").forEach((b) => (b.onclick = () => doInteraction(id, b.dataset.k)));
-  clearInterval(game.ipAnim);
-  const dr = () => drawKeeper(byId("ipport"), NPCS[id].nome);
-  dr();
-  game.ipAnim = setInterval(dr, 150);
+      return {
+        t: `${c.n} (${cnt})`,
+        icon: c.icon,
+        cls: c.k === "amor" ? "love" : c.k === "mal" ? "mean" : "cat",
+        off: !cnt,
+        fn: () => openInterPanel(id, c.k, 0),
+      };
+    });
+    opts.push({ t: "Voltar", icon: "door", fn: () => ((game.pieAnchor = { x: game.ipAnchor.x, y: game.ipAnchor.y }), (game.ipAnchor = null), socialMenu(id)) });
+    return choice(n, info, opts);
+  }
+  const C = INTER_CATS.find((c) => c.k === cat);
+  const list = INTERACTIONS.filter((r) => r[1] === cat && interAvailable(r, id));
+  const pages = Math.max(1, Math.ceil(list.length / IP_PAGE));
+  page = ((page % pages) + pages) % pages;
+  game.pieAnchor = { x: game.ipAnchor.x, y: game.ipAnchor.y, group: C.n, ring: "acts" };
+  const opts = list.slice(page * IP_PAGE, page * IP_PAGE + IP_PAGE).map((r) => {
+    const x = r[9];
+    const done = interDoneToday(id, r[0]);
+    const tag = done ? " · amanhã" : x.cost ? ` · ${withTax(x.cost)} ouro` : x.item ? ` · ${ITEMS[x.item].nome}` : x.time ? ` · ${x.time >= 60 ? x.time / 60 + "h" : x.time + "min"}` : "";
+    return { t: r[2] + tag, icon: r[3], cls: cat === "amor" ? "love" : cat === "mal" ? "mean" : "", off: done, fn: () => doInteraction(id, r[0]) };
+  });
+  if (pages > 1) opts.push({ t: `Mais (${page + 1}/${pages})`, icon: "scroll", cls: "nav", fn: () => openInterPanel(id, cat, page + 1) });
+  opts.push({ t: "Voltar", icon: "door", cls: "nav", fn: () => openInterPanel(id) });
+  game.ipCat = cat;
+  game.ipPage = page;
+  choice(n, info, opts);
+}
+function closeInterPanel() {
+  game.ipAnchor = null;
+  if (typeof closePie === "function") closePie();
 }
 
 /** Faz a interação e mostra a reação. Depois volta para o painel. */
@@ -306,11 +289,12 @@ function doInteraction(id, key) {
   const n = NPCS[id].nome.split(",")[0];
   const ps = PERSONALITIES[id] || "gentil";
   const code = PS_CODE[ps] || "G";
-  const back = () => openInterPanel(id, cat);
+  const page = game.ipPage || 0;
+  const back = () => openInterPanel(id, cat, page);
   const others = Object.keys(FRIENDS).filter((k) => k !== id && NPCS[k]);
   const o = others.length ? NPCS[pickOne(others)].nome.split(",")[0] : "o Coletor";
   const fmt = (s) => (s === "@conselho" ? pickOne(LIFE_ADVICE) : s).replace(/\{n\}/g, n).replace(/\{v\}/g, player.name || "você").replace(/\{o\}/g, o);
-  closeInterPanel();
+  hidePie();
   if (x.cost && player.gold < withTax(x.cost)) return say([["", `Você precisa de ${withTax(x.cost)} de ouro para isso.`]], back);
   if (x.item && !itemCount(x.item)) return say([["", `Você precisa de ${ITEMS[x.item].nome} na bolsa.`]], back);
   if (x.special === "loan") {
@@ -390,5 +374,5 @@ function doInteraction(id, key) {
 
 /** Item que aparece no menu de cada pessoa. */
 function lifeSocialItems(id) {
-  return [{ t: `Interações… (${INTERACTIONS.filter((r) => interAvailable(r, id)).length})`, icon: "chat", fn: () => openInterPanel(id) }];
+  return [{ t: `Interações… (${INTERACTIONS.filter((r) => interAvailable(r, id)).length})`, icon: "chat", fn: () => ((game.ipAnchor = null), openInterPanel(id)) }];
 }

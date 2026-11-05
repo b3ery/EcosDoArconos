@@ -11,12 +11,13 @@
 /** Categorias e as palavras que levam uma opção para cada uma. */
 const PIE_GROUPS = [
   { n: "Sair", icon: "door", re: /^(Sair|Fechar|Cancelar|Agora não|Só olhar)/ },
+  { n: "Interações", icon: "chat", re: /^Interações/ },
   { n: "Romântico", icon: "heart", re: /Carinhos|Encontros|namor|casamento|relacionamento|Beijar|Flertar|Dançar juntos|♥/ },
   { n: "Malvado", icon: "anger", re: /Discutir|Fofoc|grosseiro|briga|Terminar|divórcio|Proibir|Insultar/ },
   { n: "Engraçado", icon: "laugh", re: /piada|cócegas|Brincar|Toca aqui/ },
   { n: "Família", icon: "house", re: /filho|Filho|ajuda nas tarefas|Ganhar um presente|Arranjar|Apoiar|refeição|Passear juntos|Treinar runas/ },
   { n: "Serviços", icon: "coin", re: /Comprar|Tratamento|Tratar|Treinar|Trabalhar|trocas|Viajar|cavalo|Pedido|Entregar|Ouvir o que|emprestado|dívida|Guarda Real/ },
-  { n: "Amigável", icon: "smile", re: /Abraçar|Elogiar|Conversar|Bater papo|presente|desculpas|conselho|Cumprimentar|Interações|beber/ },
+  { n: "Amigável", icon: "smile", re: /Abraçar|Elogiar|Conversar|Bater papo|presente|desculpas|conselho|Cumprimentar|beber/ },
 ];
 function pieGroupOf(text) {
   const g = PIE_GROUPS.find((q) => q.re.test(text));
@@ -83,14 +84,21 @@ function renderPie(title, text, opts) {
   game.choice = shown;
   const pos = pieScreenPos(a.x, a.y);
   const n = shown.length;
-  const radius = n > 6 ? 118 : 100;
+  // Opções em arco dos dois lados do personagem: a metade da direita e a da esquerda.
+  const right = Math.ceil(n / 2),
+    left = n - right,
+    gap = 40;
   const items = shown
     .map((o, i) => {
-      const ang = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-      const dx = Math.cos(ang) * radius,
-        dy = Math.sin(ang) * radius * 0.78;
+      const onRight = i < right;
+      const k = onRight ? i : n - 1 - i;
+      const cnt = onRight ? right : left;
+      const dy = (k - (cnt - 1) / 2) * gap;
+      const maxY = Math.max(1, ((cnt - 1) / 2) * gap + gap / 2);
+      const bow = 34 + 46 * (1 - (dy / maxY) ** 2);
+      const dx = onRight ? bow : -bow;
       const ic = o.icon || choiceIcon(o.t) || PIE_GROUPS.find((q) => q.n === pieGroupOf(o.t))?.icon || "chat";
-      return `<button class="pie-opt" data-i="${i}" style="transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))">${iconHTML(ic, 18)}<span>${o.t}</span></button>`;
+      return `<button class="pie-opt ${o.cls || ""} ${onRight ? "r" : "l"}" data-i="${i}" ${o.off ? "disabled" : ""} style="transform:translate(calc(${onRight ? "0%" : "-100%"} + ${dx}px), calc(-50% + ${dy}px));animation-delay:${i * 18}ms"><span class="pie-ic">${iconHTML(ic, 18)}</span><span>${o.t}</span></button>`;
     })
     .join("");
   const name = title.split("·")[0].trim();
@@ -99,11 +107,12 @@ function renderPie(title, text, opts) {
       <button class="pie-center" title="Fechar (Esc)">✕</button>
       ${items}
     </div>
-    <div class="pie-text"><b style="color:var(--gold)">${name}</b> · ${a.group || "Interagir"}${text ? `<br>${text}` : ""}</div>`;
+    <div class="pie-text"><b class="pie-name">${name}</b><span class="pie-grp">${a.group || "Interagir"}</span>${text ? `<div class="pie-sub">${text}</div>` : ""}</div>`;
   el.style.display = "block";
   byId("choice").style.display = "none";
   el.querySelectorAll(".pie-opt").forEach((b) => (b.onclick = () => pickChoice(+b.dataset.i)));
   el.querySelector(".pie-center").onclick = closePie;
+  el.classList.toggle("wide", n > 8);
   return true;
 }
 function hidePie() {
@@ -112,6 +121,7 @@ function hidePie() {
 }
 function closePie() {
   hidePie();
+  game.ipAnchor = null;
   byId("choice").style.display = "none";
   game.pieAnchor = null;
   game.mode = "world";
