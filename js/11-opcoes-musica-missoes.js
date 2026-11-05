@@ -726,9 +726,22 @@ function finishWedding() {
   game.mode = "world";
   player.spouse = id;
   player.dating = null;
+  if (id === "rainha") {
+    player.flags.consorte = true;
+    repAdd(10);
+  }
   player.married = player.day;
   Object.keys(FRIENDS).forEach((k) => (player.rel[k] = Math.min(100, friendship(k) + 5)));
   saveGame();
+  if (id === "rainha") {
+    say([
+      ["Padre Anselmo", `Pelo poder das runas e pela vontade da Coroa, eu declaro ${player.name} e a Rainha Aurélia unidos para sempre!`],
+      ["Rainha Aurélia", `Povo de Cinzaluz: conheçam ${genderWord("o seu novo Consorte Real", "a sua nova Consorte Real", "e Consorte Real")}!`],
+      ["", "Agora você é da família real: recebe 50 de ouro por dia do tesouro e não paga mais o Imposto Real."],
+      ["", "A Rainha passa as noites com você na sua casa (ela diz que o castelo é frio demais). Para ter filhos, fale com ela em casa."],
+    ]);
+    return;
+  }
   say([
     ["Padre Anselmo", `Pelo poder das runas, eu declaro ${player.name} e ${name} unidos para sempre!`],
     ["Arquimaga Odelia", "Que a Canção Arcana proteja esta família."],

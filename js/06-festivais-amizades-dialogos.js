@@ -854,6 +854,10 @@ function castleMenu() {
         },
       },
       {
+        t: player.spouse === "rainha" ? "Ver sua esposa, a Rainha ♥" : "Conversar com a Rainha (amizade)",
+        fn: () => socialMenu("rainha"),
+      },
+      {
         t: "Admirar o salão",
         fn: () =>
           say([
@@ -1157,6 +1161,10 @@ function pickBook() {
 /* ===================== AMIZADES ===================== */
 
 const FRIENDS = {
+  rainha: {
+    fav: "perolaN",
+    r80: ["amuPerola", 1],
+  },
   odelia: {
     fav: "cha",
     r80: ["amuCan", 1],
@@ -1297,7 +1305,7 @@ function discount(shop) {
  */
 const TAX = { buy: 0.12, sell: 0.1 };
 function taxRate() {
-  if (festivalToday()) return 0;
+  if (festivalToday() || player.spouse === "rainha") return 0;
   return (player.rep ?? 50) >= 80 ? TAX.buy / 2 : TAX.buy;
 }
 function taxOf(price) {
@@ -1314,10 +1322,11 @@ function payWithTax(price) {
   return tax;
 }
 function saleAfterTax(value) {
-  if (festivalToday()) return value;
+  if (festivalToday() || player.spouse === "rainha") return value;
   return value - Math.floor(value * TAX.sell);
 }
 function taxNote() {
+  if (player.spouse === "rainha") return '<span style="color:#f2c14e">Consorte Real: isento do Imposto Real!</span>';
   if (festivalToday()) return '<span style="color:#7ad36b">Dia de festival: sem Imposto Real!</span>';
   const pct = Math.round(taxRate() * 100);
   return `Imposto Real: ${pct}% na compra · ${Math.round(TAX.sell * 100)}% na venda${pct < 12 ? " (desconto por boa fama)" : ""}`;
@@ -2174,6 +2183,7 @@ function greet(id) {
 /* ===================== CONVERSAS VIVAS ===================== */
 
 const PERSONALITIES = {
+  rainha: "sabio",
   capitao: "aventureiro",
   cocheiro2: "engracado",
   nicoP: "gentil",
@@ -2670,6 +2680,13 @@ function socialMenu(id) {
     opts.push({
       t: "Convidar para namorar ♥",
       fn: () => {
+        if (id === "rainha" && !royalSuitor()) {
+          say([
+            [nm, "*ri baixinho* Você é encantador. Mas uma rainha não namora qualquer pessoa."],
+            ["", "Para cortejar a Rainha você precisa de reputação 70+ e ter feito algo pelo reino (libertar um Guardião ou servir na Guarda Real)."],
+          ]);
+          return;
+        }
         player.dating = id;
         addFriendship(id, 5);
         saveGame();
@@ -2695,7 +2712,21 @@ function socialMenu(id) {
           say([[nm, "Eu gosto muito de você... mas vamos esperar mais um pouco? (amizade 75+)"]]);
           return;
         }
+        if (id === "rainha" && (player.rep ?? 50) < 80) {
+          say([[nm, "Eu digo sim com o coração. Mas o reino precisa amar você também. (reputação 80+)"]]);
+          return;
+        }
         removeItem("anel");
+        if (id === "rainha") {
+          say(
+            [
+              [nm, "*tira a luva e estende a mão* Sim. Que Cinzaluz inteira escute: sim!"],
+              ["", "O castelo prepara um casamento real. Sinos, pétalas e a vila inteira na porta do Templo."],
+            ],
+            () => startWedding(id),
+          );
+          return;
+        }
         say([[nm, "Sim! Mil vezes sim!"]], () => startWedding(id));
       },
     });

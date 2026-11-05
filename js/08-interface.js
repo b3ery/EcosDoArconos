@@ -67,7 +67,7 @@ function talkTargetAt(x, y) {
 
 function npcLook(id) {
   const n = NPCS[id];
-  return { robe: n.robe, hat: n.hat, hair: n.hair, id, glow: MAGIC_KEEPERS.has(id) };
+  return { robe: n.robe, hat: n.hat, hair: n.hair, id, glow: MAGIC_KEEPERS.has(id), crown: n.crown };
 }
 
 /** Descobre quem está falando, para desenhar o retrato certo. */

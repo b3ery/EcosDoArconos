@@ -5,7 +5,33 @@
 
 /* ===================== FAMÍLIA ===================== */
 
-const ROMANCE = ["rosa", "curandeira", "kael", "iara", "ferreiro", "marina", "tobias"];
+const ROMANCE = ["rosa", "curandeira", "kael", "iara", "ferreiro", "marina", "tobias", "rainha"];
+
+/** A Rainha só aceita ser cortejada por quem é querido e já serviu ao reino. */
+function royalSuitor() {
+  return (player.rep ?? 50) >= 70 && (guardiansFreed() >= 1 || player.flags.guardaReal);
+}
+/** Coroa desenhada por cima de um sprite de 32px (u = 2). */
+function drawCrown(X, Y) {
+  ctx.fillStyle = "#f2c14e";
+  ctx.fillRect(X + 10, Y + 2, 12, 4);
+  ctx.fillRect(X + 10, Y, 2, 3);
+  ctx.fillRect(X + 15, Y - 1, 2, 3);
+  ctx.fillRect(X + 20, Y, 2, 3);
+  ctx.fillStyle = "#e0303a";
+  ctx.fillRect(X + 15, Y + 3, 2, 2);
+}
+
+/* ===================== ACONTECIMENTOS DO DIA ===================== */
+
+/** Roda uma vez por dia, quando o dia vira. */
+function onNewDay() {
+  if (player.spouse === "rainha") {
+    player.gold += 50;
+    setTimeout(() => toast("Mesada real: +50 de ouro do tesouro da Coroa.", 3500), 2200);
+  }
+  if (typeof growKids === "function") growKids();
+}
 const FAM_SPOTS = {
   spouse: [11, 7],
   kids: [
@@ -117,6 +143,7 @@ function drawFamily(f, t) {
   if (f.kind === "spouse") {
     const n = NPCS[f.id];
     drawSprite(wizardRects(n.robe, n.hat, n.hair, null, "down"), X, Y + Math.sin(t * 2) * 0.8, 2);
+    if (n.crown) drawCrown(X, Y + Math.sin(t * 2) * 0.8);
     ctx.fillStyle = "#ff6b8a";
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";

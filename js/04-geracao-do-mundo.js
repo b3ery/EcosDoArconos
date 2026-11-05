@@ -4012,6 +4012,18 @@ const HONDA_TIPS = [
 ];
 
 const NPCS = {
+  rainha: {
+    nome: "Rainha Aurélia",
+    robe: "#8a2a5a",
+    hat: null,
+    hair: "#d9a441",
+    crown: true,
+    talk() {
+      if (player.spouse === "rainha")
+        return [["Rainha Aurélia", "Meu consorte! O reino anda calmo... e eu ando com saudade de você."]];
+      return [["Rainha Aurélia", "Cinzaluz agradece a sua visita. Seja breve: tenho um reino para cuidar."]];
+    },
+  },
   honda: {
     nome: "Professor Bruno Honda",
     // Cores escolhidas para que o desenho saia careca no topo, de óculos e com barba branca.

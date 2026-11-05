@@ -123,6 +123,7 @@ function update(dt) {
       if (game.annDay !== player.day) {
         if (game.annDay != null) {
           dailyCheat();
+          onNewDay();
           player.kids.forEach((k) => {
             if (k.school && !k.grad) {
               k.study = Math.min(100, (k.study || 0) + 9);
