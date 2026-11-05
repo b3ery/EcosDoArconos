@@ -196,6 +196,8 @@ function update(dt) {
       const sdt = dt * timeSpeed();
       player.food = Math.max(0, player.food - sdt * 0.2 * difficulty().need * fm);
       player.water = Math.max(0, player.water - sdt * 0.28 * difficulty().need * wm);
+      // No modo História a pessoa foca na aventura: fome e sede ficam sempre cheias.
+      if (!lifeMode()) player.food = player.water = 100;
     }
     needsTick(dt * timeSpeed());
     lifeNeedsTick(dt * timeSpeed());

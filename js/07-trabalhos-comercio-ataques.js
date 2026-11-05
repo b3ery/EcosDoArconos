@@ -696,7 +696,7 @@ function skillUnlocked(id) {
 function renderInv() {
   const t = game.invTab;
   let h = `<div class="gh"><h2>Inventário · ${player.name}</h2><button id="ivclose">Fechar (I)</button></div>
-  <div class="gsub">Ouro: <b style="color:var(--gold)">${player.gold}</b> · Fome ${Math.round(player.food)}/100 · Sede ${Math.round(player.water)}/100${player.injured ? ' · <span style="color:#ff8a8a">FERIDO</span>' : ""}</div>
+  <div class="gsub">${iconHTML("coin")}Ouro: <b style="color:var(--gold)">${player.gold}</b>${lifeMode() ? ` · ${iconHTML("meat")}Fome ${Math.round(player.food)}/100 · ${iconHTML("water")}Sede ${Math.round(player.water)}/100` : ""}${player.injured ? ' · <span style="color:#ff8a8a">FERIDO</span>' : ""}</div>
   <div class="tabs">${[
     ["itens", "Itens"],
     ["equip", "Equipamento"],
@@ -784,7 +784,7 @@ function renderInv() {
         inv: "Inverno: a fome cai mais rápido e os rios congelam.",
       }[season().id]
     }</div><div class="statl"><div>Hora: <b>${clockStr()}</b></div><div>Próximo festival: <b>${festivalToday() ? "hoje!" : "em " + daysToFest() + " dia(s)"}</b></div><div>Noite protegida: <b>${hasMoon() ? "sim" : "não"}</b></div></div>
-    <h3>Como sobreviver</h3><div class="qtip">· Fome e sede caem com o tempo. Se zerarem, você perde vida e sua magia enfraquece.</div>
+    <h3>Como sobreviver</h3>${lifeMode() ? '<div class="qtip">· Fome e sede caem com o tempo. Se zerarem, você perde vida.</div>' : ""}
     <div class="qtip">· Beba da fonte da vila ou de rios (fique de frente para a água e aperte E).</div>
     <div class="qtip">· Durma em casa para recuperar tudo. Se ficar ferido, vá ao hospital.</div>`;
   }
@@ -860,6 +860,7 @@ function pickElement(r) {
   startGame(true);
 }
 function needsTick(dt) {
+  if (!lifeMode()) return;
   if (player.food < 25 && !game.wf) {
     game.wf = true;
     toast("Você está com fome. Coma algo (tecla I).", 3000);

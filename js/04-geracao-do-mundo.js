@@ -4870,7 +4870,7 @@ function INTRO() {
     ],
     [
       "Arquimaga Odelia",
-      "A jornada é longa. Você vai sentir fome e sede: o mercado fica ao sudoeste. Sua casa, de telhado azul, é onde você dorme e recupera as forças.",
+      "A jornada é longa. Compre poções no mercado, ao sudoeste. Sua casa, de telhado azul, é onde você dorme e recupera as forças.",
     ],
     [
       "Arquimaga Odelia",

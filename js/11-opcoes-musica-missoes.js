@@ -1467,7 +1467,7 @@ const GUIDE_SECTIONS = [
     [
       ["Missões (Q)", "Mostram sempre o próximo passo da história e os pedidos aceitos."],
       ["Treino", "O Instrutor Kael, ao norte da praça, ensina a lutar com runas."],
-      ["Fome e sede", "Coma e beba (mercado, taverna, padarias). Sem isso, a vida cai."],
+      ["Fome e sede", "Só no Simulador de Vida. No modo História, comida e bebida recuperam vida e mana."],
       ["Dormir", "Na cama da sua casa (porta azul, Sua Casa) ou nas pousadas."],
     ],
   ],
