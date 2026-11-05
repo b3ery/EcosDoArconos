@@ -524,9 +524,9 @@ function renderActionButtons() {
   byId("bCast").disabled = battle.busy || !key || player.mp < spellCost(key);
   byId("bClear").disabled = battle.busy || !battle.sel.length;
   byId("bDef").disabled = battle.busy;
-  byId("bPot").textContent = battle.panel === "items" ? "Itens ▲" : "Itens";
+  byId("bPot").innerHTML = iconHTML("potion") + (battle.panel === "items" ? "Itens ▲" : "Itens");
   byId("bPot").disabled = battle.busy;
-  byId("bEth").textContent = battle.panel === "skills" ? "Habilidades ▲" : "Habilidades";
+  byId("bEth").innerHTML = iconHTML("book") + (battle.panel === "skills" ? "Habilidades ▲" : "Habilidades");
   byId("bEth").disabled = battle.busy;
   byId("bRun").disabled = battle.busy || battle.e.boss || battle.e.eco;
   const resonance = battle.res || 0;

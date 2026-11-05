@@ -609,7 +609,7 @@ function renderShop() {
   let h = `<div class="gh"><h2>${sh.nome}</h2><button id="shclose">Fechar (Esc)</button></div>
   <div class="gsub">${sh.sub} · Seu ouro: <b style="color:var(--gold)">${player.gold}</b></div>
   <div class="gsub">${taxNote()}${player.taxPaid ? ` · Você já pagou ${player.taxPaid} de imposto` : ""}</div>
-  <div class="tabs"><button data-t="buy" class="${game.shopTab === "buy" ? "on" : ""}">Comprar</button><button data-t="sell" class="${game.shopTab === "sell" ? "on" : ""}">Vender</button></div>`;
+  <div class="tabs"><button data-t="buy" class="${game.shopTab === "buy" ? "on" : ""}">${iconHTML("coin")}Comprar</button><button data-t="sell" class="${game.shopTab === "sell" ? "on" : ""}">${iconHTML("bag")}Vender</button></div>`;
   if (game.shopTab === "buy") {
     for (const id of sh.items) {
       const it = ITEMS[id];
@@ -706,7 +706,10 @@ function renderInv() {
     ["visual", "Aparência"],
     ["status", "Status"],
   ]
-    .map(([k, n]) => `<button data-t="${k}" class="${t === k ? "on" : ""}">${n}</button>`)
+    .map(
+      ([k, n]) =>
+        `<button data-t="${k}" class="${t === k ? "on" : ""}">${iconHTML({ itens: "bag", equip: "armor", hab: "sparkle", amigos: "heart", familia: "house", visual: "shirt", status: "star" }[k])}${n}</button>`,
+    )
     .join("")}</div>`;
   if (t === "itens") {
     const ids = Object.keys(player.inv).filter((id) => ITEMS[id].tipo !== "equip");

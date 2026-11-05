@@ -504,6 +504,8 @@ function refreshTitle() {
 }
 refreshTitle();
 byId("icStory").innerHTML = iconHTML("staff", 40);
+// Ícones fixos nos botões (batalha e telas).
+document.querySelectorAll(".bic[data-ic]").forEach((el) => (el.innerHTML = iconHTML(el.dataset.ic)));
 byId("icLife").innerHTML = iconHTML("house", 40);
 layout();
 requestAnimationFrame(loop);

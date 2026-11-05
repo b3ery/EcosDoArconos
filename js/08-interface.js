@@ -615,7 +615,7 @@ function openQuests() {
   const q = curStep();
   const ci = STEPS.indexOf(q);
   const totalC = Object.values(ZONES).reduce((a, z) => a + z.feats.filter((f) => f[2] === "C").length, 0);
-  let h = `<div class="gh"><h2>Missões</h2><button id="qclose">Fechar (Q)</button></div>${player.finished ? '<div class="qs cur"> <b>História concluída!</b> A Canção Arcana voltou. Continue com as missões secundárias.</div>' + sideHTML() : ""}<h3>História principal</h3>`;
+  let h = `<div class="gh"><h2>Missões</h2><button id="qclose">Fechar (Q)</button></div>${player.finished ? '<div class="qs cur"> <b>História concluída!</b> A Canção Arcana voltou. Continue com as missões secundárias.</div>' + sideHTML() : ""}<h3>${iconHTML("scroll")}História principal</h3>`;
   STEPS.forEach((s, i) => {
     if (i < ci) h += `<div class="qs done">✓ ${s.t}</div>`;
     else if (i === ci)
@@ -742,6 +742,14 @@ function drawQuestArrow(t, camX, camY, Z = 1) {
 
 /* ===================== HUD ===================== */
 let hudCache = "";
+/** Ícone do objetivo do topo da tela. */
+function questIcon(text) {
+  if (player.job) return (PROFESSIONS[player.job.id] || { icon: "bag" }).icon;
+  if (/^!/.test(text) || /Ataque/.test(text)) return "anger";
+  if (/Guardião|Liberte|Silenciador|Enfrente/.test(text)) return "skull";
+  if (lifeMode()) return isMonarch() ? "crown" : "house";
+  return choiceIcon(text) || "scroll";
+}
 function updateHUD() {
   let chips = "";
   if (player.injured) chips += `<span class="chip" style="color:#ff6b6b">Ferido</span>`;
@@ -763,8 +771,8 @@ function updateHUD() {
   const lifeRows = lifeMode()
     ? `<div class="hrow nd">${needBar("energy", "en")}${needBar("hygiene", "hy")}</div><div class="hrow nd">${needBar("fun", "fu")}<span style="font-size:.75em;color:#c9a8ff">${playerAge()} anos</span></div>`
     : "";
-  const s = `<div class="box hudL"><div class="hrow"><span class="lv">Nv${player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
-  <div class="hrow"><span class="gd">◆${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
+  const s = `<div class="box hudL"><div class="hrow"><span class="lv">${iconHTML("star", 12)}Nv${player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
+  <div class="hrow"><span class="gd">${iconHTML("coin", 12)}${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
   ${lifeMode() ? `<div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>` : ""}
   ${lifeRows}${chips ? `<div class="chips">${chips}</div>` : ""}</div>
   <div class="box hudR"><span class="clock">${iconHTML(WEATHER_ICONS[player.weather] || "sun", 14)}${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${lifeMode() ? "" : ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""} ${weatherMark(r)}" title="${RUNES[r].nome}${weatherMark(r) ? ` (${weatherMark(r) === "up" ? "forte" : "fraca"} com este clima)` : ""}">${runeSVG(r, 16)}${weatherMark(r) ? `<i class="wmk">${weatherMark(r) === "up" ? "▲" : "▼"}</i>` : ""}</span>`).join("")}</div>`;
@@ -776,7 +784,7 @@ function updateHUD() {
   if (game.tgt && game.mode === "world" && !game.dialog) {
     const lb = (matchMedia("(pointer:coarse)").matches ? "A" : "E") + " · " + game.tgt.l;
     if (tp.dataset.s !== lb) {
-      tp.textContent = lb;
+      tp.innerHTML = iconHTML(choiceIcon(game.tgt.l) || "") + escapeHtml(lb);
       tp.dataset.s = lb;
     }
     tp.style.display = "block";
@@ -785,7 +793,7 @@ function updateHUD() {
   if (game.mode === "world" && !game.dialog && game.raid) {
     const qs = ` Ataque! Onda ${game.raid.wave}/${game.raid.waves} · ${raidLeft()} inimigos · ${Math.max(0, Math.ceil(game.raid.left / 60))}h restantes`;
     if (qp.dataset.s !== qs) {
-      qp.textContent = qs;
+      qp.innerHTML = iconHTML(questIcon(qs)) + escapeHtml(qs);
       qp.dataset.s = qs;
     }
     qp.className = "box ui urg";
@@ -793,7 +801,7 @@ function updateHUD() {
   } else if (game.mode === "world" && !game.dialog && player.zone === "casa") {
     const qs = " Sua casa · R: decorar · porta embaixo para sair";
     if (qp.dataset.s !== qs) {
-      qp.textContent = qs;
+      qp.innerHTML = iconHTML(questIcon(qs)) + escapeHtml(qs);
       qp.dataset.s = qs;
     }
     qp.className = "box ui";
@@ -801,7 +809,7 @@ function updateHUD() {
   } else if (game.mode === "world" && !game.dialog && player.job) {
     const qs = jobStatusText();
     if (qp.dataset.s !== qs) {
-      qp.textContent = qs;
+      qp.innerHTML = iconHTML(questIcon(qs)) + escapeHtml(qs);
       qp.dataset.s = qs;
     }
     qp.className = "box ui";
@@ -809,7 +817,7 @@ function updateHUD() {
   } else if (game.mode === "world" && !game.dialog && lifeMode()) {
     const qs = lifeGoalText();
     if (qp.dataset.s !== qs) {
-      qp.textContent = qs;
+      qp.innerHTML = iconHTML(questIcon(qs)) + escapeHtml(qs);
       qp.dataset.s = qs;
     }
     qp.className = "box ui" + (qs.startsWith("!") ? " urg" : "");
@@ -820,7 +828,7 @@ function updateHUD() {
       ? `★ ${ns.t} · ${Math.min(ns.p(), sideN(ns))}/${sideN(ns)}`
       : "★ Todas as missões secundárias concluídas!";
     if (qp.dataset.s !== qs) {
-      qp.textContent = qs;
+      qp.innerHTML = iconHTML(questIcon(qs)) + escapeHtml(qs);
       qp.dataset.s = qs;
     }
     qp.className = "box ui";
@@ -832,7 +840,7 @@ function updateHUD() {
     const d = Math.abs(r.x - player.x) + Math.abs(r.y - player.y);
     const qs = `${u ? "" : "▶"} ${q.t} · ${d}`;
     if (qp.dataset.s !== qs) {
-      qp.textContent = qs;
+      qp.innerHTML = iconHTML(questIcon(qs)) + escapeHtml(qs);
       qp.dataset.s = qs;
     }
     qp.className = "box ui" + (u ? " urg" : "");
@@ -842,7 +850,8 @@ function updateHUD() {
 let toastTimer = null;
 function toast(msg, ms = 2200) {
   const el = byId("toast");
-  el.textContent = msg;
+  const ic = choiceIcon(msg);
+  el.innerHTML = (ic ? iconHTML(ic) : "") + escapeHtml(String(msg));
   el.style.display = "block";
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => (el.style.display = "none"), ms);

@@ -2865,7 +2865,7 @@ function nextSide() {
   return SIDEQ.find((q, i) => !(player.sideClaim || {})[i] && q.p() < sideN(q)) || null;
 }
 function sideHTML() {
-  let h = "<h3>Missões secundárias</h3>";
+  let h = `<h3>${iconHTML("star")}Missões secundárias</h3>`;
   SIDEQ.forEach((q, i) => {
     const v = Math.min(q.p(), sideN(q)),
       n = sideN(q),

@@ -650,7 +650,7 @@ function npcTalkOrQuests(id) {
 }
 
 function townQuestsHTML() {
-  let html = "<h3>Pedidos dos moradores</h3>";
+  let html = `<h3>${iconHTML("chat")}Pedidos dos moradores</h3>`;
   for (const q of TOWN_QUESTS) {
     const state = townQuestState(q);
     const who = NPCS[q.giver].nome.split(",")[0];
