@@ -3,6 +3,7 @@
  * Floresta Grande (só no Simulador de Vida): animais que andam pelo mapa.
  * Lobos, javalis e ursos atacam quem chega perto; cervos fogem.
  * Lutar e caçar é com E na hora certa do medidor de força.
+ * Facão: sem ele o dano é fraco. O facão gasta com o uso e precisa ser trocado.
  */
 
 "use strict";
@@ -15,10 +16,55 @@ const ANIMALS = {
 };
 const ANIMAL_MIX = ["lobo", "lobo", "javali", "javali", "urso", "cervo", "cervo", "cervo"];
 
+const BLADES = { facaoA: { mul: 3, uses: 120 }, facao: { mul: 2, uses: 40 } };
+/** O melhor facão que você carrega (ou null). */
+function currentBlade() {
+  return ["facaoA", "facao"].find((k) => itemCount(k) > 0) || null;
+}
+function bladeUses() {
+  const b = currentBlade();
+  if (!b) return 0;
+  player.facaoUses = player.facaoUses || {};
+  if (player.facaoUses[b] == null) player.facaoUses[b] = BLADES[b].uses;
+  return player.facaoUses[b];
+}
+/** Um golpe gasta o facão; quando acaba, ele quebra. */
+function wearBlade() {
+  const b = currentBlade();
+  if (!b) return;
+  player.facaoUses[b] = bladeUses() - 1;
+  if (player.facaoUses[b] === 10) toast(`Seu ${ITEMS[b].nome} está quase quebrando (10 golpes).`, 2600);
+  if (player.facaoUses[b] <= 0) {
+    removeItem(b);
+    delete player.facaoUses[b];
+    playSound(180, 0.2, "square");
+    toast(`Seu ${ITEMS[b].nome} quebrou! Compre outro com o Brann ou com o Guarda-Florestal.`, 3600);
+  }
+}
+function sellBladeMenu() {
+  choice("Guarda-Florestal Brás", "\"Sem facão a floresta te engole. Tenho um aqui.\"", [
+    {
+      t: `Comprar Facão de Mato (${withTax(45)} ouro)`,
+      icon: "sword",
+      fn: () => {
+        if (player.gold < withTax(45)) return say([["Guarda-Florestal Brás", "Sem ouro? Então fique na trilha e corra dos lobos."]]);
+        payWithTax(45);
+        addItem("facao");
+        player.facaoUses = player.facaoUses || {};
+        player.facaoUses.facao = BLADES.facao.uses;
+        saveGame();
+        say([["Guarda-Florestal Brás", "Tome. Afiado e pronto. Volte vivo!"]]);
+      },
+    },
+    { t: "Agora não", fn: null },
+  ]);
+}
+
 /** Animais nascem ao entrar na floresta. */
 function spawnAnimals() {
   game.animals = [];
   if (!lifeMode() || player.zone !== "floresta") return;
+  if (!currentBlade()) setTimeout(() => toast("Cuidado: você está sem facão! O Guarda-Florestal ou o Brann vendem um.", 4200), 1500);
   const z = ZONES.floresta;
   const spots = z.spawn.filter(([x, y]) => Math.abs(x - player.x) + Math.abs(y - player.y) > 12);
   for (let i = 0; i < 16 && spots.length; i++) {
@@ -95,7 +141,8 @@ function animalLabel(x, y) {
   if (player.zone !== "floresta" || !lifeMode()) return null;
   const a = animalAt(x, y);
   if (!a) return null;
-  return `${ANIMALS[a.type].hostile ? "Lutar com" : "Caçar"} ${ANIMALS[a.type].n} (${Math.max(0, Math.ceil(a.hp))} de vida)`;
+  const b = currentBlade();
+  return `${ANIMALS[a.type].hostile ? "Lutar com" : "Caçar"} ${ANIMALS[a.type].n} (${Math.max(0, Math.ceil(a.hp))} de vida) · ${b ? `${ITEMS[b].nome} ${bladeUses()}` : "sem facão!"}`;
 }
 function animalInteract(x, y) {
   const a = animalLabel(x, y) && animalAt(x, y);
@@ -103,8 +150,10 @@ function animalInteract(x, y) {
   const A = ANIMALS[a.type];
   const q = swingFeedback(x, y, "sword");
   if (!q) return true;
-  const dmg = q === 2 ? 14 : 7;
+  const b = currentBlade();
+  const dmg = Math.round((q === 2 ? 7 : 3.5) * (b ? BLADES[b].mul : 1));
   a.hp -= dmg;
+  wearBlade();
   a.hurt = 0.4;
   playSound(220, 0.08, "square");
   // Empurrão para trás.

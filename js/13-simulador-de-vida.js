@@ -65,6 +65,8 @@ function startLifeMode() {
   player.hygiene = 100;
   player.fun = 80;
   player.age = START_AGE;
+  addItem("facao");
+  player.facaoUses = { facao: 40 };
   worldState();
   game.seenArr = {};
   game.mm = {};

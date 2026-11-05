@@ -796,6 +796,7 @@ Object.assign(PIXEL_ICONS, {
 
 /** Ícone de cada item. Os que não estão aqui usam o ícone do tipo (veja itemIcon). */
 const ITEM_ICONS = {
+  facao: "sword", facaoA: "sword",
   pocao: "potion", pocaoG: "potion", perfume: "potion",
   eter: "potionB", eterG: "potionB", elixir: "potionB",
   ervas: "herb", ervaS: "herb", fenix: "feather", pena: "feather", penaH: "feather",

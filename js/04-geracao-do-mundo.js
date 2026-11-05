@@ -4426,10 +4426,14 @@ const NPCS = {
     hat: "#5a3a22",
     hair: "#3a2414",
     talk() {
-      return [
+      const L = [
         ["Guarda-Florestal Brás", "Bem-vindo à Floresta Grande. Cervos são mansos e fogem. Lobos, javalis e ursos atacam quem chega perto."],
         ["Guarda-Florestal Brás", "Para lutar, fique de frente para o bicho e aperte E no verde do medidor. Se a vida ficar baixa, corra para o altar ou volte para a vila!"],
+        ["Guarda-Florestal Brás", currentBlade() ? `Seu ${ITEMS[currentBlade()].nome} ainda aguenta ${bladeUses()} golpes. Nunca entre aqui sem um facão bom!` : "Você está SEM facão?! Vai morrer na unha. O Brann vende na Forja, e eu tenho um sobrando: 45 de ouro."],
       ];
+      if (!lifeMode()) return L;
+      say(L, sellBladeMenu);
+      return null;
     },
   },
   peleiro: {

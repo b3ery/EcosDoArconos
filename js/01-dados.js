@@ -569,6 +569,18 @@ const ITEMS = {
     desc: "Recupera todo HP e MP e cura ferimentos.",
   },
   /* ---- materiais ---- */
+  facao: {
+    nome: "Facão de Mato",
+    tipo: "tool",
+    preco: 35,
+    desc: "Protege na Floresta Grande: dano 2×. Gasta com o uso (40 golpes).",
+  },
+  facaoA: {
+    nome: "Facão de Aço",
+    tipo: "tool",
+    preco: 120,
+    desc: "Lâmina forjada pelo Brann: dano 3× na floresta. Dura 120 golpes.",
+  },
   couro: {
     nome: "Couro de Lobo",
     tipo: "mat",
@@ -905,7 +917,7 @@ const SHOPS = {
   ferreiro: {
     nome: "Brann, o Ferreiro",
     sub: "Armaduras e escudos",
-    items: ["armCouro", "escudo", "armMalha", "armRunica", "armGuard"],
+    items: ["facao", "facaoA", "armCouro", "escudo", "armMalha", "armRunica", "armGuard"],
   },
   doran: {
     nome: "Doran, o Artesão Arcano",
