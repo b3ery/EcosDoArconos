@@ -44,7 +44,7 @@ function pieScreenPos(x, y) {
   if (!c) return { left: 50, top: 45 };
   const sx = ((x * TILE + 16 - c.camX) * c.Z) / viewWidth;
   const sy = ((y * TILE + 12 - c.camY) * c.Z) / 480;
-  return { left: Math.max(18, Math.min(82, sx * 100)), top: Math.max(24, Math.min(76, sy * 100)) };
+  return { left: Math.max(32, Math.min(68, sx * 100)), top: Math.max(30, Math.min(70, sy * 100)) };
 }
 
 /** Desenha as opções em círculo. Retorna true se usou o menu-pizza. */

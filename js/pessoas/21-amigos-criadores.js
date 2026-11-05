@@ -4,8 +4,8 @@
  *  - Lucas Marzocca: o rolezeiro. Só conversa depois de ganhar um hidromel.
  *  - Matheus: o fazendeiro, melhor amigo do Lucas, casado com a Duquesa Malu.
  *  - Marcos: o General, casado com a Princesa Julia das Marés; ajuda na vila.
- *  - Andressa: dona da maior rede de bibliotecas, misteriosa, sabe tudo de segurança. Casada com o Gabriel.
- *  - Mylena: artista do Ateliê de pinturas e móveis, casada com o Príncipe Pedro, filho da Rainha.
+ *  - Andressa: dona da maior rede de bibliotecas, misteriosa, sabe tudo de segurança. Casada com o Pedro Poeta.
+ *  - Princesa Mylena: artista do Ateliê de pinturas e móveis, casada com o Príncipe Pedro Max, filho da Rainha.
  *  - Júlia Oliveira (homenagem): veterinária e dona dos bichos, casada com o Rei Vini do Sul.
  * Cada um tem casa, trabalho e rotina: anda pela vila, vai trabalhar, se encontra e volta para casa.
  * (Visual inspirado nas fotos da equipe no README.)
@@ -105,9 +105,64 @@ const CREW_LOOKS = {
   },
   mylena: { robe: "#c94a8b", hat: null, hair: "#1a1a1d", look: { skin: "#a8704a", hair: "#1a1a1d", hstyle: "longo", hat: "flor", hatc: "#2a2f6e", outfit: "vestido", robe: "#c94a8b", eyes: "#2a1a10", acc: "brincos" } },
   malu: { robe: "#7a3a8a", hat: null, hair: "#8a3a1b", look: { skin: "#f1c8a5", hair: "#8a3a1b", hstyle: "longo", hat: "tiara", hatc: "#2a2f6e", outfit: "real", robe: "#7a3a8a", eyes: "#3a5a2a", acc: "colar" } },
-  julia: { robe: "#3a8ab1", hat: null, hair: "#d9a442", look: { skin: "#d9a07a", hair: "#d9a442", hstyle: "trancas", hat: "tiara", hatc: "#2a2f6e", outfit: "vestido", robe: "#3a8ab1", eyes: "#2a5a8a", acc: "colar" } },
-  pedro: { robe: "#2a4a8b", hat: null, hair: "#d9a443", look: { skin: "#f1c8a5", hair: "#d9a443", hstyle: "curto", hat: "coroa", hatc: "#2a2f6e", outfit: "real", robe: "#2a4a8b", eyes: "#2a5a8a", acc: "nenhum" } },
-  gabriel: { robe: "#4a4a6a", hat: null, hair: "#3a2414", look: { skin: "#d9a07a", hair: "#3a2414", hstyle: "curto", hat: "nenhum", hatc: "#2a2f6e", outfit: "capa", robe: "#4a4a6a", eyes: "#2a1a10", acc: "bigode" } },
+  // Princesa Julia das Marés (esposa do Marcos): cachos longos castanho-avermelhados, blusa vinho, colar dourado.
+  julia: {
+    robe: "#7a1a2a",
+    hat: null,
+    hair: "#4a2014",
+    look: {
+      skin: "#e8b896",
+      hair: "#4a2014",
+      hstyle: "longo",
+      hat: "tiara",
+      hatc: "#2a2f6e",
+      outfit: "tunica",
+      robe: "#7a1a2a",
+      eyes: "#2a1a10",
+      acc: "colar",
+      extra: (dir) => {
+        const H = "#4a2014",
+          Hl = "#8a4a2a";
+        if (dir === "up") return [[4, 4, 8, 9, H], [5, 6, 1, 1, Hl], [9, 9, 1, 1, Hl], [6, 11, 1, 1, Hl]];
+        const side = dir === "left" || dir === "right";
+        const hair = side
+          ? [[5, 4, 7, 2, H], [4, 5, 3, 8, H], [4, 7, 1, 1, Hl], [5, 10, 1, 1, Hl], [4, 12, 1, 1, Hl]]
+          : [[5, 4, 6, 2, H], [3, 5, 2, 9, H], [11, 5, 2, 9, H], [3, 7, 1, 1, Hl], [12, 9, 1, 1, Hl], [3, 11, 1, 1, Hl], [12, 12, 1, 1, Hl], [4, 13, 1, 1, Hl]];
+        const top = side ? [] : [[6, 9, 4, 1, "#e8b896"], [6, 10, 4, 1, "#f2c14e"], [7, 8, 1, 1, "#f2eee4"]];
+        return [...hair, ...top];
+      },
+    },
+  },
+  // Luca: careca, barba e bigode, jaqueta verde-oliva e camiseta preta de banda.
+  luca: {
+    robe: "#4a5a32",
+    hat: null,
+    hair: "#5a3a22",
+    look: {
+      skin: "#f0c8a8",
+      hair: "#5a3a22",
+      hstyle: "careca",
+      hat: "nenhum",
+      hatc: "#2a2f6e",
+      outfit: "capa",
+      robe: "#4a5a32",
+      eyes: "#2a1a10",
+      acc: "nenhum",
+      extra: (dir) => {
+        const B = "#5a3a22";
+        if (dir === "up") return [[5, 5, 6, 1, "#e0b898"]];
+        const side = dir === "left" || dir === "right";
+        const beard = side ? [[7, 8, 4, 1, B], [8, 9, 3, 1, B], [8, 7, 2, 1, B]] : [[5, 8, 6, 1, B], [6, 9, 4, 1, B], [6, 7, 1, 1, B], [9, 7, 1, 1, B], [5, 7, 1, 1, B], [10, 7, 1, 1, B]];
+        const shine = side ? [[8, 5, 2, 1, "#ffe0c8"]] : [[6, 5, 2, 1, "#ffe0c8"], [10, 7, 1, 1, "#c9c0b8"]];
+        const shirt = side ? [] : [[6, 9, 4, 4, "#1a1a1a"], [7, 10, 2, 1, "#e8e8e8"]];
+        return [...beard, ...shine, ...shirt];
+      },
+    },
+  },
+  // Príncipe Pedro Max (filho da Rainha, marido da Mylena): pele morena, cachos pretos, bigode.
+  pedro: { robe: "#2a4a8b", hat: null, hair: "#140c08", look: { skin: "#a8704a", hair: "#140c08", hstyle: "cacheado", hat: "coroa", hatc: "#2a2f6e", outfit: "real", robe: "#2a4a8b", eyes: "#2a1a10", acc: "bigode" } },
+  // Pedro, o Poeta (marido da Andressa; o id continua "gabriel" para não perder jogos salvos).
+  gabriel: { robe: "#6a2a4a", hat: null, hair: "#3a2414", look: { skin: "#d9a07a", hair: "#3a2414", hstyle: "longo", hat: "boina", hatc: "#2a2a2a", outfit: "tunica", robe: "#6a2a4a", eyes: "#2a1a10", acc: "cachecol" } },
   // Júlia Oliveira: cachos volumosos na altura do ombro, óculos redondos finos, blusa caramelo, brincos.
   juliaO: {
     robe: "#c9773a",
@@ -187,7 +242,7 @@ Object.assign(NPCS, {
   lucas: crewNPC("lucas", "Lucas Marzocca, o Rolezeiro", () => [
     ["Lucas Marzocca", ["Hoje tem festa na taverna! E amanhã também. E depois de amanhã...", "Namorando? Eu? ...Só três. Quatro. Depende do dia.", "O Matheus é meu irmão de outra mãe. Se eu sumir, procura na fazenda dele."][Math.floor(Math.random() * 3)]],
   ]),
-  matheus: crewNPC("matheus", "Matheus, o Fazendeiro", () => [
+  matheus: crewNPC("matheus", "Matheus, Duque e Fazendeiro", () => [
     ["Matheus", ["Terra boa, chuva certa e a Malu do meu lado. Precisa de mais nada.", "O Lucas? Passou a noite na taverna de novo. Eu que vou buscar ele, como sempre.", "Sou fazendeiro, casado com uma duquesa. A vila até hoje não acredita!"][Math.floor(Math.random() * 3)]],
   ]),
   marcos: crewNPC("marcos", "General Marcos", () => [
@@ -196,13 +251,13 @@ Object.assign(NPCS, {
   andressa: crewNPC("andressa", "Andressa, a Bibliotecária-Chefe", () => [
     ["Andressa", ["Tenho bibliotecas em três reinos. E em todas, alguém me conta alguma coisa.", "*ajeita os óculos* Eu sei o que você está procurando. A pergunta é: o que você me dá em troca?", "Segurança não é muralha. É informação no lugar certo."][Math.floor(Math.random() * 3)]],
   ]),
-  mylena: crewNPC("mylena", "Mylena, a Artista", () => [
+  mylena: crewNPC("mylena", "Mylena, Princesa e Artista", () => [
     ["Mylena", ["Pintei a Rainha ontem. Ela pediu para tirar uma ruga. Eu tirei duas, de presente!", "Meu ateliê tem quadros e móveis feitos à mão. Cada um com uma história... e um pouco de tinta no lugar errado.", "O Pedro diz que eu pinto a vila mais bonita do que ela é. Eu digo que pinto como ela merece ser."][Math.floor(Math.random() * 3)]],
   ]),
   malu: crewNPC("malu", "Duquesa Malu", () => [["Duquesa Malu", "Duquesa de dia, fazendeira à tarde. O Matheus me ensinou a plantar; eu ensinei ele a dançar valsa."]]),
   julia: crewNPC("julia", "Princesa Julia das Marés", () => [["Princesa Julia", "Deixei o palácio das Marés para casar com o Marcos. Melhor decisão da minha vida... depois da de trazer meus sapatos."]]),
-  pedro: crewNPC("pedro", "Príncipe Pedro", () => [["Príncipe Pedro", "Minha mãe governa o reino. A Mylena governa o meu coração. E a minha agenda, pelo jeito."]]),
-  gabriel: crewNPC("gabriel", "Gabriel, o Cartógrafo", () => [["Gabriel", ["A Andressa sabe tudo de todo mundo. Eu só sei onde fica cada lugar. Juntos, ninguém se perde.", "Casei com a mulher mais misteriosa de três reinos. Até hoje não sei o sobrenome inteiro dela."][Math.floor(Math.random() * 2)]]]),
+  pedro: crewNPC("pedro", "Príncipe Pedro Max", () => [["Príncipe Pedro Max", pickOne(["Minha mãe governa o reino. A Mylena governa o meu coração. E a minha agenda, pelo jeito.", "Herdeiro do trono, sim. Mas o que eu gosto mesmo é de ver a Mylena pintando.", "O Lucas e o Luca vivem falando mal da monarquia. Eu finjo que não ouço. Às vezes eu concordo."])]]),
+  gabriel: crewNPC("gabriel", "Pedro, o Poeta", () => [["Pedro Poeta", pickOne(["\"Nos óculos dela cabe o mundo; nos segredos dela, cabem três reinos.\" ...Escrevi agora. Pra Andressa.", "Poeta não ganha ouro. Ganha suspiros. A Andressa diz que suspiro não paga o aluguel.", "Quer ouvir um soneto? Tenho catorze. Quer dizer, um soneto tem catorze versos. Eu tenho um.", "Rimei 'Cinzaluz' com 'arcabuz'. A Andressa disse que isso é uma ameaça."])]]),
   juliaO: crewNPC("juliaO", "Júlia Oliveira, a Veterinária", () => [
     ["Júlia Oliveira", ["Cachorro, gato, coruja, cavalo, até dragãozinho: se tem pata ou asa, eu cuido.", "O Vini diz que o Sul é o reino mais rico. Eu digo que é o mais feliz. E quem manda lá em casa sou eu.", "Hoje tem café com a Mylena e a Andressa. Fofoca de alto nível, com informação de segurança e quadro novo."][Math.floor(Math.random() * 3)]],
   ]),
@@ -234,24 +289,18 @@ Object.assign(BUILDING_STYLES, BUILDING_EXTRA_STYLES);
 /** Casas da turma na vila (e os dois estabelecimentos novos). */
 const CREW_BUILDINGS = [
   { id: "hLucas", style: "casebre", x: 21, y: 18, w: 4, h: 3, door: [22], name: "Quartinho do Lucas", home: ["lucas"] },
-  { id: "hMatheus", style: "casa2", x: 18, y: 42, w: 4, h: 3, door: [19], name: "Sítio do Matheus e da Malu", home: ["matheus", "malu"] },
-  { id: "hMarcos", style: "sobrado", x: 41, y: 9, w: 4, h: 3, door: [42], name: "Casa do General", home: ["marcos", "julia"] },
-  { id: "hAndressa", style: "sobrado", x: 47, y: 9, w: 4, h: 3, door: [48], name: "Casa da Andressa e do Gabriel", home: ["andressa", "gabriel"] },
+  lote("a1", { id: "hMatheus", style: "casa2", name: "Sítio do Duque Matheus", home: ["matheus", "malu"] }),
+  lote("a2", { id: "hMarcos", style: "sobrado", name: "Casa do General", home: ["marcos", "julia"] }),
+  lote("a3", { id: "hAndressa", style: "sobrado", name: "Casa da Andressa e do Pedro Poeta", home: ["andressa", "gabriel"] }),
+  lote("a5", { id: "hLuca", style: "casebre", name: "Barraco do Luca", home: ["luca"] }),
   { id: "atelie", style: "atelie", x: 30, y: 35, w: 4, h: 3, door: [31], name: "Ateliê da Mylena", home: ["mylena", "pedro"], work: "mylena" },
   { id: "clinica", style: "clinica", x: 46, y: 30, w: 4, h: 3, door: [47], name: "Clínica Veterinária da Júlia", work: "juliaO" },
-  { id: "hJulia", style: "mansao", x: 23, y: 41, w: 5, h: 3, door: [25], name: "Mansão Oliveira", home: ["juliaO", "vini"] },
+  lote("a4", { id: "hJulia", style: "mansao", name: "Mansão Oliveira", home: ["juliaO", "vini"] }),
 ];
 (function placeCrewBuildings() {
   const z = ZONES.vila,
     tw = z.town;
-  for (const b of CREW_BUILDINGS) {
-    for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) setTile("vila", x, y, "H");
-    for (const dx of b.door) {
-      setTile("vila", dx, b.y + b.h - 1, "D");
-      tw.doors[dx + "," + (b.y + b.h - 1)] = b;
-    }
-    tw.bld.push(b);
-  }
+  for (const b of CREW_BUILDINGS) placeVilaBuilding(b);
 })();
 function crewHomeOf(id) {
   return CREW_BUILDINGS.find((b) => (b.home || []).includes(id));

@@ -147,6 +147,9 @@ Os criadores do jogo viraram personagens importantes da história, com seus parc
 
 - Os cinco se encontram na **fonte da praça** em dia de festival à noite e a cada 3 dias no fim da tarde.
 - **Mylena, Andressa e Júlia** tomam café na frente do **Ateliê** todo dia à tarde (14h30 às 17h).
+- **Eles trabalham lá dentro:** Andressa e o Pedro Poeta na **Biblioteca**, a Princesa Mylena no **Ateliê**, a Júlia na **Clínica**, Marcos, Julia, Pedro Max e Malu no **Castelo**, e à noite Lucas, Luca e o Poeta na **Taverna**. Entre nos prédios para falar com eles.
+- **Bairro das Flores:** a vila cresceu para o sul. As casas da turma ficam lá, com espaço, ruas com lampiões e casas novas à venda.
+- **Família real completa:** Rainha Aurélia, Príncipe Pedro Max, Princesa Mylena, Duque Matheus e Duquesa Malu desfilam juntos.
 - O **Lucas** dorme até as 10h, passa a tarde na praça e a noite na porta da taverna.
 - **Os Alcoólatras Anônimos** (Lucas, Matheus, Marcos, Andressa, Mylena e Júlia) têm **reunião semanal na Taverna Javali Dourado** (a cada 7 dias, das 19h às 23h). Sente com o grupo, pague uma rodada, leia a ata ou desafie o Marcos na queda de braço.
 
@@ -155,13 +158,17 @@ Os criadores do jogo viraram personagens importantes da história, com seus parc
 | | | | | |
 |:---:|:---:|:---:|:---:|:---:|
 | <img src="assets/personagens/turma_lucas.png" width="100"/><br><b>Lucas Marzocca</b><br><sub>O rolezeiro e o único solteiro. Só conversa depois de ganhar um hidromel; mora no Quartinho ao lado da taverna.</sub> | <img src="assets/personagens/turma_matheus.png" width="100"/><br><b>Matheus</b><br><sub>O fazendeiro, melhor amigo do Lucas. Trabalha na plantação e mora no Sítio.</sub> | <img src="assets/personagens/turma_marcos.png" width="100"/><br><b>General Marcos</b><br><sub>Treina ao amanhecer e guarda o portão do castelo. Treina você (+vida máxima).</sub> | <img src="assets/personagens/turma_andressa.png" width="100"/><br><b>Andressa</b><br><sub>Dona da maior rede de bibliotecas. Misteriosa, vende informações de segurança. Trabalha na Biblioteca.</sub> | <img src="assets/personagens/turma_mylena.png" width="100"/><br><b>Mylena</b><br><sub>Artista do Ateliê de quadros e móveis (a loja abre das 7h às 17h). Engraçada e amada por todos.</sub> |
-| | <img src="assets/personagens/turma_malu.png" width="100"/><br><b>Duquesa Malu</b><br><sub>Esposa do Matheus</sub> | <img src="assets/personagens/turma_julia.png" width="100"/><br><b>Princesa Julia das Marés</b><br><sub>Esposa do Marcos</sub> | <img src="assets/personagens/turma_gabriel.png" width="100"/><br><b>Gabriel, o Cartógrafo</b><br><sub>Marido da Andressa</sub> | <img src="assets/personagens/turma_pedro.png" width="100"/><br><b>Príncipe Pedro</b><br><sub>Filho da Rainha, marido da Mylena</sub> |
+| | <img src="assets/personagens/turma_malu.png" width="100"/><br><b>Duquesa Malu</b><br><sub>Esposa do Duque Matheus</sub> | <img src="assets/personagens/turma_julia.png" width="100"/><br><b>Princesa Julia das Marés</b><br><sub>Esposa do Marcos</sub> | <img src="assets/personagens/turma_gabriel.png" width="100"/><br><b>Pedro, o Poeta</b><br><sub>Marido da Andressa</sub> | <img src="assets/personagens/turma_pedro.png" width="100"/><br><b>Príncipe Pedro Max</b><br><sub>Filho da Rainha, marido da Princesa Mylena</sub> |
 
 | | |
 |:---:|:---:|
 | <img src="assets/personagens/turma_juliaO.png" width="100"/><br><b>Júlia Oliveira</b><br><sub>Homenagem: veterinária e dona dos bichos. Atende na <b>Clínica Veterinária</b> (consulta do mascote e adoção), mora na Mansão Oliveira. Super rica e feliz.</sub> | <img src="assets/personagens/turma_vini.png" width="100"/><br><b>Rei Vini do Sul</b><br><sub>Marido da Júlia. Visita Cinzaluz nos festivais e no fim de semana.</sub> |
 
 </div>
+
+| | |
+|:---:|:---:|
+| <img src="assets/personagens/turma_luca.png" width="100"/><br><b>Luca, o Maluco</b><br><sub>Careca, barbudo e fora da caixinha: conversa com quem está jogando (quebra a quarta parede). Às vezes aparece com o grupão.</sub> | <b>Os Iluministas</b><br><sub>Luca e Lucas Marzocca são contra a monarquia. Entre para o grupo pelo menu deles e convença os moradores (Interações → Reino → Convencer a ser iluminista). Cinco convertidos dão uma conquista. A Rainha não gosta nada disso.</sub> |
 
 > **Na história:** se você for amigo dos cinco, a turma aparece na batalha contra o Silenciador e luta com você (+25% de dano). Só o Lucas pode ser namorado: o resto da turma é casado.
 
@@ -434,6 +441,12 @@ Na criação e no guarda-roupa: **barra lateral com ícones** (Perfil, Rosto, Ca
 
 Cartão do jogador com retrato, vida, magia e fôlego; runas em botões grandes com a cor do elemento; aviso de **Super efetivo!** antes de lançar; faixas de **"Seu turno!"** e **"Vez do inimigo"**; vida do inimigo com rastro amarelo; números de dano maiores, e a tela pisca quando você acerta a fraqueza.
 
+## 💬 As pessoas puxam conversa
+
+De tempos em tempos, quem está perto de você vem falar sozinho: elogia, **flerta** (você pode flertar de volta, ficar sem graça ou cortar o clima), conta piada, pede ouro emprestado (e devolve com juros), dá presente, convida para a taverna ou reclama. O Luca fala direto com quem está jogando.
+
+**Romance com qualquer adulto:** dá para flertar e convidar qualquer pessoa para namorar, mesmo sem coração de amizade. A chance é menor quando vocês mal se conhecem, e quem é casado recusa (ou, com muita amizade, topa um romance secreto).
+
 ## 🛒 Lojas
 
 Cada loja é uma **vitrine**: o atendente aparece no canto e comenta o que você faz, os itens ficam numa **prateleira em leque** (o do meio grande, os vizinhos menores dos lados) com cor de **raridade** (Comum, Incomum, Raro, Épico, Lendário). Embaixo, um painel mostra descrição, **atributos** (fome, vida, dano, defesa...), preço com imposto e **quantidade**.
@@ -449,7 +462,7 @@ Na **alfaiataria e no salão** tem um **espelho**: o boneco já veste a peça en
 
 ## 🗨️ Mais de 100 interações (nos dois modos)
 
-Clique numa pessoa → **Interações…** abre o menu em pizza com **152 ações** em 9 categorias: **Amigável, Engraçado, Conversa, Atividades, Na taverna, Ajudar, Romântico, Malvado e Fazer as pazes**. Cada pessoa reage conforme a **personalidade** (gentil, engraçado, tímido, orgulhoso...) e a amizade. Algumas custam ouro ou tempo, as malvadas derrubam a **reputação**, e as românticas mais fortes só aparecem para quem namora ou é casado. Cada ação vale uma vez por dia com cada pessoa.
+Clique numa pessoa → **Interações…** abre o menu em pizza com **mais de 400 ações** em 15 categorias: **Amigável, Engraçado, Conversa, Atividades, Na taverna, Ajudar, Romântico, Malvado, Fazer as pazes, Elogiar, Brincadeiras, Jogos, Família e vizinhança, Reino e Coração**. Cada pessoa reage conforme a **personalidade** (gentil, engraçado, tímido, orgulhoso...) e a amizade. Algumas custam ouro ou tempo, as malvadas derrubam a **reputação**, e as românticas mais fortes só aparecem para quem namora ou é casado. Cada ação vale uma vez por dia com cada pessoa.
 
 ## 💘 Namorar qualquer pessoa (nos dois modos)
 

@@ -5685,3 +5685,8 @@ body.tallui #speedb,
 body.tallui #waitb {
   display: none !important;
 }
+.st-nav {
+  touch-action: none;
+  min-width: 48px;
+  min-height: 48px;
+}
