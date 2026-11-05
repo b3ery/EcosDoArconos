@@ -598,7 +598,7 @@ function elfMenu(elf) {
 function grownKidMenuItems(k) {
   if (kidAge(k) < 8) return [];
   const key = "kid" + k.name;
-  return [
+  const items = [
     {
       t: "Pedir ajuda nas tarefas",
       fn: () => {
@@ -634,6 +634,8 @@ function grownKidMenuItems(k) {
       },
     },
   ];
+  // Sem magia no Simulador de Vida: não tem treino de runas.
+  return lifeMode() ? items.filter((o) => !o.t.includes("runas")) : items;
 }
 
 const SECRET_VISIT_GIFTS = ["pao", "doce", "mel", "flor"];

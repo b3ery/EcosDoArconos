@@ -74,7 +74,8 @@ function familyList() {
     });
   player.kids.forEach((k, i) => {
     const spot = kidSpot(i);
-    if (!atSchool(k) && spot) l.push({ kind: "kid", k, i, x: spot[0], y: spot[1] });
+    const away = k.movedOut && !festivalToday();
+    if (!away && !atSchool(k) && spot) l.push({ kind: "kid", k, i, x: spot[0], y: spot[1] });
   });
   return l;
 }
@@ -151,14 +152,18 @@ function drawFamily(f, t) {
   } else if (kidAge(f.k) < 2) {
     drawBaby(X, Y, f.k, t);
   } else {
-    const b = Math.abs(Math.sin(t * 4 + f.i)) * -2;
+    // Criança pequena, adolescente médio, adulto do tamanho de todo mundo.
+    const stage = kidStage(f.k);
+    const sc = stage.key === "crianca" ? 1.4 : stage.key === "teen" ? 1.75 : 2;
+    const b = Math.abs(Math.sin(t * 4 + f.i)) * (stage.key === "adulto" ? -0.6 : -2);
     ctx.save();
-    ctx.translate(X + 5, Y + 9 + b);
+    ctx.translate(X + (32 - 16 * sc) / 2, Y + 32 - 16 * sc + b);
     for (const [x, y, w, h, c] of heroRects(f.k.look, "down", null)) {
       ctx.fillStyle = c;
-      ctx.fillRect(x * 1.4, y * 1.4, w * 1.4, h * 1.4);
+      ctx.fillRect(x * sc, y * sc, w * sc, h * sc);
     }
     ctx.restore();
+    if (f.k.spouse && stage.key === "adulto") drawPixelIcon("ring", X + 16, Y - 6);
   }
 }
 function familyMenu(f) {
@@ -268,20 +273,21 @@ function familyMenu(f) {
     ]);
     return;
   }
-  const lines = [
-    `Me ensina um feitiço? Por favor, por favor!`,
-    `Hoje eu vi um sapo enorme perto do rio!`,
-    `Quando eu crescer quero ser mago igual a você!`,
-    `Você trouxe alguma coisa da aventura?`,
-    `Desenhei você lutando contra um dragão!`,
-  ];
+  const lines = KID_LINES[kidStage(k).key];
   const opts = [
     {
       t: "Conversar",
-      fn: () => say([[k.name, lines[Math.floor(Math.random() * lines.length)]]]),
+      fn: () => {
+        if (player.famDay["kidtalk" + k.name] !== player.day) {
+          player.famDay["kidtalk" + k.name] = player.day;
+          k.mood = Math.min(100, (k.mood ?? 60) + 3);
+        }
+        say([[k.name, lines[Math.floor(Math.random() * lines.length)]]]);
+      },
     },
-    ...affectionMenuItems({ kind: "kid", k }),
+    ...(kidStage(k).key === "adulto" ? [] : affectionMenuItems({ kind: "kid", k })),
     ...grownKidMenuItems(k),
+    ...adultKidItems(k),
     {
       t: "Brincar",
       fn: () => {
@@ -309,7 +315,7 @@ function familyMenu(f) {
     t: "Sair",
     fn: null,
   });
-  choice(k.name, `Seu filho ou filha. Idade: ${age} dias de vida (criança).`, opts);
+  choice(k.name, `${kidStage(k).n} · ${age} dias de vida${k.spouse ? ` · casado(a) com ${k.spouse}` : k.partner ? ` · namorando ${k.partner}` : ""} · Humor: ${kidMood(k)}`, opts);
 }
 function promptName(title, text, cb) {
   game.mode = "prompt";
@@ -351,7 +357,12 @@ function familyHTML() {
     }</div></div></div>`;
   });
   player.kids.forEach((k) => {
-    h += `<div class="irow"><div><div class="nm">${k.name}</div><div class="ds">${kidAge(k) < 2 ? "Bebê" : "Criança"} · nasceu no dia ${k.born}${k.school ? " · Escola: nota " + grade(k) : kidAge(k) >= 2 ? " · Pode ir à escola" : ""}</div></div></div>`;
+    const extra = k.spouse
+      ? ` · casado(a) com ${k.spouse}${k.movedOut ? " (mora fora, visita nos festivais)" : ""}${k.grandkids ? ` · ${k.grandkids} neto(s)` : ""}`
+      : k.partner
+        ? ` · namorando ${k.partner}`
+        : "";
+    h += `<div class="irow"><div><div class="nm">${iconHTML(kidStage(k).key === "bebe" ? "baby" : "smile")}${k.name}</div><div class="ds">${kidStage(k).n} · nasceu no dia ${k.born}${k.school ? " · Escola: nota " + grade(k) : kidAge(k) >= 2 && kidAge(k) < 16 ? " · Pode ir à escola" : ""}${extra}</div></div></div>`;
   });
   h +=
     "<h3>Pessoas especiais</h3>" +
@@ -2820,4 +2831,167 @@ function sideHTML() {
     h += `<div class="qs ${cl ? "done" : ""}">${cl ? "✓ " : ""}${q.t} · ${v}/${n} <span style="color:var(--gold)">◆${q.r}</span>${done && !cl ? ` <button data-side="${i}">Receber</button>` : ""}<div class="jbar" style="height:.35em;background:#2b2142"><i style="width:${(100 * v) / n}%;background:var(--gold)"></i></div></div>`;
   });
   return h;
+}
+
+
+/* ===================== FILHOS CRESCEM ===================== */
+
+/** Fases da vida dos filhos (em dias de jogo). */
+const KID_STAGES = [
+  { key: "bebe", n: "Bebê", from: 0 },
+  { key: "crianca", n: "Criança", from: 2 },
+  { key: "teen", n: "Adolescente", from: 10 },
+  { key: "adulto", n: "Adulto", from: 16 },
+];
+function kidStage(k) {
+  const age = kidAge(k);
+  return [...KID_STAGES].reverse().find((s) => age >= s.from);
+}
+function kidMood(k) {
+  const m = k.mood ?? 60;
+  return m >= 75 ? "Feliz" : m >= 45 ? "Tranquilo" : m >= 25 ? "Chateado" : "Revoltado";
+}
+const KID_LINES = {
+  bebe: ["*balbucia*"],
+  crianca: [
+    "Me ensina um feitiço? Por favor, por favor!",
+    "Hoje eu vi um sapo enorme perto do rio!",
+    "Quando eu crescer quero ser igual a você!",
+    "Você trouxe alguma coisa pra mim?",
+    "Desenhei você lutando contra um dragão!",
+  ],
+  teen: [
+    "Ai, para de me abraçar na frente dos outros!",
+    "Posso ir na festa da taverna hoje? Todo mundo vai!",
+    "Ninguém me entende nesta casa...",
+    "Tô pensando no que quero ser: Guarda Real ou dono de tenda?",
+    "*fones de ouvido imaginários* Hã? Falou comigo?",
+  ],
+  adulto: [
+    "Lembra quando eu tinha medo do escuro? Hoje eu que conto histórias.",
+    "Tô juntando ouro pra ter minha própria casa.",
+    "Obrigado por tudo que você fez por mim.",
+    "Trabalhei na feira hoje. Agora entendo por que você chegava cansado!",
+  ],
+};
+const SUITOR_NAMES = ["Heitor", "Lívia", "Caetano", "Marieta", "Benício", "Celeste", "Otília", "Ramiro", "Irene", "Ezequiel", "Glória", "Tadeu"];
+const SUITOR_FAMILIES = ["Ferraz", "Valente", "Monteiro", "dos Anjos", "Brisamar", "da Serra", "Albuquerque", "Pedreira"];
+const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
+
+/** Roda todo dia: filhos crescem, namoram, casam e trazem netos. */
+function growKids() {
+  for (const k of player.kids || []) {
+    const age = kidAge(k);
+    if (age === 10) setTimeout(() => toast(`${k.name} virou adolescente! Prepare-se para as portas batendo.`, 4000), 2600);
+    if (age === 16) setTimeout(() => toast(`${k.name} chegou à vida adulta! Agora pode namorar e casar.`, 4000), 2600);
+    if (age < 16) continue;
+    if (!k.spouse && !k.partner && Math.random() < 0.2) {
+      k.partner = pickOne(SUITOR_NAMES);
+      k.partnerDay = player.day;
+      setTimeout(() => toast(`Fofoca: ${k.name} está namorando ${k.partner}!`, 4000), 3200);
+    } else if (!k.spouse && k.partner && player.day - k.partnerDay >= 3 && Math.random() < 0.3) {
+      marryKid(k, k.partner, 0, false);
+    }
+    if (k.spouse && player.day - (k.married || 0) >= 4 && Math.random() < 0.18 && (k.grandkids || 0) < 4) {
+      k.grandkids = (k.grandkids || 0) + 1;
+      setTimeout(
+        () => toast(`${k.name} teve um bebê! Você virou ${genderWord("avô", "avó", "avô/avó")} (${k.grandkids} neto(s)).`, 4500),
+        3800,
+      );
+    }
+  }
+}
+/** Casamento de um filho: festa, dote e o casal vai morar na própria casa. */
+function marryKid(k, partner, dowry, arranged) {
+  k.spouse = partner;
+  k.partner = null;
+  k.married = player.day;
+  k.movedOut = true;
+  k.school = false;
+  player.gold += dowry;
+  repAdd(arranged ? 3 : 2);
+  saveGame();
+  const msg = arranged
+    ? `${k.name} e ${partner} se casaram no Templo, num casamento arranjado pelas famílias.${dowry ? ` Dote recebido: ${dowry} ouro.` : ""}`
+    : `${k.name} e ${partner} se casaram no Templo! Você chorou na primeira fila.`;
+  if (game.mode === "world" && !game.dialog)
+    say([
+      ["Padre Anselmo", `Eu declaro ${k.name} e ${partner} unidos para sempre!`],
+      ["", msg + " Eles vão morar na casa deles e visitam você nos dias de festival."],
+    ]);
+  else toast(msg, 5000);
+}
+function arrangedCandidates() {
+  return [0, 1, 2].map(() => {
+    const fame = Math.floor(Math.random() * 3);
+    return {
+      name: pickOne(SUITOR_NAMES),
+      family: pickOne(SUITOR_FAMILIES),
+      fame: ["humilde", "respeitada", "nobre"][fame],
+      dowry: [20, 60, 150][fame] + Math.floor(Math.random() * 30),
+      pick: [0.75, 0.55, 0.35][fame],
+    };
+  });
+}
+/** Opções para filhos adultos: namoro e casamento arranjado. */
+function adultKidItems(k) {
+  if (kidStage(k).key !== "adulto" || k.spouse) return [];
+  const items = [];
+  if (k.partner)
+    items.push(
+      {
+        t: `Apoiar o namoro com ${k.partner}`,
+        fn: () => {
+          k.mood = Math.min(100, (k.mood ?? 60) + 10);
+          if (player.day - (k.partnerDay || 0) >= 1 && Math.random() < 0.35) return marryKid(k, k.partner, 0, false);
+          saveGame();
+          say([[k.name, `Sério? Obrigado! ${k.partner} vai adorar saber. Acho que logo vem casamento...`]]);
+        },
+      },
+      {
+        t: `Proibir o namoro com ${k.partner}`,
+        fn: () => {
+          k.mood = Math.max(0, (k.mood ?? 60) - 25);
+          if (Math.random() < 0.5) {
+            saveGame();
+            return say([[k.name, "Eu sou adulto! Vou continuar namorando, sim. *bate a porta*"]]);
+          }
+          k.partner = null;
+          saveGame();
+          say([[k.name, "...Tá bom. Mas eu nunca vou esquecer isso."]]);
+        },
+      },
+    );
+  items.push({
+    t: "Arranjar um casamento",
+    fn: () => {
+      const list = arrangedCandidates();
+      choice(
+        "Casamento arranjado",
+        `A casamenteira da vila trouxe três pretendentes para ${k.name}. ${k.name} precisa aceitar. Humor: ${kidMood(k)}.`,
+        list
+          .map((c) => ({
+            t: `${c.name} ${c.family} · família ${c.fame} · dote ${c.dowry} ouro`,
+            fn: () => {
+              let chance = c.pick + ((k.mood ?? 60) - 50) / 200;
+              if (k.partner) chance -= 0.3;
+              if (Math.random() < chance) {
+                say([[k.name, `${c.name}? *pensa* Conversamos na festa do mês passado... Tudo bem, eu aceito.`]], () =>
+                  marryKid(k, c.name + " " + c.family, c.dowry, true),
+                );
+              } else {
+                k.mood = Math.max(0, (k.mood ?? 60) - 10);
+                saveGame();
+                say([
+                  [k.name, k.partner ? `Eu já amo ${k.partner}! Não vou casar com quem eu nem conheço.` : "Não. Quero escolher com quem eu caso."],
+                  ["", "Dica: filhos felizes aceitam mais. Converse com eles todo dia."],
+                ]);
+              }
+            },
+          }))
+          .concat([{ t: "Desistir", fn: null }]),
+      );
+    },
+  });
+  return items;
 }
