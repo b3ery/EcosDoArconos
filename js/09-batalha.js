@@ -378,6 +378,13 @@ function startBattle(type, mob, opts = {}) {
   const bossNote = enemy.boss ? " Um Guardião!" : "";
   const nightNote = night ? " É noite: ele está mais forte!" : "";
   battleLog(`${enemy.nome} aparece!${bossNote}${nightNote}`);
+  const strong = ORDER.filter((r) => weatherMark(r) === "up").map((r) => RUNES[r].nome),
+    weak = ORDER.filter((r) => weatherMark(r) === "down").map((r) => RUNES[r].nome);
+  const listPt = (a) => (a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0] || "");
+  if (strong.length || weak.length)
+    battleLog(
+      `${currentWeather().n}${isNight() ? " à noite" : ""}: ${strong.length ? listPt(strong) + (strong.length > 1 ? " mais fortes" : " mais forte") : ""}${strong.length && weak.length ? "; " : ""}${weak.length ? listPt(weak) + (weak.length > 1 ? " mais fracas" : " mais fraca") : ""}.`,
+    );
   renderBattle();
 }
 
@@ -457,7 +464,10 @@ function renderRunePanel() {
       const picked = battle.sel.filter((r) => r === rune).length;
       const classes = `rbtn ${picked ? "pick" : ""} ${sealed ? "sealed" : ""}`;
       const title = sealed ? "Selada" : RUNES[rune].nome;
-      return `<button class="${classes}" data-r="${rune}" ${sealed || battle.busy ? "disabled" : ""} title="${title}">${runeSVG(rune, 18)}${RUNES[rune].nome}${picked > 1 ? " ×2" : ""}<span class="k">${i + 1}</span></button>`;
+      const wm = weatherMark(rune);
+      const pct = Math.round((weatherMul(rune) - 1) * 100);
+      const tag = wm ? `<span class="wtag ${wm}" title="Clima: ${pct > 0 ? "+" : ""}${pct}%">${wm === "up" ? "▲" : "▼"}${Math.abs(pct)}%</span>` : "";
+      return `<button class="${classes}" data-r="${rune}" ${sealed || battle.busy ? "disabled" : ""} title="${title}">${runeSVG(rune, 18)}${RUNES[rune].nome}${picked > 1 ? " ×2" : ""}${tag}<span class="k">${i + 1}</span></button>`;
     })
     .join("");
   byId("rbtns")

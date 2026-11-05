@@ -738,7 +738,7 @@ function updateHUD() {
   <div class="hrow"><span class="gd">◆${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
   <div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>
   ${lifeRows}${chips ? `<div class="chips">${chips}</div>` : ""}</div>
-  <div class="box hudR"><span class="clock">${iconHTML(WEATHER_ICONS[player.weather] || "sun", 14)}${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${lifeMode() ? "" : ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""}" title="${RUNES[r].nome}">${runeSVG(r, 16)}</span>`).join("")}</div>`;
+  <div class="box hudR"><span class="clock">${iconHTML(WEATHER_ICONS[player.weather] || "sun", 14)}${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${lifeMode() ? "" : ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""} ${weatherMark(r)}" title="${RUNES[r].nome}${weatherMark(r) ? ` (${weatherMark(r) === "up" ? "forte" : "fraca"} com este clima)` : ""}">${runeSVG(r, 16)}${weatherMark(r) ? `<i class="wmk">${weatherMark(r) === "up" ? "▲" : "▼"}</i>` : ""}</span>`).join("")}</div>`;
   if (s !== hudCache) {
     byId("hud").innerHTML = s;
     hudCache = s;

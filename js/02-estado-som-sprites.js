@@ -190,14 +190,8 @@ function dmgMul(els) {
   if ((player.drunk || 0) >= 40) m *= 1.1;
   if (player.liquidCourage && game.mode === "battle") m *= 1.15;
   m *= difficulty().spPow || 1;
-  if (player.zone && outdoorTheme(ZONES[player.zone].theme)) {
-    let wm = 1;
-    for (const e of els) {
-      const v = currentWeather().mul[e];
-      if (v) wm = Math.max(wm === 1 ? v : wm, v);
-    }
-    m *= wm;
-  }
+  // Clima e hora do dia: média da força das runas usadas.
+  m *= els.reduce((a, e) => a + weatherMul(e), 0) / Math.max(1, els.length);
   return m;
 }
 const SEASONS = [
@@ -228,59 +222,58 @@ function season() {
 function seasonDay() {
   return ((player.day - 1) % 7) + 1;
 }
+/** Cada clima deixa duas runas mais fortes e uma ou duas mais fracas (só ao ar livre). */
 const WEATHER = {
   sol: {
     n: "Ensolarado",
     ic: "",
-    fx: "Feitiços de Chama +10% e de Luz +15%.",
-    mul: {
-      fogo: 1.1,
-      luz: 1.15,
-    },
+    fx: "Chama +15% e Luz +20%. Maré −15% e Sombra −20%.",
+    mul: { fogo: 1.15, luz: 1.2, agua: 0.85, sombra: 0.8 },
   },
   nublado: {
     n: "Nublado",
     ic: "",
-    fx: "Sem efeito nos feitiços.",
-    mul: {},
+    fx: "Vento +10% e Sombra +10%. Luz −10%.",
+    mul: { ar: 1.1, sombra: 1.1, luz: 0.9 },
   },
   chuva: {
     n: "Chuva",
     ic: "",
-    fx: "Maré +15%, Chama -15%. A sede cai mais devagar. Moradores ficam em casa.",
-    mul: {
-      agua: 1.15,
-      fogo: 0.85,
-    },
+    fx: "Maré +20% e Terra +10%. Chama −20%. A sede cai mais devagar. Moradores ficam em casa.",
+    mul: { agua: 1.2, terra: 1.1, fogo: 0.8 },
   },
   tempestade: {
     n: "Tempestade",
     ic: "",
-    fx: "Vento +20%, Chama -10%. Monstros +10% de ataque. Moradores ficam em casa.",
-    mul: {
-      ar: 1.2,
-      fogo: 0.9,
-    },
+    fx: "Vento +25% e Maré +10%. Chama −15% e Terra −10%. Monstros +10% de ataque.",
+    mul: { ar: 1.25, agua: 1.1, fogo: 0.85, terra: 0.9 },
   },
   neve: {
     n: "Neve",
     ic: "",
-    fx: "Maré +10%, Chama -10%. A fome cai mais rápido.",
-    mul: {
-      agua: 1.1,
-      fogo: 0.9,
-    },
+    fx: "Maré +15% e Terra +5%. Chama −15% e Vento −5%. A fome cai mais rápido.",
+    mul: { agua: 1.15, terra: 1.05, fogo: 0.85, ar: 0.95 },
   },
   neblina: {
     n: "Neblina",
     ic: "",
-    fx: "Sombra +15%, Luz -10%. Visão reduzida.",
-    mul: {
-      sombra: 1.15,
-      luz: 0.9,
-    },
+    fx: "Sombra +20% e Vento +5%. Luz −15%. Visão reduzida.",
+    mul: { sombra: 1.2, ar: 1.05, luz: 0.85 },
   },
 };
+/** Força de uma runa agora: clima ao ar livre + dia (Luz) ou noite (Sombra). */
+function weatherMul(rune) {
+  if (!player.zone || !outdoorTheme(ZONES[player.zone].theme)) return 1;
+  let m = currentWeather().mul[rune] || 1;
+  if (isNight()) m *= rune === "sombra" ? 1.1 : rune === "luz" ? 0.9 : 1;
+  else m *= rune === "luz" ? 1.05 : 1;
+  return m;
+}
+/** Seta para cima, para baixo ou nada, conforme a força da runa agora. */
+function weatherMark(rune) {
+  const m = weatherMul(rune);
+  return m > 1.001 ? "up" : m < 0.999 ? "down" : "";
+}
 const WCHANCE = {
   pri: [
     ["sol", 40],

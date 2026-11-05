@@ -2026,3 +2026,33 @@ body.mland #qpill {
 .hrow .bar.fu i {
   background: #9ff06a;
 }
+
+/* Clima: runas fortes (▲) e fracas (▼) */
+.wtag {
+  font-size: 0.7em;
+  margin-left: 0.3em;
+  padding: 0 0.2em;
+  border-radius: 2px;
+}
+.wtag.up {
+  color: #7ad36b;
+}
+.wtag.down {
+  color: #ff7a7a;
+}
+.hudR .rune {
+  position: relative;
+}
+.hudR .rune .wmk {
+  position: absolute;
+  right: -3px;
+  bottom: -4px;
+  font-style: normal;
+  font-size: 0.55em;
+}
+.hudR .rune.up .wmk {
+  color: #7ad36b;
+}
+.hudR .rune.down .wmk {
+  color: #ff7a7a;
+}
