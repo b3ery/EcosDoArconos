@@ -1390,7 +1390,7 @@ function winTraining() {
       ],
       [
         "Instrutor Kael",
-        "Tome 30 de ouro e 2 poções. Agora passe no mercado: a viagem é longa, leve poções e comida para recuperar a vida.",
+        "Tome 30 de ouro e 2 poções. Agora passe no mercado: a viagem é longa, e você vai sentir fome e sede.",
       ],
       [
         "Instrutor Kael",

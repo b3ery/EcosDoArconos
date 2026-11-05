@@ -1055,7 +1055,7 @@ function restMenu() {
                 : [],
             )
             .concat(
-              lifeMode() && (player.food < 30 || player.water < 30)
+              player.food < 30 || player.water < 30
                 ? [["", "Você acorda com fome e sede. Coma e beba algo (tecla I)."]]
                 : [],
             ),

@@ -327,7 +327,7 @@ const STEPS = [
     t: "Compre suprimentos no mercado",
     zone: "vila",
     pos: () => VILLAGE_POINTS.mercado,
-    d: "O mercado fica a leste da praça central. Compre poções com o Bruno (barraca vermelha) ou comida com a Rosa (barraca amarela): as duas recuperam vida e mana.",
+    d: "O mercado fica a leste da praça central. Compre comida e água com a Rosa (barraca amarela) ou poções com o Bruno (barraca vermelha).",
     done: () => player.flags.bought,
   },
   {
@@ -482,7 +482,7 @@ function urgent() {
       zone: "vila",
       pos: hpos,
     };
-  if (lifeMode() && player.water < 12)
+  if (player.water < 12)
     return {
       id: "u3",
       t: "Beba água!",
@@ -490,7 +490,7 @@ function urgent() {
       zone: "vila",
       pos: () => VILLAGE_POINTS.fonte,
     };
-  if (lifeMode() && player.food < 12)
+  if (player.food < 12)
     return {
       id: "u4",
       t: "Coma alguma coisa!",
@@ -638,7 +638,7 @@ function openQuests() {
   <div class="qtip">· Na batalha, acertar a fraqueza do inimigo dá dano quase dobrado. Fraquezas descobertas ficam marcadas.</div>
   <div class="qtip">· Defender recupera mana. Monstros deixam ouro: gaste no mercado com poções, comida e equipamentos.</div>
   <div class="qtip">· À noite (☾) os monstros ficam mais fortes, mas dão mais ouro e XP. Durma em casa para pular para a manhã.</div>
-  <div class="qtip">· Ferimentos graves só são curados no hospital. Comida e poções recuperam vida e mana.</div>`;
+  <div class="qtip">· Fome e sede caem com o tempo. Ferimentos graves só são curados no hospital.</div>`;
   h += townQuestsHTML();
   if (!player.finished) h += sideHTML();
   byId("quests").innerHTML = h;
@@ -773,7 +773,7 @@ function updateHUD() {
     : "";
   const s = `<div class="box hudL"><div class="hrow"><span class="lv">${iconHTML("star", 12)}Nv${player.lvl}</span><div class="bar hp"><i style="width:${Math.max(0, (100 * player.hp) / maxHp())}%"></i><em>${Math.max(0, player.hp)}/${maxHp()}</em></div></div>
   <div class="hrow"><span class="gd">${iconHTML("coin", 12)}${player.gold}</span>${lifeMode() ? '<span style="font-size:.8em;color:#c9a8ff">Simulador de Vida</span>' : `<div class="bar mp"><i style="width:${(100 * player.mp) / maxMp()}%"></i><em>${player.mp}/${maxMp()}</em></div>`}</div>
-  ${lifeMode() ? `<div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>` : ""}
+  <div class="hrow nd"><span title="Fome">${iconHTML("meat", 14)}</span><div class="bar fd"><i style="width:${player.food}%"></i></div><span title="Sede">${iconHTML("water", 14)}</span><div class="bar wt"><i style="width:${player.water}%"></i></div></div>
   ${lifeRows}${chips ? `<div class="chips">${chips}</div>` : ""}</div>
   <div class="box hudR"><span class="clock">${iconHTML(WEATHER_ICONS[player.weather] || "sun", 14)}${clockStr()}${festivalToday() ? ` · <b style="color:#ff8ad0"> ${festivalToday().n.replace("Festival ", "")}</b>` : ""}</span>${lifeMode() ? "" : ORDER.map((r) => `<span class="rune ${player.runes.includes(r) ? "on" : ""} ${weatherMark(r)}" title="${RUNES[r].nome}${weatherMark(r) ? ` (${weatherMark(r) === "up" ? "forte" : "fraca"} com este clima)` : ""}">${runeSVG(r, 16)}${weatherMark(r) ? `<i class="wmk">${weatherMark(r) === "up" ? "▲" : "▼"}</i>` : ""}</span>`).join("")}</div>`;
   if (s !== hudCache) {

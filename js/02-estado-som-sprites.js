@@ -175,8 +175,6 @@ function removeItem(id, n = 1) {
   if (!player.inv[id]) delete player.inv[id];
 }
 function starving() {
-  // Fome e sede só existem no Simulador de Vida.
-  if (player.mode !== "vida") return false;
   return player.food <= 0 || player.water <= 0;
 }
 function dmgMul(els) {
