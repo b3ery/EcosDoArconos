@@ -6122,3 +6122,8 @@ body.mland .joy:not(.active) {
     font-size: 1.2em !important;
   }
 }
+@media (pointer: fine) {
+  .cc-panel {
+    overflow-y: scroll !important;
+  }
+}

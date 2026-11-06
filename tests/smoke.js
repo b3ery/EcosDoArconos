@@ -120,6 +120,9 @@ const check = (name, ok) => {
   check("Mago é imortal para mortal", await page.evaluate(() => (killMenu("odelia"), (game.dialog = null), (game.mode = "world"), !isDead("odelia"))));
   check("Matar e ir para o calabouço", await page.evaluate(() => (killNpc("bruno", "faca"), murderFound("bruno"), (game.dialog = null), startJail(72, "teste"), isDead("bruno") && player.zone === "calabouco" && hated())));
   await page.evaluate(() => (leaveJail(), enterHouse(null), (game.dialog = null), (game.mode = "world")));
+  check("Corpo fica no chão", await page.evaluate(() => !!(player.dead.bruno && player.dead.bruno.pos)));
+  check("Sonegar tira o imposto", await page.evaluate(() => ((player.sonega = true), withTax(100) === 100 && !((player.sonega = false))) ));
+  check("Mais de 550 interações", await page.evaluate(() => INTERACTIONS.length >= 550));
   check("Parede pintada na casa", await page.evaluate(() => HOME_PAL[homeTier()].wall === "#ecc8cc"));
   await page.waitForTimeout(1500);
   check("500+ itens no catálogo", await page.evaluate(() => CATALOG.length >= 500));

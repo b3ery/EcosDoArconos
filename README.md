@@ -416,6 +416,15 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **O calabouço** (visite pelo Guarda Tomé, ou vá preso): celas, tochas, guarda fazendo ronda e o **Professor L**, careca, pálido e de olhos pretos. Ninguém sabe o nome dele nem por que está preso. É insuportável e deixa tudo pior. O **General Marcos** tem um ranço dele, então toda patrulha joga lixo na cela. Cumpra a pena, tente fugir (com magia é mais fácil) ou converse com ele, se aguentar.
 - **Qualquer pessoa pode dar o golpe:** sem idade mínima e também no modo História (com o Luca ou o Lucas).
 
+## 🦹 Ladrão, sonegador e NPCs que lembram de tudo
+
+- **O corpo fica no chão**, com uma poça de sangue, onde a pessoa morreu. Quem passar perto grita e chama a guarda. Você pode esconder o corpo, revistar os bolsos ou fingir que achou.
+- **Ladrão:** bata carteira e furte das lojas (pelo menu da pessoa) ou arrombe as casas da turma de madrugada. Quanto mais você rouba, mais habilidade ganha. Se for pego: multa, calabouço ou fuga.
+- **Sonegador:** no menu do crime (**tecla X** ou ☰ → Crime) você para de pagar o Imposto Real. Com o coletor dá para esconder os bens. Se a sonegação crescer, o **Fiscal da Coroa** aparece: pague, suborne ou minta.
+- **NPCs com memória:** lembram dos seus presentes, da ajuda, dos insultos, dos flertes e dos furtos, e falam disso com você ("Ainda tô usando aquele presente que você me deu ontem!"). Quando conversam entre si, **contam uns aos outros** o que você fez.
+- **Eles reparam em você:** vêm oferecer comida quando você está com fome, te avisam quando a guarda ou o fiscal estão atrás de você e trazem fofocas novas. Quem sabe que você rouba fica de olho e cobra mais caro.
+- **572 interações** no total, com as categorias novas **Malandragem** e **Ideias e opiniões**.
+
 ## 🏠 Casa do seu jeito
 
 - **Móveis redesenhados** com luz, sombra e detalhes, e **12 móveis novos** na Marcenaria: sofá de veludo, poltrona de leitura, piano de cauda, relógio de pêndulo, cama de casal, tapete persa, abajur de vitral, mesa de jantar, cômoda, espelho de pé, penteadeira e samambaia.
