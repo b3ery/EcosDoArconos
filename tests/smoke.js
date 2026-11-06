@@ -17,7 +17,7 @@ const check = (name, ok) => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 960 } });
   const errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("pageerror", (e) => errors.push(e.message + " " + (e.stack || "").split("\n").slice(1, 3).join(" | ")));
   await page.goto(URL);
   await page.waitForTimeout(1200);
   check("Tela de título abre", await page.evaluate(() => game.mode === "title"));

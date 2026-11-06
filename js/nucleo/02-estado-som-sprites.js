@@ -1234,25 +1234,7 @@ function wizardRects(robe, hat, hair, glow, dir, frame = 0, seed) {
   if (s % 6 === 1 && dir !== "up" && hairStyle !== 1 && !glow)
     r.push([6, 8, 4, 1, hair], [7, 9, 2, 1, hair]);
   if (glow) {
-    switch (L.staffs) {
-      case "galho":
-        r.push([13, 5, 1, 10, "#6b4423"], [12, 4, 1, 2, "#6b4423"], [14, 7, 1, 1, "#5a8a3a"], [11, 2, 3, 3, glow]);
-        break;
-      case "espiral":
-        r.push([13, 4, 1, 11, "#c9a03a"], [12, 6, 1, 1, "#7a4f2a"], [14, 9, 1, 1, "#7a4f2a"], [12, 12, 1, 1, "#7a4f2a"], [12, 1, 3, 3, glow], [11, 2, 1, 1, "#c9a03a"], [15, 2, 1, 1, "#c9a03a"]);
-        break;
-      case "lua":
-        r.push([13, 4, 1, 11, "#d8d0c2"], [12, 1, 3, 1, glow], [11, 2, 1, 2, glow], [12, 4, 1, 1, glow], [13, 2, 1, 1, "#ffffff"]);
-        break;
-      case "duplo":
-        r.push([13, 4, 1, 11, "#4a3a5a"], [12, 2, 3, 2, glow], [13, 0, 1, 2, glow], [12, 8, 3, 1, glow]);
-        break;
-      case "estrela":
-        r.push([13, 4, 1, 11, "#7a4f2a"], [13, 0, 1, 5, glow], [11, 2, 5, 1, glow], [13, 2, 1, 1, "#ffffff"]);
-        break;
-      default:
-        r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
-    }
+    r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
   }
   return r;
 }
