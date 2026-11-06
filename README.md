@@ -397,6 +397,15 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **O Marzoca é o mais perseguido:** o Lucas vive dando em cima de gente casada, e o marido (ou a esposa) aparece com a faca. A vila inteira comenta, e o jogo conta as fugas dele.
 - **Protestos dos Iluministas:** a cada 3 ou 4 dias, de manhã, Luca e Lucas juntam o povo na frente do castelo com cartazes. A Rainha aparece, os tomates, ovos e repolhos começam a voar, os guardas correm atrás de todo mundo e vira uma loucura. Entre no protesto, jogue tomate (cuidado com a multa), defenda a Rainha ou tente acalmar a multidão. Quem é iluminista pode convocar um protesto com o Luca.
 
+## 👑 Golpe de estado e os Três Reinos (Simulador)
+
+- **Conspire** (tecla **K** → Reinos, ou com o Luca e o Lucas): chame aliados (cada um aceita pelo jeito dele; os leais à coroa podem te entregar), suborne guardas, compre armas na Forja e espalhe boatos. Cuidado com a **suspeita**: se chegar a 100, você vai para a masmorra.
+- **O General Marcos** traz o exército se entrar na conspiração; o **Luca** cria a distração perfeita.
+- **A noite do golpe** (das 22h às 4h): portões, salão e sala do trono, com escolhas em cada etapa. Discurse, prenda a Rainha ou ofereça exílio.
+- **Coroado:** você vira Rei ou Rainha de Aurélia, recebe impostos todo dia, dá festas, declara guerra e usa uma coroa na cabeça.
+- **Conquiste Marés e Pedravale:** recrute soldados e invada (ataque frontal, cerco ou emboscada), faça um golpe infiltrado com espiões ou uma união diplomática. Os três juntos: **Imperador(a) dos Três Reinos**.
+- **Contragolpe:** se o povo te odiar, a Rainha Aurélia volta do exílio com um exército.
+
 ## 🏠 Casa do seu jeito
 
 - **Móveis redesenhados** com luz, sombra e detalhes, e **12 móveis novos** na Marcenaria: sofá de veludo, poltrona de leitura, piano de cauda, relógio de pêndulo, cama de casal, tapete persa, abajur de vitral, mesa de jantar, cômoda, espelho de pé, penteadeira e samambaia.

@@ -12,11 +12,6 @@
 
 /* ===================== CORES ===================== */
 
-function shade(hex, k) {
-  const n = parseInt(hex.slice(1), 16);
-  const f = (v) => Math.max(0, Math.min(255, Math.round(k > 0 ? v + (255 - v) * k : v * (1 + k))));
-  return "#" + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, "0")).join("");
-}
 
 /* ===================== MÓVEIS NOVOS ===================== */
 

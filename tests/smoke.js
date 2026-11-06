@@ -116,6 +116,7 @@ const check = (name, ok) => {
     game.dialog = null;
     game.mode = "world";
   });
+  check("Golpe de estado dá a coroa", await page.evaluate(() => (coupWin("discurso"), (game.dialog = null), isMonarch() && /Aurélia/.test(royalTitle()))));
   check("Parede pintada na casa", await page.evaluate(() => HOME_PAL[homeTier()].wall === "#ecc8cc"));
   await page.waitForTimeout(1500);
   check("500+ itens no catálogo", await page.evaluate(() => CATALOG.length >= 500));

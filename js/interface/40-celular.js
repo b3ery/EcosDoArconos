@@ -166,7 +166,7 @@ function fitPie() {
  * e some quando você solta). Tocar no chão faz o personagem andar até lá sozinho;
  * tocar numa porta, placa ou baú anda até lá e já interage. */
 game.autoPath = null;
-function walkTo(tx, ty) {
+function tapWalkTo(tx, ty) {
   const z = player.zone;
   let interact = null;
   let path = null;
@@ -189,7 +189,7 @@ byId("cv").addEventListener("click", (e) => {
     ty = Math.floor((ly / game.cam.Z + game.cam.camY) / TILE);
   if (characterAt(tx, ty) || characterAt(tx, Math.floor((ly / game.cam.Z + game.cam.camY + 12) / TILE))) return;
   if (tx === player.x && ty === player.y) return;
-  walkTo(tx, ty);
+  tapWalkTo(tx, ty);
 });
 {
   const updBase = update;

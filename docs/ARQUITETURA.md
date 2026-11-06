@@ -77,6 +77,7 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 43 | `js/vida/42-vida-autonoma.js` | Moradores com vontade própria: - a turma sente fome, saudade dos amigos e tédio, e decide sozinha aonde ir (comer, visitar alguém, passear, fugir da chuva); - quem se encontra conv | — |
 | 44 | `js/vida/43-protestos.js` | Protesto dos Iluministas na frente do castelo (Simulador): 1. Concentração: cartazes, gritos de guerra, Luca e Lucas puxando o coro. 2. A Rainha aparece na escadaria: começam a voa | — |
 | 45 | `js/mundo/44-casa-bonita.js` | Casa mais bonita e do seu jeito: - móveis redesenhados com luz, sombra, contorno e detalhes; - 12 móveis novos (sofá, poltrona, piano, relógio de pêndulo, cama de casal...); - pint | — |
+| 46 | `js/vida/45-golpe.js` | Golpe de estado e conquista dos reinos (Simulador de Vida): 1. Conspiração: junte apoio (aliados, guardas subornados, armas, o povo, os Iluministas) sem levantar suspeita. Suspeita | — |
 
 ## Testes
 
