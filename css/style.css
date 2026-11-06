@@ -6042,3 +6042,83 @@ body.mland .joy:not(.active) {
 .cc-traits button.on small {
   color: #e8d8b0;
 }
+
+/* Criador: rolagem visível no painel e na barra lateral (também no celular). */
+.cc-main {
+  min-height: 0;
+  overflow: hidden;
+}
+.cc-win {
+  min-height: 0;
+}
+.cc-side {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.cc-panel,
+.cc-side {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-color: #c9a03a rgba(255, 255, 255, 0.06);
+}
+.cc-panel::-webkit-scrollbar,
+.cc-side::-webkit-scrollbar {
+  width: 10px;
+}
+.cc-panel::-webkit-scrollbar-thumb,
+.cc-side::-webkit-scrollbar-thumb {
+  background: #c9a03a;
+  border-radius: 6px;
+  border: 2px solid #211733;
+}
+.cc-panel::-webkit-scrollbar-track,
+.cc-side::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+.cc-panel {
+  scrollbar-width: auto;
+}
+/* Criador no celular deitado: barra | opções (com rolagem) | boneco pequeno ao lado. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .cc-win {
+    grid-template-columns: auto minmax(0, 1fr) 12em !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    height: 100% !important;
+  }
+  .cc-stage {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    flex-direction: column !important;
+    justify-content: center;
+    gap: 0.4em;
+    border-top: 0 !important;
+    border-left: 2px solid #3a2a5a !important;
+    padding: 0.4em !important;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .cc-room {
+    flex: 1 1 auto !important;
+    min-height: 0;
+  }
+  .cc-room canvas {
+    width: 7.5em !important;
+    height: 7.5em !important;
+  }
+  .cc-btns {
+    flex-direction: column;
+    gap: 0.3em;
+  }
+  .cc-btns button {
+    padding: 0.3em 0.6em;
+  }
+  .cc-main {
+    padding: 0.5em 0.6em !important;
+  }
+  .cc-main h2 {
+    font-size: 1.2em !important;
+  }
+}
