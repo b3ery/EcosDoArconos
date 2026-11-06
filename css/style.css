@@ -5829,3 +5829,216 @@ body.mland #touch.hs #tMenu {
     height: 4.5em;
   }
 }
+
+/* Pausa / velocidade / esperar embaixo do relógio (40-celular.js) */
+#tgrp {
+  position: absolute;
+  display: flex;
+  gap: 0.3em;
+  z-index: 6;
+}
+#tgrp .tbtn {
+  position: static;
+  margin: 0;
+}
+body.tallui #tgrp {
+  display: none;
+}
+
+/* Andar com o dedo: arrastar em qualquer lugar; o joystick só aparece embaixo do dedo. */
+body.mland #joyzone {
+  left: 0;
+  width: 100%;
+  top: 14%;
+}
+body.mland .joy:not(.active) {
+  opacity: 0;
+}
+
+/* ===================== DECORAR (44-casa-bonita.js) ===================== */
+.dc-tabs {
+  display: flex;
+  gap: 0.4em;
+  margin: 0.4em 0 0.6em;
+}
+.dc-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  flex: 1;
+  justify-content: center;
+}
+.dc-tabs button.on {
+  border-color: var(--gold);
+  color: #fff3b0;
+  background: linear-gradient(#4a3a6a, #2e2150);
+}
+.dc-front {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.6em 0.8em;
+  border-radius: 12px;
+  border: 2px solid #5a4a8a;
+  background: rgba(30, 20, 50, 0.6);
+}
+.dc-front div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.dc-front span {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+.dc-front.ok {
+  border-color: #6ac36b;
+}
+.dc-front.no {
+  border-color: #a84a4a;
+  opacity: 0.85;
+}
+.dc-front.has {
+  border-color: var(--gold);
+}
+.dc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.2em, 1fr));
+  gap: 0.5em;
+}
+.dc-it {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 7.4em;
+  overflow: visible !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0.4em;
+  margin: 0;
+  border-radius: 12px;
+  background: linear-gradient(#3a2c5c, #221838);
+}
+.dc-it canvas {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+  border-radius: 8px;
+  background: radial-gradient(#e8d8b8, #b8a078);
+}
+.dc-it b {
+  font-size: 0.85em;
+  text-align: center;
+}
+.dc-it small {
+  color: var(--muted);
+}
+.dc-it:disabled {
+  opacity: 0.45;
+}
+.dc-sw {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+.dc-sw button {
+  position: relative;
+  width: 3.4em;
+  height: 3.4em;
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+  border: 3px solid rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.15);
+}
+.dc-sw button span {
+  position: absolute;
+  left: 50%;
+  bottom: -1.4em;
+  transform: translateX(-50%);
+  font-size: 0.62em;
+  white-space: nowrap;
+  color: var(--muted);
+  pointer-events: none;
+}
+.dc-sw {
+  padding-bottom: 1.2em;
+}
+.dc-sw button.on {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px #fff3b0, 0 0 12px rgba(242, 193, 78, 0.6);
+}
+.dc-sw button.clr {
+  background: repeating-linear-gradient(45deg, #3a2c5c 0 6px, #2a1f44 6px 12px);
+}
+.dc-ref {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12em, 1fr));
+  gap: 0.6em;
+}
+.dc-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  text-align: center;
+  padding: 0.9em;
+  border-radius: 14px;
+  border: 2px solid #5a4a8a;
+  background: linear-gradient(#2e2150, #1a1230);
+}
+.dc-card small {
+  color: var(--muted);
+}
+.dc-card.done {
+  border-color: #6ac36b;
+}
+
+/* ===================== CRIADOR: JEITO ===================== */
+.cc-traits {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5em, 1fr));
+  gap: 0.4em;
+}
+.cc-traits button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.4em;
+  align-items: center;
+  text-align: left;
+  margin: 0;
+  padding: 0.35em 0.5em;
+  border-radius: 10px;
+}
+.cc-traits button img {
+  grid-row: span 2;
+}
+.cc-traits button small {
+  font-size: 0.7em;
+  color: var(--muted);
+  line-height: 1.15;
+}
+.cc-traits button.on {
+  border-color: var(--gold);
+  background: linear-gradient(#5a4a2a, #3a2c1a);
+}
+.cc-or button {
+  display: flex;
+  flex-direction: column;
+}
+.cc-or button small {
+  font-size: 0.7em;
+  color: var(--muted);
+}
+.cc-or button.on small,
+.cc-traits button.on small {
+  color: #3a2414;
+}
+.cc-traits button.on {
+  color: #fff3b0;
+}
+.cc-traits button.on small {
+  color: #e8d8b0;
+}

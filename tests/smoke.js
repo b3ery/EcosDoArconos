@@ -92,6 +92,32 @@ const check = (name, ok) => {
     showCreate("wardrobe");
   });
   check("Criador de personagem abre", await page.evaluate(() => !!document.querySelector(".cc-grid, .cc-prof")));
+  await page.evaluate(() => {
+    clearInterval(game.ccAnim);
+    byId("create").style.display = "none";
+    game.mode = "world";
+    player.zone = "vila";
+    player.x = 31;
+    player.y = 16;
+    player.clock = 10 * 60;
+    enterZone(false);
+    game.dialog = null;
+    game.mode = "world";
+    crewInit();
+  });
+  check("Falas geradas não repetem", await page.evaluate(() => new Set(Array.from({ length: 40 }, () => genLine("rosa"))).size === 40));
+  check("Protesto dos Iluministas começa", await page.evaluate(() => startProtest(true) && game.protest.actors.length >= 6));
+  await page.evaluate(() => (game.protest = null));
+  check("Perseguição com faca começa", await page.evaluate(() => startChase("pedro", "player", "mylena") && !!game.chase));
+  await page.evaluate(() => {
+    game.chase = null;
+    paintOf().wall0 = "#ecc8cc";
+    enterHouse(null);
+    game.dialog = null;
+    game.mode = "world";
+  });
+  check("Parede pintada na casa", await page.evaluate(() => HOME_PAL[homeTier()].wall === "#ecc8cc"));
+  await page.waitForTimeout(1500);
   check("500+ itens no catálogo", await page.evaluate(() => CATALOG.length >= 500));
   check("Sem erros de JavaScript", errors.length === 0);
   if (errors.length) console.log("Erros:\n" + errors.join("\n"));

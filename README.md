@@ -118,6 +118,10 @@
 | <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial</sub> | <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> |
 | <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> | <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> |
 | <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
+| <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> | <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> |
+| <img src="assets/screenshots/conversa.png" width="420"/><br><sub>Os moradores conversam entre si</sub> | <img src="assets/screenshots/jeito.png" width="420"/><br><sub>Personalidade e orientação no criador</sub> |
+| <img src="assets/screenshots/casa.png" width="420"/><br><sub>Casa pintada com os móveis novos</sub> | <img src="assets/screenshots/pintar.png" width="420"/><br><sub>Decorar: Móveis, Pintar e Reformar</sub> |
+| <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado), andando com o dedo</sub> |
 
 </div>
 
@@ -382,6 +386,29 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **Nos dois modos:** fome e sede caem com o tempo. **Frutas silvestres** (colhidas nas árvores do Bosque e do Pântano) e **água de rio ou fonte** podem causar **intoxicação**: a vida cai aos poucos e a magia enfraquece. Chá de Ervas, Ervas Medicinais, **Xarope de Ervas** (Bruno) ou a Curandeira curam. O poço e o cantil são seguros.
 - **No Simulador:** energia, higiene e diversão também contam, e dá para pegar **gripe** (chuva e cansaço), **disenteria** (pouca higiene), **febre** (idade e azar) e **peste** (tempos de guerra). Doente, você trabalha pior e perde energia e diversão.
 
+## 🧠 Moradores com vida própria (Simulador)
+
+- **Vontade própria:** a turma sente fome, saudade dos amigos, tédio e cansaço, e decide sozinha aonde ir: comer na taverna ou na padaria, visitar alguém, ver quem ama, passear, sentar na praça ou correr para casa quando chove.
+- **Eles conversam entre si:** quem se encontra na rua (ou dentro das lojas e da taverna) para e conversa com balões de fala. Casais trocam carinho ou brigam; os outros fofocam.
+- **Entram na conversa:** quando você conversa com alguém e tem outra pessoa por perto, ela se mete no papo.
+- **Falas quase infinitas:** as frases são montadas na hora (abertura + assunto + fecho) com o clima, a hora, os casais da vila, a turma, você, a Rainha, notícias recentes e o jeito de quem fala, com memória para não repetir.
+- **Personalidade e orientação:** cada pessoa tem dois traços (romântico, ciumento, esquentado, fofoqueiro, galanteador...) e uma orientação. Use **Conhecer melhor** no menu da pessoa para descobrir. Você escolhe os seus 3 traços e de quem gosta na aba **Jeito** do criador (e no guarda-roupa).
+- **Ciúme:** dar em cima de gente casada pode dar ruim (vale para qualquer casado da vila). Se o par descobrir, ele pode **sair na mão** com você, **correr atrás de você com uma faca** pela vila (fuja ou entre num prédio!) ou só dar um climão.
+- **O Marzoca é o mais perseguido:** o Lucas vive dando em cima de gente casada, e o marido (ou a esposa) aparece com a faca. A vila inteira comenta, e o jogo conta as fugas dele.
+- **Protestos dos Iluministas:** a cada 3 ou 4 dias, de manhã, Luca e Lucas juntam o povo na frente do castelo com cartazes. A Rainha aparece, os tomates, ovos e repolhos começam a voar, os guardas correm atrás de todo mundo e vira uma loucura. Entre no protesto, jogue tomate (cuidado com a multa), defenda a Rainha ou tente acalmar a multidão. Quem é iluminista pode convocar um protesto com o Luca.
+
+## 🏠 Casa do seu jeito
+
+- **Móveis redesenhados** com luz, sombra e detalhes, e **12 móveis novos** na Marcenaria: sofá de veludo, poltrona de leitura, piano de cauda, relógio de pêndulo, cama de casal, tapete persa, abajur de vitral, mesa de jantar, cômoda, espelho de pé, penteadeira e samambaia.
+- **Pintar a casa** (grátis): paredes e piso de cada andar, e por fora paredes, telhado e vigas.
+- **Segundo andar em qualquer casa:** na aba Reformar. A casa ganha escada e uma janela no telhado com floreira.
+
+## 📱 No celular
+
+- O jogo é jogado **deitado** (em pé aparece um aviso para girar).
+- **Ande com o dedo:** arraste em qualquer lugar da tela (o joystick aparece embaixo do dedo) ou toque no chão para ir até lá. Tocar numa porta ou placa anda até ela e interage.
+- Atalhos guardados no botão ☰, minimapa ligado, pausa e velocidade logo abaixo do relógio.
+
 ## 💬 Interação estilo The Sims
 
 Clique num personagem (ou aperte **E** perto dele): as opções aparecem **em círculo ao redor dele**, com ícones e agrupadas em **Amigável, Romântico, Engraçado, Malvado, Família e Serviços**. O ✕ no meio fecha.
@@ -611,10 +638,10 @@ ecos-do-arcano/
 ├── css/style.css           visual de todas as telas
 ├── js/
 │   ├── nucleo/             dados, estado, laço principal, teclado, gerador de ícones
-│   ├── mundo/              mapas, vilas, reinos, casas, floresta, quintal, clima
+│   ├── mundo/              mapas, vilas, reinos, casas (pintura, móveis, 2º andar), floresta, quintal, clima
 │   ├── historia/           batalha, caminho do vilão, missões da mina e do farol
 │   ├── pessoas/            família, amizades, diálogos, turma, contatos, interações
-│   ├── vida/               Simulador de Vida, profissões, carreiras, saúde, calendário
+│   ├── vida/               Simulador de Vida, profissões, carreiras, saúde, calendário, personalidade, vida própria, protestos
 │   └── interface/          inventário, lojas, criador, menus, opções, conquistas
 ├── tests/smoke.js          teste automático (npm test)
 ├── tools/                  build num arquivo só e gerador do mapa de arquitetura

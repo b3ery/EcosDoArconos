@@ -94,13 +94,13 @@ function toggleMinimap() {
   b.addEventListener("click", () => game.mode === "world" && toggleMinimap());
   small.appendChild(b);
 })();
-// No celular deitado o minimapa desce para não ficar embaixo do relógio.
+// O minimapa desce para não ficar embaixo do relógio e dos botões de tempo.
 {
   const mmBase = drawMinimap;
   drawMinimap = function (big, t) {
-    if (big || !document.body.classList.contains("mland")) return mmBase(big, t);
+    if (big) return mmBase(big, t);
     ctx.save();
-    ctx.translate(0, 42);
+    ctx.translate(0, game.mmDy || 34);
     mmBase(big, t);
     ctx.restore();
   };
@@ -160,3 +160,111 @@ function fitPie() {
     });
   };
 }
+
+/* ---- Andar com o dedo ----
+ * Arrastar o dedo em qualquer ponto da tela anda (o joystick aparece embaixo do dedo
+ * e some quando você solta). Tocar no chão faz o personagem andar até lá sozinho;
+ * tocar numa porta, placa ou baú anda até lá e já interage. */
+game.autoPath = null;
+function walkTo(tx, ty) {
+  const z = player.zone;
+  let interact = null;
+  let path = null;
+  if (walkable(z, tx, ty) && !(typeof furnAt === "function" && furnAt(tx, ty, true))) path = zonePath(z, player.x, player.y, tx, ty, 3000);
+  else {
+    interact = [tx, ty];
+    path = zonePath(z, player.x, player.y, tx, ty, 3000, (x, y) => Math.abs(x - tx) + Math.abs(y - ty) === 1 && walkable(z, x, y));
+    if (path && path.length && path[path.length - 1][0] === tx && path[path.length - 1][1] === ty) path.pop();
+  }
+  if (!path) return toast("Não dá para chegar aí.", 1200);
+  game.autoPath = { path, interact, zone: z, stuck: 0, mark: [tx, ty], t: 0 };
+}
+for (const el of [byId("joyzone"), byId("joy")]) el && el.addEventListener("pointerdown", () => (game.autoPath = null));
+byId("cv").addEventListener("click", (e) => {
+  if (game.mode !== "world" || game.dialog || !game.cam || game.fish) return;
+  const r = byId("cv").getBoundingClientRect();
+  const lx = ((e.clientX - r.left) / r.width) * viewWidth,
+    ly = ((e.clientY - r.top) / r.height) * 480;
+  const tx = Math.floor((lx / game.cam.Z + game.cam.camX) / TILE),
+    ty = Math.floor((ly / game.cam.Z + game.cam.camY) / TILE);
+  if (characterAt(tx, ty) || characterAt(tx, Math.floor((ly / game.cam.Z + game.cam.camY + 12) / TILE))) return;
+  if (tx === player.x && ty === player.y) return;
+  walkTo(tx, ty);
+});
+{
+  const updBase = update;
+  update = function (dt) {
+    const A = game.autoPath;
+    let drove = false;
+    if (A) {
+      const keys = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"].some((k) => pressedKeys[k]);
+      if (keys || A.zone !== player.zone || game.mode !== "world") game.autoPath = null;
+      else if (!game.dialog) {
+        while (A.path.length && A.path[0][0] === player.x && A.path[0][1] === player.y) A.path.shift();
+        if (!A.path.length) {
+          game.autoPath = null;
+          if (A.interact) {
+            const [ix, iy] = A.interact;
+            player.dir = ix > player.x ? "right" : ix < player.x ? "left" : iy > player.y ? "down" : "up";
+            if (typeof targetAt === "function" && targetAt(ix, iy)) interactAt(ix, iy);
+          }
+        } else {
+          const [nx, ny] = A.path[0];
+          if (Math.abs(nx - player.x) + Math.abs(ny - player.y) !== 1) game.autoPath = null;
+          else {
+            game.touch = nx > player.x ? "right" : nx < player.x ? "left" : ny > player.y ? "down" : "up";
+            A.driving = true;
+            drove = true;
+            A.t += dt;
+            if (A.t > 1.2 + A.path.length * 0.5) game.autoPath = null;
+          }
+        }
+      }
+    }
+    updBase(dt);
+    if (drove) game.touch = null;
+  };
+  const drawBase = crewDrawList;
+  crewDrawList = function (list, t) {
+    drawBase(list, t);
+    const A = game.autoPath;
+    if (!A) return;
+    const [mx, my] = A.mark;
+    list.push({
+      y: -0.5,
+      draw: () => {
+        const X = mx * TILE + 16,
+          Y = my * TILE + 24,
+          s = 1 + Math.sin(t * 8) * 0.15;
+        ctx.strokeStyle = "rgba(242,193,78,.9)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(X, Y, 9 * s, 4 * s, 0, 0, 7);
+        ctx.stroke();
+      },
+    });
+  };
+}
+
+/* ---- Pausa, velocidade e esperar: agora embaixo do relógio, lado a lado ---- */
+(function timeButtons() {
+  const scr = byId("screen");
+  const grp = document.createElement("div");
+  grp.id = "tgrp";
+  grp.className = "ui";
+  for (const id of ["pauseb", "speedb", "waitb"]) byId(id) && grp.appendChild(byId(id));
+  scr.appendChild(grp);
+  const place = () => {
+    const hr = document.querySelector("#hud .hudR");
+    if (!hr || !hr.offsetParent || game.mode === "title") return void (grp.style.visibility = "hidden");
+    const S = scr.getBoundingClientRect(),
+      R = hr.getBoundingClientRect();
+    grp.style.visibility = "";
+    grp.style.top = R.bottom - S.top + 4 + "px";
+    grp.style.right = S.right - R.right + "px";
+    const G = grp.getBoundingClientRect();
+    game.mmDy = Math.max(0, ((G.bottom - S.top + 6) / S.height) * 480 - 37);
+  };
+  setInterval(place, 400);
+  addEventListener("resize", place);
+})();

@@ -545,6 +545,8 @@ function showCreate(mode) {
   game.lookDraft = JSON.parse(JSON.stringify(player.look));
   game.draftName = player.name;
   game.draftGender = player.gender;
+  game.draftTraits = (player.traits || []).slice();
+  game.draftOrient = player.orient || "bi";
   game.prevDir = "down";
   byId("title").style.display = "none";
   renderCreate();

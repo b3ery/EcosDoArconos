@@ -13,6 +13,7 @@
 
 const CC_SECTIONS = [
   { k: "perfil", n: "Perfil", ic: "chat", only: "new" },
+  { k: "jeito", n: "Jeito", ic: "heart" },
   { k: "rosto", n: "Rosto", ic: "eye", subs: [["skin", "Pele"], ["eyes", "Olhos"]] },
   { k: "cabelo", n: "Cabelo", ic: "hair", subs: [["hstyle", "Penteado"], ["hair", "Cor do cabelo"]] },
   { k: "chapeu", n: "Chapéu", ic: "hat", subs: [["hat", "Modelo"], ["hatc", "Cor"]] },
@@ -105,6 +106,20 @@ function renderCreate() {
         .map(([k, d]) => `<button data-dif="${k}" class="${(game.draftDiff || "normal") === k ? "on" : ""}"><b>${d.n}</b><small>${d.desc}</small></button>`)
         .join("")}</div>
     </div>`;
+  } else if (sec.k === "jeito") {
+    const tr = game.draftTraits || [];
+    const g = game.draftGender === "f" ? "f" : "m";
+    panel = `<div class="cc-prof">
+      <div class="cc-lbl">${iconHTML("smile", 18)}<span>Personalidade <small>(escolha até 3)</small></span></div>
+      <div class="cc-traits">${Object.entries(TRAITS)
+        .map(([k, d]) => `<button data-trait="${k}" class="${tr.includes(k) ? "on" : ""}" title="${d.d}">${iconHTML(d.ic, 18)}<b>${traitName(k, g)}</b><small>${d.d}</small></button>`)
+        .join("")}</div>
+      <div class="cc-lbl">${iconHTML("heart", 18)}<span>De quem você gosta</span></div>
+      <div class="cc-seg cc-or">${Object.entries(ORIENTS)
+        .map(([k, d]) => `<button data-orient="${k}" class="${(game.draftOrient || "bi") === k ? "on" : ""}" title="${d.d}">${d.n}<small>${d.d}</small></button>`)
+        .join("")}</div>
+      <div class="cc-note">${iconHTML("star", 14)} Seus traços dão bônus nas interações que combinam com eles. A orientação muda quem flerta com você (e quem você pode namorar).</div>
+    </div>`;
   } else {
     const opts = ccAvail(cat);
     const palette = CC_COLOR.has(cat)
@@ -190,6 +205,18 @@ function renderCreate() {
       el.querySelector(".cc-name").textContent = ni.value.trim() || "Aprendiz";
     };
   el.querySelectorAll("[data-gen]").forEach((b) => (b.onclick = () => ((game.draftGender = b.dataset.gen), renderCreate())));
+  el.querySelectorAll("[data-trait]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const k = b.dataset.trait,
+          tr = (game.draftTraits = game.draftTraits || []);
+        if (tr.includes(k)) tr.splice(tr.indexOf(k), 1);
+        else if (tr.length < 3) tr.push(k);
+        else toast("No máximo 3 traços.", 1400);
+        renderCreate();
+      }),
+  );
+  el.querySelectorAll("[data-orient]").forEach((b) => (b.onclick = () => ((game.draftOrient = b.dataset.orient), renderCreate())));
   el.querySelectorAll("[data-dif]").forEach((b) => (b.onclick = () => ((game.draftDiff = b.dataset.dif), renderCreate())));
   byId("crand").onclick = () => {
     for (const c of ["hstyle", "hair", "hat", "outfit", "robe", "hatc", "eyes", "acc", "staffc"].concat(mode === "new" ? ["skin"] : [])) {
@@ -208,6 +235,8 @@ function renderCreate() {
   byId("cgo").onclick = () => {
     clearInterval(game.ccAnim);
     player.look = JSON.parse(JSON.stringify(L));
+    player.traits = (game.draftTraits || []).slice();
+    player.orient = game.draftOrient || "bi";
     if (mode === "new") {
       player.name = (game.draftName || "").trim().slice(0, 12) || "Aprendiz";
       player.gender = game.draftGender;

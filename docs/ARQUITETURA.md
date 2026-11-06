@@ -73,6 +73,10 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 39 | `js/pessoas/38-turma-luca.js` | - Luca: careca, maluco, quebra a quarta parede. Às vezes aparece com o grupão. - Iluministas: Luca e Lucas Marzocca contra a monarquia; dá para entrar e convencer os outros. - Famí | `crewTarget` (21-amigos-criadores.js), `crewHomeOf` (21-amigos-criadores.js), `genInterior` (04-geracao-do-mundo.js), `interiorPersonMenu` (23-contatos.js), `bldService` (06-festivais-amizades-dialogos.js), `crewDoor` (21-amigos-criadores.js), `crewItems` (21-amigos-criadores.js), `interReqOk` (25-interacoes.js), `lifeSocialItems` (25-interacoes.js), `onNewDay` (05-familia-e-vida-social.js), `renderShop` (24-lojas.js), `renderCosmetic` (24-lojas.js) |
 | 40 | `js/pessoas/39-interacoes-mais.js` | Mais de 250 interações novas (o total passa de 400), com categorias novas: Elogiar, Brincadeiras, Jogos, Família e vizinhança, Reino (inclui o Iluminismo) e Coração (romance mais l | — |
 | 41 | `js/interface/40-celular.js` | Ajustes para jogar no celular: - o jogo é só deitado (em pé aparece um aviso para girar o aparelho); - os botões pequenos (Itens, Missões, Mapa...) ficam guardados num botão ☰, ass | — |
+| 42 | `js/vida/41-almas.js` | Cada pessoa tem um jeito de ser: - gênero, personalidade (2 traços) e orientação (de quem ela gosta); - casais entre os moradores (além dos casais da turma); - você escolhe a sua p | — |
+| 43 | `js/vida/42-vida-autonoma.js` | Moradores com vontade própria: - a turma sente fome, saudade dos amigos e tédio, e decide sozinha aonde ir (comer, visitar alguém, passear, fugir da chuva); - quem se encontra conv | — |
+| 44 | `js/vida/43-protestos.js` | Protesto dos Iluministas na frente do castelo (Simulador): 1. Concentração: cartazes, gritos de guerra, Luca e Lucas puxando o coro. 2. A Rainha aparece na escadaria: começam a voa | — |
+| 45 | `js/mundo/44-casa-bonita.js` | Casa mais bonita e do seu jeito: - móveis redesenhados com luz, sombra, contorno e detalhes; - 12 móveis novos (sofá, poltrona, piano, relógio de pêndulo, cama de casal...); - pint | — |
 
 ## Testes
 

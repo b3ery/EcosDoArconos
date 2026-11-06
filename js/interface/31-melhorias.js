@@ -170,7 +170,7 @@ function tutTick(dt) {
     saveGame();
     return hideTut();
   }
-  game.tutT = (game.tutT || 0) + dt;
+  if (!game.dialog) game.tutT = (game.tutT || 0) + dt;
   if (steps[i].done()) {
     player.tutStep = i + 1;
     game.tutT = 0;
@@ -197,7 +197,7 @@ function showTut(text, i, n) {
       hideTut();
     };
   }
-  el.style.display = ["world", "choice", "quests", "inv"].includes(game.mode) && !(game.mode === "inv" && player.tutStep !== 2) ? "block" : "none";
+  el.style.display = ["world", "choice", "quests", "inv"].includes(game.mode) && !game.dialog && !(game.mode === "inv" && player.tutStep !== 2) ? "block" : "none";
 }
 function hideTut() {
   const el = byId("coach");
