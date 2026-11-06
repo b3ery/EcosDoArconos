@@ -52,15 +52,36 @@ const TRAITS = {
   dramatico: { m: "Dramático", f: "Dramática", ic: "sweat", d: "Tudo vira uma tragédia (ou uma novela)." },
   leal: { m: "Leal", f: "Leal", ic: "smile", d: "Defende os amigos até o fim." },
 };
+/** Cada pessoa tem 3 traços, e nenhuma combinação se repete. */
 const NPC_TRAITS_FIXED = {
-  lucas: ["galanteador", "rebelde"], luca: ["rebelde", "engracado"], matheus: ["leal", "calmo"], malu: ["ciumento", "generoso"],
-  marcos: ["serio", "esquentado"], julia: ["ciumento", "dramatico"], andressa: ["intelectual", "fofoqueiro"], gabriel: ["romant", "dramatico"],
-  mylena: ["extro", "romant"], pedro: ["ciumento", "leal"], juliaO: ["generoso", "extro"], vini: ["esquentado", "ambicioso"],
-  rainha: ["serio", "ambicioso"], odelia: ["intelectual", "calmo"], bruno: ["engracado", "ciumento"], rosa: ["fofoqueiro", "generoso"],
-  ferreiro: ["esquentado", "leal"], curandeira: ["calmo", "romant"], kael: ["serio", "aventureiro"], lia: ["extro", "engracado"],
-  iara: ["timido", "intelectual"], tome: ["serio", "leal"], marina: ["aventureiro", "esquentado"], tobias: ["timido", "ciumento"],
-  capitao: ["ciumento", "esquentado"], zaid: ["ambicioso", "engracado"], doran: ["preguicoso", "galanteador"], ancia: ["fofoqueiro", "calmo"],
+  lucas: ["galanteador", "rebelde", "extro"], luca: ["rebelde", "engracado", "intelectual"], matheus: ["leal", "calmo", "generoso"], malu: ["ciumento", "generoso", "romant"],
+  marcos: ["serio", "esquentado", "leal"], julia: ["ciumento", "dramatico", "romant"], andressa: ["intelectual", "fofoqueiro", "ambicioso"], gabriel: ["romant", "dramatico", "timido"],
+  mylena: ["extro", "romant", "engracado"], pedro: ["ciumento", "leal", "esquentado"], juliaO: ["generoso", "extro", "aventureiro"], vini: ["esquentado", "ambicioso", "ciumento"],
+  rainha: ["serio", "ambicioso", "dramatico"], odelia: ["intelectual", "calmo", "serio"], bruno: ["engracado", "ciumento", "preguicoso"], rosa: ["fofoqueiro", "generoso", "extro"],
+  ferreiro: ["esquentado", "leal", "ambicioso"], curandeira: ["calmo", "romant", "generoso"], kael: ["serio", "aventureiro", "timido"], lia: ["extro", "engracado", "aventureiro"],
+  iara: ["timido", "intelectual", "romant"], tome: ["serio", "leal", "preguicoso"], marina: ["aventureiro", "esquentado", "engracado"], tobias: ["timido", "ciumento", "leal"],
+  capitao: ["ciumento", "esquentado", "dramatico"], zaid: ["ambicioso", "engracado", "galanteador"], doran: ["preguicoso", "galanteador", "calmo"], ancia: ["fofoqueiro", "calmo", "intelectual"],
+  cocheiro2: ["extro", "aventureiro", "galanteador"], nicoP: ["engracado", "timido", "generoso"], mercOri: ["ambicioso", "fofoqueiro", "calmo"], minerA: ["esquentado", "preguicoso", "leal"],
+  peleiro: ["timido", "aventureiro", "generoso"], cocheiro3: ["dramatico", "engracado", "fofoqueiro"], cocheiro: ["preguicoso", "extro", "fofoqueiro"],
 };
+const TRAIT_ASSIGN = {};
+/** Para quem não está na lista: sorteia 3 traços que ninguém mais tem (fixo por pessoa). */
+function assignTraits(id) {
+  const keys = Object.keys(TRAITS);
+  const used = new Set(Object.values(NPC_TRAITS_FIXED).concat(Object.values(TRAIT_ASSIGN)).map((t) => t.slice().sort().join("|")));
+  let h = hashStr(id || "x");
+  for (let k = 0; k < 400; k++) {
+    const pick = [];
+    for (let j = 0; pick.length < 3 && j < 12; j++) {
+      const t = keys[(h >>> (j * 3)) % keys.length];
+      if (!pick.includes(t)) pick.push(t);
+      if (j % 3 === 2) h = Math.imul(h ^ (j + 7), 2654435761) >>> 0;
+    }
+    if (pick.length === 3 && !used.has(pick.slice().sort().join("|"))) return pick;
+    h = Math.imul(h ^ (k + 101), 16777619) >>> 0;
+  }
+  return ["calmo", "leal", "generoso"];
+}
 function hashStr(s) {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
@@ -68,12 +89,8 @@ function hashStr(s) {
 }
 function npcTraits(id) {
   if (NPC_TRAITS_FIXED[id]) return NPC_TRAITS_FIXED[id];
-  const keys = Object.keys(TRAITS),
-    h = hashStr(id || "x");
-  const a = keys[h % keys.length];
-  let b = keys[(h >>> 8) % keys.length];
-  if (b === a) b = keys[(h >>> 16) % keys.length] === a ? "calmo" : keys[(h >>> 16) % keys.length];
-  return [a, b];
+  if (!id) return [];
+  return (TRAIT_ASSIGN[id] = TRAIT_ASSIGN[id] || assignTraits(id));
 }
 function hasTrait(id, t) {
   return id === "player" ? (player.traits || []).includes(t) : npcTraits(id).includes(t);
@@ -82,9 +99,8 @@ function traitName(t, g) {
   return TRAITS[t] ? (g === "f" ? TRAITS[t].f : TRAITS[t].m) : t;
 }
 function traitsText(id) {
-  return npcTraits(id)
-    .map((t) => traitName(t, npcGender(id)))
-    .join(" e ");
+  const n = npcTraits(id).map((t) => traitName(t, npcGender(id)).toLowerCase());
+  return n.length > 1 ? n.slice(0, -1).join(", ") + " e " + n[n.length - 1] : n.join("");
 }
 
 /* ===================== ORIENTAÇÃO ===================== */
@@ -104,12 +120,17 @@ const NPC_COUPLES = [
   ["iara", "mercOri"],
   ["tobias", "nicoP"],
 ];
-const NPC_ORIENT_FIXED = { iara: "homo", mercOri: "homo", tobias: "homo", nicoP: "homo", curandeira: "bi", doran: "pan", odelia: "ace", lia: "ace" };
+/** Orientação de cada um (os casais combinam entre si). */
+const NPC_ORIENT_FIXED = {
+  lucas: "bi", luca: "ace", matheus: "hetero", malu: "bi", marcos: "hetero", julia: "pan", andressa: "bi", gabriel: "pan", mylena: "bi", pedro: "hetero",
+  juliaO: "pan", vini: "bi", rainha: "hetero", odelia: "ace", bruno: "bi", rosa: "hetero", doran: "pan", ferreiro: "bi", curandeira: "hetero", kael: "homo",
+  iara: "homo", mercOri: "bi", tome: "hetero", marina: "pan", capitao: "hetero", tobias: "homo", nicoP: "pan", cocheiro2: "homo", minerA: "hetero",
+  peleiro: "bi", cocheiro3: "bi", cocheiro: "hetero", zaid: "pan", ancia: "hetero",
+};
 function npcOrient(id) {
   if (NPC_ORIENT_FIXED[id]) return NPC_ORIENT_FIXED[id];
-  if (typeof CREW_ALL !== "undefined" && CREW_ALL.includes(id)) return "hetero";
   const r = hashStr("o" + id) % 100;
-  return r < 66 ? "hetero" : r < 78 ? "homo" : r < 94 ? "bi" : r < 98 ? "pan" : "ace";
+  return r < 42 ? "hetero" : r < 62 ? "bi" : r < 78 ? "homo" : r < 92 ? "pan" : "ace";
 }
 function playerOrient() {
   return player.orient || "bi";
@@ -123,6 +144,8 @@ function likesGender(orient, myG, otherG, salt) {
 }
 /** Esta pessoa sente atração por você? */
 function attractedTo(id) {
+  // O Lucas é bi, mas tem muito mais chance de se interessar por mulher.
+  if (id === "lucas") return player.gender === "f" || hashStr("lm" + (player.name || "")) % 100 < (player.gender === "m" ? 30 : 60);
   return likesGender(npcOrient(id), npcGender(id), player.gender || "n", id + (player.name || ""));
 }
 /** Você sente atração por esta pessoa (pela orientação que escolheu)? */
@@ -138,6 +161,10 @@ function npcSpouse(id) {
     if (b === id && player.spouse !== a && player.dating !== a) return a;
   }
   return null;
+}
+/** Todo mundo que é casado odeia o Lucas Marzocca. */
+function hatesMarzoca(id) {
+  return !!id && id !== "lucas" && !!npcSpouse(id);
 }
 const shortName = (id) => (NPCS[id] ? NPCS[id].nome.split(",")[0] : id);
 
@@ -228,8 +255,17 @@ const TOPICS = {
     return `${pk(["Vi", "Peguei", "Passei e vi"])} ${shortName(a)} e ${shortName(b)} ${pk(COUPLE_ACTS)} ${pk(PLACES)}.`;
   },
   turma: (id) => `${pk(["Sabia que", "Diz que", "Ontem", "Hoje cedo"])} ${shortName(someCrew(id))} ${pk(CREW_DEEDS)}?`.replace(/^(Ontem|Hoje cedo) (.*)\?$/, "$1 $2!"),
-  lucas: () =>
-    pk([
+  lucas: (id) =>
+    hatesMarzoca(id)
+      ? pk([
+          `Se eu pegar o Marzoca olhando pra ${npcSpouse(id) ? shortName(npcSpouse(id)) : "minha família"} de novo...`,
+          "Odeio aquele Lucas Marzocca. Com todas as forças das runas.",
+          "Todo casado dessa vila tem um motivo pra correr atrás do Marzoca.",
+          "O Marzoca passou na minha rua. Tranquei a porta e escondi a aliança.",
+          `${shortName(npcSpouse(id))} diz que o Lucas é engraçado. EU não acho graça nenhuma.`,
+          "Vou fazer um abaixo-assinado pra expulsar o Marzoca da vila.",
+        ])
+      : pk([
       `Lucas Marzocca deu em cima d${pk(["a mulher do ferreiro", "o marido da Rosa", "a esposa do Capitão", "a Princesa Julia", "a Duquesa Malu"])} e saiu correndo ${pk(PLACES)}!`,
       "O Marzoca de novo fugindo de marido bravo. Esse aí não aprende!",
       "Se ouvir alguém gritando 'VOLTA AQUI, MARZOCA', não se assuste. É terça-feira.",
@@ -238,8 +274,9 @@ const TOPICS = {
     ]),
   voce: (id) => {
     const rep = player.rep ?? 50,
-      f = id && typeof friendship === "function" ? friendship(id) : 30;
+      f = id && FRIENDS[id] ? friendship(id) : 30;
     if (player.spouse && Math.random() < 0.35) return `E ${shortName(player.spouse)}, como vai? ${pk(["Manda um abraço!", "Vocês formam um casal bonito.", "Cuida bem, hein!"])}`;
+    if (hatesMarzoca(id) && FRIENDS.lucas && friendshipLevel("lucas") >= 2 && Math.random() < 0.4) return pk(["Vi você andando com o Marzoca. Escolhe melhor as amizades, viu?", "Amig" + genderWord("o", "a", "e") + " do Lucas Marzocca, é? Hmm.", "Fala pro seu amigo Marzoca ficar longe da minha casa."]);
     if (rep < 30) return pk(["Andam falando umas coisas de você por aí...", "Não sei se posso confiar em você ainda.", "Sua fama não anda boa, viu?"]);
     if (f > 60) return pk([`${player.name}, você é das minhas pessoas favoritas.`, "Que bom que você passou por aqui!", "Com você por perto o dia melhora."]);
     return pk([`${player.name}, você parece cansad${genderWord("o", "a", "e")}.`, "Você é novo por aqui ou só parece?", "Gostei do seu jeito, sabia?", "Você sempre aparece na hora certa."]);
@@ -332,6 +369,18 @@ function genExchange(a, b) {
   const fillA = (s) => s.replace(/\{A\}/g, B).replace(/\{B\}/g, B).replace(/\{X\}/g, X);
   const out = [];
   const married = a.id && b.id && npcSpouse(a.id) === b.id;
+  // Casados contra o Marzoca: sempre dá confusão.
+  const lu = a.id === "lucas" ? a : b.id === "lucas" ? b : null,
+    ca = lu === a ? b : a;
+  if (lu && hatesMarzoca(ca.id)) {
+    const L = lu.nome,
+      C = ca.nome;
+    const opener = lu === a ? [L, pk([`E aí, ${C}! Como vai a família? Manda um beijo pr${gw(npcSpouse(ca.id), "o", "a")} ${shortName(npcSpouse(ca.id))}!`, `Bom dia, ${C}! Que dia lindo, né? Tipo a sua família.`, `${C}, meu amigo! Calma, eu só passei pra dar oi.`])] : [C, pk(["Ih, olha quem apareceu. O Marzoca.", `Fica longe de mim, ${L}.`, "Pode ir dando meia-volta, Marzoca!"])];
+    const angry = [C, pk([`Nem vem, ${L}! Tô de olho em você.`, "Sai daqui antes que eu perca a paciência!", `Se chegar perto d${gw(npcSpouse(ca.id), "o", "a")} ${shortName(npcSpouse(ca.id))}, eu juro...`, "Marzoca, você é um perigo pra qualquer casamento!"])];
+    const excuse = [L, pk(["Que isso! Eu sou um homem de respeito!", "Calma, calma! Eu só sou simpático!", "Por que todo casado me trata assim? Injustiça!", "Eu? Eu nem gosto de... tá bom, gosto de todo mundo."])];
+    const last = [C, pk(["SOME!", "Respeito? Você?! Hahaha. Some daqui.", "Última vez que eu aviso, Marzoca!", "*cospe no chão* Hmpf."])];
+    return lu === a ? [opener, angry, excuse, last] : [opener, excuse, angry, [L, pk(["Tá bom, tá bom, já fui! ...Manda um beijo pra família!", "Nossa, que recepção calorosa.", "Um dia vocês ainda vão me amar."])], last];
+  }
   if (married && Math.random() < 0.6) {
     const pair = Math.random() < 0.7 ? pk(SWEET) : pk(FIGHT);
     out.push([A, pair[0]], [B, pair[1]], [A, Math.random() < 0.5 ? genLine(a.id, "amor") : pk(["Te amo, viu?", "Bobo(a).", "Tá bom, tá bom."])]);
@@ -446,7 +495,9 @@ const TRAIT_CAT_BONUS = { extro: "amigo", engracado: "graca", romant: "amor", in
         const lines = [["", `${n} é ${traitsText(id).toLowerCase()}. ${TRAITS[tr[0]].d}`]];
         if (sp) lines.push(["", `É casad${gw(id, "o", "a")} com ${shortName(sp)}.${hasTrait(sp, "ciumento") || hasTrait(sp, "esquentado") ? ` Cuidado: ${shortName(sp)} é ${traitsText(sp).toLowerCase()}!` : ""}`]);
         else lines.push(["", `${n} está solteir${gw(id, "o", "a")}.`]);
-        if (!(typeof CREW_ALL !== "undefined" && CREW_ALL.includes(id))) {
+        if (sp && id !== "lucas" && hatesMarzoca(id)) lines.push([n, pk(["E se o Lucas Marzocca chegar perto da minha família, eu não respondo por mim.", "Marzoca? Nem fala esse nome perto de mim.", "Aquele Marzoca... um dia ainda pego ele."])]);
+        if (id === "lucas") lines.push([n, "Eu? Gosto de todo mundo! ...Mas confesso que mulher me ganha bem mais fácil. E sim, todo marido da vila me odeia. Injustiça!"]);
+        if (!isChildNpc(id)) {
           if (f >= 30 || hasTrait(id, "extro")) lines.push([n, npcOrient(id) === "ace" ? "Romance não é pra mim. Prefiro amizade, livros e chá." : `Se quer saber, eu sou ${ORIENTS[npcOrient(id)].n.toLowerCase()}. ${attractedTo(id) ? pk(["E você não é de se jogar fora...", "Por quê? Tá interessad" + genderWord("o", "a", "e") + "?"]) : "Mas a gente pode ser amigos!"}`]);
           else lines.push([n, "Isso de com quem eu namoro? A gente ainda não tem essa intimidade."]);
         }

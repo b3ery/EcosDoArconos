@@ -237,18 +237,28 @@ function talkers() {
   const out = [];
   for (const a of Object.values(game.crewA || {})) if (player.zone === "vila" && crewVisible(a)) (a.kind = "crew"), out.push({ ref: a, id: a.id, nome: shortName(a.id) });
   for (const r of game.roam || []) if (NPCS[r.id] && !(typeof npcAsleep === "function" && npcAsleep(r.id))) (r.kind = "roam"), out.push({ ref: r, id: r.id, nome: shortName(r.id) });
-  for (const w of game.walkers || []) if (!(w.inside > 0) && !(w.sit > 0)) (w.kind = "walker"), out.push({ ref: w, id: null, nome: w.nm });
+  for (const w of game.walkers || []) if (!(w.inside > 0) && !(w.sit > 0)) (w.kind = "walker"), out.push({ ref: w, id: "w:" + w.nm, nome: w.nm });
   return out.filter((p) => !(p.ref.talking > 0) && nearPlayer(p.ref, 14));
 }
 function bumpChats() {
   if (!ZONES[player.zone] || !ZONES[player.zone].town) return;
   if (game.convs.length >= 3) return;
   const ps = talkers();
+  // O Marzoca perto de alguém casado: confusão garantida.
+  const lu = ps.find((p) => p.id === "lucas");
+  if (lu) {
+    const foe = ps.find((p) => p !== lu && hatesMarzoca(p.id) && dist1(p.ref, lu.ref) <= 3);
+    if (foe) {
+      game.bubbles.push({ x: foe.ref.x, y: foe.ref.y, icon: "anger", t: 2.4 });
+      startConv([foe, lu], genExchange(foe, lu), { loud: true });
+      return;
+    }
+  }
   for (let i = 0; i < ps.length; i++)
     for (let j = i + 1; j < ps.length; j++) {
       const a = ps[i],
         b = ps[j];
-      if (dist1(a.ref, b.ref) > 2 || (!a.id && !b.id && Math.random() < 0.5)) continue;
+      if (dist1(a.ref, b.ref) > 2 || (a.id.startsWith("w:") && b.id.startsWith("w:") && Math.random() < 0.5)) continue;
       startConv([a, b], genExchange(a, b));
       return;
     }
@@ -264,8 +274,8 @@ function interiorChatTick(dt) {
   if (ps.length < 2 || Math.random() < 0.3) return;
   const a = pk(ps);
   const b = ps.filter((p) => p !== a).sort((p, q) => dist1(p, a) - dist1(q, a))[0];
-  const A = { ref: a, id: a.cid || null, nome: a.nm || "Cliente" },
-    B = { ref: b, id: b.cid || null, nome: b.nm || "Cliente" };
+  const A = { ref: a, id: a.cid || "w:" + (a.nm || "c1"), nome: a.nm || "Cliente" },
+    B = { ref: b, id: b.cid || "w:" + (b.nm || "c2"), nome: b.nm || "Cliente" };
   startConv([A, B], genExchange(A, B));
 }
 
@@ -613,7 +623,15 @@ function galanteioTick(dt) {
   if (!L || !crewVisible(L) || !nearPlayer(L, 18) || L.talking > 0) return;
   const targets = Object.values(game.crewA).filter((o) => o !== L && crewVisible(o) && npcSpouse(o.id) && NPCS[npcSpouse(o.id)] && !o.talking && nearPlayer(o, 20));
   if (!targets.length) return;
-  const o = targets.sort((p, q) => dist1(p, L) - dist1(q, L))[0];
+  // Ele vai muito mais atrás de mulher casada do que de homem casado.
+  let o = null,
+    tot = targets.reduce((acc, q) => acc + (npcGender(q.id) === "f" ? 4 : 1) / (1 + dist1(q, L) / 8), 0),
+    r = Math.random() * tot;
+  for (const q of targets) if ((r -= (npcGender(q.id) === "f" ? 4 : 1) / (1 + dist1(q, L) / 8)) < 0) {
+    o = q;
+    break;
+  }
+  o = o || targets[0];
   const dest = freeNear("vila", o.x, o.y, 1);
   if (!dest) return;
   [L.x, L.y] = dest;
