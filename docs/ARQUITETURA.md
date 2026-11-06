@@ -78,6 +78,7 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 44 | `js/vida/43-protestos.js` | Protesto dos Iluministas na frente do castelo (Simulador): 1. Concentração: cartazes, gritos de guerra, Luca e Lucas puxando o coro. 2. A Rainha aparece na escadaria: começam a voa | — |
 | 45 | `js/mundo/44-casa-bonita.js` | Casa mais bonita e do seu jeito: - móveis redesenhados com luz, sombra, contorno e detalhes; - 12 móveis novos (sofá, poltrona, piano, relógio de pêndulo, cama de casal...); - pint | — |
 | 46 | `js/vida/45-golpe.js` | Golpe de estado e conquista dos reinos (Simulador de Vida): 1. Conspiração: junte apoio (aliados, guardas subornados, armas, o povo, os Iluministas) sem levantar suspeita. Suspeita | — |
+| 47 | `js/vida/46-morte-e-calabouco.js` | Crimes, castigo e o calabouço (nos dois modos): - Qualquer adulto pode morrer (crianças não). Magos são imortais para mortais: no Simulador ninguém mata a Odelia; no modo História  | — |
 
 ## Testes
 

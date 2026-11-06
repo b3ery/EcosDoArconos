@@ -56,6 +56,7 @@ function nearPlayer(o, r = 12) {
 /* ===================== CONVERSAS COM BALÃO ===================== */
 
 game.convs = [];
+game.speech = game.speech || [];
 /**
  * Duas (ou mais) pessoas conversam com balões de fala.
  * parts: [{ref, nome, id}] (ref tem x/y e fica parado durante a conversa);

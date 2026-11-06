@@ -406,6 +406,16 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **Conquiste Marés e Pedravale:** recrute soldados e invada (ataque frontal, cerco ou emboscada), faça um golpe infiltrado com espiões ou uma união diplomática. Os três juntos: **Imperador(a) dos Três Reinos**.
 - **Contragolpe:** se o povo te odiar, a Rainha Aurélia volta do exílio com um exército.
 
+## 🗡️ Crimes, castigo e o calabouço (nos dois modos)
+
+- **Qualquer adulto pode morrer** (pelo menu da pessoa → Matar…): faca, veneno (compre no Boticário) ou, no modo História, um **feitiço mortal**.
+- **Magos são imortais para mortais:** no Simulador a lâmina atravessa a Odelia como névoa. No modo História você é mago, e **mago contra mago** pode acabar em morte: é um duelo de verdade.
+- **Testemunhas:** quem estiver por perto pode ver. Se ninguém viu, esconda o corpo; a guarda investiga por alguns dias.
+- **Descobriram?** Prisão no calabouço, reputação zero e a vila inteira te detesta: ninguém quer conversa, as lojas cobram mais e a rua grita "assassino!". Os mortos ganham um túmulo atrás do Templo.
+- **Saga do vilão:** o eco do Silenciador manda eliminar a Arquimaga Odelia. A história continua sem ela.
+- **O calabouço** (visite pelo Guarda Tomé, ou vá preso): celas, tochas, guarda fazendo ronda e o **Professor L**, careca, pálido e de olhos pretos. Ninguém sabe o nome dele nem por que está preso. É insuportável e deixa tudo pior. O **General Marcos** tem um ranço dele, então toda patrulha joga lixo na cela. Cumpra a pena, tente fugir (com magia é mais fácil) ou converse com ele, se aguentar.
+- **Qualquer pessoa pode dar o golpe:** sem idade mínima e também no modo História (com o Luca ou o Lucas).
+
 ## 🏠 Casa do seu jeito
 
 - **Móveis redesenhados** com luz, sombra e detalhes, e **12 móveis novos** na Marcenaria: sofá de veludo, poltrona de leitura, piano de cauda, relógio de pêndulo, cama de casal, tapete persa, abajur de vitral, mesa de jantar, cômoda, espelho de pé, penteadeira e samambaia.

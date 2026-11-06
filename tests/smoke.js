@@ -117,6 +117,9 @@ const check = (name, ok) => {
     game.mode = "world";
   });
   check("Golpe de estado dá a coroa", await page.evaluate(() => (coupWin("discurso"), (game.dialog = null), isMonarch() && /Aurélia/.test(royalTitle()))));
+  check("Mago é imortal para mortal", await page.evaluate(() => (killMenu("odelia"), (game.dialog = null), (game.mode = "world"), !isDead("odelia"))));
+  check("Matar e ir para o calabouço", await page.evaluate(() => (killNpc("bruno", "faca"), murderFound("bruno"), (game.dialog = null), startJail(72, "teste"), isDead("bruno") && player.zone === "calabouco" && hated())));
+  await page.evaluate(() => (leaveJail(), enterHouse(null), (game.dialog = null), (game.mode = "world")));
   check("Parede pintada na casa", await page.evaluate(() => HOME_PAL[homeTier()].wall === "#ecc8cc"));
   await page.waitForTimeout(1500);
   check("500+ itens no catálogo", await page.evaluate(() => CATALOG.length >= 500));
