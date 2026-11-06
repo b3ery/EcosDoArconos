@@ -14,15 +14,51 @@
 const CC_SECTIONS = [
   { k: "perfil", n: "Perfil", ic: "chat", only: "new" },
   { k: "jeito", n: "Jeito", ic: "heart" },
-  { k: "rosto", n: "Rosto", ic: "eye", subs: [["skin", "Pele"], ["eyes", "Olhos"]] },
-  { k: "cabelo", n: "Cabelo", ic: "hair", subs: [["hstyle", "Penteado"], ["hair", "Cor do cabelo"]] },
-  { k: "chapeu", n: "Chapéu", ic: "hat", subs: [["hat", "Modelo"], ["hatc", "Cor"]] },
-  { k: "roupa", n: "Roupa", ic: "shirt", subs: [["outfit", "Modelo"], ["robe", "Cor"]] },
+  // [parte, nome, cor que aparece em cima]: em cima as cores, embaixo os formatos.
+  { k: "rosto", n: "Rosto", ic: "eye", subs: [["face", "Rosto e pele", "skin"], ["eyeshape", "Olhos", "eyes"]] },
+  { k: "cabelo", n: "Cabelo", ic: "hair", subs: [["hstyle", "Penteado", "hair"]] },
+  { k: "chapeu", n: "Chapéu", ic: "hat", subs: [["hat", "Chapéu", "hatc"]] },
+  { k: "roupa", n: "Roupa", ic: "shirt", subs: [["outfit", "Roupa", "robe"]] },
   { k: "acess", n: "Acessórios", ic: "glasses", subs: [["acc", "Acessório"], ["aura", "Aura"]] },
-  { k: "cajado", n: "Cajado", ic: "staff", subs: [["staffc", "Cristal"]], story: true },
+  { k: "cajado", n: "Cajado", ic: "staff", subs: [["staffs", "Cajado", "staffc"]], story: true },
 ];
 const CC_COLOR = new Set(["skin", "eyes", "hair", "hatc", "robe", "staffc"]);
-const CC_BODY = new Set(["outfit", "robe", "staffc", "aura"]);
+const CC_BODY = new Set(["outfit", "robe", "staffc", "aura", "staffs"]);
+/* Formatos e detalhes novos (de graça na criação; no guarda-roupa alguns custam ouro). */
+Object.assign(COSMETICS, {
+  face: [
+    ["nenhum", "Liso", 0],
+    ["bochechas", "Bochechas rosadas", 0],
+    ["sardas", "Sardas", 0],
+    ["pinta", "Pinta", 0],
+    ["sorriso", "Sorriso", 0],
+    ["olheiras", "Olheiras", 0],
+    ["cicatriz", "Cicatriz", 0],
+    ["barba", "Barba", 0],
+    ["cavanhaque", "Cavanhaque", 0],
+    ["batom", "Batom", 0],
+    ["guerra", "Pintura de guerra", 0],
+  ],
+  eyeshape: [
+    ["ponto", "Simples", 0],
+    ["grandes", "Grandes", 0],
+    ["cilios", "Com cílios", 0],
+    ["sobrancelhas", "Sobrancelhas", 0],
+    ["sonolentos", "Sonolentos", 0],
+    ["bravos", "Bravos", 0],
+    ["fechados", "Sorridentes", 0],
+    ["brilho", "Brilhantes", 0],
+  ],
+  staffs: [
+    ["reto", "Reto", 0],
+    ["galho", "Galho", 0],
+    ["espiral", "Espiral dourada", 0],
+    ["lua", "Lua crescente", 0],
+    ["estrela", "Estrela", 0],
+    ["duplo", "Duplo cristal", 0],
+  ],
+});
+for (const k of ["face", "eyeshape", "staffs"]) COSMETIC_ICONS[k] = { face: "smile", eyeshape: "eye", staffs: "staff" }[k];
 const CC_POSES = [
   ["down", "Frente"],
   ["right", "Lado"],
@@ -87,6 +123,7 @@ function renderCreate() {
   const subs = sec.subs || [];
   if (!subs.some((s) => s[0] === game.ccSub)) game.ccSub = subs[0] ? subs[0][0] : null;
   const cat = game.ccSub;
+  const colKey = ((subs.find((q) => q[0] === cat) || [])[2]) || (CC_COLOR.has(cat) ? cat : null);
   game.ccPose = game.ccPose || "down";
 
   let panel = "";
@@ -122,13 +159,14 @@ function renderCreate() {
     </div>`;
   } else {
     const opts = ccAvail(cat);
-    const palette = CC_COLOR.has(cat)
-      ? `<div class="cc-pal">${opts
+    const COLN = { skin: "Cor da pele", eyes: "Cor dos olhos", hair: "Cor do cabelo", hatc: "Cor do chapéu", robe: "Cor da roupa", staffc: "Cor do cristal" };
+    const palette = colKey
+      ? `<div class="cc-lbl cc-pl">${iconHTML("sparkle", 14)}<span>${COLN[colKey] || "Cor"}</span></div><div class="cc-pal">${ccAvail(colKey)
           .filter((o) => o.ok)
-          .map((o) => `<button class="cc-sw ${L[cat] === o.id ? "on" : ""}" data-pick="${o.id}" style="background:${o.id}" title="${o.n}"></button>`)
-          .join("")}<label class="cc-sw plus ${mode === "new" ? "" : "off"}" title="${mode === "new" ? "Escolher qualquer cor" : "Cores livres só na criação. Compre tinturas no Salão e na Alfaiataria."}">+<input type="color" id="ccolor" value="${/^#[0-9a-f]{6}$/i.test(L[cat]) ? L[cat] : "#888888"}" ${mode === "new" ? "" : "disabled"}></label></div>`
+          .map((o) => `<button class="cc-sw ${L[colKey] === o.id ? "on" : ""}" data-pick="${o.id}" style="background:${o.id}" title="${o.n}"></button>`)
+          .join("")}<label class="cc-sw plus ${mode === "new" ? "" : "off"}" title="${mode === "new" ? "Escolher qualquer cor" : "Cores livres só na criação. Compre tinturas no Salão e na Alfaiataria."}">+<input type="color" id="ccolor" value="${/^#[0-9a-f]{6}$/i.test(L[colKey]) ? L[colKey] : "#888888"}" ${mode === "new" ? "" : "disabled"}></label></div><div class="cc-lbl cc-pl">${iconHTML("star", 14)}<span>${{ face: "Detalhes do rosto", eyeshape: "Formato dos olhos", hstyle: "Penteado", hat: "Modelo", outfit: "Modelo", staffs: "Formato do cajado" }[cat] || "Modelo"}</span></div>`
       : "";
-    const tiles = opts
+    const tiles = (CC_COLOR.has(cat) ? [] : opts)
       .map(
         (o, i) => `<button class="cc-tile ${L[cat] === o.id ? "on" : ""} ${o.ok ? "" : "lock"}" data-opt="${i}" title="${o.n}">
         <canvas width="84" height="84" data-th="${i}"></canvas>
@@ -165,7 +203,7 @@ function renderCreate() {
       const o = opts[+cv.dataset.th];
       const Lm = Object.assign({}, L, { [cat]: o.id });
       if (cat === "hatc" && L.hat === "nenhum") Lm.hat = "mago";
-      if (cat === "hstyle" || cat === "hair") Lm.hat = "nenhum";
+      if (cat === "hstyle" || cat === "hair" || cat === "face" || cat === "eyeshape") Lm.hat = "nenhum";
       CC_BODY.has(cat) ? drawPose(cv, Lm, "down", 0) : drawBust(cv, Lm);
     });
   }
@@ -187,9 +225,9 @@ function renderCreate() {
         renderCreate();
       }),
   );
-  el.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => ((L[cat] = b.dataset.pick), renderCreate())));
+  el.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => ((L[colKey || cat] = b.dataset.pick), playSound(700, 0.03, "sine"), renderCreate())));
   const cc = byId("ccolor");
-  if (cc) cc.onchange = () => ((L[cat] = cc.value), renderCreate());
+  if (cc) cc.onchange = () => ((L[colKey || cat] = cc.value), renderCreate());
   el.querySelectorAll("[data-pose]").forEach(
     (b) =>
       (b.onclick = () => {
@@ -219,7 +257,7 @@ function renderCreate() {
   el.querySelectorAll("[data-orient]").forEach((b) => (b.onclick = () => ((game.draftOrient = b.dataset.orient), renderCreate())));
   el.querySelectorAll("[data-dif]").forEach((b) => (b.onclick = () => ((game.draftDiff = b.dataset.dif), renderCreate())));
   byId("crand").onclick = () => {
-    for (const c of ["hstyle", "hair", "hat", "outfit", "robe", "hatc", "eyes", "acc", "staffc"].concat(mode === "new" ? ["skin"] : [])) {
+    for (const c of ["hstyle", "hair", "hat", "outfit", "robe", "hatc", "eyes", "acc", "staffc", "face", "eyeshape", "staffs"].concat(mode === "new" ? ["skin"] : [])) {
       const a = ccAvail(c).filter((o) => o.ok);
       if (a.length) L[c] = a[Math.floor(Math.random() * a.length)].id;
     }

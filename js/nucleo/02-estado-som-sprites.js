@@ -1234,7 +1234,25 @@ function wizardRects(robe, hat, hair, glow, dir, frame = 0, seed) {
   if (s % 6 === 1 && dir !== "up" && hairStyle !== 1 && !glow)
     r.push([6, 8, 4, 1, hair], [7, 9, 2, 1, hair]);
   if (glow) {
-    r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
+    switch (L.staffs) {
+      case "galho":
+        r.push([13, 5, 1, 10, "#6b4423"], [12, 4, 1, 2, "#6b4423"], [14, 7, 1, 1, "#5a8a3a"], [11, 2, 3, 3, glow]);
+        break;
+      case "espiral":
+        r.push([13, 4, 1, 11, "#c9a03a"], [12, 6, 1, 1, "#7a4f2a"], [14, 9, 1, 1, "#7a4f2a"], [12, 12, 1, 1, "#7a4f2a"], [12, 1, 3, 3, glow], [11, 2, 1, 1, "#c9a03a"], [15, 2, 1, 1, "#c9a03a"]);
+        break;
+      case "lua":
+        r.push([13, 4, 1, 11, "#d8d0c2"], [12, 1, 3, 1, glow], [11, 2, 1, 2, glow], [12, 4, 1, 1, glow], [13, 2, 1, 1, "#ffffff"]);
+        break;
+      case "duplo":
+        r.push([13, 4, 1, 11, "#4a3a5a"], [12, 2, 3, 2, glow], [13, 0, 1, 2, glow], [12, 8, 3, 1, glow]);
+        break;
+      case "estrela":
+        r.push([13, 4, 1, 11, "#7a4f2a"], [13, 0, 1, 5, glow], [11, 2, 5, 1, glow], [13, 2, 1, 1, "#ffffff"]);
+        break;
+      default:
+        r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
+    }
   }
   return r;
 }
@@ -1416,7 +1434,66 @@ function heroRects(L, dir, glow, fr = 0) {
     const ec = L.eyes || "#222",
       e1 = dir === "right" ? 7 : 6,
       e2 = dir === "left" ? 8 : 9;
-    r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec]);
+    const sk = L.skin || "#f0c8a8",
+      skd = shade(sk, -0.3),
+      brow = shade(hc, -0.15);
+    switch (L.eyeshape) {
+      case "grandes":
+        r.push([e1, 6, 1, 2, ec], [e2, 6, 1, 2, ec]);
+        break;
+      case "cilios":
+        r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec], [e1 - 1, 6, 1, 1, "#1a1a1a"], [e2 + 1, 6, 1, 1, "#1a1a1a"]);
+        break;
+      case "sonolentos":
+        r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec], [e1, 6, 1, 1, skd], [e2, 6, 1, 1, skd]);
+        break;
+      case "sobrancelhas":
+        r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec], [e1, 6, 1, 1, brow], [e2, 6, 1, 1, brow], [e1 - 1, 6, 1, 1, brow], [e2 + 1, 6, 1, 1, brow]);
+        break;
+      case "bravos":
+        r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec], [e1 + 1, 6, 1, 1, brow], [e2 - 1, 6, 1, 1, brow]);
+        break;
+      case "fechados":
+        r.push([e1, 7, 1, 1, skd], [e2, 7, 1, 1, skd], [e1, 6, 1, 1, shade(sk, -0.45)], [e2, 6, 1, 1, shade(sk, -0.45)]);
+        break;
+      case "brilho":
+        r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec], [e1, 6, 1, 1, "#ffffff"], [e2, 6, 1, 1, "#ffffff"]);
+        break;
+      default:
+        r.push([e1, 7, 1, 1, ec], [e2, 7, 1, 1, ec]);
+    }
+    switch (L.face) {
+      case "bochechas":
+        r.push([6, 8, 1, 1, "#f08a9a"], [9, 8, 1, 1, "#f08a9a"]);
+        break;
+      case "sardas":
+        r.push([6, 8, 1, 1, "#b8684a"], [9, 8, 1, 1, "#b8684a"], [8, 8, 1, 1, shade(sk, -0.15)]);
+        break;
+      case "pinta":
+        r.push([dir === "left" ? 6 : 9, 8, 1, 1, "#4a2a1a"]);
+        break;
+      case "cicatriz":
+        r.push([dir === "left" ? 7 : 8, 6, 1, 3, "#c46a6a"]);
+        break;
+      case "barba":
+        r.push([6, 8, 4, 1, brow], [5, 7, 1, 2, brow], [10, 7, 1, 2, brow]);
+        break;
+      case "cavanhaque":
+        r.push([7, 8, 2, 1, brow]);
+        break;
+      case "batom":
+        r.push([7, 8, 2, 1, "#c93a5a"], [6, 8, 1, 1, "#f0a0b0"], [9, 8, 1, 1, "#f0a0b0"]);
+        break;
+      case "guerra":
+        r.push([6, 8, 1, 1, "#3a6ac9"], [9, 8, 1, 1, "#3a6ac9"], [7, 6, 2, 1, "#c93a3a"]);
+        break;
+      case "olheiras":
+        r.push([e1, 8, 1, 1, "#8a6a8a"], [e2, 8, 1, 1, "#8a6a8a"]);
+        break;
+      case "sorriso":
+        r.push([7, 8, 2, 1, "#7a2a2a"], [6, 8, 1, 1, shade(sk, -0.12)], [9, 8, 1, 1, shade(sk, -0.12)]);
+        break;
+    }
     const ac = L.acc;
     if (ac === "sardas")
       r.push([e1, 8, 1, 1, "#c9785a"], [e2, 8, 1, 1, "#c9785a"]);
@@ -1519,7 +1596,25 @@ function heroRects(L, dir, glow, fr = 0) {
       break;
   }
   if (glow) {
-    r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
+    switch (L.staffs) {
+      case "galho":
+        r.push([13, 5, 1, 10, "#6b4423"], [12, 4, 1, 2, "#6b4423"], [14, 7, 1, 1, "#5a8a3a"], [11, 2, 3, 3, glow]);
+        break;
+      case "espiral":
+        r.push([13, 4, 1, 11, "#c9a03a"], [12, 6, 1, 1, "#7a4f2a"], [14, 9, 1, 1, "#7a4f2a"], [12, 12, 1, 1, "#7a4f2a"], [12, 1, 3, 3, glow], [11, 2, 1, 1, "#c9a03a"], [15, 2, 1, 1, "#c9a03a"]);
+        break;
+      case "lua":
+        r.push([13, 4, 1, 11, "#d8d0c2"], [12, 1, 3, 1, glow], [11, 2, 1, 2, glow], [12, 4, 1, 1, glow], [13, 2, 1, 1, "#ffffff"]);
+        break;
+      case "duplo":
+        r.push([13, 4, 1, 11, "#4a3a5a"], [12, 2, 3, 2, glow], [13, 0, 1, 2, glow], [12, 8, 3, 1, glow]);
+        break;
+      case "estrela":
+        r.push([13, 4, 1, 11, "#7a4f2a"], [13, 0, 1, 5, glow], [11, 2, 5, 1, glow], [13, 2, 1, 1, "#ffffff"]);
+        break;
+      default:
+        r.push([13, 4, 1, 11, "#7a4f2a"], [12, 2, 3, 3, glow]);
+    }
   }
   return r;
 }
