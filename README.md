@@ -414,6 +414,8 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **Descobriram?** Prisão no calabouço, reputação zero e a vila inteira te detesta: ninguém quer conversa, as lojas cobram mais e a rua grita "assassino!". Os mortos ganham um túmulo atrás do Templo.
 - **Saga do vilão:** o eco do Silenciador manda eliminar a Arquimaga Odelia. A história continua sem ela.
 - **O calabouço** (visite pelo Guarda Tomé, ou vá preso): celas, tochas, guarda fazendo ronda e o **Professor L**, careca, pálido e de olhos pretos. Ninguém sabe o nome dele nem por que está preso. É insuportável e deixa tudo pior. O **General Marcos** tem um ranço dele, então toda patrulha joga lixo na cela. Cumpra a pena, tente fugir (com magia é mais fácil) ou converse com ele, se aguentar.
+- **Pena de morte:** duas mortes (ou matar alguém da realeza) levam a julgamento na escadaria do castelo. Peça clemência, tente fugir da forca ou aceite. No Simulador a execução é o fim (um filho adulto continua a família). No modo História você é mago: a corda arrebenta e você é exilado.
+- **Todo adulto pode morrer**, inclusive os moradores sem nome e os elfos (que também ganharam todas as interações, em pizza).
 - **Qualquer pessoa pode dar o golpe:** sem idade mínima e também no modo História (com o Luca ou o Lucas).
 
 ## 🦹 Ladrão, sonegador e NPCs que lembram de tudo
