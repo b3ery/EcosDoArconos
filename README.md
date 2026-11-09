@@ -140,34 +140,33 @@ flowchart LR
 
 ## 🍻 A Turma de Cinzaluz: os Alcoólatras Anônimos
 
-Os criadores do jogo viraram personagens importantes da história, com seus parceiros. Cada um tem **casa, trabalho e rotina**: sai de casa de manhã, vai para o seu estabelecimento, anda pela vila e volta à noite. Bata na porta da casa deles para visitar.
-
-- Os cinco se encontram na **fonte da praça** em dia de festival à noite e a cada 3 dias no fim da tarde.
-- **Mylena, Andressa e Júlia** tomam café na frente do **Ateliê** todo dia à tarde (14h30 às 17h).
-- **Eles trabalham lá dentro:** Andressa e o Pedro Poeta na **Biblioteca**, a Princesa Mylena no **Ateliê**, a Júlia na **Clínica**, Marcos, Julia, Pedro Max e Malu no **Castelo**, e à noite Lucas, Luca e o Poeta na **Taverna**. Entre nos prédios para falar com eles.
-- **Bairro das Flores:** a vila cresceu para o sul. As casas da turma ficam lá, com espaço, ruas com lampiões e casas novas à venda.
-- **Família real completa:** Rainha Aurélia, Príncipe Pedro Max, Princesa Mylena, Duque Matheus e Duquesa Malu desfilam juntos.
-- O **Lucas** dorme até as 10h, passa a tarde na praça e a noite na porta da taverna.
-- **Os Alcoólatras Anônimos** (Lucas, Matheus, Marcos, Andressa, Mylena e Júlia) têm **reunião semanal na Taverna Javali Dourado** (a cada 7 dias, das 19h às 23h). Sente com o grupo, pague uma rodada, leia a ata ou desafie o Marcos na queda de braço.
+Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa, trabalho e rotina** na vila.
 
 <div align="center">
 
+| | | |
+|:---:|:---:|:---:|
+| <img src="assets/personagens/turma_lucas.png" width="90"/><br><b>Lucas Marzocca</b><br><sub>O rolezeiro solteiro da Taverna. Todo marido da vila odeia ele</sub> | <img src="assets/personagens/turma_matheus.png" width="90"/><br><b>Duque Matheus</b><br><sub>Fazendeiro do Sítio, melhor amigo do Lucas</sub> | <img src="assets/personagens/turma_marcos.png" width="90"/><br><b>General Marcos</b><br><sub>Guarda o castelo e treina você (+vida máxima)</sub> |
+| <img src="assets/personagens/turma_andressa.png" width="90"/><br><b>Andressa</b><br><sub>Dona das bibliotecas. Misteriosa, vende informações</sub> | <img src="assets/personagens/turma_mylena.png" width="90"/><br><b>Princesa Mylena</b><br><sub>Artista do Ateliê de quadros e móveis</sub> | <img src="assets/personagens/turma_juliaO.png" width="90"/><br><b>Júlia Oliveira</b><br><sub>Veterinária da Clínica, dona dos bichos</sub> |
+
+**Os pares**
+
 | | | | | |
 |:---:|:---:|:---:|:---:|:---:|
-| <img src="assets/personagens/turma_lucas.png" width="100"/><br><b>Lucas Marzocca</b><br><sub>O rolezeiro e o único solteiro. Só conversa depois de ganhar um hidromel; mora no Quartinho ao lado da taverna.</sub> | <img src="assets/personagens/turma_matheus.png" width="100"/><br><b>Matheus</b><br><sub>O fazendeiro, melhor amigo do Lucas. Trabalha na plantação e mora no Sítio.</sub> | <img src="assets/personagens/turma_marcos.png" width="100"/><br><b>General Marcos</b><br><sub>Treina ao amanhecer e guarda o portão do castelo. Treina você (+vida máxima).</sub> | <img src="assets/personagens/turma_andressa.png" width="100"/><br><b>Andressa</b><br><sub>Dona da maior rede de bibliotecas. Misteriosa, vende informações de segurança. Trabalha na Biblioteca.</sub> | <img src="assets/personagens/turma_mylena.png" width="100"/><br><b>Mylena</b><br><sub>Artista do Ateliê de quadros e móveis (a loja abre das 7h às 17h). Engraçada e amada por todos.</sub> |
-| | <img src="assets/personagens/turma_malu.png" width="100"/><br><b>Duquesa Malu</b><br><sub>Esposa do Duque Matheus</sub> | <img src="assets/personagens/turma_julia.png" width="100"/><br><b>Princesa Julia das Marés</b><br><sub>Esposa do Marcos</sub> | <img src="assets/personagens/turma_gabriel.png" width="100"/><br><b>Pedro, o Poeta</b><br><sub>Marido da Andressa</sub> | <img src="assets/personagens/turma_pedro.png" width="100"/><br><b>Príncipe Pedro Max</b><br><sub>Filho da Rainha, marido da Princesa Mylena</sub> |
+| <img src="assets/personagens/turma_malu.png" width="70"/><br><b>Duquesa Malu</b><br><sub>Esposa do Matheus</sub> | <img src="assets/personagens/turma_julia.png" width="70"/><br><b>Princesa Julia</b><br><sub>Esposa do Marcos</sub> | <img src="assets/personagens/turma_gabriel.png" width="70"/><br><b>Pedro, o Poeta</b><br><sub>Marido da Andressa</sub> | <img src="assets/personagens/turma_pedro.png" width="70"/><br><b>Príncipe Pedro Max</b><br><sub>Marido da Mylena</sub> | <img src="assets/personagens/turma_vini.png" width="70"/><br><b>Rei Vini do Sul</b><br><sub>Marido da Júlia</sub> |
+
+**E o Luca**
 
 | | |
-|:---:|:---:|
-| <img src="assets/personagens/turma_juliaO.png" width="100"/><br><b>Júlia Oliveira</b><br><sub>Homenagem: veterinária e dona dos bichos. Atende na <b>Clínica Veterinária</b> (consulta do mascote e adoção), mora na Mansão Oliveira. Super rica e feliz.</sub> | <img src="assets/personagens/turma_vini.png" width="100"/><br><b>Rei Vini do Sul</b><br><sub>Marido da Júlia. Visita Cinzaluz nos festivais e no fim de semana.</sub> |
+|:---:|:---|
+| <img src="assets/personagens/turma_luca.png" width="80"/><br><b>Luca, o Maluco</b> | Careca, barbudo e fora da caixinha: conversa com quem está jogando. Com o Lucas, lidera os **Iluministas**, contra a monarquia. |
 
 </div>
 
-| | |
-|:---:|:---:|
-| <img src="assets/personagens/turma_luca.png" width="100"/><br><b>Luca, o Maluco</b><br><sub>Careca, barbudo e fora da caixinha: conversa com quem está jogando (quebra a quarta parede). Às vezes aparece com o grupão.</sub> | <b>Os Iluministas</b><br><sub>Luca e Lucas Marzocca são contra a monarquia. Entre para o grupo pelo menu deles e convença os moradores (Interações → Reino → Convencer a ser iluminista). Cinco convertidos dão uma conquista. A Rainha não gosta nada disso.</sub> |
-
-> **Na história:** se você for amigo dos cinco, a turma aparece na batalha contra o Silenciador e luta com você (+25% de dano). Só o Lucas pode ser namorado: o resto da turma é casado.
+- **Rotina:** de dia cada um está no seu trabalho (Biblioteca, Ateliê, Clínica, Castelo, Sítio); à noite a turma vai para a Taverna. As casas ficam no **Bairro das Flores**.
+- **Reunião dos A.A.:** a cada 7 dias, das 19h às 23h, na **Taverna Javali Dourado**. Pague uma rodada, leia a ata ou desafie o Marcos na queda de braço.
+- **Encontros:** na fonte da praça em dia de festival, e café de Mylena, Andressa e Júlia no Ateliê à tarde.
+- **Na história:** quem for amigo da turma ganha ajuda na batalha final, e cada um tem uma **missão pessoal**.
 
 <br>
 
