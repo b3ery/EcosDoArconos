@@ -6904,3 +6904,120 @@ body.mland #dport {
   justify-content: center;
   margin-top: 0.8em;
 }
+
+/* Créditos finais que sobem na tela */
+#rollcred {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #241838, #07050c 75%);
+  color: #ece4ff;
+  text-align: center;
+  cursor: default;
+}
+#rollcred .rc-roll {
+  position: absolute;
+  left: 50%;
+  width: min(40em, 94%);
+  margin-left: calc(min(40em, 94%) / -2);
+  will-change: transform;
+}
+#rollcred .rc-block {
+  margin: 0 0 4.5em;
+}
+#rollcred .rc-title h1 {
+  margin: 0;
+  font-size: 2.6em;
+  color: var(--gold, #f2c14e);
+  text-shadow: 0 0 18px rgba(242, 193, 78, 0.4);
+}
+#rollcred h2 {
+  margin: 0.2em 0;
+  color: #fff;
+  font-size: 1.5em;
+}
+#rollcred .rc-label {
+  color: var(--gold, #f2c14e);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.78em;
+  margin-bottom: 0.6em;
+  opacity: 0.85;
+}
+#rollcred .rc-sub {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+#rollcred p {
+  margin: 0.35em 0;
+}
+#rollcred canvas {
+  position: static;
+  display: block;
+  margin: 0 auto 0.3em;
+  image-rendering: pixelated;
+}
+#rollcred .rc-hero {
+  width: 6em;
+  height: 6em;
+}
+#rollcred .rc-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.25em 0.2em;
+  border-bottom: 1px dashed rgba(176, 108, 255, 0.2);
+}
+#rollcred .rc-row span {
+  color: #cbbfe6;
+}
+#rollcred .rc-ach {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35em;
+}
+#rollcred .rc-ach span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.2em 0.55em;
+  border-radius: 999px;
+  background: rgba(242, 193, 78, 0.12);
+  border: 1px solid rgba(242, 193, 78, 0.35);
+  font-size: 0.82em;
+}
+#rollcred .rc-team {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8em 0.6em;
+  margin-bottom: 0.8em;
+}
+#rollcred .rc-team div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 6.6em;
+  font-size: 0.92em;
+}
+#rollcred .rc-team canvas {
+  width: 3.4em;
+  height: 3.4em;
+}
+#rollcred .rc-team small {
+  color: var(--muted);
+  font-size: 0.75em;
+}
+#rollcred .rc-last {
+  margin-bottom: 8em;
+}
+#rollcred .rc-skip {
+  position: absolute;
+  right: 1em;
+  bottom: 1em;
+  z-index: 2;
+  opacity: 0.75;
+}
