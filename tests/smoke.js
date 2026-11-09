@@ -128,6 +128,23 @@ const check = (name, ok) => {
   check("Parede pintada na casa", await page.evaluate(() => HOME_PAL[homeTier()].wall === "#ecc8cc"));
   await page.waitForTimeout(1500);
   check("500+ itens no catálogo", await page.evaluate(() => CATALOG.length >= 500));
+  // Sistemas novos: mortes, NPCs, reino, legado.
+  const clean = () => page.evaluate(() => { game.deathScene = null; game.dying = false; document.body.classList.remove("cutscene"); game.dialog = null; byId("dialog").style.display = "none"; byId("choice").style.display = "none"; game.mode = "world"; });
+  await clean();
+  check("Ano de 15 dias", await page.evaluate(() => { const a = playerAge(), b = player.bdayDay ?? player.day; player.bdayDay = player.day - YEAR_DAYS; ageTick(); const ok = playerAge() === a + 1; player.bdayDay = b; return ok; }));
+  await page.waitForTimeout(3000);
+  await clean();
+  check("30 mortes com cena", await page.evaluate(() => DEATH_IDS.length === 30 && playerDies("raio") && game.deathScene && game.deathScene.id === "raio"));
+  await clean();
+  check("Moradores namoram e casam", await page.evaluate(() => { const S = soc(); const ids = Object.keys(NPCS).filter(singleNpc); let p = null; for (const a of ids) { for (const b of ids) if (a < b && mutualAttraction(a, b)) { p = [a, b]; break; } if (p) break; } S.dating[p[0]] = p[1]; S.dating[p[1]] = p[0]; S.wed.push({ k: npcPair(p[0], p[1]), a: p[0], b: p[1], day: player.day }); player.clock = 17 * 60 + 5; weddingTick(); game.dialog = null; return npcSpouse(p[0]) === p[1]; }));
+  await clean();
+  check("Golpe solo (sem aliados)", await page.evaluate(() => { player.throne = {}; syncRulers(); player.plot = { sup: 0, sus: 0, allies: [], bribes: 0, arms: 0, day: 0, solo: { map: 3, train: 3, key: 1, sleep: 1, day: {} } }; return supportTotal() >= 60; }));
+  check("Golpe dos Iluministas cria o Conselho", await page.evaluate(() => { player.throne = {}; ilumCoupResolve(true, null); game.dialog = null; return !!player.council && /Conselho/.test(KINGDOMS.aurelia.ruler); }));
+  check("Plebiscito restaura a monarquia", await page.evaluate(() => { player.councilChief = true; player.rep = 100; const r = Math.random; Math.random = () => 0.9; plebiscite(); Math.random = r; game.dialog = null; return !player.council && rulesK("aurelia"); }));
+  check("Fofoca se espalha", await page.evaluate(() => { player.secrets = []; addSecret("furto", "teste", "rosa"); for (let i = 0; i < 6; i++) spreadSecrets(); return secrets()[0].knows.length > 1; }));
+  check("Filhos herdam traços", await page.evaluate(() => { player.kids = [{ name: "Teo", g: "m", born: player.day, look: player.look }]; giveKidTraits(); return player.kids[0].traits.length === 3; }));
+  check("Árvore da família abre", await page.evaluate(() => { openFamilyTree(); const ok = game.mode === "arvore" && !!document.querySelector(".av-c.now"); closeFamilyTree(); return ok; }));
+  check("Menu de Ações abre", await page.evaluate(() => { actionsMenu(); const ok = game.mode === "choice"; game.mode = "world"; byId("choice").style.display = "none"; return ok; }));
   check("Sem erros de JavaScript", errors.length === 0);
   if (errors.length) console.log("Erros:\n" + errors.join("\n"));
   await browser.close();

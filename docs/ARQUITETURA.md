@@ -89,7 +89,9 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 55 | `js/vida/55-vida-inteligente.js` | - O ano dura 15 dias: o aniversário é a cada 15 dias, com festa. - Moradores com cérebro: cada par tem uma relação que muda a cada conversa (pelo jeito de cada um). Eles fazem amiz | — |
 | 56 | `js/vida/56-mortes.js` | 30 jeitos de morrer no Simulador (e o duelo de magos na história). Cada morte tem a sua cena: o cenário onde aconteceu, quem matou, os efeitos (sangue, água, raio, neve, veneno...) | — |
 | 57 | `js/vida/57-golpe-e-protesto.js` | - Luca e Lucas Marzocca puxam o protesto na primeira fila, com nome em cima da cabeça, megafone e gritos próprios (o Marzoca dá em cima até da Rainha). - Botão "Golpe" (☰ no celula | — |
-| 58 | `js/interface/53-tela-inicio.js` | Tela de início mais limpa, em dois passos: 1. Logo + Jogar, Opções e Créditos. 2. Depois de Jogar: Continuar (se tiver jogo salvo) e a escolha do modo. O Guia e as Conquistas ficam | — |
+| 58 | `js/vida/58-reino.js` | - Golpe solo: dá para derrubar a coroa sozinh@, sem aliados (planta do castelo, treino, chave roubada, sonífero na guarda) e manter a monarquia. - Os Iluministas também tentam o go | — |
+| 59 | `js/vida/59-legado.js` | - Fofoca que se espalha: seus segredos (furtos, arrombamentos, flerte com gente casada) passam de boca em boca pelas amizades. Dá para abafar (pagar para guardar segredo) ou desmen | — |
+| 60 | `js/interface/53-tela-inicio.js` | Tela de início mais limpa, em dois passos: 1. Logo + Jogar, Opções e Créditos. 2. Depois de Jogar: Continuar (se tiver jogo salvo) e a escolha do modo. O Guia e as Conquistas ficam | — |
 
 ## Testes
 

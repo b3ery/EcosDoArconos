@@ -6726,3 +6726,70 @@ body.cutscene #toast {
   font-size: 0.78em;
   opacity: 0.85;
 }
+
+/* Árvore da família */
+#arvore {
+  display: none;
+  position: absolute;
+  inset: 4%;
+  z-index: 60;
+  overflow-y: auto;
+  padding: 1em 1.2em;
+  background: linear-gradient(#1e1a14, #14100c);
+  border: 2px solid #8a6a3a;
+  border-radius: 12px;
+  color: #f0e6d2;
+  text-align: center;
+}
+#arvore h2,
+#arvore h3 {
+  margin: 0.2em 0 0.6em;
+  color: #ffd98a;
+}
+#arvore .jn-x {
+  position: sticky;
+  float: right;
+  top: 0;
+}
+#arvore .av-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#arvore .av-c,
+#arvore .av-k {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15em;
+  min-width: 220px;
+  padding: 0.5em 0.8em;
+  border-radius: 10px;
+  background: #2a2218;
+  border: 1px solid #5a4a30;
+}
+#arvore .av-c.now {
+  border: 2px solid #ffd98a;
+  background: #3a2e1c;
+}
+#arvore .av-c small,
+#arvore .av-k small {
+  opacity: 0.7;
+}
+#arvore .av-c b,
+#arvore .av-k b {
+  color: #ffe6b0;
+}
+#arvore .av-arrow {
+  margin: 0.15em 0;
+  opacity: 0.6;
+}
+#arvore .av-kids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  justify-content: center;
+}
+#arvore .av-none,
+#arvore .av-will {
+  opacity: 0.8;
+}

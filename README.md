@@ -422,6 +422,17 @@ Toda vida acaba, e a cena da morte mostra **como** foi: o cenário onde acontece
 - **Livro das Mortes** (tecla **B** ou botão *Mortes*): guarda as mortes que você já descobriu, mesmo entre uma vida e outra, com dicas das que faltam.
 - O ano dura **15 dias**: aniversário com festa a cada 15 dias.
 
+## 🌳 Legado da família (Simulador)
+
+- **Menu de Ações** (tecla **Y** ou botão *Ações*): jornal, golpe, crime, mortes, objetivos, árvore, testamento, fofocas, reinos e calendário num lugar só.
+- **Árvore da família:** cada geração com idade, causa da morte, casamento e se governou.
+- **Testamento:** escolha o herdeiro e doe ao Templo. Sem testamento, os irmãos brigam na justiça.
+- **Filhos herdam o jeito** dos pais, e o herdeiro continua com essa personalidade.
+- **A vila lembra** dos seus pais e avós nas conversas.
+- **Fofoca que se espalha:** seus segredos correm pelas amizades. Pague para guardar segredo ou desminta; se metade da vila souber, vira notícia.
+- **Objetivos do dia** com recompensa em ouro e reputação.
+- **Modo História:** finais diferentes (monarca, exilado, manchado, herói amado) e a turma não luta ao lado de quem matou gente.
+
 ## 🏰 Origem, casa e a Ala Real (Simulador)
 
 - **Na criação (aba Origem)** você escolhe quem é: **Plebeu, Artesão, Comerciante, Burguês, Nobre (Duque/Duquesa) ou Realeza (Príncipe/Princesa)**. A origem define o ouro inicial, a reputação e o padrão de casa. Também dá para escolher uma **ocupação** (qualquer uma das carreiras), que já começa com experiência.
@@ -439,6 +450,10 @@ Toda vida acaba, e a cena da morte mostra **como** foi: o cenário onde acontece
 - **Estações no visual:** flores na primavera, folhas laranja caindo no outono, neve nos telhados e nas árvores no inverno.
 
 ## 👑 Golpe de estado e os Três Reinos (Simulador)
+
+**Golpe sozinh@:** sem aliados, ninguém te trai. Estude a planta do castelo, treine com a espada, roube a chave do portão e ponha sonífero no vinho da guarda. Na noite do golpe você entra pela passagem secreta, passa pelos guardas dormindo e exige a coroa. A monarquia continua, com você no trono.
+
+**Os Iluministas também dão golpe:** a força deles cresce com protestos, impostos altos e governante impopular. Quando estoura, você defende o castelo, se junta a eles ou fica em casa. Se vencerem, Cinzaluz vira o **Conselho do Povo**, com **eleição a cada 15 dias** (comício, rodada na taverna, debate com o Luca). Eleit@ Chefe do Conselho com reputação 70+, dá para convocar um **plebiscito e restaurar a monarquia**. No trono, você mantém a coroa concedendo um Conselho Consultivo, prendendo Luca e Marzoca ou dando banquetes, e investiga o **nobre rival** que trama na corte.
 
 **Como dar o golpe:** tecla **V** (ou botão *Golpe* no ☰ do celular), ou fale com o Luca ou o Lucas Marzocca. Chame amigos (amizade 25+), suborne guardas, compre armas na Forja e espalhe boatos sem deixar a suspeita chegar a 100. Com 60% de apoio, volte entre 22h e 4h e escolha **DAR O GOLPE AGORA**.
 
