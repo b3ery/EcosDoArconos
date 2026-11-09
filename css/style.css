@@ -6190,3 +6190,236 @@ body.mland .joy:not(.active) {
   color: #fff3b0;
   background: linear-gradient(#5a4a2a, #3a2c1a);
 }
+
+/* Os botões A/B escondidos não podem bloquear o toque em botões de menu (ex.: Começar). */
+body.mland .abx,
+body.mland .abx .big,
+body.mland .abx .small {
+  pointer-events: none;
+}
+body.mland .abx button {
+  pointer-events: auto;
+}
+#touch.ha.hb .big,
+#touch.hs #tMenu {
+  display: none !important;
+}
+#touch.hs .small {
+  display: none !important;
+}
+
+/* ===================== TELA DE INÍCIO NO CELULAR DEITADO ===================== */
+@media (pointer: coarse) and (max-height: 520px) and (orientation: landscape) {
+  #title.over {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      "logo cont"
+      "orn modes"
+      "sub modes"
+      "btns modes";
+    column-gap: 1.2em;
+    align-items: center;
+    padding: max(10px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 10px max(18px, env(safe-area-inset-left));
+    overflow: hidden;
+  }
+  #title .title-panel {
+    display: contents;
+  }
+  #title h1 {
+    grid-area: logo;
+    font-size: clamp(26px, 7.2vh, 44px) !important;
+    margin: 0 !important;
+    line-height: 1.05;
+    text-align: center;
+  }
+  #title .title-orn {
+    grid-area: orn;
+    margin: 0.2em 0 !important;
+  }
+  #title .sub {
+    grid-area: sub;
+    margin: 0 !important;
+    text-align: center;
+    font-size: 0.95em;
+    align-self: start;
+  }
+  #title .small-btns {
+    grid-area: btns;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35em;
+    margin: 0 !important;
+  }
+  #title .small-btns button {
+    margin: 0 !important;
+    min-height: 38px;
+    padding: 0.2em 0.4em !important;
+    font-size: 0.9em;
+  }
+  #title .cont-btn {
+    grid-area: cont;
+    margin: 0 0 0.4em !important;
+    width: 100%;
+    min-height: 40px;
+    font-size: 0.95em !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #title .modes {
+    grid-area: modes;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6em;
+    margin: 0 !important;
+    align-self: stretch;
+  }
+  #title .mode-card {
+    margin: 0 !important;
+    padding: 0.6em 0.5em !important;
+    justify-content: center;
+    gap: 0.25em;
+    min-height: 0;
+  }
+  #title .mode-card .mode-ic {
+    width: 48px !important;
+    height: 48px !important;
+    flex: none;
+    margin: 0 0 0.2em !important;
+  }
+  #title .mode-card .mode-ic img,
+  #title .mode-card .mode-ic canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  #title .mode-card b {
+    font-size: 1.15em !important;
+  }
+  #title .mode-card span {
+    font-size: 0.72em !important;
+    line-height: 1.25;
+  }
+  #title .mode-card .mode-go {
+    padding: 0.25em 1em !important;
+    font-size: 1em !important;
+  }
+  #title .ctl {
+    display: none !important;
+  }
+  body.ontitle #fsb,
+  body.ontitle #optb,
+  body.ontitle #tgrp {
+    display: none !important;
+  }
+}
+@media (pointer: coarse) {
+  #title .ctl {
+    display: none !important;
+  }
+}
+.st-steal {
+  margin-top: 0.4em;
+  width: 100%;
+  border-color: #a84a4a !important;
+  color: #ffb3b3 !important;
+  background: linear-gradient(#3a1a22, #24101a) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  font-size: 0.85em;
+}
+
+/* ===================== LOJA NO CELULAR DEITADO ===================== */
+@media (max-height: 520px) and (orientation: landscape) {
+  #shop .store.slider {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "head head"
+      "top cats"
+      "stage detail";
+    height: 100%;
+    overflow: hidden;
+  }
+  #shop .st-head {
+    grid-area: head;
+    padding: 0.2em 0.6em !important;
+    min-height: 0;
+  }
+  #shop .st-head h2,
+  #shop .st-head .st-name {
+    font-size: 1.1em !important;
+  }
+  #shop .st-top {
+    grid-area: top;
+    margin: 0 !important;
+    padding: 0.15em 0.5em !important;
+    min-height: 0;
+    font-size: 0.8em;
+  }
+  #shop .st-cats {
+    grid-area: cats;
+    margin: 0 !important;
+    padding: 0.15em 0.4em !important;
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    font-size: 0.8em;
+  }
+  #shop .st-stage {
+    grid-area: stage;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 0.3em !important;
+    font-size: 0.72em;
+  }
+  #shop .st-detail {
+    grid-area: detail;
+    flex-direction: column;
+    gap: 0.35em;
+    margin: 0 0.4em 0.3em 0 !important;
+    padding: 0.4em 0.5em !important;
+    overflow-y: auto;
+    font-size: 0.82em;
+    min-height: 0;
+  }
+  #shop .st-detail .st-desc {
+    margin: 0.2em 0;
+    max-height: 4.5em;
+    overflow-y: auto;
+  }
+  #shop .st-buybox {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em;
+  }
+  #shop .st-buybox > button,
+  #shop .st-steal {
+    min-height: 36px;
+    flex: 1 1 45%;
+    margin: 0 !important;
+  }
+  #shop .st-count,
+  #shop .st-keys,
+  #shop .st-tax,
+  #shop .st-dots {
+    display: none !important;
+  }
+  #shop .st-keeper img,
+  #shop .st-top .st-av {
+    width: 2.2em !important;
+    height: 2.2em !important;
+  }
+}
+/* Nas telas cheias (loja, inventário, criador), os botões do jogo não ficam por cima. */
+body.mland:has(#shop[style*="block"]) #touch,
+body.mland:has(#create[style*="flex"]) #touch,
+body.mland:has(#shop[style*="block"]) #fsb,
+body.mland:has(#shop[style*="block"]) #optb,
+body.mland:has(#shop[style*="block"]) #tgrp {
+  display: none !important;
+}

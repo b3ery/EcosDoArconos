@@ -821,3 +821,46 @@ addInter("paz", { rel: 5, likes: "GBT", dislikes: "O" }, [
 
 /* Na pizza, roubar e matar ficam juntos num grupo "Crime" bem à vista. */
 PIE_GROUPS.splice(1, 0, { n: "Crime", icon: "skull", re: /^Roubar|^Matar|golpe de estado|conspiração/i });
+
+/* ===================== ROUBAR DENTRO DA LOJA ===================== */
+
+/** Quem cuida da loja (para lembrar do furto e chamar a guarda). */
+function shopKeeperId(shopId) {
+  const fr = Object.keys(FRIENDS).find((k) => FRIENDS[k].shop === shopId && !isDead(k));
+  if (fr) return fr;
+  const nm = shopKeeperName(shopId).split(",")[0];
+  return tempNpc("k_", { nm, robe: "#5a5a7a", hair: "#3a2414" });
+}
+{
+  const focusBase = shopFocus;
+  shopFocus = function () {
+    focusBase();
+    if (game.shopTab !== "buy" || !game.shopId || String(game.shopId).startsWith("__")) return;
+    const box = byId("shop") && byId("shop").querySelector(".st-buybox");
+    if (!box || box.querySelector(".st-steal")) return;
+    const b = document.createElement("button");
+    b.className = "st-steal";
+    b.innerHTML = `${iconHTML("skull", 14)} Roubar`;
+    b.title = "Enfiar o item na bolsa sem pagar. Se o lojista ver, chama a guarda.";
+    b.onclick = () => {
+      const id = game.shopList[game.shopIdx];
+      const kid = shopKeeperId(game.shopId);
+      if (player.famDay["lift" + game.shopId] === player.day) return toast("O lojista está de olho em você hoje. Melhor não arriscar de novo.", 2400);
+      player.famDay["lift" + game.shopId] = player.day;
+      const ch = stealChance(kid, 0.5) - Math.min(0.25, (ITEMS[id].preco || 10) / 600);
+      if (Math.random() < ch) {
+        addItem(id);
+        player.thefts = (player.thefts || 0) + 1;
+        player.thiefXP = (player.thiefXP || 0) + 1;
+        saveGame();
+        playSound(880, 0.05, "sine");
+        toast(`Você enfiou ${ITEMS[id].nome} na bolsa sem ninguém ver.`, 2600);
+        shopFocus();
+      } else {
+        closeShop();
+        setTimeout(() => caughtStealing(kid, "roubando da loja", ITEMS[id].preco || 20), 200);
+      }
+    };
+    box.appendChild(b);
+  };
+}

@@ -268,3 +268,6 @@ byId("cv").addEventListener("click", (e) => {
   setInterval(place, 400);
   addEventListener("resize", place);
 })();
+
+/* Marca o corpo da página na tela de início (para esconder botões do jogo). */
+setInterval(() => document.body.classList.toggle("ontitle", game.mode === "title"), 300);
