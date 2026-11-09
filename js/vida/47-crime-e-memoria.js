@@ -430,8 +430,13 @@ function pickpocket(id) {
   }
   caughtStealing(id, "batendo carteira", 20);
 }
+/** Loja de quem vende (casa de comércio ou barraca da feira). */
+function shopOfNpc(id) {
+  const k = (FRIENDS[id] && FRIENDS[id].shop) || id;
+  return SHOPS[k] && (SHOPS[k].items || []).length ? k : null;
+}
 function shoplift(id) {
-  const shop = SHOPS[FRIENDS[id].shop];
+  const shop = SHOPS[shopOfNpc(id)];
   if (!shop) return;
   player.famDay["lift" + id] = player.day;
   const it = pk(shop.items.filter((k) => ITEMS[k]));
@@ -473,8 +478,8 @@ function burgle(b) {
   lifeSocialItems = function (id) {
     const items = itemsBase(id);
     if (isChildNpc(id) || isDead(id)) return items;
-    if (player.famDay["pick" + id] !== player.day) items.push({ t: "Bater carteira (ladrão)", icon: "coin", fn: () => pickpocket(id) });
-    if (FRIENDS[id] && FRIENDS[id].shop && player.famDay["lift" + id] !== player.day) items.push({ t: "Furtar da loja (ladrão)", icon: "bag", fn: () => shoplift(id) });
+    if (player.famDay["pick" + id] !== player.day) items.push({ t: "Roubar: bater a carteira", icon: "coin", fn: () => pickpocket(id) });
+    if (shopOfNpc(id) && player.famDay["lift" + id] !== player.day) items.push({ t: "Roubar da loja", icon: "bag", fn: () => shoplift(id) });
     return items;
   };
   const doorBase = crewDoor;
@@ -484,7 +489,7 @@ function burgle(b) {
     if (!(h >= 22 || h < 5)) return doorBase(b);
     choice(b.name || "Casa", "Madrugada. A rua está vazia...", [
       { t: "Bater na porta", icon: "house", fn: () => doorBase(b) },
-      { t: "Arrombar a casa (ladrão)", icon: "lock", fn: () => burgle(b) },
+      { t: "Roubar: arrombar a casa", icon: "lock", fn: () => burgle(b) },
       { t: "Ir embora", fn: null },
     ]);
     return true;
@@ -813,3 +818,6 @@ addInter("paz", { rel: 5, likes: "GBT", dislikes: "O" }, [
     if (game.mode === "world" && !game.dialog) bodyWatch(dt);
   };
 }
+
+/* Na pizza, roubar e matar ficam juntos num grupo "Crime" bem à vista. */
+PIE_GROUPS.splice(1, 0, { n: "Crime", icon: "skull", re: /^Roubar|^Matar|golpe de estado|conspiração/i });
