@@ -83,6 +83,7 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 49 | `js/vida/48-pena-de-morte.js` | - Pena de morte: quem mata duas vezes (ou mata alguém da realeza) vai a julgamento. Clemência, fuga ou forca. No Simulador a forca é o fim (a família continua com um herdeiro, se h | — |
 | 50 | `js/mundo/49-castelos-reinos.js` | Os outros reinos ganham as suas sedes: - Palácio das Marés (Porto Brisamar): numa ilha no mar, ligada pela ponte do cais. Paredes brancas, cúpulas azul-turquesa e bandeiras com a o | — |
 | 51 | `js/vida/50-origem-e-ala-real.js` | Simulador de Vida: quem você é quando nasce. - Na criação (aba Origem): plebeu, artesão, comerciante, burguês, nobre ou realeza, e uma ocupação inicial (qualquer carreira, já com e | — |
+| 52 | `js/vida/51-alteza.js` | - Quem nasce na realeza é reconhecido: a Rainha Aurélia trata você como sobrinho(a) e herdeiro(a); o povo se curva, chama de "Alteza" e a guarda bate continência. - Ala Real redese | — |
 
 ## Testes
 
