@@ -7021,3 +7021,21 @@ body.mland #dport {
   z-index: 2;
   opacity: 0.75;
 }
+
+/* Acessibilidade: letra maior */
+body.font-g :is(#dialog, #choice, #toast, #options, #inv, #quests, #shop, #coach, #hud, #jornal, #mortes, #arvore, #diariovida, #guide, #pie) {
+  font-size: 115%;
+}
+body.font-e :is(#dialog, #choice, #toast, #options, #inv, #quests, #shop, #coach, #hud, #jornal, #mortes, #arvore, #diariovida, #guide, #pie) {
+  font-size: 132%;
+}
+/* Modo calmo: sem tremer a interface */
+body.calm .shake,
+body.calm .shout {
+  animation: none !important;
+}
+#options .sv-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}

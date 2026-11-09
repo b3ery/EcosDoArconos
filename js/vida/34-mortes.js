@@ -502,7 +502,7 @@ function drawFx(fx, W, H, t, cx, cy) {
       }
       break;
     case "raio":
-      if ((t % 1.6) < 0.18) {
+      if (!settings.calm && (t % 1.6) < 0.18) {
         rect(0, 0, W, H, "rgba(255,255,255,.55)");
         ctx.strokeStyle = "#fff6a0";
         ctx.lineWidth = 5;
@@ -518,7 +518,7 @@ function drawFx(fx, W, H, t, cx, cy) {
       break;
     case "chuva":
       for (let i = 0; i < 50; i++) rect((i * 61 + t * 300) % W, (i * 37 + t * 600) % H, 2, 12, "rgba(160,190,230,.6)");
-      if ((t % 2.3) < 0.12) rect(0, 0, W, H, "rgba(255,255,255,.4)");
+      if (!settings.calm && (t % 2.3) < 0.12) rect(0, 0, W, H, "rgba(255,255,255,.4)");
       break;
     case "neve":
       for (let i = 0; i < 60; i++) rect(((i * 61 + Math.sin(t + i) * 20) % W + W) % W, (i * 37 + t * 40) % H, 3, 3, "#fff");
