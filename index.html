@@ -203,47 +203,116 @@
       </div>
     </div>
 
-    <!-- ================= SCRIPTS (a ordem importa) ================= -->
-    <script src="js/nucleo/01-dados.js"></script>
-    <script src="js/nucleo/02-estado-som-e-sprites.js"></script>
-    <script src="js/mundo/03-mapa-e-geracao.js"></script>
-    <script src="js/pessoas/04-familia-e-dialogos.js"></script>
-    <script src="js/interface/05-interface-e-comercio.js"></script>
-    <script src="js/historia/06-batalha.js"></script>
-    <script src="js/nucleo/07-loop-e-desenho.js"></script>
-    <script src="js/interface/08-opcoes-musica-missoes.js"></script>
-    <script src="js/vida/09-simulador-e-profissoes.js"></script>
-    <script src="js/mundo/10-reinos-e-idade.js"></script>
-    <script src="js/mundo/11-casas-e-quintal.js"></script>
-    <script src="js/pessoas/12-vila-amigos-e-contatos.js"></script>
-    <script src="js/vida/13-saude.js"></script>
-    <script src="js/interface/14-pizza-catalogo-e-lojas.js"></script>
-    <script src="js/mundo/15-floresta-e-clima.js"></script>
-    <script src="js/historia/16-vilao-e-missoes.js"></script>
-    <script src="js/pessoas/17-interacoes.js"></script>
-    <script src="js/nucleo/18-entrada.js"></script>
-    <script src="js/interface/19-melhorias-e-criador.js"></script>
-    <script src="js/interface/20-inventario.js"></script>
-    <script src="js/vida/21-carreiras.js"></script>
-    <script src="js/pessoas/22-turma-aa.js"></script>
-    <script src="js/vida/23-calendario-e-vida-extra.js"></script>
-    <script src="js/historia/24-batalha-visual.js"></script>
-    <script src="js/pessoas/25-turma-luca-e-iluministas.js"></script>
-    <script src="js/interface/26-celular-e-tela-inicio.js"></script>
-    <script src="js/vida/27-almas-e-autonomia.js"></script>
-    <script src="js/vida/28-protestos-e-golpe.js"></script>
-    <script src="js/mundo/29-casa-bonita.js"></script>
-    <script src="js/vida/30-crime-calabouco-e-forca.js"></script>
-    <script src="js/mundo/31-castelos.js"></script>
-    <script src="js/vida/32-realeza-e-mundo-vivo.js"></script>
-    <script src="js/vida/33-pedro-max-e-vida-inteligente.js"></script>
-    <script src="js/vida/34-mortes.js"></script>
-    <script src="js/vida/35-reino-e-iluministas.js"></script>
-    <script src="js/vida/36-legado.js"></script>
-    <script src="js/interface/37-polimento.js"></script>
-    <script src="js/vida/38-corte-e-eventos.js"></script>
-    <script src="js/historia/39-saga.js"></script>
-    <script src="js/historia/40-creditos-finais.js"></script>
-    <script src="js/interface/41-acessibilidade-e-save.js"></script>
+    <!-- ================= SCRIPTS =================
+         A ORDEM IMPORTA: cada arquivo pode envolver (modificar) funções dos anteriores.
+         O cabeçalho de cada arquivo diz o que ele faz e o que ele modifica. -->
+    <!-- núcleo -->
+    <script src="js/nucleo/dados.js"></script>
+    <script src="js/nucleo/estado-som-e-sprites.js"></script>
+    <script src="js/nucleo/icones-pixel.js"></script>
+    <!-- mundo -->
+    <script src="js/mundo/mapa.js"></script>
+    <script src="js/mundo/geracao-do-mundo.js"></script>
+    <script src="js/mundo/bairro-das-flores.js"></script>
+    <!-- pessoas -->
+    <script src="js/pessoas/familia-e-vida-social.js"></script>
+    <script src="js/pessoas/festivais-amizades-e-dialogos.js"></script>
+    <!-- interface -->
+    <script src="js/interface/trabalhos-e-comercio.js"></script>
+    <script src="js/interface/interface.js"></script>
+    <!-- modo História -->
+    <script src="js/historia/batalha/batalha.js"></script>
+    <!-- núcleo -->
+    <script src="js/nucleo/loop-e-desenho.js"></script>
+    <!-- interface -->
+    <script src="js/interface/opcoes-musica-e-missoes.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/simulador.js"></script>
+    <script src="js/vida/profissoes.js"></script>
+    <!-- mundo -->
+    <script src="js/mundo/reinos-e-idade.js"></script>
+    <script src="js/mundo/casas-e-realeza.js"></script>
+    <script src="js/mundo/casa-e-quintal.js"></script>
+    <!-- pessoas -->
+    <script src="js/pessoas/vida-na-vila.js"></script>
+    <script src="js/pessoas/turma/rotina-da-turma.js"></script>
+    <script src="js/pessoas/contatos.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/saude.js"></script>
+    <!-- interface -->
+    <script src="js/interface/menu-pizza.js"></script>
+    <script src="js/interface/itens/catalogo-de-itens.js"></script>
+    <script src="js/interface/itens/lojas.js"></script>
+    <!-- mundo -->
+    <script src="js/mundo/floresta.js"></script>
+    <script src="js/mundo/clima-e-cansaco.js"></script>
+    <!-- modo História -->
+    <script src="js/historia/vilao.js"></script>
+    <script src="js/historia/missoes-farol-e-mina.js"></script>
+    <!-- pessoas -->
+    <script src="js/pessoas/interacoes/interacoes.js"></script>
+    <script src="js/pessoas/interacoes/interacoes-extras.js"></script>
+    <!-- núcleo -->
+    <script src="js/nucleo/entrada.js"></script>
+    <!-- interface -->
+    <script src="js/interface/melhorias.js"></script>
+    <script src="js/interface/criador-de-personagem.js"></script>
+    <script src="js/interface/itens/inventario.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/carreiras.js"></script>
+    <!-- pessoas -->
+    <script src="js/pessoas/turma/alcoolatras-anonimos.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/calendario-e-diario.js"></script>
+    <!-- modo História -->
+    <script src="js/historia/batalha/batalha-visual.js"></script>
+    <!-- pessoas -->
+    <script src="js/pessoas/turma/luca-e-iluministas.js"></script>
+    <!-- interface -->
+    <script src="js/interface/celular.js"></script>
+    <script src="js/interface/tela-inicio.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/moradores/almas.js"></script>
+    <script src="js/vida/moradores/vida-autonoma.js"></script>
+    <script src="js/vida/poder/protestos.js"></script>
+    <script src="js/vida/poder/golpe.js"></script>
+    <!-- mundo -->
+    <script src="js/mundo/casa-bonita.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/crime/morte-e-calabouco.js"></script>
+    <script src="js/vida/crime/crime-e-memoria.js"></script>
+    <script src="js/vida/crime/pena-de-morte.js"></script>
+    <!-- mundo -->
+    <script src="js/mundo/castelos.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/realeza/origem-e-ala-real.js"></script>
+    <script src="js/vida/realeza/alteza.js"></script>
+    <script src="js/vida/mundo-vivo.js"></script>
+    <script src="js/vida/moradores/pedro-max.js"></script>
+    <script src="js/vida/moradores/vida-inteligente.js"></script>
+    <script src="js/vida/mortes.js"></script>
+    <script src="js/vida/poder/golpe-e-protesto.js"></script>
+    <script src="js/vida/poder/iluministas-e-conselho.js"></script>
+    <script src="js/vida/familia/legado.js"></script>
+    <!-- interface -->
+    <script src="js/interface/polimento.js"></script>
+    <script src="js/interface/cenas.js"></script>
+    <!-- Simulador de Vida -->
+    <script src="js/vida/poder/coroacao-e-corte.js"></script>
+    <script src="js/vida/eventos-da-vila.js"></script>
+    <script src="js/vida/familia/dinastia-e-desafios.js"></script>
+    <!-- interface -->
+    <script src="js/interface/retratos-musica-e-toque.js"></script>
+    <!-- modo História -->
+    <script src="js/historia/saga/base.js"></script>
+    <script src="js/historia/saga/flashbacks-e-escolhas.js"></script>
+    <script src="js/historia/saga/missoes-da-turma.js"></script>
+    <script src="js/historia/saga/batalhas-especiais.js"></script>
+    <script src="js/historia/saga/cripta.js"></script>
+    <script src="js/historia/saga/segredos-e-capitulos.js"></script>
+    <script src="js/historia/saga/epilogo-e-novo-jogo.js"></script>
+    <script src="js/historia/creditos-finais.js"></script>
+    <!-- interface -->
+    <script src="js/interface/acessibilidade-e-save.js"></script>
   </body>
 </html>

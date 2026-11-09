@@ -352,15 +352,22 @@ HTML5, CSS3 e JavaScript puro, sem dependências. Tudo é desenhado pixel a pixe
 
 ```
 EcosDoArconos/
-├── index.html      a página e a ordem dos scripts
-├── css/style.css   o visual de todas as telas
-├── js/             nucleo · mundo · historia · pessoas · vida · interface
-├── tests/smoke.js  teste automático (npm test)
-└── tools/          build num arquivo só (node tools/build.js)
+├── index.html        a página e a ORDEM dos scripts (em blocos comentados)
+├── css/style.css     o visual de todas as telas
+├── js/
+│   ├── nucleo/       dados, estado, sons, sprites, laço principal, teclado
+│   ├── mundo/        mapas, geração do mundo, reinos, casas, castelos, floresta, clima
+│   ├── pessoas/      família, diálogos, vila · interacoes/ · turma/
+│   ├── interface/    telas, menus, opções, criador, celular, cenas · itens/
+│   ├── historia/     vilão, missões · batalha/ · saga/ (flashbacks, cripta, segredos...)
+│   └── vida/         Simulador · moradores/ · poder/ · realeza/ · crime/ · familia/
+├── tests/smoke.js    teste automático (npm test)
+└── tools/            check.js (npm run check) e build.js (um arquivo só)
 ```
 
 - `npm run check` confere a sintaxe; `npm test` abre o jogo num navegador e passa pelas telas dos dois modos.
-- Os scripts são carregados **nessa ordem** pelo `index.html`: um arquivo pode modificar funções dos anteriores.
+- Um arquivo por assunto, com nome que diz o que faz. O cabeçalho de cada um explica o que ele faz e quais funções de outros arquivos ele modifica.
+- A ordem de carregamento fica só no `index.html`: um arquivo pode modificar funções dos anteriores. O `npm run check` avisa se algum arquivo ficou fora da lista.
 
 <br>
 
