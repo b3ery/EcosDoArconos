@@ -5,6 +5,9 @@
  *  - Pedro Max é o mais bolado de todos: deu em cima da Mylena, ele SEMPRE fica
  *    sabendo, sai na porrada com você e, acabando a briga, puxa a faca e tenta te
  *    matar pela vila (cada facada dói muito mais).
+ *  - Pedro Max na mão é quase imbatível (muita vida, soco pesado, desvia).
+ *  - Proteção contra briga travada: se o menu da briga sumir (fala por cima,
+ *    menu fechado), ele volta sozinho.
  */
 
 "use strict";
@@ -54,9 +57,80 @@ function pedroRage(id) {
       NO_FIGHT.delete("pedro");
       startBrawl("pedro", NPCS.pedro.nome);
       if (had) NO_FIGHT.add("pedro");
-      if (game.brawl) game.brawl.foe.pow *= 1.35;
+      if (game.brawl) pedroBuff(game.brawl);
     },
   );
+}
+/* Pedro na porrada: quase impossível de ganhar. */
+function pedroBuff(b) {
+  b.pedro = true;
+  b.foe.max = b.foe.hp = Math.round(Math.max(b.foe.max * 1.4, 54 + player.lvl * 6));
+  b.foe.pow = Math.max(b.foe.pow * 1.0, 5.8 + player.lvl * 1.1);
+}
+{
+  const pmBase = playerBrawlMove;
+  playerBrawlMove = function (key) {
+    const b = game.brawl;
+    if (b && b.pedro && key !== "block" && key !== "dodge" && !(b.me.stun > 0) && Math.random() < 0.2) {
+      const mv = BRAWL_MOVES[key];
+      b.me.stamina = Math.max(0, Math.min(100, b.me.stamina - mv.cost));
+      b.me.block = b.me.dodge = false;
+      animateBrawl("me", key);
+      return pk(["Pedro Max desvia com um sorriso e te dá um tapa na nuca! ", "Pedro segura seu braço no ar: \"Isso é soco?\" ", "Pedro nem pisca. Seu golpe passa raspando. "]);
+    }
+    return pmBase(key);
+  };
+  const fmBase = foeBrawlMove;
+  foeBrawlMove = function () {
+    const b = game.brawl;
+    const r = fmBase();
+    // Pedro não fica tonto por muito tempo e recupera o fôlego no ódio.
+    if (b && b.pedro) {
+      b.foe.stun = 0;
+      if (b.foe.hp > 0) b.foe.hp = Math.min(b.foe.max, b.foe.hp + 1);
+    }
+    return r;
+  };
+}
+/* Briga nunca trava: marca quando um golpe está em andamento e, se o menu
+   sumir sem a briga acabar, abre de novo. */
+{
+  const actBase = brawlAct;
+  brawlAct = function (key) {
+    if (game.brawl) game.brawl.busy = performance.now();
+    return actBase(key);
+  };
+  const nrBase = nextBrawlRound;
+  nextBrawlRound = function (message) {
+    const b = game.brawl;
+    if (b) b.busy = 0;
+    game.pieAnchor = null;
+    return nrBase(message);
+  };
+}
+function brawlWatchdog() {
+  const b = game.brawl;
+  if (!b) return (game.brawlLost = 0);
+  if (game.dialog || game.mode === "choice" || game.mode === "title") return (game.brawlLost = 0);
+  if (b.busy && performance.now() - b.busy < 2500) return;
+  game.brawlLost = game.brawlLost || performance.now();
+  if (performance.now() - game.brawlLost < 400) return;
+  game.brawlLost = 0;
+  nextBrawlRound(b.log || "A briga continua!");
+}
+/* Fugiu do Pedro? Ele puxa a faca do mesmo jeito. */
+{
+  const flBase = fleeBrawl;
+  fleeBrawl = function () {
+    const rage = game.brawl && game.brawl.pedro && game.pedroRage;
+    const r = flBase.apply(this, arguments);
+    if (rage && game.pedroRage) {
+      game.pedroRage.phase = "faca";
+      game.pedroRage.won = false;
+      game.pedroRage.wait = performance.now() + 800;
+    }
+    return r;
+  };
 }
 /* Acabou a briga: o Pedro puxa a faca. */
 {
@@ -149,7 +223,9 @@ function pedroChaseTick() {
     if (game.mode === "title") return;
     // O ciúme interrompe até o menu de interações aberto.
     const q = game.jealousQ;
-    if (q && game.mode === "choice" && !game.dialog && performance.now() >= q.at) {
+    // ...mas só quando ele vai mesmo disparar agora (na vila, sem briga/perseguição).
+    const fires = q && performance.now() >= q.at && !game.brawl && !game.chase && ZONES[player.zone] && ZONES[player.zone].town;
+    if (fires && game.mode === "choice" && !game.dialog) {
       if (typeof closeInterPanel === "function") closeInterPanel();
       hidePie();
       byId("choice").style.display = "none";
@@ -158,5 +234,6 @@ function pedroChaseTick() {
     }
     pedroKnife();
     pedroChaseTick();
+    brawlWatchdog();
   };
 }

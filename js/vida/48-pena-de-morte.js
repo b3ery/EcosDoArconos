@@ -22,7 +22,7 @@
   const choiceBase = choice;
   choice = function (title, text, opts) {
     const L = game.lastPie;
-    if (!game.pieAnchor && L && performance.now() - L.t < 90000 && L.name && String(title).includes(L.name) && Math.abs(L.x - player.x) + Math.abs(L.y - player.y) <= 8) game.pieAnchor = { x: L.x, y: L.y };
+    if (!game.pieAnchor && !game.brawl && L && performance.now() - L.t < 90000 && L.name && String(title).includes(L.name) && Math.abs(L.x - player.x) + Math.abs(L.y - player.y) <= 8) game.pieAnchor = { x: L.x, y: L.y };
     return choiceBase(title, text, opts);
   };
 }
