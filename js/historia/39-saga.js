@@ -90,6 +90,7 @@ function playFlashback(i) {
   );
 }
 function flashbackTick() {
+  if (player.finished || game.rollDone || game.mode !== "world") return;
   const n = (player.pages || []).length;
   const seen = player.fbSeen || 0;
   if (n > seen && game.mode === "world" && !game.dialog) {

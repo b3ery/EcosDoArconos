@@ -119,6 +119,11 @@ flowchart LR
 
 | | |
 |:---:|:---:|
+| <img src="assets/screenshots/creditos_finais.png" width="420"/><br><sub>Créditos finais com a sua jornada e conquistas</sub> | <img src="assets/screenshots/creditos.png" width="420"/><br><sub>Tela de créditos com a equipe</sub> |
+| <img src="assets/screenshots/dupla.png" width="420"/><br><sub>Batalha em dupla: o Guardião muda de forma</sub> | <img src="assets/screenshots/cripta.png" width="420"/><br><sub>Cripta dos Ecos: espelhos e luz</sub> |
+| <img src="assets/screenshots/flashback.png" width="420"/><br><sub>Flashback de Odelia e Vesper crianças</sub> | <img src="assets/screenshots/coroacao.png" width="420"/><br><sub>Coroação depois do golpe</sub> |
+| <img src="assets/screenshots/morte.png" width="420"/><br><sub>Velório com lápide e epitáfio</sub> | <img src="assets/screenshots/arvore.png" width="420"/><br><sub>Árvore da família</sub> |
+| <img src="assets/screenshots/incendio.png" width="420"/><br><sub>Incêndio no Armazém Geral</sub> | <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> |
 | <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial: Jogar, Opções e Créditos</sub> | <img src="assets/screenshots/modos.png" width="420"/><br><sub>Depois de Jogar: continuar ou escolher o modo</sub> |
 | <img src="assets/screenshots/origem.png" width="420"/><br><sub>Origem na criação: do plebeu à realeza</sub> | <img src="assets/screenshots/alareal.png" width="420"/><br><sub>Ala Real do castelo, com empregados</sub> |
 | <img src="assets/screenshots/palacio.png" width="420"/><br><sub>Palácio das Marés, numa ilha no Porto</sub> | <img src="assets/screenshots/fortaleza.png" width="420"/><br><sub>Fortaleza de Pedravale</sub> |
@@ -127,10 +132,9 @@ flowchart LR
 | <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> | <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> |
 | <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado)</sub> |
 | <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
-| <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> | <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> |
+| <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> | <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> |
 | <img src="assets/screenshots/conversa.png" width="420"/><br><sub>Os moradores conversam entre si</sub> | <img src="assets/screenshots/jeito.png" width="420"/><br><sub>Personalidade e orientação no criador</sub> |
 | <img src="assets/screenshots/casa.png" width="420"/><br><sub>Casa pintada com os móveis novos</sub> | <img src="assets/screenshots/pintar.png" width="420"/><br><sub>Decorar: Móveis, Pintar e Reformar</sub> |
-| <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> |  |
 
 </div>
 
