@@ -86,8 +86,9 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 52 | `js/vida/51-alteza.js` | - Quem nasce na realeza é reconhecido: a Rainha Aurélia trata você como sobrinho(a) e herdeiro(a); o povo se curva, chama de "Alteza" e a guarda bate continência. - Ala Real redese | — |
 | 53 | `js/vida/52-mundo-vivo.js` | - O Eco de Cinzaluz: o jornal do dia (tecla J ou ☰ → Jornal), com manchete, notícias, política, fofocas, previsão do tempo, classificados, obituário, horóscopo das runas e a tirinh | — |
 | 54 | `js/vida/54-pedro-max.js` | - Ciúme nos dois modos e mais frequente: quem é casado descobre mais (o par perto vê na hora; longe, a fofoca chega em poucos segundos). - Pedro Max é o mais bolado de todos: deu e | — |
-| 55 | `js/vida/55-vida-inteligente.js` | - O ano dura 15 dias: o aniversário é a cada 15 dias, com festa. - Cena da morte do personagem: o corpo cai, a alma sobe e há um velório no cemitério com lápide, epitáfio e quem vo | — |
-| 56 | `js/interface/53-tela-inicio.js` | Tela de início mais limpa, em dois passos: 1. Logo + Jogar, Opções e Créditos. 2. Depois de Jogar: Continuar (se tiver jogo salvo) e a escolha do modo. O Guia e as Conquistas ficam | — |
+| 55 | `js/vida/55-vida-inteligente.js` | - O ano dura 15 dias: o aniversário é a cada 15 dias, com festa. - Moradores com cérebro: cada par tem uma relação que muda a cada conversa (pelo jeito de cada um). Eles fazem amiz | — |
+| 56 | `js/vida/56-mortes.js` | 30 jeitos de morrer no Simulador (e o duelo de magos na história). Cada morte tem a sua cena: o cenário onde aconteceu, quem matou, os efeitos (sangue, água, raio, neve, veneno...) | — |
+| 57 | `js/interface/53-tela-inicio.js` | Tela de início mais limpa, em dois passos: 1. Logo + Jogar, Opções e Créditos. 2. Depois de Jogar: Continuar (se tiver jogo salvo) e a escolha do modo. O Guia e as Conquistas ficam | — |
 
 ## Testes
 

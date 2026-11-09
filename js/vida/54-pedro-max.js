@@ -182,6 +182,8 @@ function pedroChaseTick() {
     game.flash = 0.6;
     if (lifeMode()) addNeed("energy", -10);
     if (c.hits >= 2 && player.hp <= mx * 0.25) {
+      // Metade das vezes o Pedro consegue mesmo (Simulador).
+      if (lifeMode() && typeof playerDies === "function" && Math.random() < 0.5) return playerDies("pedro", { why: "A Mylena chegou tarde demais." });
       game.chase = null;
       game.pedroRage = null;
       const lost = Math.round(player.gold * 0.25);

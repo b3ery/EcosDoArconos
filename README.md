@@ -399,9 +399,28 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **Falas quase infinitas:** as frases são montadas na hora (abertura + assunto + fecho) com o clima, a hora, os casais da vila, a turma, você, a Rainha, notícias recentes e o jeito de quem fala, com memória para não repetir.
 - **Personalidade e orientação:** cada pessoa tem dois traços (romântico, ciumento, esquentado, fofoqueiro, galanteador...) e uma orientação. Use **Conhecer melhor** no menu da pessoa para descobrir. Você escolhe os seus 3 traços e de quem gosta na aba **Jeito** do criador (e no guarda-roupa).
 - **Ciúme (nos dois modos):** dar em cima de gente casada pode dar ruim (vale para qualquer casado da vila). Se o par estiver perto, vê na hora; se não, a fofoca chega em poucos segundos. Se o par descobrir, ele pode **sair na mão** com você, **correr atrás de você com uma faca** pela vila (fuja ou entre num prédio!) ou só dar um climão.
-- **Pedro Max é o mais bolado:** deu em cima da Mylena, ele sempre fica sabendo. Sai na porrada com você e, acabando a briga, puxa a faca da bota e tenta te matar pela vila. Cada facada dele dói muito mais, e quem é pego vai parar no Hospital.
+- **Pedro Max é o mais bolado:** deu em cima da Mylena, ele sempre fica sabendo. Sai na porrada com você e, acabando a briga, puxa a faca da bota e tenta te matar pela vila. Na mão ele é quase imbatível, cada facada dói muito mais, e quem é pego pode acabar no Hospital... ou no cemitério.
 - **O Marzoca é o mais perseguido:** o Lucas vive dando em cima de gente casada, e o marido (ou a esposa) aparece com a faca. A vila inteira comenta, e o jogo conta as fugas dele.
 - **Protestos dos Iluministas:** a cada 3 ou 4 dias, de manhã, Luca e Lucas juntam o povo na frente do castelo com cartazes. A Rainha aparece, os tomates, ovos e repolhos começam a voar, os guardas correm atrás de todo mundo e vira uma loucura. Entre no protesto, jogue tomate (cuidado com a multa), defenda a Rainha ou tente acalmar a multidão. Quem é iluminista pode convocar um protesto com o Luca.
+
+## ⚰️ 30 jeitos de morrer (Simulador)
+
+Toda vida acaba, e a cena da morte mostra **como** foi: o cenário onde aconteceu, quem matou, o corpo caindo, a alma subindo e depois o velório no cemitério com lápide, epitáfio e quem você amou.
+
+| | | | |
+|---|---|---|---|
+| Velhice | Forca | Faca do Pedro Max | Ciúme (faca) |
+| Briga de rua | Fome | Sede | Doença |
+| Peste | Intoxicação | Veneno de um desafeto | Afogamento (bêbado no rio) |
+| Bebedeira | Raio na tempestade | Frio da madrugada de inverno | Desabamento na mina |
+| Fera da floresta | Urso | Queda na serra | Mar bravo no porto |
+| Duelo de magos | Vingança por um crime | Golpe de Estado | Guerra |
+| Assalto de madrugada | Coice de cavalo | Engasgo | Pisoteado no protesto |
+| Exaustão | Coração | | |
+
+- Quase tudo dá aviso antes (fome, sede, frio, doença, bêbado na beira da água) e muita coisa tem escolha: entregar a bolsa ou reagir ao assalto, pedir socorro ao engasgar.
+- **Livro das Mortes** (tecla **B** ou botão *Mortes*): guarda as mortes que você já descobriu, mesmo entre uma vida e outra, com dicas das que faltam.
+- O ano dura **15 dias**: aniversário com festa a cada 15 dias.
 
 ## 🏰 Origem, casa e a Ala Real (Simulador)
 
