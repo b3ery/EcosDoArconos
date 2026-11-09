@@ -6793,3 +6793,40 @@ body.cutscene #toast {
 #arvore .av-will {
   opacity: 0.8;
 }
+
+/* Retratos maiores nas falas */
+#dport {
+  width: 7.4em;
+  height: 6.4em;
+}
+body.mland #dport {
+  width: 5.6em;
+  height: 4.8em;
+}
+/* Diário da Vida */
+#diariovida {
+  display: none;
+  position: absolute;
+  inset: 5%;
+  z-index: 70;
+  overflow-y: auto;
+  padding: 1em 1.4em;
+  background: linear-gradient(#1a1424, #0e0a14);
+  border: 2px solid #b48aff;
+  border-radius: 12px;
+  color: #ece4ff;
+}
+#diariovida h2 {
+  margin: 0 0 0.5em;
+  color: #ffd6f0;
+  text-align: center;
+}
+#diariovida .dv-l p {
+  margin: 0.25em 0;
+}
+#diariovida .dv-b {
+  display: flex;
+  gap: 0.6em;
+  justify-content: center;
+  margin-top: 0.8em;
+}

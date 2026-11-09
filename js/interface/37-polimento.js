@@ -56,6 +56,7 @@ function unstick(loud) {
     game.deathScene = null;
     game.dying = false;
   }
+  game.cine = null;
   document.body.classList.remove("cutscene");
   game.dialog = null;
   byId("dialog").style.display = "none";
@@ -82,7 +83,7 @@ function stuckWatch(dt) {
   let bad = false;
   if (game.mode === "choice" && !game.dialog && !vis("choice") && !vis("pie")) bad = "menu";
   else if (game.dialog && !vis("dialog") && game.mode !== "cutscene") bad = "fala";
-  else if (game.mode === "cutscene" && !game.deathScene) bad = "cena";
+  else if (game.mode === "cutscene" && !game.deathScene && !game.cine) bad = "cena";
   else if (OVERLAY_MODES[game.mode] && !vis(OVERLAY_MODES[game.mode])) bad = "janela";
   else if (game.dying && !game.deathScene && !game.dialog && game.mode === "world") bad = "morte";
   if (!bad) return (stuckFor = 0);
