@@ -115,13 +115,18 @@
 
 | | |
 |:---:|:---:|
-| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial</sub> | <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> |
-| <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> | <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> |
+| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial: Jogar, Opções e Créditos</sub> | <img src="assets/screenshots/modos.png" width="420"/><br><sub>Depois de Jogar: continuar ou escolher o modo</sub> |
+| <img src="assets/screenshots/origem.png" width="420"/><br><sub>Origem na criação: do plebeu à realeza</sub> | <img src="assets/screenshots/alareal.png" width="420"/><br><sub>Ala Real do castelo, com empregados</sub> |
+| <img src="assets/screenshots/palacio.png" width="420"/><br><sub>Palácio das Marés, numa ilha no Porto</sub> | <img src="assets/screenshots/fortaleza.png" width="420"/><br><sub>Fortaleza de Pedravale</sub> |
+| <img src="assets/screenshots/jornal.png" width="420"/><br><sub>O Eco de Cinzaluz, o jornal do dia</sub> | <img src="assets/screenshots/inverno.png" width="420"/><br><sub>Inverno: neve nos telhados e nas árvores</sub> |
+| <img src="assets/screenshots/calabouco.png" width="420"/><br><sub>O calabouço e o Professor L</sub> | <img src="assets/screenshots/corpo.png" width="420"/><br><sub>Crimes têm consequência</sub> |
+| <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> | <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> |
+| <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado)</sub> |
 | <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
 | <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> | <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> |
 | <img src="assets/screenshots/conversa.png" width="420"/><br><sub>Os moradores conversam entre si</sub> | <img src="assets/screenshots/jeito.png" width="420"/><br><sub>Personalidade e orientação no criador</sub> |
 | <img src="assets/screenshots/casa.png" width="420"/><br><sub>Casa pintada com os móveis novos</sub> | <img src="assets/screenshots/pintar.png" width="420"/><br><sub>Decorar: Móveis, Pintar e Reformar</sub> |
-| <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado), andando com o dedo</sub> |
+| <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> |  |
 
 </div>
 

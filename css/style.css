@@ -6620,7 +6620,7 @@ body.mland:has(#shop[style*="block"]) #tgrp {
 @media (pointer: coarse) and (max-height: 520px) and (orientation: landscape) {
   #title.over.step1,
   #title.over.step2 {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
