@@ -36,6 +36,7 @@ Object.assign(COSMETICS, {
     ["cicatriz", "Cicatriz", 0],
     ["barba", "Barba", 0],
     ["cavanhaque", "Cavanhaque", 0],
+    ["bigode", "Bigode", 0],
     ["batom", "Batom", 0],
     ["guerra", "Pintura de guerra", 0],
   ],
@@ -116,6 +117,8 @@ function renderCreate() {
   L.acc = L.acc || "nenhum";
   L.staffc = L.staffc || "#ffe066";
   L.aura = L.aura || "nenhuma";
+  // Sardas e bigode agora são do rosto (não acessórios).
+  if (L.acc === "sardas" || L.acc === "bigode") (L.face = L.acc), (L.acc = "nenhum");
   L.hatc = L.hatc || "#2a2f6e";
   const secs = CC_SECTIONS.filter((s) => (!s.only || s.only === mode) && !(s.story && lifeMode()));
   if (!secs.some((s) => s.k === game.ccTab)) game.ccTab = secs[0].k;

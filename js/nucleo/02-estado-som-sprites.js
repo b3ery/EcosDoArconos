@@ -1463,6 +1463,9 @@ function heroRects(L, dir, glow, fr = 0) {
       case "cavanhaque":
         r.push([7, 8, 2, 1, brow]);
         break;
+      case "bigode":
+        r.push([6, 8, 4, 1, brow]);
+        break;
       case "batom":
         r.push([7, 8, 2, 1, "#c93a5a"], [6, 8, 1, 1, "#f0a0b0"], [9, 8, 1, 1, "#f0a0b0"]);
         break;
@@ -1516,6 +1519,27 @@ function heroRects(L, dir, glow, fr = 0) {
   if (L.acc === "colar") r.push([6, 9, 4, 1, tr], [7, 10, 2, 1, "#5fd0ff"]);
   if (L.acc === "cachecol")
     r.push([5, 9, 6, 1, "#c94a4a"], [9, 9, 1, 3, "#a83a3a"]);
+  switch (L.acc) {
+    case "laco":
+      r.push([9, 4, 1, 1, "#e0466a"], [11, 4, 1, 1, "#e0466a"], [10, 4, 1, 1, "#ff8aa8"], [9, 5, 1, 1, "#c03050"], [11, 5, 1, 1, "#c03050"]);
+      break;
+    case "pena":
+      r.push([11, 2, 1, 3, "#f2eee4"], [12, 1, 1, 2, "#7ad36b"], [12, 3, 1, 1, "#5fd0ff"]);
+      break;
+    case "bolsa":
+      if (dir !== "up") r.push([5, 9, 1, 1, "#6b4423"], [6, 10, 1, 1, "#6b4423"], [7, 11, 1, 1, "#6b4423"], [8, 12, 1, 1, "#6b4423"]);
+      r.push([9, 12, 3, 2, "#8a5a2e"], [10, 12, 1, 1, tr]);
+      break;
+    case "cinto":
+      r.push([4, 12, 8, 1, "#3a2414"], [7, 12, 2, 1, tr]);
+      break;
+    case "pulseiras":
+      r.push([3, 12, 1, 1, tr], [12, 12, 1, 1, "#5fd0ff"]);
+      break;
+    case "medalha":
+      if (dir !== "up") r.push([7, 9, 2, 1, "#c94a4a"], [7, 10, 2, 2, tr], [8, 10, 1, 1, "#fff3b0"]);
+      break;
+  }
   const hc2 = L.hatc || "#2a2f6e";
   switch (L.hat) {
     case "mago":

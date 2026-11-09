@@ -1266,11 +1266,21 @@ function drawBuilding(b, t) {
   if (S.thatch) fillPolygon(X - 8, Y + roofH, X + W + 8, Y + roofH, X + W / 2, Y - 18);
   else fillPolygon(X - 6, Y + roofH, X + W + 6, Y + roofH, X + W - 14, Y - 10, X + 14, Y - 10);
   ctx.fillStyle = S.r2;
-  for (let r = 0; r < (roofH + 10) / 7; r++) {
-    const yy = Y - 8 + r * 7;
-    const inset = 14 - (r * 20) / ((roofH + 10) / 7);
-    ctx.fillRect(X + inset - 4, yy, W - 2 * inset + 8, 2);
-  }
+  if (S.thatch) {
+    // Palha: as faixas seguem o triângulo do telhado (não passam da borda).
+    const top = Y - 18,
+      base = Y + roofH,
+      half = W / 2 + 8;
+    for (let yy = top + 8; yy < base - 2; yy += 7) {
+      const hw = (half * (yy - top)) / (base - top) - 2;
+      if (hw > 2) ctx.fillRect(X + W / 2 - hw, yy, hw * 2, 2);
+    }
+  } else
+    for (let r = 0; r < (roofH + 10) / 7; r++) {
+      const yy = Y - 8 + r * 7;
+      const inset = 14 - (r * 20) / ((roofH + 10) / 7);
+      ctx.fillRect(X + inset - 4, yy, W - 2 * inset + 8, 2);
+    }
   ctx.fillStyle = "rgba(0,0,0,.25)";
   ctx.fillRect(X - 6, Y + roofH - 3, W + 12, 3);
   if (S.tower) {
