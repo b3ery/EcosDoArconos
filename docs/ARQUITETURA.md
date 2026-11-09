@@ -84,6 +84,7 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 50 | `js/mundo/49-castelos-reinos.js` | Os outros reinos ganham as suas sedes: - Palácio das Marés (Porto Brisamar): numa ilha no mar, ligada pela ponte do cais. Paredes brancas, cúpulas azul-turquesa e bandeiras com a o | — |
 | 51 | `js/vida/50-origem-e-ala-real.js` | Simulador de Vida: quem você é quando nasce. - Na criação (aba Origem): plebeu, artesão, comerciante, burguês, nobre ou realeza, e uma ocupação inicial (qualquer carreira, já com e | — |
 | 52 | `js/vida/51-alteza.js` | - Quem nasce na realeza é reconhecido: a Rainha Aurélia trata você como sobrinho(a) e herdeiro(a); o povo se curva, chama de "Alteza" e a guarda bate continência. - Ala Real redese | — |
+| 53 | `js/vida/52-mundo-vivo.js` | - O Eco de Cinzaluz: o jornal do dia (tecla J ou ☰ → Jornal), com manchete, notícias, política, fofocas, previsão do tempo, classificados, obituário, horóscopo das runas e a tirinh | — |
 
 ## Testes
 

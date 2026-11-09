@@ -405,6 +405,14 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - Quem **casa com a Rainha** ou **dá o golpe** também ganha acesso à Ala Real pela porta do castelo.
 - **Os outros reinos têm sede:** o **Palácio das Marés**, numa ilha ligada à ponte do Porto, e a **Fortaleza de Pedravale**, de pedra escura. Lá dentro ficam o salão do trono e o governante, para audiência, diplomacia ou conquista. Se o governante morrer, o trono fica vago.
 
+## 📰 Mundo vivo
+
+- **O Eco de Cinzaluz** (tecla **J** ou ☰ → Jornal): o jornal do dia, com manchete, notícias, política, quem governa cada reino, fofocas da taverna, previsão do tempo, classificados de casas e empregos, obituário, horóscopo das runas e a tirinha do Luca.
+- **Sucessão:** se você é herdeiro(a), é coroado(a) quando a Rainha morre ou decide abdicar. Um nobre rival, o Duque Ramiro de Valsombra, pode contestar a coroa.
+- **Cada reino tem a sua cara:** lema, leis que valem de verdade (as Marés são porto livre, com imposto pela metade; em Pedravale roubar é bem mais difícil e há pedágio), prato típico (Caldeirada das Marés, Pão de Pedra dos Anões) e festa própria (Noite das Velas no mar, Festa da Forja com faíscas).
+- **Mascotes** também ficam na Ala Real e no quintal: dá para fazer carinho, brincar e escolher quem vai passear com você.
+- **Estações no visual:** flores na primavera, folhas laranja caindo no outono, neve nos telhados e nas árvores no inverno.
+
 ## 👑 Golpe de estado e os Três Reinos (Simulador)
 
 - **Conspire** (tecla **K** → Reinos, ou com o Luca e o Lucas): chame aliados (cada um aceita pelo jeito dele; os leais à coroa podem te entregar), suborne guardas, compre armas na Forja e espalhe boatos. Cuidado com a **suspeita**: se chegar a 100, você vai para a masmorra.
