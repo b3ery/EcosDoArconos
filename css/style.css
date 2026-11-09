@@ -6134,3 +6134,59 @@ body.mland .joy:not(.active) {
 .cc-pal + .cc-lbl.cc-pl {
   margin-top: 0.7em;
 }
+
+/* Criador: origem e ocupação */
+.cc-origs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11em, 1fr));
+  gap: 0.45em;
+}
+.cc-origs button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.45em;
+  align-items: center;
+  text-align: left;
+  margin: 0;
+  padding: 0.45em 0.55em;
+  border-radius: 12px;
+}
+.cc-origs button img {
+  grid-row: span 3;
+}
+.cc-origs button small {
+  font-size: 0.72em;
+  color: var(--muted);
+  line-height: 1.15;
+}
+.cc-origs button em {
+  font-style: normal;
+  font-size: 0.75em;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+}
+.cc-origs button.on {
+  border-color: var(--gold);
+  background: linear-gradient(#5a4a2a, #3a2c1a);
+}
+.cc-occs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+.cc-occs button {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  margin: 0;
+  padding: 0.3em 0.6em;
+  border-radius: 999px;
+  font-size: 0.9em;
+}
+.cc-occs button.on {
+  border-color: var(--gold);
+  color: #fff3b0;
+  background: linear-gradient(#5a4a2a, #3a2c1a);
+}

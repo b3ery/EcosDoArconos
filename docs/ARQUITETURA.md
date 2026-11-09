@@ -81,6 +81,8 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 47 | `js/vida/46-morte-e-calabouco.js` | Crimes, castigo e o calabouço (nos dois modos): - Qualquer adulto pode morrer (crianças não). Magos são imortais para mortais: no Simulador ninguém mata a Odelia; no modo História  | — |
 | 48 | `js/vida/47-crime-e-memoria.js` | - O corpo fica no chão, com sangue, onde a pessoa morreu. Quem passar perto grita e chama a guarda. Dá para esconder, revistar os bolsos ou fingir que achou. - Ladrão: bater cartei | — |
 | 49 | `js/vida/48-pena-de-morte.js` | - Pena de morte: quem mata duas vezes (ou mata alguém da realeza) vai a julgamento. Clemência, fuga ou forca. No Simulador a forca é o fim (a família continua com um herdeiro, se h | — |
+| 50 | `js/mundo/49-castelos-reinos.js` | Os outros reinos ganham as suas sedes: - Palácio das Marés (Porto Brisamar): numa ilha no mar, ligada pela ponte do cais. Paredes brancas, cúpulas azul-turquesa e bandeiras com a o | — |
+| 51 | `js/vida/50-origem-e-ala-real.js` | Simulador de Vida: quem você é quando nasce. - Na criação (aba Origem): plebeu, artesão, comerciante, burguês, nobre ou realeza, e uma ocupação inicial (qualquer carreira, já com e | — |
 
 ## Testes
 

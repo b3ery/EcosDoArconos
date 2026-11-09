@@ -397,6 +397,14 @@ As combinações mais fortes ficaram mais caras ou mais fracas (Crepúsculo 42�
 - **O Marzoca é o mais perseguido:** o Lucas vive dando em cima de gente casada, e o marido (ou a esposa) aparece com a faca. A vila inteira comenta, e o jogo conta as fugas dele.
 - **Protestos dos Iluministas:** a cada 3 ou 4 dias, de manhã, Luca e Lucas juntam o povo na frente do castelo com cartazes. A Rainha aparece, os tomates, ovos e repolhos começam a voar, os guardas correm atrás de todo mundo e vira uma loucura. Entre no protesto, jogue tomate (cuidado com a multa), defenda a Rainha ou tente acalmar a multidão. Quem é iluminista pode convocar um protesto com o Luca.
 
+## 🏰 Origem, casa e a Ala Real (Simulador)
+
+- **Na criação (aba Origem)** você escolhe quem é: **Plebeu, Artesão, Comerciante, Burguês, Nobre (Duque/Duquesa) ou Realeza (Príncipe/Princesa)**. A origem define o ouro inicial, a reputação e o padrão de casa. Também dá para escolher uma **ocupação** (qualquer uma das carreiras), que já começa com experiência.
+- **Depois você escolhe a casa** conforme a origem: casebres para o povo, casas e sobrados para quem tem dinheiro, mansões para a nobreza.
+- **A Realeza mora na Ala Real do castelo:** quarto real, quarto de hóspedes, dois banheiros, sala de jantar, cozinha e salão de festas. Os **empregados** fazem o serviço: o **Mordomo Albérico** prepara banquetes e bailes, a **Cozinheira Benta** serve refeições, a **Camareira Lis** prepara o banho e escolhe a roupa, e o **Criado Teo** toca piano e chama a turma para festas. A família real recebe mesada todo dia e não paga imposto de casa.
+- Quem **casa com a Rainha** ou **dá o golpe** também ganha acesso à Ala Real pela porta do castelo.
+- **Os outros reinos têm sede:** o **Palácio das Marés**, numa ilha ligada à ponte do Porto, e a **Fortaleza de Pedravale**, de pedra escura. Lá dentro ficam o salão do trono e o governante, para audiência, diplomacia ou conquista. Se o governante morrer, o trono fica vago.
+
 ## 👑 Golpe de estado e os Três Reinos (Simulador)
 
 - **Conspire** (tecla **K** → Reinos, ou com o Luca e o Lucas): chame aliados (cada um aceita pelo jeito dele; os leais à coroa podem te entregar), suborne guardas, compre armas na Forja e espalhe boatos. Cuidado com a **suspeita**: se chegar a 100, você vai para a masmorra.

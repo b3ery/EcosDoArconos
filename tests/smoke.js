@@ -123,6 +123,8 @@ const check = (name, ok) => {
   check("Corpo fica no chão", await page.evaluate(() => !!(player.dead.bruno && player.dead.bruno.pos)));
   check("Sonegar tira o imposto", await page.evaluate(() => ((player.sonega = true), withTax(100) === 100 && !((player.sonega = false))) ));
   check("Mais de 550 interações", await page.evaluate(() => INTERACTIONS.length >= 550));
+  check("Ala Real com empregados", await page.evaluate(() => (enterRoyalWing(), player.zone === "alareal" && game.rwStaff.length === 4)));
+  await page.evaluate(() => (leaveRoyalWing(), enterHouse(null), (game.dialog = null), (game.mode = "world")));
   check("Parede pintada na casa", await page.evaluate(() => HOME_PAL[homeTier()].wall === "#ecc8cc"));
   await page.waitForTimeout(1500);
   check("500+ itens no catálogo", await page.evaluate(() => CATALOG.length >= 500));

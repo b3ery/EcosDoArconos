@@ -729,7 +729,7 @@ function drawTile(z, x, y, c, t) {
         ctx.fillStyle = P.line;
         ctx.fillRect(X, Y, TILE, 1);
         ctx.fillRect(X, Y, 1, TILE);
-        if (x === 6 || x === 7) {
+        if ((x === 6 || x === 7) && player.zone === "casa") {
           ctx.fillStyle = "#a8282a";
           ctx.fillRect(X + (x === 6 ? 6 : 0), Y, 26, TILE);
           ctx.fillStyle = "#f2c14e";

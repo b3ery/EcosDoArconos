@@ -13,6 +13,7 @@
 
 const CC_SECTIONS = [
   { k: "perfil", n: "Perfil", ic: "chat", only: "new" },
+  { k: "origem", n: "Origem", ic: "crown", only: "new", life: true },
   { k: "jeito", n: "Jeito", ic: "heart" },
   // [parte, nome, cor que aparece em cima]: em cima as cores, embaixo os formatos.
   { k: "rosto", n: "Rosto", ic: "eye", subs: [["face", "Rosto e pele", "skin"], ["eyeshape", "Olhos", "eyes"]] },
@@ -120,7 +121,7 @@ function renderCreate() {
   // Sardas e bigode agora são do rosto (não acessórios).
   if (L.acc === "sardas" || L.acc === "bigode") (L.face = L.acc), (L.acc = "nenhum");
   L.hatc = L.hatc || "#2a2f6e";
-  const secs = CC_SECTIONS.filter((s) => (!s.only || s.only === mode) && !(s.story && lifeMode()));
+  const secs = CC_SECTIONS.filter((s) => (!s.only || s.only === mode) && !(s.story && lifeMode()) && !(s.life && !lifeMode()));
   if (!secs.some((s) => s.k === game.ccTab)) game.ccTab = secs[0].k;
   const sec = secs.find((s) => s.k === game.ccTab);
   const subs = sec.subs || [];
@@ -146,6 +147,8 @@ function renderCreate() {
         .map(([k, d]) => `<button data-dif="${k}" class="${(game.draftDiff || "normal") === k ? "on" : ""}"><b>${d.n}</b><small>${d.desc}</small></button>`)
         .join("")}</div>
     </div>`;
+  } else if (sec.k === "origem" && typeof ccOriginPanel === "function") {
+    panel = ccOriginPanel();
   } else if (sec.k === "jeito") {
     const tr = game.draftTraits || [];
     const g = game.draftGender === "f" ? "f" : "m";
@@ -257,6 +260,7 @@ function renderCreate() {
         renderCreate();
       }),
   );
+  if (typeof ccOriginBind === "function") ccOriginBind(el);
   el.querySelectorAll("[data-orient]").forEach((b) => (b.onclick = () => ((game.draftOrient = b.dataset.orient), renderCreate())));
   el.querySelectorAll("[data-dif]").forEach((b) => (b.onclick = () => ((game.draftDiff = b.dataset.dif), renderCreate())));
   byId("crand").onclick = () => {
