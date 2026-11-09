@@ -173,6 +173,64 @@ Os criadores do jogo viraram personagens importantes da história, com seus parc
 
 ---
 
+## 🧙 Personagens Principais
+
+<div align="center">
+
+| | | | |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/personagens/npc_odelia.png" width="110"/><br><b>Arquimaga Odelia</b><br><sub>Mentora do aprendiz e irmã de Vesper · Cinzaluz</sub> | <img src="assets/personagens/npc_kael.png" width="110"/><br><b>Instrutor Kael</b><br><sub>Ensina a lutar com runas · Cinzaluz</sub> | <img src="assets/personagens/npc_bruno.png" width="110"/><br><b>Bruno, o Alquimista</b><br><sub>Poções e remédios · Cinzaluz</sub> | <img src="assets/personagens/npc_rosa.png" width="110"/><br><b>Rosa, a Quitandeira</b><br><sub>Comida e bebida · Cinzaluz</sub> |
+| <img src="assets/personagens/npc_doran.png" width="110"/><br><b>Doran, o Artesão</b><br><sub>Cajados mágicos · Cinzaluz</sub> | <img src="assets/personagens/npc_curandeira.png" width="110"/><br><b>Curandeira Maíra</b><br><sub>Cura e cuidados · Cinzaluz</sub> | <img src="assets/personagens/npc_capitao.png" width="110"/><br><b>Capitão Bento</b><br><sub>Velho marinheiro · Porto Brisamar</sub> | <img src="assets/personagens/npc_ancia.png" width="110"/><br><b>Anciã Berta</b><br><sub>Conhece a história dos anões · Pedravale</sub> |
+| <img src="assets/personagens/npc_druida.png" width="110"/><br><b>Druida Errante</b><br><sub>Dicas sobre o Ent · Bosque Murmurante</sub> | <img src="assets/personagens/npc_monge.png" width="110"/><br><b>Monge da Montanha</b><br><sub>Dicas sobre o Grifo · Picos Uivantes</sub> | <img src="assets/personagens/npc_selene.png" width="110"/><br><b>Professora Selene</b><br><sub>Antiga professora · Academia Arcana</sub> | <img src="assets/personagens/npc_espirito.png" width="110"/><br><b>Espírito de um Aprendiz</b><br><sub>Dicas sobre o Silenciador · Torre do Silêncio</sub> |
+| <img src="assets/personagens/npc_honda.png" width="110"/><br><b>Professor Bruno Honda</b><br><sub>Historiador de runas: decifra o diário de Vesper · Praça</sub> | <b>Professor L</b><br><sub>O prisioneiro insuportável do calabouço. Ninguém sabe o nome dele</sub> | <b>Velha Juta</b><br><sub>Guarda as memórias do Pântano</sub> | <b>Eco do Bibliotecário</b><br><sub>Lê os livros de Vesper · Torre</sub> |
+
+</div>
+
+> Cada morador tem tom de pele, penteado e roupa próprios. Só quem ainda guarda magia, a **Arquimaga Odelia** e a **Professora Selene**, usa chapéu pontudo e cajado brilhante.
+
+<br>
+
+---
+
+## 👑 Família Real
+
+<div align="center">
+
+| | | | |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/personagens/real_rainha.png" width="100"/><br><b>Rainha Aurélia</b><br><sub>Governa Aurélia do Castelo de Cinzaluz</sub> | <img src="assets/personagens/turma_pedro.png" width="100"/><br><b>Príncipe Pedro Max</b><br><sub>Filho da Rainha. Ciumento: ninguém mexe com a Mylena</sub> | <img src="assets/personagens/turma_mylena.png" width="100"/><br><b>Princesa Mylena</b><br><sub>Artista do Ateliê, esposa do Pedro Max</sub> | <img src="assets/personagens/real_guarda.png" width="100"/><br><b>Guarda Real</b><br><sub>Protege o castelo e a passeata</sub> |
+
+</div>
+
+> A cada 5 dias a família real faz uma **passeata** pela vila. Os outros reinos têm seus governantes: o **Príncipe-Almirante Tarso** (Marés) e o **Rei-Anão Durgan** (Pedravale).
+
+<br>
+
+---
+
+## 👹 Chefes
+
+<div align="center">
+
+| | Chefe | Onde | Nível |
+|:---:|:---|:---|:---:|
+| <img src="assets/personagens/boss_ent.png" width="70"/> | **Ent Silenciado**<br><sub>Guardião</sub> | 🌲 Bosque Murmurante | **Nv 4+** |
+| <img src="assets/personagens/boss_serpente.png" width="70"/> | **Serpente de Névoa**<br><sub>Guardião</sub> | 🌫️ Pântano das Brumas | **Nv 6+** |
+| <img src="assets/personagens/boss_grifo.png" width="70"/> | **Grifo de Pedra**<br><sub>Guardião</sub> | 🏔️ Picos Uivantes | **Nv 8+** |
+| <img src="assets/personagens/boss_basilisco.png" width="70"/> | **Basilisco de Cristal**<br><sub>Guardião</sub> | ⛏️ Mina de Cristal (Pedravale) | **Nv 9+** |
+| <img src="assets/personagens/boss_leviata.png" width="70"/> | **Leviatã do Cais**<br><sub>Guardião</sub> | ⚓ Píer do Porto Brisamar | **Nv 10+** |
+| <img src="assets/personagens/boss_vitral.png" width="70"/> | **Espírito do Vitral**<br><sub>Chefe secreto</sub> | ⛪ Templo da Luz (opcional) | **Nv 8+** |
+| <img src="assets/personagens/boss_diretor.png" width="70"/> | **Diretor Espectral**<br><sub>Chefe da masmorra</sub> | 📚 Academia Arcana | **Nv 10+** |
+| <img src="assets/personagens/boss_silenciador.png" width="70"/> | **O Silenciador**<br><sub>Chefe final</sub> | 🗼 Torre do Silêncio | **Nv 12+** |
+
+</div>
+
+> Na metade da vida, cada Guardião **muda de forma e de fraqueza**. Também há os **Ecos Corrompidos** (Lobo Alfa, Hidra, Roc, Quimera e Colosso) e, dependendo das suas escolhas, o **Kael Silenciado**.
+
+<br>
+
+---
+
 ## 📜 A História — O Segredo dos Irmãos
 
 | Ato | O que acontece |
@@ -192,9 +250,36 @@ Os criadores do jogo viraram personagens importantes da história, com seus parc
 
 ---
 
+## 🔮 Magia — Runas
+
+| 🔥 Chama | 💧 Maré | 🌪️ Vento | ⛰️ Terra | ☀️ Luz | 🌙 Sombra |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| Dano e queimadura | Cura e congelamento | Golpes múltiplos | Escudos | Cura e cegueira | Roubo de vida |
+
+**27 feitiços** de 1 ou 2 runas e **8 combos secretos**. A runa de afinidade dá +25% de dano; acertar a fraqueza dá quase o dobro; cada feitiço sobe de nível com o uso, e acertos enchem a **Canção Arcana**, o golpe supremo.
+
+<br>
+
+---
+
+## 🏘️ O Mundo
+
+| Lugar | O que tem |
+|:---|:---|
+| 🏘️ **Cinzaluz** | Praça com fonte, mercado, 20+ comércios com interior, castelo, templo, escola, taverna, calabouço e o Bairro das Flores |
+| ⚓ **Porto Brisamar** | Farol, cais, Palácio das Marés numa ilha |
+| ⛏️ **Pedravale** | Forja anã, Mina de Cristal, Fortaleza de Pedravale |
+| 🌲 **Bosque Murmurante** | Elfos, rios, o Ent e a **Cripta dos Ecos** |
+| 🌫️ **Pântano das Brumas** · 🏔️ **Picos Uivantes** | Serpente, Grifo e a Velha Juta |
+| 📚 **Academia Arcana** · 🗼 **Torre do Silêncio** | Tomos de feitiços, Diretor Espectral e o Silenciador |
+| 🌳 **Floresta Grande** (Simulador) | Lobos, javalis, ursos e caça |
+
+<br>
+
+---
+
 ## ⚔️ Modo História
 
-- **6 runas e 27 feitiços** (Chama, Maré, Vento, Terra, Luz e Sombra). Combine 1 ou 2 runas; acertar a fraqueza dá quase o dobro de dano.
 - **Combos secretos:** duas magias seguidas na ordem certa (Maré → Chama = Vapor Escaldante...). São 8 para descobrir.
 - **Guardiões com duas fases:** na metade da vida eles mudam de forma e de fraqueza. Seu melhor amigo da turma luta ao seu lado.
 - **Flashbacks dos irmãos:** cada página do diário de Vesper abre uma lembrança, e as suas escolhas enfraquecem o Silenciador.
