@@ -95,12 +95,16 @@
 
 <div align="center">
 
-```
-╔══════════════════════════════════════════════════════════════════════╗
-║  🏘️ Cinzaluz  →  🌲 Bosque (Ent)  →  🌫️ Pântano (Serpente)          ║
-║        ↓                                         ↓                   ║
-║  ✦ Epílogo  ←  🗼 Torre (Silenciador)  ←  🏔️ Picos (Grifo)          ║
-╚══════════════════════════════════════════════════════════════════════╝
+```mermaid
+flowchart LR
+  A["🏘️ Cinzaluz"] --> B["🌲 Bosque<br/>Ent"]
+  B --> C["🌫️ Pântano<br/>Serpente"]
+  C --> D["🏔️ Picos<br/>Grifo"]
+  D --> E["⛏️ Mina<br/>Basilisco"]
+  D --> F["⚓ Porto<br/>Leviatã"]
+  E --> G["🗼 Torre<br/>Silenciador"]
+  F --> G
+  G --> H["✦ Epílogo"]
 ```
 
 </div>
