@@ -1582,11 +1582,11 @@ function closeGuide() {
    ========================================================================== */
 
 const TEAM = [
-  ["Andressa Rabêlo", "823213904"],
-  ["Lucas Marzocca", "823116813"],
-  ["Marcos V. Santos", "82327399"],
-  ["Matheus H. F.", "823141914"],
-  ["Mylena Soares", "824144075"],
+  ["Andressa Rabêlo", "823213904", "andressa"],
+  ["Lucas Marzocca", "823116813", "lucas"],
+  ["Marcos V. Santos", "82327399", "marcos"],
+  ["Matheus H. F.", "823141914", "matheus"],
+  ["Mylena Soares", "824144075", "mylena"],
 ];
 
 let creditsReturnMode = "title";
@@ -1598,14 +1598,25 @@ function openCredits() {
   byId("end").style.display = "none";
   const box = byId("credits");
   box.innerHTML = `
-    <h1>Ecos do Arcano</h1>
-    <div class="sub">A Magia Perdida</div>
-    <h3>Equipe</h3>
-    <div class="team">${TEAM.map(([name, ra]) => `<div><b>${name}</b><span>RA ${ra}</span></div>`).join("")}</div>
-    <div class="credits-note">Universidade São Judas Tadeu · 2026<br>
-    Feito com HTML5, CSS3 e JavaScript puro. Todo o desenho, os sons e a música são gerados pelo próprio jogo.</div>
-    <div class="btns"><button id="creditsclose">Voltar</button></div>`;
+    <div class="cr-card">
+      <div class="cr-head"><span>✦</span> Créditos <span>✦</span></div>
+      <div class="cr-game">Ecos do Arcano <small>· A Magia Perdida</small></div>
+      <div class="cr-team">${TEAM.map(([name, ra, id], i) => `<div class="cr-p"><canvas data-i="${i}" width="64" height="64"></canvas><b>${name}</b><small>RA ${ra}</small></div>`).join("")}</div>
+      <div class="cr-foot">Universidade São Judas Tadeu · 2026<br><small>HTML5 · CSS3 · JavaScript · arte, sons e música gerados pelo próprio jogo</small></div>
+      <button id="creditsclose">Voltar</button>
+    </div>`;
   box.style.display = "flex";
+  // Cada pessoa aparece como o personagem dela no jogo.
+  box.querySelectorAll(".cr-team canvas").forEach((cv) => {
+    const L = typeof CREW_LOOKS !== "undefined" && CREW_LOOKS[TEAM[cv.dataset.i][2]];
+    if (!L || !L.look) return;
+    const c2 = cv.getContext("2d");
+    c2.imageSmoothingEnabled = false;
+    for (const [x, y, w, h, col] of heroRects(L.look, "down", null)) {
+      c2.fillStyle = col;
+      c2.fillRect(x * 4, y * 4, w * 4, h * 4);
+    }
+  });
   byId("creditsclose").onclick = closeCredits;
 }
 
