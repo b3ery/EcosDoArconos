@@ -440,6 +440,8 @@ Toda vida acaba, e a cena da morte mostra **como** foi: o cenário onde acontece
 
 ## 👑 Golpe de estado e os Três Reinos (Simulador)
 
+**Como dar o golpe:** tecla **V** (ou botão *Golpe* no ☰ do celular), ou fale com o Luca ou o Lucas Marzocca. Chame amigos (amizade 25+), suborne guardas, compre armas na Forja e espalhe boatos sem deixar a suspeita chegar a 100. Com 60% de apoio, volte entre 22h e 4h e escolha **DAR O GOLPE AGORA**.
+
 - **Conspire** (tecla **K** → Reinos, ou com o Luca e o Lucas): chame aliados (cada um aceita pelo jeito dele; os leais à coroa podem te entregar), suborne guardas, compre armas na Forja e espalhe boatos. Cuidado com a **suspeita**: se chegar a 100, você vai para a masmorra.
 - **O General Marcos** traz o exército se entrar na conspiração; o **Luca** cria a distração perfeita.
 - **A noite do golpe** (das 22h às 4h): portões, salão e sala do trono, com escolhas em cada etapa. Discurse, prenda a Rainha ou ofereça exílio.
