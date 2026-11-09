@@ -46,7 +46,7 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 12 | `js/interface/11-opcoes-musica-missoes.js` | Tela de opções, música de fundo, qualidade gráfica, pedidos de Porto Brisamar e Pedravale, e as interações extras com elfos, filhos crescidos e família secreta. | — |
 | 13 | `js/vida/13-simulador-de-vida.js` | Modo Simulador de Vida: sem runas e sem batalhas da história. O jogador cuida das necessidades básicas, trabalha de verdade (com minijogos), pode ter a própria tendinha e entrar pa | — |
 | 14 | `js/vida/14-profissoes.js` | Profissões medievais feitas de verdade, andando e agindo no mapa: lenhador, fazendeiro, minerador, pescador, carregador, guarda (patrulha e ladrões), feirante (clientes vêm até voc | — |
-| 15 | `js/mundo/15-reinos-e-idade.js` | Só no Simulador de Vida: - Idade: cada dia do jogo é um ano. Você envelhece, e um dia a vida acaba. Se tiver um filho adulto, ele herda tudo e você continua jogando com ele. - Rein | — |
+| 15 | `js/mundo/15-reinos-e-idade.js` | Só no Simulador de Vida: - Idade: o ano dura 15 dias (veja 55-vida-inteligente.js). Você envelhece, e um dia a vida acaba. Se tiver um filho adulto, ele herda tudo e você continua  | — |
 | 16 | `js/mundo/16-casas-e-realeza.js` | Só no Simulador de Vida: - Casas à venda nas três vilas: comprar, morar, alugar as outras. - Coletor Real: uma pessoa do palácio vem até você cobrar o imposto da casa e dos móveis. | — |
 | 17 | `js/pessoas/17-vida-na-vila.js` | Simulador de Vida mais cheio de vida: - Móveis novos (banheira, mesa de jogos, fogão a lenha) e todos os móveis úteis. - Muitas interações com os moradores (piada, conselho, fofoca | — |
 | 18 | `js/vida/18-saude.js` | Saúde: - Nos dois modos: comer frutas silvestres ou beber água de rio/fonte pode causar intoxicação. - No Simulador de Vida: doenças (gripe, disenteria, febre e peste), com causas, | — |
@@ -86,7 +86,8 @@ A coluna "Embrulha" mostra exatamente isso. Antes de mudar uma função, procure
 | 52 | `js/vida/51-alteza.js` | - Quem nasce na realeza é reconhecido: a Rainha Aurélia trata você como sobrinho(a) e herdeiro(a); o povo se curva, chama de "Alteza" e a guarda bate continência. - Ala Real redese | — |
 | 53 | `js/vida/52-mundo-vivo.js` | - O Eco de Cinzaluz: o jornal do dia (tecla J ou ☰ → Jornal), com manchete, notícias, política, fofocas, previsão do tempo, classificados, obituário, horóscopo das runas e a tirinh | — |
 | 54 | `js/vida/54-pedro-max.js` | - Ciúme nos dois modos e mais frequente: quem é casado descobre mais (o par perto vê na hora; longe, a fofoca chega em poucos segundos). - Pedro Max é o mais bolado de todos: deu e | — |
-| 55 | `js/interface/53-tela-inicio.js` | Tela de início mais limpa, em dois passos: 1. Logo + Jogar, Opções e Créditos. 2. Depois de Jogar: Continuar (se tiver jogo salvo) e a escolha do modo. O Guia e as Conquistas ficam | — |
+| 55 | `js/vida/55-vida-inteligente.js` | - O ano dura 15 dias: o aniversário é a cada 15 dias, com festa. - Cena da morte do personagem: o corpo cai, a alma sobe e há um velório no cemitério com lápide, epitáfio e quem vo | — |
+| 56 | `js/interface/53-tela-inicio.js` | Tela de início mais limpa, em dois passos: 1. Logo + Jogar, Opções e Créditos. 2. Depois de Jogar: Continuar (se tiver jogo salvo) e a escolha do modo. O Guia e as Conquistas ficam | — |
 
 ## Testes
 

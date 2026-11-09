@@ -1,7 +1,7 @@
 /**
  * ECOS DO ARCANO — 15-reinos-e-idade.js
  * Só no Simulador de Vida:
- *  - Idade: cada dia do jogo é um ano. Você envelhece, e um dia a vida acaba.
+ *  - Idade: o ano dura 15 dias (veja 55-vida-inteligente.js). Você envelhece, e um dia a vida acaba.
  *    Se tiver um filho adulto, ele herda tudo e você continua jogando com ele.
  *  - Reinos: cada vila pertence a um reino. As relações mudam todo dia,
  *    e podem virar guerra (fronteiras fechadas, imposto de guerra, alistamento).

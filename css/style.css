@@ -6663,3 +6663,13 @@ body.mland:has(#shop[style*="block"]) #tgrp {
 #title .mode-card span.mode-ic {
   display: grid !important;
 }
+
+/* Cena da morte: só o desenho, sem interface por cima. */
+body.cutscene #screen > :not(#cv),
+body.cutscene #touch,
+body.cutscene #tgrp,
+body.cutscene #tMenu,
+body.cutscene .ach-pop,
+body.cutscene #toast {
+  visibility: hidden !important;
+}
