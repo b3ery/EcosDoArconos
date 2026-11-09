@@ -778,9 +778,13 @@ R                Decorar a casa
 Z                Zoom
 F                Tela cheia
 O / Esc          Opções
+Y                Menu de Ações (jornal, golpe, família, testamento...)
+V                Golpe de estado / governar
+B                Livro das Mortes
+J                Jornal · X Crime · K Reinos · L Calendário
 
 Batalha:  1–6 runas · Enter lança · D defende · H habilidades · I itens
-Celular:  joystick na metade esquerda da tela · botões A e B
+Celular:  joystick na metade esquerda da tela · botões A e B · ☰ → Ações
 ```
 
 > Funciona em qualquer navegador moderno, no computador e no celular. ✨
