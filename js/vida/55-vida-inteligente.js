@@ -518,6 +518,17 @@ function drawNpcFight(f, t) {
 function npcDaily() {
   if (!lifeMode()) return;
   const S = soc();
+  // A vida continua longe de você: umas conversas por dia entre quem se cruza na vila.
+  const adults = Object.keys(NPCS).filter((id) => named(id) && !isChildNpc(id));
+  for (let i = 0; i < 14 && adults.length > 1; i++) {
+    const a = pk(adults);
+    let b = pk(adults);
+    // Tende a procurar quem já conhece (ou quem acha bonito).
+    const known = adults.filter((o) => o !== a && S.rel[npcPair(a, o)] !== undefined && (S.rel[npcPair(a, o)] > 20 || mutualAttraction(a, o)));
+    if (known.length && Math.random() < 0.6) b = pk(known);
+    if (a === b) continue;
+    afterChat(a, b, relOf(a, b) < -30);
+  }
   // Se você roubou o par de alguém, o namoro antigo acaba.
   for (const id of [player.spouse, player.dating, ...(player.lovers || [])].filter(Boolean)) {
     const ex = S.dating[id] || S.mar[id];
@@ -552,7 +563,7 @@ function npcDaily() {
     const [a, b] = k.split("|");
     const r = relAdd(a, b, Math.random() * 5 - 2.2 + compat(a, b) / 25);
     if (r < -25 && Math.random() < 0.3) breakUp(a, b, "muita briga em casa");
-    else if (r > 55 && Math.random() < 0.04 && !isChildNpc(a)) {
+    else if (r > 55 && Math.random() < 0.012 && !isChildNpc(a)) {
       S.babies = (S.babies || 0) + 1;
       const nm = pk(["Tiago", "Lia", "Bento", "Clara", "Davi", "Nina", "Otto", "Íris", "Caio", "Luna"]);
       vilaNews(`Nasceu ${nm}, filh${/a$/.test(nm) ? "a" : "o"} de ${shortName(a)} e ${shortName(b)}! A vila mandou flores.`);

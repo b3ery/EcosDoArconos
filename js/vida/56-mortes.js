@@ -1087,7 +1087,7 @@ function deathRisks(dt) {
   if (game.dying) return;
   watch("thirstAt", player.water <= 0, 1440, 600, "Sua garganta arde. Você vai morrer de sede se não beber água!", "sede");
   if (game.dying) return;
-  watch("tiredAt", lifeNeed("energy") <= 0, 18 * 60, 8 * 60, "Seu corpo não aguenta mais. Durma, ou vai morrer de exaustão!", "exaustao");
+  watch("tiredAt", lifeNeed("energy") <= 0, 30 * 60, 12 * 60, "Seu corpo não aguenta mais. Durma, ou vai morrer de exaustão!", "exaustao");
   if (game.dying) return;
   // Doença sem tratamento até o fim.
   const sk = player.sick && player.sick.id;
@@ -1105,16 +1105,22 @@ function deathRisks(dt) {
   ].some(([dx, dy]) => tileAt(z, player.x + dx, player.y + dy) === "~");
   if (nearWater && out && drunk >= 60) {
     if (!game.wWarn) (game.wWarn = 1), toast("Cuidado: bêbad" + genderWord("o", "a", "e") + " na beira da água!", 3000);
-    if (roll(0.012)) return playerDies("afogamento");
+    if (roll(0.006)) return playerDies("afogamento");
   }
-  if (nearWater && z === "porto" && player.weather === "tempestade" && roll(0.01)) return playerDies("naufragio");
+  if (nearWater && z === "porto" && player.weather === "tempestade") {
+    if (!game.seaWarn) (game.seaWarn = 1), toast("As ondas estão enormes! Saia da beira do mar!", 3200);
+    if (roll(0.005)) return playerDies("naufragio");
+  }
   // Raio na tempestade, ao ar livre.
-  if (out && player.weather === "tempestade" && roll(0.0012)) return playerDies("raio");
+  if (out && player.weather === "tempestade") {
+    if (!game.stormWarn) (game.stormWarn = 1), toast("Tempestade forte! Ficar ao ar livre é perigoso (raios).", 3600);
+    if (roll(0.0001)) return playerDies("raio");
+  }
   // Frio da madrugada no inverno.
-  if (out && season().id === "inv" && h < 5 && player.zone !== "casa") {
+  if (out && season().id === "inv" && (h < 5 || h >= 22) && player.zone !== "casa") {
     game.cold = (game.cold || 0) + s;
-    if (game.cold > 15 && game.cold - s <= 15) toast("Você está congelando! Vá para dentro de casa!", 4200);
-    if (game.cold > 60) return playerDies("frio");
+    if (game.cold > 25 && game.cold - s <= 25) toast("Você está congelando! Vá para dentro de casa!", 4200);
+    if (game.cold > 70) return playerDies("frio");
   } else game.cold = Math.max(0, (game.cold || 0) - s * 2);
   // Serra: bêbado ou caindo de sono à noite.
   if (z === "serra" && out && (drunk >= 50 || (night && lifeNeed("energy") < 15)) && roll(0.006)) return playerDies("queda");
@@ -1125,7 +1131,7 @@ function deathRisks(dt) {
   const P = game.protest;
   if (P && P.queen && P.phase === 2 && Math.abs(P.queen.x - player.x) + Math.abs(P.queen.y - player.y) <= 4 && roll(0.006)) return playerDies("protesto");
   // Assalto de madrugada (quem anda com muito ouro).
-  if (Z.town && out && night && player.gold >= 150 && player.robbedDay !== player.day && roll(0.002)) return ambush("ladrao");
+  if (Z.town && out && night && player.gold >= 200 && player.robbedDay !== player.day && roll(0.0008)) return ambush("ladrao");
   // Vingança agendada.
   if (player.revengeDay === player.day && night && out && roll(0.02)) {
     player.revengeDay = null;
