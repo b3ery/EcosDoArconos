@@ -289,6 +289,7 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 - **7 missões sem luta:** investigar o Ladrão de Tortas, repetir a Canção do Bardo (jogo da memória), os Enigmas da Biblioteca, as Entregas da Rosa contra o relógio, as Ervas da Maíra em três regiões, a Carta rasgada da Dona Flor e ajudar a Lia a se declarar. Procure a estrela em cima da cabeça.
 - **Para zerar, é preciso fazer tudo:** as missões sem luta, os quebra-cabeças, a exploração e a gente da estrada são etapas da história, espalhadas pelos capítulos. Cada Guardião está preso por um selo, e o quebra-cabeça da região é a chave. A sala do Silenciador só abre no fim de tudo.
 - **Exploração:** 15 lugares escondidos (3 por região). Alguns você acha só de chegar perto; outros estão atrás de vinhas (Chama), pedras rachadas (Terra), água funda (Maré) ou névoa presa (Vento). Cada um conta um pedaço da história dos irmãos e dá recompensa (até vida e mana máximas).
+- **Provas da Torre (capítulo final):** na Antessala do Silêncio, três provas no mapa, no estilo da Cripta: tocar os Sinos do Silêncio na ordem da inscrição, girar espelhos para um feixe de luz de verdade chegar ao cristal e acender as dezesseis lajes pisando em cada uma só uma vez. Elas abrem o caminho até o Silenciador.
 - **5 quebra-cabeças nos pedestais:** Mosaico de Vesper (peças deslizantes, Vila), Selo das Runas (acender tudo, Pântano), Canais do Porto (girar canos), Balança dos Anões (Pedravale) e Cofre de Vesper (código de runas, Bosque). Cada um esconde um pedaço da história.
 - **Cada Guardião luta de um jeito:** o Ent se cura pelas raízes, a Serpente some na névoa, o Grifo voa, o Basilisco te petrifica se você repetir a magia e o Leviatã manda uma onda gigante que só se aguenta defendendo.
 - **Gente pelo caminho:** 8 encontros nas estradas (um mercador assaltado, uma criança perdida, um Eco com a voz da Odelia...), cada um com uma escolha de herói ou de vilão.
@@ -318,6 +319,10 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 - **Narrador dublado:** 116 falas com código (AB-01, CAP-01, GUA-ENT...). Grave cada uma como `audio/voz/CÓDIGO.mp3` e o jogo toca sozinho na hora da fala; a música abaixa enquanto ele fala. Opções → Dublagem liga, desliga e ajusta o volume.
 - **Músicas próprias:** *Épocas Sombrias* é o tema de tudo (tela inicial, vila, casa, regiões) enquanto o mundo está em silêncio; quando a Canção Arcana volta no final, *Arcana* vira o tema. *Batalha Final* toca contra o Silenciador. Outro MP3 em `audio/musica/NOME.mp3` (ex.: `vila.mp3`, `batalha.mp3`) toca no lugar da música do jogo daquela faixa.
+
+## 🛠️ Versão dev
+
+Abra `dev.html` (ou `index.html?dev`). O botão **DEV** e a tecla **F9** abrem o painel: liberar tudo (nível 20, runas, magias, ouro e itens), pular para qualquer etapa da história com as anteriores feitas, ir para qualquer região, invencível, vencer a luta, resolver quebra-cabeças e as provas da Torre, revelar mapas e ver as cenas. "Sair da versão dev" volta ao jogo normal.
 
 ## 🏡 Simulador de Vida
 

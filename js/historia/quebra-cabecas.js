@@ -298,17 +298,20 @@ const PZ_CODE = {
   n: "Cofre de Vesper",
   zone: "bosque",
   where: "Bosque Murmurante",
-  help: "Monte um código de 4 runas e teste. ● = runa certa no lugar certo. ○ = a runa existe, mas em outro lugar. Você tem 8 tentativas.",
+  help: "Monte um código de 4 runas (pode repetir) e toque em Testar. Depois de cada tentativa, cada runa ganha uma cor: <b style='color:#7ad36b'>verde</b> = runa certa no lugar certo · <b style='color:#f2c14e'>amarelo</b> = essa runa existe no código, mas em outro lugar · <b style='color:#9a98a8'>cinza</b> = essa runa não está (ou já não sobra mais dela). Você tem 8 tentativas.",
   win: "CLIQUE. O cofre abre. Dentro, um bilhete de criança: \"Se alguém achar isso, diga para a minha irmã que eu não estou bravo.\"",
   reward: { gold: 100, xp: 100, items: [["pocao", 2]] },
   make: () => ({ code: Array.from({ length: 4 }, () => PZ_RUNES[rnd(4)]), cur: [], tries: [] }),
   html(s) {
-    const dot = (r) => `<span class="pz-dot" style="background:${RUNES[r].cor}" title="${RUNES[r].nome}"></span>`;
-    const rows = s.tries.map((t) => `<div class="pz-row">${t.g.map(dot).join("")}<span class="pz-fb">${"●".repeat(t.b)}${"○".repeat(t.w)}${!t.b && !t.w ? "—" : ""}</span></div>`).join("");
-    const lost = s.tries.length >= 8;
-    return `<div class="pz-code">${rows || "<div class='pz-row dim'>Nenhuma tentativa ainda.</div>"}
+    const MARK = { g: "#7ad36b", y: "#f2c14e", x: "#5a5868" };
+    const TIP = { g: "certa no lugar certo", y: "existe, mas em outro lugar", x: "não está no código" };
+    const dot = (r, m) =>
+      `<span class="pz-dot ${m ? "mk" : ""}" style="background:${RUNES[r].cor};${m ? `box-shadow:0 0 0 3px ${MARK[m]};${m === "x" ? "opacity:.45;" : ""}` : ""}" title="${RUNES[r].nome}${m ? ": " + TIP[m] : ""}">${RUNES[r].nome[0]}</span>`;
+    const rows = s.tries.map((t) => `<div class="pz-row">${t.g.map((r, i) => dot(r, t.m[i])).join("")}<span class="pz-fb">${t.b === 4 ? "Abriu!" : `${t.b} no lugar certo`}</span></div>`).join("");
+    const lost = s.tries.length >= 8 && !(s.tries.length && s.tries[s.tries.length - 1].b === 4);
+    return `<div class="pz-code">${rows || "<div class='pz-row dim'>Nenhuma tentativa ainda. Comece com qualquer combinação.</div>"}
       <div class="pz-row cur">${[0, 1, 2, 3].map((i) => (s.cur[i] ? dot(s.cur[i]) : `<span class="pz-dot empty"></span>`)).join("")}</div>
-      ${lost ? `<div class="pz-lost">Acabaram as tentativas. O código era ${s.code.map(dot).join("")}. Toque em Recomeçar.</div>` : `<div class="pz-keys">${PZ_RUNES.map((r) => `<button class="pz-t key" data-a="r:${r}" style="--rc:${RUNES[r].cor}">${RUNES[r].nome}</button>`).join("")}<button class="pz-t key" data-a="del">⌫</button><button class="pz-t key go" data-a="go" ${s.cur.length < 4 ? "disabled" : ""}>Testar</button></div>`}</div>`;
+      ${lost ? `<div class="pz-lost">Acabaram as tentativas. O código era ${s.code.map((r) => dot(r)).join("")}. Toque em Recomeçar.</div>` : `<div class="pz-keys">${PZ_RUNES.map((r) => `<button class="pz-t key" data-a="r:${r}" style="--rc:${RUNES[r].cor}">${RUNES[r].nome}</button>`).join("")}<button class="pz-t key" data-a="del">⌫</button><button class="pz-t key go" data-a="go" ${s.cur.length < 4 ? "disabled" : ""}>Testar</button></div>`}</div>`;
   },
   status: (s) => `Tentativas: ${s.tries.length}/8`,
   act(s, a) {
@@ -316,16 +319,15 @@ const PZ_CODE = {
     if (a.startsWith("r:") && s.cur.length < 4) s.cur.push(a.slice(2));
     else if (a === "del") s.cur.pop();
     else if (a === "go" && s.cur.length === 4) {
-      let b = 0;
-      const rc = [],
-        rg = [];
-      s.cur.forEach((r, i) => (r === s.code[i] ? b++ : (rc.push(s.code[i]), rg.push(r))));
-      let w = 0;
-      for (const r of rg) {
-        const k = rc.indexOf(r);
-        if (k >= 0) (w++, rc.splice(k, 1));
-      }
-      s.tries.push({ g: s.cur.slice(), b, w });
+      // Cores por runa, como no Termo: verde primeiro, depois amarelo com o que sobra.
+      const m = ["x", "x", "x", "x"],
+        left = {};
+      s.cur.forEach((r, i) => (r === s.code[i] ? (m[i] = "g") : (left[s.code[i]] = (left[s.code[i]] || 0) + 1)));
+      s.cur.forEach((r, i) => {
+        if (m[i] === "g") return;
+        if (left[r] > 0) ((m[i] = "y"), left[r]--);
+      });
+      s.tries.push({ g: s.cur.slice(), m, b: m.filter((x) => x === "g").length });
       s.cur = [];
     }
   },
@@ -369,9 +371,9 @@ function puzzleAt(x, y) {
   .pz-code{display:flex;flex-direction:column;gap:6px;align-items:center}
   .pz-row{display:flex;gap:6px;align-items:center} .pz-row.dim{opacity:.6;font-size:13px}
   .pz-row.cur{padding:6px;border:2px dashed rgba(255,255,255,.3);border-radius:8px}
-  .pz-dot{display:inline-block;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+  .pz-dot{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.4);font:700 12px monospace;color:rgba(0,0,0,.55)} .pz-dot.mk{margin:0 3px}
   .pz-dot.empty{background:rgba(0,0,0,.3)}
-  .pz-fb{min-width:70px;margin-left:8px;letter-spacing:2px;color:#ffe08a}
+  .pz-fb{min-width:110px;margin-left:10px;font-size:12px;color:#ffe08a}
   .pz-keys{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
   .pz-t.key{aspect-ratio:auto;padding:8px 10px;font-size:14px;background:var(--rc,#4a4a58)}
   .pz-t.key.go{background:#5a8a4a} .pz-t.key:disabled{opacity:.4}

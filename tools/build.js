@@ -19,6 +19,6 @@ let out = html;
 scripts.forEach((s, i) => (out = out.replace(`<script src="${s}"></script>`, i === 0 ? '<script src="ecos.js"></script>' : "")));
 fs.writeFileSync(path.join(dist, "index.html"), out.replace(/\n\s*\n\s*\n/g, "\n"));
 for (const dir of ["css", "assets", "audio"]) fs.cpSync(path.join(root, dir), path.join(dist, dir), { recursive: true });
-for (const f of ["favicon.ico", "manifest.json"]) if (fs.existsSync(path.join(root, f))) fs.copyFileSync(path.join(root, f), path.join(dist, f));
+for (const f of ["favicon.ico", "manifest.json", "dev.html"]) if (fs.existsSync(path.join(root, f))) fs.copyFileSync(path.join(root, f), path.join(dist, f));
 const kb = (n) => Math.round(n / 1024) + " KB";
 console.log(`${scripts.length} scripts juntados em dist/ecos.js (${kb(bundle.length)}).`);
