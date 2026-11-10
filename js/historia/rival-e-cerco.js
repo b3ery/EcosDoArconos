@@ -376,6 +376,11 @@ function restoreTick() {
   };
 
   // Quem perdeu a voz só consegue olhar para você.
+  const ntBase = npcTalkOrQuests;
+  npcTalkOrQuests = function (id) {
+    if (story() && silenced().includes(id)) return socialMenu(id);
+    return ntBase.apply(this, arguments);
+  };
   const smBase = socialMenu;
   socialMenu = function (id) {
     if (story() && silenced().includes(id)) {

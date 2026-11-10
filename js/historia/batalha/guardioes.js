@@ -40,8 +40,8 @@ function gmOn() {
       const B = battle;
       setTimeout(() => battle === B && battleLog("⚠ " + GUARD_MECH[type](gmWeakName())), 1900);
     }
-    const tb = byId("tbanner");
-    if (tb) tb.classList.remove("show");
+    const zc = byId("zcard");
+    if (zc) zc.classList.remove("show");
     return r;
   };
 
@@ -166,8 +166,8 @@ function gmOn() {
   update = function (dt) {
     updBase(dt);
     if (game.mode === "battle") {
-      const tb = byId("tbanner");
-      if (tb && tb.classList.contains("show")) tb.classList.remove("show");
+      const zc = byId("zcard");
+      if (zc && zc.classList.contains("show")) zc.classList.remove("show");
     }
   };
 }

@@ -127,7 +127,7 @@ function effectivenessText(mult) {
 
 /** Termina a ação do jogador: vitória se o inimigo caiu, senão vez do inimigo. */
 function finishPlayerAction(delay) {
-  setTimeout(() => (battle.e.hp <= 0 ? win() : enemyTurn()), delay);
+  setTimeout(() => battle && (battle.e.hp <= 0 ? win() : enemyTurn()), delay);
 }
 
 /* ==========================================================================

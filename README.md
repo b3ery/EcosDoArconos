@@ -285,6 +285,8 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 - **Nyx, a rival:** uma caçadora de runas a serviço do Silenciador cruza o seu caminho no Bosque, no Pântano e nos Picos. Ajude ou humilhe: ela pode lutar do seu lado na Torre ou virar a última barreira.
 - **O Silêncio ataca Cinzaluz:** a vila começa sem cor e recupera um pouco a cada runa. Em duas invasões você só salva um lado, e quem fica para trás perde a voz até o próximo Guardião acordar.
+- **✦ Unir todos os poderes:** na luta final, quando a máscara racha, os cinco Guardiões, a Nyx, o Kael, a Odelia, a turma e quem você ajudou na estrada atacam juntos. Quanto mais gente você ajudou, mais forte o golpe.
+- **7 missões sem luta:** investigar o Ladrão de Tortas, repetir a Canção do Bardo (jogo da memória), os Enigmas da Biblioteca, as Entregas da Rosa contra o relógio, as Ervas da Maíra em três regiões, a Carta rasgada da Dona Flor e ajudar a Lia a se declarar. Procure a estrela em cima da cabeça.
 - **Cada Guardião luta de um jeito:** o Ent se cura pelas raízes, a Serpente some na névoa, o Grifo voa, o Basilisco te petrifica se você repetir a magia e o Leviatã manda uma onda gigante que só se aguenta defendendo.
 - **Gente pelo caminho:** 8 encontros nas estradas (um mercador assaltado, uma criança perdida, um Eco com a voz da Odelia...), cada um com uma escolha de herói ou de vilão.
 - **Sonhos com Vesper:** ao dormir, ele fala com você. No último sonho, a sua promessa pesa na luta final. A turma também comenta cada Guardião libertado.
