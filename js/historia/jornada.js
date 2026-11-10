@@ -138,9 +138,9 @@ const ENCOUNTERS = [
 function encTick() {
   const z = player.zone;
   if (game.encWait > 0) return false;
-  if ((player.playtime || 0) - (player.encLast || -999) < 100) return false;
+  if ((player.playtime || 0) - (player.encLast || -999) < 60) return false;
   const pool = ENCOUNTERS.filter((e) => e.zones.includes(z) && !(e.id in enc()));
-  if (!pool.length || Math.random() > 0.45) return ((game.encWait = 9999), false);
+  if (!pool.length || Math.random() > 0.75) return ((game.encWait = 9999), false);
   const E = pool[Math.floor(Math.random() * pool.length)];
   player.encLast = player.playtime || 0;
   game.encWait = 9999;
