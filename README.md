@@ -285,6 +285,10 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 - **Nyx, a rival:** uma caçadora de runas a serviço do Silenciador cruza o seu caminho no Bosque, no Pântano e nos Picos. Ajude ou humilhe: ela pode lutar do seu lado na Torre ou virar a última barreira.
 - **O Silêncio ataca Cinzaluz:** a vila começa sem cor e recupera um pouco a cada runa. Em duas invasões você só salva um lado, e quem fica para trás perde a voz até o próximo Guardião acordar.
+- **Cada Guardião luta de um jeito:** o Ent se cura pelas raízes, a Serpente some na névoa, o Grifo voa, o Basilisco te petrifica se você repetir a magia e o Leviatã manda uma onda gigante que só se aguenta defendendo.
+- **Gente pelo caminho:** 8 encontros nas estradas (um mercador assaltado, uma criança perdida, um Eco com a voz da Odelia...), cada um com uma escolha de herói ou de vilão.
+- **Sonhos com Vesper:** ao dormir, ele fala com você. No último sonho, a sua promessa pesa na luta final. A turma também comenta cada Guardião libertado.
+- **Jornada (J):** uma tela com tudo o que você salvou, escolheu e deixou para trás.
 - **Capítulos com título** (Prólogo, I a IV e Final) e uma luta final mais justa: cada derrota para o Silenciador deixa a próxima um pouco mais fácil.
 - **Combos secretos:** duas magias seguidas na ordem certa (Maré → Chama = Vapor Escaldante...). São 8 para descobrir.
 - **Guardiões com duas fases:** na metade da vida eles mudam de forma e de fraqueza. Seu melhor amigo da turma luta ao seu lado.
@@ -300,6 +304,8 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 ---
 
 ## 🏡 Simulador de Vida
+
+- **Metas de vida** (casar, 3 filhos, fortuna, 70 anos, 3 gerações, governar...), **notícias que mudam a vila** (seca e colheita mexem nos preços, a guerra convoca moradores) e **famílias rivais**: Os Brasa, os Maré-Alta e os Pedregal. Tudo no menu Ações (Y).
 
 Sem magia: uma vida inteira em Cinzaluz, com fome, sede, energia, higiene e diversão.
 

@@ -7039,3 +7039,50 @@ body.calm .shout {
   flex-wrap: wrap;
   gap: 0.4em;
 }
+
+/* ===== Luta no celular deitado: painel menor, botões numa linha só, inimigo visível ===== */
+@media (max-height: 520px) and (orientation: landscape) {
+  #bpanel {
+    padding: 6px 10px !important;
+    gap: 4px 10px !important;
+  }
+  #bplayer {
+    width: 150px !important;
+    min-width: 0 !important;
+    padding: 6px !important;
+    align-self: center;
+    height: auto !important;
+  }
+  #bplayer canvas#bpport {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  #bpanel .brow {
+    gap: 4px !important;
+    margin: 0 !important;
+  }
+  #rbtns .rbtn {
+    min-height: 0 !important;
+    padding: 4px 6px !important;
+    font-size: 12px !important;
+  }
+  #weave .slot {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  #bpanel .brow:last-child {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #bpanel .brow:last-child button {
+    flex: 0 0 auto;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    min-height: 0 !important;
+    height: 28px;
+  }
+  #ebox {
+    padding: 6px 10px !important;
+  }
+}

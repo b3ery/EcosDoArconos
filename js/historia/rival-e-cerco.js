@@ -263,7 +263,7 @@ function siegeTick() {
       ["Guarda Tomé", k === "c1" ? "ECOS DO SILÊNCIO! Estão entrando por dois lados!" : "De novo não! São mais fortes desta vez! Precisamos de você!"],
       ["Arquimaga Odelia", "Eu seguro a barreira do sul! Você só consegue chegar a um lado a tempo. Escolha!"],
     ],
-    () => choice("O Silêncio ataca Cinzaluz", "Quem você vai proteger?", [{ t: C.a.t, icon: "shield", fn: pickSide(C.a, C.b) }, { t: C.b.t, icon: "shield", fn: pickSide(C.b, C.a) }]),
+    () => choice("O Silêncio ataca Cinzaluz", "Quem você vai proteger?", [{ t: C.a.t, icon: "armor", fn: pickSide(C.a, C.b) }, { t: C.b.t, icon: "armor", fn: pickSide(C.b, C.a) }]),
   );
   return true;
 }
