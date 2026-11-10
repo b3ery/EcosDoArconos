@@ -5,8 +5,7 @@
  *  - Nyx, a Caçadora de Runas: uma rival que trabalha para o Silenciador.
  *    Aparece no Bosque, no Pântano e nos Picos. O que você faz com ela decide
  *    se ela luta do seu lado na Torre ou contra você.
- *  - O Silêncio ataca Cinzaluz: a vila começa sem cor e recupera um pouco a
- *    cada runa. Duas invasões obrigam você a escolher quem salvar; quem você
+ *  - O Silêncio ataca Cinzaluz: duas invasões obrigam você a escolher quem salvar; quem você
  *    não salvou perde a voz até o próximo Guardião acordar.
  * Modifica (envolve) funções de outros arquivos: applyPostBattleRewards,
  * createEnemy, crewDrawList, dmgMul, draw, enemyTurn, enterZone, socialMenu,
@@ -419,21 +418,6 @@ function restoreTick() {
           },
         });
       });
-  };
-
-  // Cinzaluz sem cor: a cada runa, a vila recupera um pouco.
-  const drawBase = draw;
-  draw = function () {
-    drawBase();
-    if (!story() || player.finished || player.zone !== "vila" || game.mode === "battle" || game.cine) return;
-    const missing = Math.max(0, 4 - (player.runes || []).length);
-    if (!missing) return;
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalCompositeOperation = "saturation";
-    ctx.fillStyle = `rgba(128,128,128,${0.16 * missing})`;
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.restore();
   };
 
   // Nyx na luta final: desenhada atrás de você.
