@@ -287,6 +287,7 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 - **O Silêncio ataca Cinzaluz:** em duas invasões você só salva um lado, e quem fica para trás perde a voz até o próximo Guardião acordar.
 - **✦ Unir todos os poderes:** na luta final, quando a máscara racha, os cinco Guardiões, a Nyx, o Kael, a Odelia, a turma e quem você ajudou na estrada atacam juntos. Quanto mais gente você ajudou, mais forte o golpe.
 - **7 missões sem luta:** investigar o Ladrão de Tortas, repetir a Canção do Bardo (jogo da memória), os Enigmas da Biblioteca, as Entregas da Rosa contra o relógio, as Ervas da Maíra em três regiões, a Carta rasgada da Dona Flor e ajudar a Lia a se declarar. Procure a estrela em cima da cabeça.
+- **5 quebra-cabeças nos pedestais:** Mosaico de Vesper (peças deslizantes, Vila), Selo das Runas (acender tudo, Pântano), Canais do Porto (girar canos), Balança dos Anões (Pedravale) e Cofre de Vesper (código de runas, Bosque). Cada um esconde um pedaço da história.
 - **Cada Guardião luta de um jeito:** o Ent se cura pelas raízes, a Serpente some na névoa, o Grifo voa, o Basilisco te petrifica se você repetir a magia e o Leviatã manda uma onda gigante que só se aguenta defendendo.
 - **Gente pelo caminho:** 8 encontros nas estradas (um mercador assaltado, uma criança perdida, um Eco com a voz da Odelia...), cada um com uma escolha de herói ou de vilão.
 - **Sonhos com Vesper:** ao dormir, ele fala com você. No último sonho, a sua promessa pesa na luta final. A turma também comenta cada Guardião libertado.
