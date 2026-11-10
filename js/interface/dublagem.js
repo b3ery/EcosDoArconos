@@ -115,7 +115,10 @@ function playVoice(e) {
  * música não recomeça ao passar de uma região para outra que usa o mesmo). */
 const MUSIC_FILES = {
   final: "batalha-final",
+  cancao: "arcana",
 };
+// A Canção Arcana: a faixa que toca quando ela volta ao mundo.
+TRACKS.cancao = TRACKS.titulo;
 /* A música tema: "Épocas Sombrias" em tudo enquanto o mundo está em silêncio;
  * quando a Canção Arcana volta (final da história), "Arcana" vira o tema. */
 const THEME_TRACKS = ["titulo", "vila", "noite", "aventura", "floresta", "pantano", "serra", "mina", "porto", "torre", "casa"];
@@ -176,6 +179,31 @@ Object.defineProperty(customMusic, "track", { get: () => customMusic.file });
       customMusicTick();
     } catch (e) {}
   }, 400);
+
+  // A Canção Arcana volta: no golpe "Unir todos os poderes" e logo depois de
+  // vencer o Silenciador (as runas erguidas, a Canção ecoando pela Torre).
+  if (typeof unionScene === "function") {
+    const usBase = unionScene;
+    unionScene = function () {
+      const f = usBase.apply(this, arguments);
+      f.cancao = true;
+      return f;
+    };
+  }
+  const winBase = win;
+  win = function () {
+    if (story() && battle && battle.type === "silenciador" && !battle.done) game.cancao = true;
+    return winBase.apply(this, arguments);
+  };
+  const dtCancao = desiredTrack;
+  desiredTrack = function () {
+    if (game.cine && game.cine.draw && game.cine.draw.cancao) return "cancao";
+    if (story() && game.cancao && !player.villainEnd && !player.finished && !game.ep) {
+      if (game.cine && game.cine.draw && game.cine.draw.sad) return dtCancao(); // a máscara caindo fica com o Lamento
+      return "cancao";
+    }
+    return dtCancao();
+  };
 
   // Falas na caixa de diálogo
   const rdBase = renderDialogLine;
@@ -248,5 +276,13 @@ Object.defineProperty(customMusic, "track", { get: () => customMusic.file });
     (box.querySelector(".opt-body, .ov-body") || box).appendChild(div);
     byId("dubOn").onchange = (ev) => ((settings.voiceOn = ev.target.checked), saveSettings(), settings.voiceOn || stopVoice());
     byId("dubVol").oninput = (ev) => ((settings.voice = +ev.target.value), saveSettings(), voiceAudio && (voiceAudio.volume = settings.voice));
+  };
+}
+{
+  // Jogo novo: a Canção ainda não voltou.
+  const sgBase = startGame;
+  startGame = function () {
+    game.cancao = false;
+    return sgBase.apply(this, arguments);
   };
 }

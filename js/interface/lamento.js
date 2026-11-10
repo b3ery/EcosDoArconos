@@ -156,39 +156,5 @@ const TRACK_NAMES = { titulo: "Tela inicial", vila: "Cinzaluz de dia", noite: "C
   for (const ev of ["pointerdown", "keydown", "touchend"]) addEventListener(ev, wake, { passive: true });
   document.addEventListener("visibilitychange", () => !document.hidden && wake());
 
-  // Opções → Ouvir músicas
-  const roBase = renderOptions;
-  renderOptions = function () {
-    roBase();
-    const box = byId("options");
-    if (!box || byId("optJuke")) return;
-    const div = document.createElement("div");
-    div.id = "optJuke";
-    div.innerHTML = `<h3>Ouvir músicas</h3><div class="juke">${Object.keys(TRACKS)
-      .filter((k) => k !== "silencio")
-      .map((k) => `<button data-tk="${k}" class="${game.previewTrack === k ? "on" : ""}">${k === "lamento" ? "♪ " : ""}${TRACK_NAMES[k] || k}</button>`)
-      .join("")}<button data-tk="">■ Parar</button></div><small>A música escolhida toca enquanto as Opções estiverem abertas.</small>`;
-    (box.querySelector(".opt-body, .ov-body") || box).appendChild(div);
-    div.querySelectorAll("[data-tk]").forEach(
-      (b) =>
-        (b.onclick = () => {
-          ensureMusic();
-          if (settings.music <= 0) toast("A música está no zero: aumente o volume acima.", 2600);
-          game.previewTrack = b.dataset.tk || null;
-          div.querySelectorAll("[data-tk]").forEach((x) => x.classList.toggle("on", x === b && !!b.dataset.tk));
-          updateMusic();
-        }),
-    );
-    if (!byId("jukeCSS")) {
-      const st = document.createElement("style");
-      st.id = "jukeCSS";
-      st.textContent = `#optJuke .juke{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0} #optJuke button.on{outline:2px solid var(--gold,#ffd34d)} #optJuke small{opacity:.75}`;
-      document.head.appendChild(st);
-    }
-  };
-  const coBase = closeOptions;
-  closeOptions = function () {
-    game.previewTrack = null;
-    return coBase.apply(this, arguments);
-  };
+
 }
