@@ -1,3 +1,10 @@
-Coloque aqui músicas próprias: NOME.mp3 (ex.: lamento.mp3, vila.mp3, batalha.mp3).
-Se o arquivo existir, ele toca no lugar da música do jogo.
+Músicas próprias do jogo (MP3).
+
+Já incluídas:
+- arcana.mp3: tela inicial e abertura
+- epocas-sombrias.mp3: regiões fora das vilas (Bosque, Pântano, Picos, Mina, Porto, Torre)
+- batalha-final.mp3: luta contra o Silenciador
+
+Para trocar outra faixa, coloque NOME.mp3 aqui (ex.: vila.mp3, batalha.mp3, lamento.mp3).
 Nomes: titulo, lamento, vila, noite, aventura, floresta, pantano, porto, serra, mina, torre, casa, batalha, chefe, final, festival, taverna, casamento, velorio, golpe, eleicao.
+A ligação de faixa para arquivo fica em MUSIC_FILES, no arquivo js/interface/dublagem.js.

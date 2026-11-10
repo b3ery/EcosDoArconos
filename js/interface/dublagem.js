@@ -109,38 +109,56 @@ function playVoice(e) {
   a.play().catch(() => {});
 }
 
-/* ===================== MÚSICAS PERSONALIZADAS ===================== */
-const customMusic = { state: {}, audio: null, track: null };
-function probeTrack(t) {
-  if (customMusic.state[t]) return;
-  customMusic.state[t] = "testando";
+/* ===================== MÚSICAS PERSONALIZADAS =====================
+ * Cada faixa do jogo procura audio/musica/<arquivo>.mp3. Por padrão o arquivo
+ * tem o nome da faixa; MUSIC_FILES liga várias faixas a um arquivo só (a
+ * música não recomeça ao passar de uma região para outra que usa o mesmo). */
+const MUSIC_FILES = {
+  titulo: "arcana",
+  final: "batalha-final",
+  aventura: "epocas-sombrias",
+  floresta: "epocas-sombrias",
+  pantano: "epocas-sombrias",
+  serra: "epocas-sombrias",
+  mina: "epocas-sombrias",
+  porto: "epocas-sombrias",
+  torre: "epocas-sombrias",
+};
+const musicFileOf = (t) => MUSIC_FILES[t] || t;
+const customMusic = { state: {}, audio: {}, file: null };
+function probeFile(f) {
+  if (customMusic.state[f]) return;
+  customMusic.state[f] = "testando";
   const a = new Audio();
   a.preload = "auto";
   a.loop = true;
-  a.oncanplay = () => ((customMusic.state[t] = "ok"), (customMusic[t] = a));
-  a.onerror = () => (customMusic.state[t] = "falta");
-  a.src = `audio/musica/${t}.mp3`;
+  a.oncanplay = () => ((customMusic.state[f] = "ok"), (customMusic.audio[f] = a));
+  a.onerror = () => (customMusic.state[f] = "falta");
+  a.src = `audio/musica/${f}.mp3`;
 }
 function customMusicTick() {
   const t = music.track;
   if (!t) return;
-  probeTrack(t);
-  const want = customMusic.state[t] === "ok" && settings.music > 0 ? t : null;
-  if (customMusic.track && customMusic.track !== want) {
-    const old = customMusic[customMusic.track];
+  const f = musicFileOf(t);
+  probeFile(f);
+  const want = customMusic.state[f] === "ok" && settings.music > 0 ? f : null;
+  if (customMusic.file && customMusic.file !== want) {
+    const old = customMusic.audio[customMusic.file];
     if (old) old.pause();
-    customMusic.track = null;
+    customMusic.file = null;
   }
   if (want) {
-    const a = customMusic[want];
+    const a = customMusic.audio[want];
     a.volume = Math.max(0, Math.min(1, settings.music * (game.voicePlaying ? 0.35 : 1)));
-    if (customMusic.track !== want) {
-      customMusic.track = want;
+    if (customMusic.file !== want) {
+      customMusic.file = want;
       a.currentTime = 0;
-      a.play().catch(() => (customMusic.track = null));
+      a.play().catch(() => (customMusic.file = null));
     }
   }
 }
+// Para os outros arquivos: "tem MP3 tocando agora?"
+Object.defineProperty(customMusic, "track", { get: () => customMusic.file });
 
 /* ===================== LIGAÇÕES ===================== */
 {

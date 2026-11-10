@@ -317,7 +317,7 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 ## 🎙️ Dublagem e músicas próprias
 
 - **Narrador dublado:** 116 falas com código (AB-01, CAP-01, GUA-ENT...). Grave cada uma como `audio/voz/CÓDIGO.mp3` e o jogo toca sozinho na hora da fala; a música abaixa enquanto ele fala. Opções → Dublagem liga, desliga e ajusta o volume.
-- **Músicas próprias:** um MP3 em `audio/musica/NOME.mp3` (ex.: `lamento.mp3`, `vila.mp3`) toca no lugar da música do jogo.
+- **Músicas próprias:** já vêm três: *Arcana* (tela inicial), *Épocas Sombrias* (regiões fora das vilas) e *Batalha Final* (luta contra o Silenciador). Outro MP3 em `audio/musica/NOME.mp3` (ex.: `vila.mp3`, `batalha.mp3`) toca no lugar da música do jogo daquela faixa.
 
 ## 🏡 Simulador de Vida
 
