@@ -57,7 +57,7 @@ function playFlashback(i) {
   );
 }
 function flashbackTick() {
-  if (player.finished || game.rollDone || game.mode !== "world") return;
+  if (player.finished || game.rollDone || game.ep || game.mode !== "world") return;
   const n = (player.pages || []).length;
   const seen = player.fbSeen || 0;
   if (n > seen && game.mode === "world" && !game.dialog) {
@@ -72,6 +72,7 @@ function vesperKindness() {
 /* ===================== ESCOLHAS NO MEIO ===================== */
 ENEMIES.kaelSil = Object.assign({}, ENEMIES.aprendiz, { nome: "Kael Silenciado", hp: 210, atk: 15, xp: 140, cor: "#3a2a5a", boss: true });
 function midChoicesTick() {
+  if (game.ep || player.finished) return; // nada de escolha nova no meio do final
   if (player.zone !== "vila" || game.mode !== "world" || game.dialog) return;
   const F = player.flags;
   if (!F.kaelChoice && guardiansFreed() >= 2 && NPCS.kael && !isDead("kael")) {

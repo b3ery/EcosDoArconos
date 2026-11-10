@@ -152,8 +152,26 @@ const check = (name, ok) => {
   check("Combo secreto", await page.evaluate(() => { startBattle("lobo", null); battle.prevEl = "agua"; applySpellDamage(SPELLS.fogo, []); const ok = (player.combos || []).includes("Vapor Escaldante"); endBattle(); return ok; }));
   check("Cripta: os três quebra-cabeças abrem", await page.evaluate(() => { enterCrypt(); game.dialog = null; for (const i of TORCH_ORDER) { cryptInteract(...CRYPT.torches[i]); game.dialog = null; } for (const [i, n] of [[0, 1], [1, 2], [2, 3]]) for (let k = 0; k < n; k++) { cryptInteract(...CRYPT.mirrors[i]); game.dialog = null; } const S = cryptState(); S.eOk = true; cryptApply(); const ok = S.torchesOk && S.mirOk && walkable("cripta", CRYPT.edoor[0], CRYPT.edoor[1]); leaveCrypt(); game.dialog = null; game.mode = "world"; return ok; }));
   check("Missão pessoal da turma", await page.evaluate(() => { lifeSocialItems("marcos")[0].fn(); game.dialog = null; player.winsTotal = (player.winsTotal || 0) + 3; lifeSocialItems("marcos")[0].fn(); game.dialog = null; game.mode = "world"; return arcsDone().includes("marcos"); }));
-  check("Créditos finais antes da tela de fim", await page.evaluate(() => { showEnd(); return new Promise((r) => setTimeout(() => { const rolling = game.mode === "rollcred"; document.querySelector(".rc-skip").click(); r(rolling && game.mode === "end"); }, 500)); }));
+  check("Reencontro e créditos finais antes da tela de fim", await page.evaluate(() => { player.reunionSeen = false; showEnd(); const cena = !!game.cine; if (game.cine) { game.cine.t0 = game.t - 99; endCine(); } return new Promise((r) => setTimeout(() => { const rolling = game.mode === "rollcred"; const sk = document.querySelector(".rc-skip"); if (sk) sk.click(); r(cena && rolling && game.mode === "end"); }, 600)); }));
   check("Novo Jogo+ mantém o Grimório", await page.evaluate(() => { player.spells = ["fogo", "agua", "fogo+agua"]; byId("btnNGP").click(); game.dialog = null; game.mode = "world"; return player.ngp === 1 && player.spells.length === 3; }));
+  check("Odelia conta da runa ao falar com ela", await page.evaluate(() => { player.guards = ["bosque"]; player.flags.r2 = false; game.dialog = null; game.mode = "world"; socialMenu("odelia"); const ok = !!player.flags.r2; game.dialog = null; byId("dialog").style.display = "none"; game.mode = "world"; return ok; }));
+  // Zerar: vencer o Silenciador tem que levar ao epílogo, aos créditos e à tela de fim.
+  await page.evaluate(() => { player.finished = false; player.reunionSeen = false; player.villainEnd = null; player.guards = ["bosque", "pantano", "picos", "mina", "porto"]; startBattle("silenciador", null); });
+  await page.waitForTimeout(500);
+  await page.evaluate(() => { battle.e.hp = 0; win(); });
+  let fim = false;
+  for (let i = 0; i < 60 && !fim; i++) {
+    await page.waitForTimeout(500);
+    fim = await page.evaluate(() => {
+      if (game.cine) { game.cine.t0 = game.t - 99; endCine(); }
+      if (game.dialog) { const d = game.dialog; d.i = d.lines.length - 1; advanceDialog(); advanceDialog(); }
+      else if (game.mode === "choice") pickChoice(0);
+      if (game.mode === "rollcred") document.querySelector(".rc-skip").click();
+      return game.mode === "end";
+    });
+  }
+  check("Vencer o Silenciador leva ao final do jogo", fim);
+  await page.evaluate(() => { byId("end").style.display = "none"; game.mode = "world"; });
   check("Save vai e volta por código", await page.evaluate(() => { player.gold = 4321; const pkt = fromCode(toCode(savePacket())); return pkt.player.gold === 4321 && pkt.app === "ecos-do-arcano"; }));
   check("Sem erros de JavaScript", errors.length === 0);
   if (errors.length) console.log("Erros:\n" + errors.join("\n"));

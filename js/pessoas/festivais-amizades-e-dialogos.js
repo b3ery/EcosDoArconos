@@ -1441,7 +1441,8 @@ function addFriendship(id, n) {
         400,
       );
     }
-    if (after === 3 && !player.relRew[id + "80"]) {
+    // Moradores sem nome (andarilhos, elfos) não têm prêmio de melhor amigo.
+    if (after === 3 && !player.relRew[id + "80"] && FRIENDS[id].r80) {
       player.relRew[id + "80"] = 1;
       const [it, n2] = FRIENDS[id].r80;
       let txt;

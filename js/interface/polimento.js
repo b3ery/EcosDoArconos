@@ -84,7 +84,7 @@ function stuckWatch(dt) {
   let bad = false;
   if (game.mode === "choice" && !game.dialog && !vis("choice") && !vis("pie")) bad = "menu";
   else if (game.dialog && !vis("dialog") && game.mode !== "cutscene") bad = "fala";
-  else if (game.mode === "cutscene" && !game.deathScene && !game.cine) bad = "cena";
+  else if (game.mode === "cutscene" && !game.deathScene && !game.cine && !(game.ep && !game.ep.done)) bad = "cena";
   else if (OVERLAY_MODES[game.mode] && !vis(OVERLAY_MODES[game.mode])) bad = "janela";
   else if (game.dying && !game.deathScene && !game.dialog && game.mode === "world") bad = "morte";
   if (!bad) return (stuckFor = 0);
