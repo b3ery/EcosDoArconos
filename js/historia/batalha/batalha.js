@@ -169,8 +169,11 @@ function resistOf(enemy) {
   return isFinalBoss(enemy) ? ORDER.filter((r) => r !== enemy.weakNow) : enemy.resist;
 }
 function pickBossWeak(previous) {
-  const options = player.runes.filter((r) => r !== previous);
-  return options[Math.floor(Math.random() * options.length)] || previous;
+  // Só runas que existem: um save antigo ou estranho não pode deixar a luta final sem fraqueza.
+  const valid = player.runes.filter((r) => RUNES[r]);
+  const pool = valid.length ? valid : ["fogo", "agua", "ar", "terra"];
+  const options = pool.filter((r) => r !== previous);
+  return options[Math.floor(Math.random() * options.length)] || pool[0];
 }
 
 /**
@@ -272,6 +275,8 @@ const LEVEL_GROWTH = { hp: 0.13, atk: 0.1, xp: 0.1 };
 function enemyLevelFor(type) {
   const info = ENEMY_LEVELS[type];
   if (!info) return null;
+  // O chefe final acompanha você mais devagar: treinar a mais precisa valer a pena.
+  if (type === "silenciador") return Math.max(info.min, player.lvl - 3);
   if (info.boss) return Math.max(info.min, player.lvl - 1);
   const [lo, hi] = info.range;
   const roll = player.lvl + Math.floor(Math.random() * 3) - 1;

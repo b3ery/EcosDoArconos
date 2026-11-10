@@ -22,7 +22,8 @@ function endCine() {
   if (!c || game.t - c.t0 < Math.min(2.5, c.dur)) return;
   game.cine = null;
   document.body.classList.remove("cutscene");
-  game.mode = "world";
+  // Se uma luta começou por baixo da cena, volta para ela (antes ficava presa no mapa).
+  game.mode = typeof battle !== "undefined" && battle && !battle.done ? "battle" : "world";
   game.fade = 1;
   c.next && c.next();
 }

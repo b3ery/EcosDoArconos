@@ -84,3 +84,33 @@ function roamingPos(id) {
     return sbBase(type, mob, opts);
   };
 }
+
+/* Perdeu para o Silenciador? Cada derrota deixa a próxima luta mais justa (até −36% de vida dele),
+ * e a Odelia explica o truque da runa fraca. */
+{
+  const ceBase = createEnemy;
+  createEnemy = function (type) {
+    const out = ceBase(type);
+    if (type === "silenciador" && player.silLoss) {
+      const cut = Math.min(0.36, player.silLoss * 0.12);
+      out.enemy.hp = Math.round(out.enemy.hp * (1 - cut));
+    }
+    return out;
+  };
+  const loseBase = lose;
+  lose = function () {
+    const wasFinal = battle && battle.type === "silenciador" && !itemCount("fenix");
+    if (wasFinal) {
+      player.silLoss = (player.silLoss || 0) + 1;
+      setTimeout(() => {
+        if (game.mode !== "world") return;
+        say([
+          ["Arquimaga Odelia", "Você voltou... respire. Ninguém vence o Silêncio na primeira tentativa."],
+          ["Arquimaga Odelia", "Olhe a etiqueta \"Vulnerável a...\" em cima dele: ela muda a cada fase. Use DUAS runas daquela cor juntas."],
+          ["Arquimaga Odelia", "Leve poções, e quando a barra de Ressonância encher, use o golpe final. A máscara dele já está rachada: ele não vai aguentar tanto da próxima vez."],
+        ]);
+      }, 4200);
+    }
+    return loseBase();
+  };
+}

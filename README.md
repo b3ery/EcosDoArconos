@@ -283,6 +283,9 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 ## ⚔️ Modo História
 
+- **Nyx, a rival:** uma caçadora de runas a serviço do Silenciador cruza o seu caminho no Bosque, no Pântano e nos Picos. Ajude ou humilhe: ela pode lutar do seu lado na Torre ou virar a última barreira.
+- **O Silêncio ataca Cinzaluz:** a vila começa sem cor e recupera um pouco a cada runa. Em duas invasões você só salva um lado, e quem fica para trás perde a voz até o próximo Guardião acordar.
+- **Capítulos com título** (Prólogo, I a IV e Final) e uma luta final mais justa: cada derrota para o Silenciador deixa a próxima um pouco mais fácil.
 - **Combos secretos:** duas magias seguidas na ordem certa (Maré → Chama = Vapor Escaldante...). São 8 para descobrir.
 - **Guardiões com duas fases:** na metade da vida eles mudam de forma e de fraqueza. Seu melhor amigo da turma luta ao seu lado.
 - **Flashbacks dos irmãos:** cada página do diário de Vesper abre uma lembrança, e as suas escolhas enfraquecem o Silenciador.

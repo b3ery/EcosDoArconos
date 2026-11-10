@@ -66,7 +66,7 @@ function flashbackTick() {
   }
 }
 function vesperKindness() {
-  return (player.fb || []).filter((x) => x === 1).length;
+  return (Array.isArray(player.fb) ? player.fb : []).filter((x) => x === 1).length;
 }
 
 /* ===================== ESCOLHAS NO MEIO ===================== */
