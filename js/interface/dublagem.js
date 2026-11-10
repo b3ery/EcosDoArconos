@@ -114,17 +114,19 @@ function playVoice(e) {
  * tem o nome da faixa; MUSIC_FILES liga várias faixas a um arquivo só (a
  * música não recomeça ao passar de uma região para outra que usa o mesmo). */
 const MUSIC_FILES = {
-  titulo: "arcana",
   final: "batalha-final",
-  aventura: "epocas-sombrias",
-  floresta: "epocas-sombrias",
-  pantano: "epocas-sombrias",
-  serra: "epocas-sombrias",
-  mina: "epocas-sombrias",
-  porto: "epocas-sombrias",
-  torre: "epocas-sombrias",
 };
-const musicFileOf = (t) => MUSIC_FILES[t] || t;
+/* A música tema: "Épocas Sombrias" em tudo enquanto o mundo está em silêncio;
+ * quando a Canção Arcana volta (final da história), "Arcana" vira o tema. */
+const THEME_TRACKS = ["titulo", "vila", "noite", "aventura", "floresta", "pantano", "serra", "mina", "porto", "torre", "casa"];
+function arcanaBack() {
+  if (!player || player.villainEnd) return false; // no final de vilão o mundo continua nas sombras
+  return !!(player.finished || game.ep || game.rollDone);
+}
+function musicFileOf(t) {
+  if (THEME_TRACKS.includes(t) && !(typeof lifeMode === "function" && lifeMode() && t !== "titulo")) return arcanaBack() ? "arcana" : "epocas-sombrias";
+  return MUSIC_FILES[t] || t;
+}
 const customMusic = { state: {}, audio: {}, file: null };
 function probeFile(f) {
   if (customMusic.state[f]) return;

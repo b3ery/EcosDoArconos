@@ -1,8 +1,8 @@
 Músicas próprias do jogo (MP3).
 
 Já incluídas:
-- arcana.mp3: tela inicial e abertura
-- epocas-sombrias.mp3: regiões fora das vilas (Bosque, Pântano, Picos, Mina, Porto, Torre)
+- epocas-sombrias.mp3: música tema de tudo (tela inicial, vila, noite, casa e regiões) até a Canção Arcana voltar
+- arcana.mp3: vira a música tema depois do final da história
 - batalha-final.mp3: luta contra o Silenciador
 
 Para trocar outra faixa, coloque NOME.mp3 aqui (ex.: vila.mp3, batalha.mp3, lamento.mp3).

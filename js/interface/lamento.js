@@ -119,7 +119,7 @@ for (const f of ["dreamScene", "maskScene", "towerScene"]) if (typeof window[f] 
   desiredTrack = function () {
     if (game.cine && game.cine.draw && game.cine.draw.sad) return "lamento";
     const t = dtBase();
-    return t === "silencio" ? "lamento" : t;
+    return t === "silencio" ? "vila" : t; // a vila usa a música tema
   };
 }
 
