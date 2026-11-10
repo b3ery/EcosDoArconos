@@ -308,6 +308,12 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 ---
 
+## 🗺️ Mapa, seta e música
+
+- **Seta azul das entregas:** trabalhos do quadro e pedidos prontos para entregar ganham uma seta própria com o nome de quem espera (a dourada continua na história).
+- **Mapa clicável (M):** clique ou toque em qualquer coisa para ver o que é, e em "Ir até lá" para andar sozinho. No mapa do mundo (Tab), clique numa região para ver Guardião, baús, quebra-cabeças e lugares escondidos.
+- **Lamento de Cinzaluz:** tema triste em Sol# maior que começa no vi grau (Mi#m, o mesmo som de Fá menor) e passeia pelos acordes tristes do campo harmônico (ii, iii, IV e vii°). Toca nos sonhos, lembranças, cartões de capítulo, na Torre e na vila ainda sem canção.
+
 ## 🏡 Simulador de Vida
 
 - **Metas de vida** (casar, 3 filhos, fortuna, 70 anos, 3 gerações, governar...), **notícias que mudam a vila** (seca e colheita mexem nos preços, a guerra convoca moradores) e **famílias rivais**: Os Brasa, os Maré-Alta e os Pedregal. Tudo no menu Ações (Y).
