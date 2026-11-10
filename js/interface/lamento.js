@@ -122,3 +122,73 @@ for (const f of ["dreamScene", "maskScene", "towerScene"]) if (typeof window[f] 
     return t === "silencio" ? "lamento" : t;
   };
 }
+
+/* ===================== MÚSICA À PROVA DE FALHAS =====================
+ * Antes a música só era ajustada no fim de cada quadro do jogo: se algo
+ * antes disso desse erro logo depois de uma troca de faixa (quando o volume
+ * é abaixado para trocar), o som ficava mudo. Agora ela tem relógio próprio,
+ * e o áudio "acordado" de novo no próximo toque, tecla ou ao voltar para a aba. */
+const TRACK_NAMES = { titulo: "Tela inicial", vila: "Cinzaluz de dia", noite: "Cinzaluz à noite", aventura: "Aventura", batalha: "Batalha", chefe: "Chefe", final: "Luta final", festival: "Festival", taverna: "Taverna", floresta: "Floresta", pantano: "Pântano", porto: "Porto", serra: "Serra", mina: "Mina", torre: "Torre", casa: "Casa", lamento: "Lamento de Cinzaluz", velorio: "Velório", casamento: "Casamento", golpe: "Golpe", eleicao: "Eleição" };
+{
+  const dtBase = desiredTrack;
+  desiredTrack = function () {
+    if (game.previewTrack && TRACKS[game.previewTrack]) return game.previewTrack;
+    try {
+      return dtBase();
+    } catch (e) {
+      return music.track || "vila";
+    }
+  };
+  setInterval(() => {
+    try {
+      updateMusic();
+      // Se o volume ficou preso lá embaixo depois de uma troca, volta ao normal.
+      if (music.gain && audioCtx && settings.music > 0 && music.gain.gain.value < musicVolume() * 0.2 && music.track === desiredTrack())
+        music.gain.gain.setTargetAtTime(musicVolume(), audioCtx.currentTime, 0.2);
+    } catch (e) {}
+  }, 500);
+  const wake = () => {
+    try {
+      if (audioCtx && audioCtx.state !== "running") audioCtx.resume();
+      if (audioCtx && !music.timer) ensureMusic();
+    } catch (e) {}
+  };
+  for (const ev of ["pointerdown", "keydown", "touchend"]) addEventListener(ev, wake, { passive: true });
+  document.addEventListener("visibilitychange", () => !document.hidden && wake());
+
+  // Opções → Ouvir músicas
+  const roBase = renderOptions;
+  renderOptions = function () {
+    roBase();
+    const box = byId("options");
+    if (!box || byId("optJuke")) return;
+    const div = document.createElement("div");
+    div.id = "optJuke";
+    div.innerHTML = `<h3>Ouvir músicas</h3><div class="juke">${Object.keys(TRACKS)
+      .filter((k) => k !== "silencio")
+      .map((k) => `<button data-tk="${k}" class="${game.previewTrack === k ? "on" : ""}">${k === "lamento" ? "♪ " : ""}${TRACK_NAMES[k] || k}</button>`)
+      .join("")}<button data-tk="">■ Parar</button></div><small>A música escolhida toca enquanto as Opções estiverem abertas.</small>`;
+    (box.querySelector(".opt-body, .ov-body") || box).appendChild(div);
+    div.querySelectorAll("[data-tk]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          ensureMusic();
+          if (settings.music <= 0) toast("A música está no zero: aumente o volume acima.", 2600);
+          game.previewTrack = b.dataset.tk || null;
+          div.querySelectorAll("[data-tk]").forEach((x) => x.classList.toggle("on", x === b && !!b.dataset.tk));
+          updateMusic();
+        }),
+    );
+    if (!byId("jukeCSS")) {
+      const st = document.createElement("style");
+      st.id = "jukeCSS";
+      st.textContent = `#optJuke .juke{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0} #optJuke button.on{outline:2px solid var(--gold,#ffd34d)} #optJuke small{opacity:.75}`;
+      document.head.appendChild(st);
+    }
+  };
+  const coBase = closeOptions;
+  closeOptions = function () {
+    game.previewTrack = null;
+    return coBase.apply(this, arguments);
+  };
+}
