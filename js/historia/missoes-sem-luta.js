@@ -144,7 +144,7 @@ function riddleMenu(id) {
 
 /* ===================== 4. ENTREGAS DA ROSA ===================== */
 const DELIVERY_TO = ["flor", "doran", "chazeira"];
-const DELIVERY_MIN = 120;
+const DELIVERY_MIN = 180; // minutos do jogo (o relógio anda 5 min por segundo: ~36 s de verdade)
 function deliveryLeft(Q) {
   return DELIVERY_MIN - ((player.day - Q.day) * 1440 + (player.clock - Q.clock));
 }
@@ -152,7 +152,7 @@ function deliveryMenu(id) {
   const Q = cq("entregas");
   if (id === "rosa") {
     if (!Q || (Q.st === "ativo" && Q.failed))
-      return [{ t: Q ? "★ Tentar as entregas de novo" : "★ Pedido: \"Me ajuda com as entregas?\"", fn: () => say([["Rosa, a Quitandeira", `Três cestas de pão: para ${DELIVERY_TO.map(cqName).join(", ")}. Você tem 2 horas antes de esfriar!`]], () => cqStart("entregas", { day: player.day, clock: player.clock, done: [] })) }];
+      return [{ t: Q ? "★ Tentar as entregas de novo" : "★ Pedido: \"Me ajuda com as entregas?\"", fn: () => say([["Rosa, a Quitandeira", `Três cestas de pão: para ${DELIVERY_TO.map(cqName).join(", ")}. Você tem 3 horas antes de esfriar!`]], () => cqStart("entregas", { day: player.day, clock: player.clock, done: [] })) }];
     return [];
   }
   if (Q && Q.st === "ativo" && !Q.failed && DELIVERY_TO.includes(id) && !Q.done.includes(id))

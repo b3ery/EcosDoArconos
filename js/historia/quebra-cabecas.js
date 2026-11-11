@@ -83,13 +83,13 @@ KEY_HANDLERS.puzzle = (k) => k === "escape" && closePuzzle();
 BEFORE_DIALOG.add("puzzle");
 
 /* ===================== 1. MOSAICO (peças deslizantes) ===================== */
-const MOSAIC_COL = ["#ff7a3d", "#ff9f4d", "#ffc65a", "#9ad06a", "#5ac08a", "#4aa0d0", "#5a7ae0", "#8a6ae0"];
+const MOSAIC_COL = ["#e04848", "#f08a2a", "#f2c83a", "#5ab04a", "#2ab0a0", "#3a7ae0", "#7a4ad0", "#d04aa0"]; // arco-íris: cada número com uma cor bem diferente
 const PZ_MOSAIC = {
   id: "mosaico",
   n: "Mosaico de Vesper",
   zone: "vila",
   where: "Vila de Cinzaluz",
-  help: "Toque numa peça ao lado do espaço vazio para deslizá-la. Deixe as cores na ordem, de 1 a 8, com o vazio no fim.",
+  help: "Toque numa peça que esteja ao lado do espaço vazio para ela deslizar até lá. Deixe igual ao objetivo: 1, 2, 3 em cima, 4, 5, 6 no meio, 7, 8 e o vazio embaixo.",
   win: "As cores se alinham e formam um arco-íris. No meio, gravado: \"Para Odelia, que pintava o céu.\"",
   reward: { gold: 60, xp: 70 },
   make() {
@@ -105,7 +105,9 @@ const PZ_MOSAIC = {
     }
     return { b, moves: 0 };
   },
-  html: (s) => `<div class="pz-grid g3">${s.b.map((v, i) => (v ? `<button class="pz-t" data-a="${i}" style="background:${MOSAIC_COL[v - 1]}">${v}</button>` : `<div class="pz-t empty"></div>`)).join("")}</div>`,
+  html: (s) =>
+    `<div class="pz-mos"><div class="pz-grid g3">${s.b.map((v, i) => (v ? `<button class="pz-t" data-a="${i}" style="background:${MOSAIC_COL[v - 1]}">${v}</button>` : `<div class="pz-t empty"></div>`)).join("")}</div>
+    <div class="pz-goal"><small>Objetivo</small><div class="pz-grid g3 mini">${[1, 2, 3, 4, 5, 6, 7, 8, 0].map((v) => (v ? `<div class="pz-t" style="background:${MOSAIC_COL[v - 1]}">${v}</div>` : `<div class="pz-t empty"></div>`)).join("")}</div></div></div>`,
   status: (s) => `Movimentos: ${s.moves}`,
   act(s, a) {
     const i = +a,
@@ -184,7 +186,7 @@ const PZ_PIPES = {
   n: "Canais do Porto",
   zone: "porto",
   where: "Porto Brisamar",
-  help: "Toque num cano para girar. Leve a água da entrada (à esquerda) até o moinho (à direita). Os canos molhados ficam azuis.",
+  help: "Toque num cano para girar. Leve a água da entrada (💧, à esquerda) até o moinho (🏠, à direita). Dois canos só se ligam quando os braços se encostam. Os canos com água ficam azuis.",
   win: "A água corre, a roda do moinho range e começa a girar. Os pescadores aplaudem do cais.",
   reward: { gold: 80, xp: 80, items: [["peixe", 2]] },
   make() {
@@ -226,14 +228,15 @@ const PZ_PIPES = {
   },
   html(s) {
     const { wet, out } = pipeFlow(s);
-    let h = `<div class="pz-pipes" style="grid-template-columns:28px repeat(${PIPE_W},1fr) 28px">`;
+    let h = `<div class="pz-pipes" style="grid-template-columns:40px repeat(${PIPE_W},1fr) 44px">`;
     for (let y = 0; y < PIPE_H; y++) {
-      h += `<div class="pz-end">${y === s.src ? "💧" : ""}</div>`;
+      h += `<div class="pz-end">${y === s.src ? "💧→" : ""}</div>`;
       for (let x = 0; x < PIPE_W; x++) {
         const k = y * PIPE_W + x;
-        h += `<button class="pz-t pipe ${wet.has(k) ? "wet" : ""}" data-a="${k}">${pipeGlyph(s.g[k])}</button>`;
+        const arms = pipeSides(s.g[k]).map((d) => `<i class="pa a${d}"></i>`).join("");
+        h += `<button class="pz-t pipe ${wet.has(k) ? "wet" : ""}" data-a="${k}" aria-label="cano"><i class="pc"></i>${arms}</button>`;
       }
-      h += `<div class="pz-end">${y === s.dst ? (out ? "⚙️" : "🏠") : ""}</div>`;
+      h += `<div class="pz-end">${y === s.dst ? (out ? "→⚙️" : "→🏠") : ""}</div>`;
     }
     return h + "</div>";
   },
@@ -354,9 +357,9 @@ function puzzleAt(x, y) {
   .pz-t.rune{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3)}
   .pz-t.rune.on{background:var(--rc);color:#fff;box-shadow:0 0 12px var(--rc)}
   .pz-pipes{display:grid;gap:4px;margin:0 auto;width:min(380px,88vw);align-items:center}
-  .pz-t.pipe{background:#3a3226;color:#9a8a70;font-size:30px;line-height:1}
+  .pz-t.pipe{position:relative;background:#3a3226;color:#b8a888;overflow:hidden} .pz-t.pipe .pa,.pz-t.pipe .pc{position:absolute;background:currentColor;border-radius:2px} .pz-t.pipe .pc{left:40%;top:40%;width:20%;height:20%} .pz-t.pipe .a0{left:40%;width:20%;top:0;height:60%} .pz-t.pipe .a2{left:40%;width:20%;bottom:0;height:60%} .pz-t.pipe .a1{top:40%;height:20%;right:0;width:60%} .pz-t.pipe .a3{top:40%;height:20%;left:0;width:60%}
   .pz-t.pipe.wet{background:#21405a;color:#7ad0ff}
-  .pz-end{text-align:center;font-size:20px}
+  .pz-end{text-align:center;font-size:16px;white-space:nowrap}
   .pz-scale{position:relative;height:140px;margin:0 auto 8px;width:min(340px,86vw)}
   .pz-scale .beam{position:absolute;left:5%;right:5%;top:40px;height:6px;background:#c8a060;border-radius:3px;transition:transform .3s}
   .pz-scale .pan{position:absolute;top:8px;width:42%;min-height:60px;border-bottom:4px solid #a08050;display:flex;flex-wrap:wrap;gap:3px;align-items:flex-end;justify-content:center}
@@ -377,7 +380,24 @@ function puzzleAt(x, y) {
   .pz-keys{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
   .pz-t.key{aspect-ratio:auto;padding:8px 10px;font-size:14px;background:var(--rc,#4a4a58)}
   .pz-t.key.go{background:#5a8a4a} .pz-t.key:disabled{opacity:.4}
-  .pz-lost{font-size:13px;color:#ffb0b0;text-align:center}`;
+  .pz-lost{font-size:13px;color:#ffb0b0;text-align:center}
+  .pz-mos .pz-t{font-family:ui-monospace,Menlo,Consolas,'Courier New',monospace;font-weight:800;text-shadow:0 1px 0 rgba(0,0,0,.35)} .pz-mos{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .pz-goal{text-align:center} .pz-goal small{display:block;opacity:.8;margin-bottom:4px}
+  .pz-grid.mini{width:84px;gap:3px} .pz-grid.mini .pz-t{font-size:11px;border-width:1px;border-radius:4px;cursor:default}
+  @media (max-height:520px){
+    #puzzle{padding:6px 12px !important}
+    #puzzle .gh h2{font-size:18px}
+    .pz-help{font-size:11px;margin:2px 0 4px;line-height:1.25}
+    .pz-foot{margin-top:4px}
+    .pz-grid{width:min(170px,46vh) !important;gap:4px}
+    .pz-grid.mini{width:64px !important}
+    .pz-t{font-size:15px}
+    .pz-pipes{width:min(300px,70vw);gap:3px}
+    .pz-scale{height:96px;margin-bottom:4px}
+    .pz-scale .beam{top:30px} .pz-scale .post{top:34px;height:60px}
+    .pz-t.wt{padding:3px 0;font-size:14px}
+    .pz-dot{width:20px;height:20px}
+  }`;
   document.head.appendChild(st);
 })();
 {

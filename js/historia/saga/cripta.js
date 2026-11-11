@@ -9,7 +9,7 @@
 
 /* ===================== CRIPTA DOS ECOS ===================== */
 ZONE_DEFS.cripta = { nome: "Cripta dos Ecos", theme: "mina", exits: {}, enemies: [] };
-const CRYPT = { w: 34, h: 11, exit: [3, 9], doors: [[11, 5], [22, 5]], torches: [[3, 2], [8, 2], [3, 8], [8, 8]], mirrors: [[14, 3], [18, 7], [20, 3]], src: [13, 8], crystal: [20, 8], edoor: [26, 5], chest: [31, 5] };
+const CRYPT = { w: 34, h: 11, exit: [3, 9], doors: [[11, 5], [22, 5]], torches: [[3, 2], [8, 2], [3, 8], [8, 8]], mirrors: [[16, 8], [16, 3], [20, 3], [19, 6]], src: [12, 8], crystal: [20, 7], edoor: [26, 5], chest: [31, 5] };
 const TORCH_ORDER = [2, 0, 3, 1];
 function genCrypt() {
   const { w, h } = CRYPT;
@@ -22,7 +22,10 @@ function genCrypt() {
 }
 ZONES.cripta = genCrypt();
 function cryptState() {
-  return (player.crypt = player.crypt || { lit: [], torchesOk: false, mir: [0, 0, 0], mirOk: false, eOk: false, chest: false, rune: null });
+  const S = (player.crypt = player.crypt || { lit: [], torchesOk: false, mirOk: false, eOk: false, chest: false, rune: null });
+  // Espelhos de duas posições (/ e \); saves antigos ganham a posição inicial.
+  if (!Array.isArray(S.mir2) || S.mir2.length !== CRYPT.mirrors.length) S.mir2 = ["\\", "\\", "/", "/"];
+  return S;
 }
 function setTile(zone, x, y, c) {
   const m = ZONES[zone].map,
@@ -52,7 +55,7 @@ function enterCrypt() {
   enterZone(true);
   if (!player.flags.criptaVista) {
     player.flags.criptaVista = true;
-    say([["", "Uma cripta antiga, com o cheiro de três séculos. Inscrições cobrem as paredes."], ["", "\"Quem quiser a memória de Vesper, que acenda as chamas como as estrelas se acendem: primeiro a do sul, depois a do norte...\""]]);
+    say([["", "Uma cripta antiga, com o cheiro de três séculos. Inscrições cobrem as paredes."], ["", "\"Quem quiser a memória de Vesper, que acenda as chamas como as estrelas se acendem: primeiro a do sul, depois a do norte...\""], ["", "Mais adiante, uma lanterna e quatro espelhos. Gire os espelhos (/ ou \\) até a luz chegar ao cristal."]]);
   }
 }
 function leaveCrypt() {
@@ -63,6 +66,25 @@ function leaveCrypt() {
   enterZone(true);
 }
 const near = (a, x, y) => a && a[0] === x && a[1] === y;
+/** O feixe da cripta: sai da lanterna para a direita e reflete nos espelhos. */
+function cryptBeam() {
+  const S = cryptState(),
+    D = { E: [1, 0], W: [-1, 0], N: [0, -1], S: [0, 1] },
+    B = { "/": { E: "N", N: "E", W: "S", S: "W" }, "\\": { E: "S", S: "E", W: "N", N: "W" } };
+  let [x, y] = CRYPT.src,
+    d = "E";
+  const path = [[x, y]];
+  for (let k = 0; k < 120; k++) {
+    x += D[d][0];
+    y += D[d][1];
+    if (x <= CRYPT.doors[0][0] || x >= CRYPT.doors[1][0] || y < 1 || y > CRYPT.h - 2) break;
+    path.push([x, y]);
+    if (near(CRYPT.crystal, x, y)) return { path, hit: true };
+    const mi = CRYPT.mirrors.findIndex((m) => near(m, x, y));
+    if (mi >= 0) d = B[S.mir2[mi]][d];
+  }
+  return { path, hit: false };
+}
 function cryptTarget(x, y) {
   const S = cryptState();
   if (near(CRYPT.exit, x, y)) return "Sair da cripta";
@@ -80,7 +102,7 @@ function cryptInteract(x, y) {
   const l = cryptTarget(x, y);
   if (!l) return false;
   if (l === "Sair da cripta") return leaveCrypt(), true;
-  if (l === "Ler a inscrição") return say([["", "\"...primeiro a do sul, depois a do norte; volte ao sul pelo lado do sol nascente, e termine no norte do lado do poente.\""], ["", "(Dica: sul-oeste, norte-oeste, sul-leste, norte-leste.)"]]), true;
+  if (l === "Ler a inscrição") return say([["", "\"...primeiro a do sul, depois a do norte, as duas do lado do poente; depois volte ao sul pelo lado do sol nascente, e termine no norte, do mesmo lado.\""], ["", "(Dica: sul-oeste, norte-oeste, sul-leste, norte-leste.)"]]), true;
   if (l === "Acender a tocha") {
     const ti = CRYPT.torches.findIndex((p) => near(p, x, y));
     if (S.lit.includes(ti)) return true;
@@ -102,9 +124,9 @@ function cryptInteract(x, y) {
   }
   if (l === "Girar o espelho") {
     const mi = CRYPT.mirrors.findIndex((p) => near(p, x, y));
-    S.mir[mi] = (S.mir[mi] + 1) % 4;
+    S.mir2[mi] = S.mir2[mi] === "/" ? "\\" : "/";
     playSound(300 + mi * 60, 0.06, "square");
-    if (!S.mirOk && S.mir[0] === 1 && S.mir[1] === 2 && S.mir[2] === 3) {
+    if (!S.mirOk && cryptBeam().hit) {
       S.mirOk = true;
       cryptApply();
       game.shake = 0.3;
@@ -147,25 +169,22 @@ function drawCrypt(t) {
       ctx.fillRect(x * T + 12, y * T + 4, 8, 6);
     }
   });
-  CRYPT.mirrors.forEach(([x, y], i) => {
-    ctx.save();
-    ctx.translate(x * T + 16, y * T + 16);
-    ctx.rotate((S.mir[i] * Math.PI) / 2 + Math.PI / 4);
-    ctx.fillStyle = "#cfe6ff";
-    ctx.fillRect(-11, -3, 22, 6);
-    ctx.fillStyle = "#6a7a8a";
-    ctx.fillRect(-11, 2, 22, 2);
-    ctx.restore();
-  });
-  // Feixe de luz até onde os espelhos estão certos.
-  const pts = [CRYPT.src, CRYPT.mirrors[0], CRYPT.mirrors[1], CRYPT.mirrors[2], CRYPT.crystal];
-  const okN = S.mirOk ? 4 : [S.mir[0] === 1, S.mir[1] === 2, S.mir[2] === 3].findIndex((v) => !v) + 1 || 4;
+  const beam = cryptBeam();
   ctx.strokeStyle = `rgba(255,240,160,${0.6 + 0.3 * Math.sin(t * 6)})`;
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(pts[0][0] * T + 16, pts[0][1] * T + 16);
-  for (let i = 1; i <= Math.min(okN, 4); i++) ctx.lineTo(pts[i][0] * T + 16, pts[i][1] * T + 16);
+  beam.path.forEach(([bx, by], i) => (i ? ctx.lineTo(bx * T + 16, by * T + 16) : ctx.moveTo(bx * T + 16, by * T + 16)));
   ctx.stroke();
+  CRYPT.mirrors.forEach(([x, y], i) => {
+    ctx.fillStyle = "#4a4458";
+    ctx.fillRect(x * T + 10, y * T + 24, 12, 5);
+    ctx.save();
+    ctx.translate(x * T + 16, y * T + 16);
+    ctx.rotate(S.mir2[i] === "/" ? -Math.PI / 4 : Math.PI / 4);
+    ctx.fillStyle = "#cfe6ff";
+    ctx.fillRect(-12, -2, 24, 4);
+    ctx.restore();
+  });
   ctx.fillStyle = "#ffe066";
   ctx.fillRect(CRYPT.src[0] * T + 10, CRYPT.src[1] * T + 10, 12, 12);
   ctx.fillStyle = S.mirOk ? "#ffffff" : "#7a6aa8";

@@ -24,7 +24,7 @@ const DEV = (() => {
 })();
 
 /* ===================== AÇÕES ===================== */
-function devUnlockAll() {
+function devUnlockAll(quiet) {
   player.lvl = Math.max(player.lvl, 20);
   player.basehp = 60 + (player.lvl - 1) * 15;
   player.basemp = 30 + (player.lvl - 1) * 6;
@@ -38,7 +38,7 @@ function devUnlockAll() {
   player.stamina = 100;
   player.tutDone = player.tutAsked = true;
   saveGame();
-  toast("DEV: tudo liberado (nível 20, runas, magias, ouro, itens).", 2600);
+  if (!quiet) toast("DEV: tudo liberado (nível 20, runas, magias, ouro, itens).", 2600);
 }
 /** Marca uma etapa como feita. */
 function devDoStep(s) {
@@ -219,4 +219,27 @@ if (DEV) {
     if (game.devGod && player && player.hp < maxHp()) player.hp = maxHp();
   };
   document.title = "[DEV] " + document.title;
+
+  // Na versão dev tudo já começa liberado: nível 20, as seis runas (a barreira do
+  // sul abre), todas as magias, ouro e itens, em jogo novo ou carregado.
+  const sgBase = startGame;
+  startGame = function () {
+    const r = sgBase.apply(this, arguments);
+    setTimeout(() => {
+      if (!player || !player.name) return;
+      devUnlockAll(true);
+      toast("DEV: tudo liberado. F9 abre o painel.", 3000);
+    }, 300);
+    return r;
+  };
+  // E nada fica trancado: os selos dos Guardiões, a porta do Silenciador e a regra
+  // "liberte três Guardiões antes do Basilisco e do Leviatã" não valem no modo dev.
+  if (typeof sealMessage === "function") sealMessage = () => null;
+  const iaBase = interactAt;
+  interactAt = function (x, y) {
+    const z = ZONES[player.zone];
+    if (!lifeMode() && z && z.guard && tileAt(player.zone, x, y) === "G" && !player.guards.includes(player.zone) && (z.guard === "basilisco" || z.guard === "leviata") && guardiansFreed() < 3)
+      return startBattle(z.guard, null);
+    return iaBase(x, y);
+  };
 }

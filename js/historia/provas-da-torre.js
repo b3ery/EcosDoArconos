@@ -345,6 +345,20 @@ const trialPos = (inside) => () => (player.zone === "provas" ? inside() : trialE
 
 /* ----- Ligações ----- */
 {
+  // Não dá para ficar em cima de sinos, espelhos, lanterna, cristal, tochas e baús
+  // (de cima deles, não daria para girar nem tocar).
+  const wkBase = walkable;
+  walkable = function (z, x, y) {
+    if (z === "provas" && player.zone === "provas") {
+      const l = trialTarget(x, y);
+      if (l && l !== "Porta de silêncio") return false;
+    }
+    if (z === "cripta" && player.zone === "cripta" && typeof cryptTarget === "function") {
+      const l = cryptTarget(x, y);
+      if (l && l !== "Porta elemental" && l !== "Sair da cripta") return false;
+    }
+    return wkBase(z, x, y);
+  };
   const charBase = characterAt;
   characterAt = function (x, y) {
     if (story() && player.zone === "provas" && trialTarget(x, y)) return true;
