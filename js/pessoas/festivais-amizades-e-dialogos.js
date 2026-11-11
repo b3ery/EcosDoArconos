@@ -3076,6 +3076,14 @@ function storyBuilding(b) {
       say([["", "O farol está apagado. O Capitão disse que ele só mostra o que guarda depois que escurece. Volte à noite (tecla H espera)."]]);
       return true;
     }
+    farolMemory();
+    return true;
+  }
+  return storyBuildingRest(b);
+}
+/** A lembrança do Farol: Odelia e Vesper crianças. Conclui o capítulo do Porto. */
+function farolMemory() {
+  {
     player.flags.porto2 = true;
     const chamaVolta = !!player.dom && !player.runes.includes("fogo");
     if (chamaVolta) player.runes.push("fogo");
@@ -3094,8 +3102,9 @@ function storyBuilding(b) {
       ["Capitão Bento", "Viu? Meu avô dizia que o farol lembra de tudo que viu. Tome, isto estava guardado lá em cima."],
       ["", chapterReward(70, 80, "amu2") + " Capítulo do Porto concluído!"],
     ]);
-    return true;
   }
+}
+function storyBuildingRest(b) {
   // Capítulo de Pedravale: a Forja do Irmão.
   if (b.name === "Mina de Cristal" && player.flags.serra1 && !player.flags.serra2 && !itemCount("fragmento")) {
     player.flags.serra2 = true;

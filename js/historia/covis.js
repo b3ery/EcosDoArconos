@@ -648,7 +648,7 @@ function villainRuneScene(type, rune) {
     playCine(villainRuneScene(type, enemy.rune), 7, () => pgBase(enemy, type));
   };
 }
-ACHIEVEMENTS.push(["covis", "Pelos covis", "Vença os cinco desafios dos covis dos Guardiões.", "flag", () => Object.values(LAIRS).every((L) => player.lairs && player.lairs[L.region] && player.lairs[L.region].ok)]);
+ACHIEVEMENTS.push(["covis", "Pelos covis", "Vença todos os desafios dos covis dos Guardiões.", "flag", () => Object.values(LAIRS).filter((L) => L.region !== "farol" || player.dom).every((L) => player.lairs && player.lairs[L.region] && player.lairs[L.region].ok)]);
 
 // ---- Troca de runas Serpente ↔ Leviatã em saves antigos ----
 // (a runa do mar agora fica com o Leviatã, na ilha do oceano)
