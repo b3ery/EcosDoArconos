@@ -794,6 +794,10 @@ function pickElement(r) {
   player.aff = r;
   player.runes = [r];
   player.order = [r].concat(["terra", "agua", "ar", "fogo", "luz", "sombra"].filter((x) => x !== r));
+  // a Serpente (pântano) e o Leviatã (oceano) trocaram de runa: a do mar fica com o Leviatã
+  [player.order[2], player.order[5]] = [player.order[5], player.order[2]];
+  player.flags = player.flags || {};
+  player.flags.ordV2 = true;
   byId("choose").style.display = "none";
   playSound(784, 0.15, "sine");
   startGame(true);
