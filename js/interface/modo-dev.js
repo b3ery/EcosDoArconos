@@ -109,6 +109,11 @@ function devWinBattle() {
   win();
 }
 function devSolvePuzzle() {
+  const L = typeof lairOfZone === "function" && lairOfZone(player.zone);
+  if (L) {
+    closeDevPanel();
+    return lairSolved(L, "DEV: desafio do covil resolvido.");
+  }
   if (typeof PZ !== "undefined" && PZ) {
     closeDevPanel();
     return winPuzzle();
@@ -150,7 +155,7 @@ function devPanelHTML() {
   const scenes = Object.keys(DEV_SCENES).map((k) => `<option>${k}</option>`).join("");
   return `<div class="gh"><h2>Modo DEV</h2><button id="devx">Fechar (F9)</button></div>
   <small>Etapa: <b>${cur.id}</b> · ${player.zone} ${player.x},${player.y} · nível ${player.lvl} · ${lifeMode() ? "Simulador" : "História"}</small>
-  <div class="dv-row"><button data-dv="all">Liberar tudo</button><button data-dv="god" class="${game.devGod ? "on" : ""}">Invencível</button><button data-dv="win">Vencer a luta</button><button data-dv="pz">Resolver quebra-cabeça</button><button data-dv="trials">Vencer provas da Torre</button><button data-dv="map">Revelar mapas</button></div>
+  <div class="dv-row"><button data-dv="all">Liberar tudo</button><button data-dv="god" class="${game.devGod ? "on" : ""}">Invencível</button><button data-dv="win">Vencer a luta</button><button data-dv="pz">Resolver quebra-cabeça / covil</button><button data-dv="trials">Vencer provas da Torre</button><button data-dv="map">Revelar mapas</button></div>
   <label>Pular para a etapa</label><div class="dv-row"><select id="dvStep">${steps}</select><button data-dv="jump">Ir</button></div>
   <label>Ir para a região</label><div class="dv-row"><select id="dvZone">${zones}</select><button data-dv="zone">Ir</button></div>
   <label>Ver cena</label><div class="dv-row"><select id="dvScene">${scenes}</select><button data-dv="scene">Ver</button></div>
@@ -238,7 +243,7 @@ if (DEV) {
   const iaBase = interactAt;
   interactAt = function (x, y) {
     const z = ZONES[player.zone];
-    if (!lifeMode() && z && z.guard && tileAt(player.zone, x, y) === "G" && !player.guards.includes(player.zone) && (z.guard === "basilisco" || z.guard === "leviata") && guardiansFreed() < 3)
+    if (!lifeMode() && z && z.guard && !z.lair && tileAt(player.zone, x, y) === "G" && !player.guards.includes(player.zone) && (z.guard === "basilisco" || z.guard === "leviata") && guardiansFreed() < 3)
       return startBattle(z.guard, null);
     return iaBase(x, y);
   };
