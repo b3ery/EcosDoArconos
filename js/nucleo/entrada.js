@@ -121,7 +121,7 @@ const KEY_HANDLERS = {
   battle: (k, e) => {
     if (!battle || e.repeat) return;
     if (k >= "1" && k <= "6") {
-      const rune = player.runes[+k - 1];
+      const rune = castList()[+k - 1];
       if (rune) pickRune(rune);
     } else if (BATTLE_SHORTCUTS[k]) BATTLE_SHORTCUTS[k]();
   },

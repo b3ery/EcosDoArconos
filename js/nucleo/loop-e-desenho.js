@@ -2895,7 +2895,7 @@ function drawWorld(t) {
       // No Simulador de Vida não tem cajado: é só um morador.
       const glow = lifeMode()
         ? null
-        : (player.look && player.look.staffc) || RUNES[player.runes[player.runes.length - 1]].cor;
+        : (player.look && player.look.staffc) || magicColor();
       if (player.riding) {
         const X = player.rx * TILE,
           Y = player.ry * TILE,
@@ -3441,7 +3441,7 @@ function drawBattle(t) {
   ctx.save();
   ctx.translate((viewWidth - 640) / 2, 0);
   game.bo = (viewWidth - 640) / 2;
-  const glowColor = (player.look && player.look.staffc) || RUNES[player.runes[player.runes.length - 1]].cor;
+  const glowColor = (player.look && player.look.staffc) || magicColor();
   drawMagicCircle(BATTLE_PLAYER_POS.x + 48, BATTLE_PLAYER_POS.y + 96, glowColor, t);
   if (battle && battle.e && (battle.e.boss || battle.e.eco)) {
     const ep0 = enemyPos();

@@ -3077,6 +3077,8 @@ function storyBuilding(b) {
       return true;
     }
     player.flags.porto2 = true;
+    const chamaVolta = !!player.dom && !player.runes.includes("fogo");
+    if (chamaVolta) player.runes.push("fogo");
     queueMoral("farol");
     game.flash = 1;
     playSound(523, 0.4, "sine");
@@ -3086,6 +3088,9 @@ function storyBuilding(b) {
       ["Vesper (eco)", "Eu peço que a Canção nunca acabe. E que a gente nunca brigue."],
       ["Odelia (eco)", "Bobo. Irmãos brigam. Depois fazem as pazes. É a regra."],
       ["", "As figuras se desfazem. Eram crianças. Eram Odelia e Vesper, há trezentos anos."],
+      ...(chamaVolta
+        ? [["", "A chama da lanterna desce pelos degraus e entra no seu peito. Vesper escondeu uma runa no farol que ele amava. A Runa da Chama voltou!"]]
+        : []),
       ["Capitão Bento", "Viu? Meu avô dizia que o farol lembra de tudo que viu. Tome, isto estava guardado lá em cima."],
       ["", chapterReward(70, 80, "amu2") + " Capítulo do Porto concluído!"],
     ]);

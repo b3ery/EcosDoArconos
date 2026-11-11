@@ -2436,7 +2436,8 @@ function interactAt(x, y) {
     say([
       [
         "",
-        `Uma barreira de silêncio bloqueia o sul. Só as quatro runas juntas podem rompê-la. (${player.runes.length}/4)`,
+        `Uma barreira de silêncio bloqueia o sul. Só as quatro runas juntas podem rompê-la. (${player.runes.length}/4)` +
+          (player.dom && !player.runes.includes("fogo") ? " Dizem que uma delas dorme no Farol de Brisamar." : ""),
       ],
     ]);
   }

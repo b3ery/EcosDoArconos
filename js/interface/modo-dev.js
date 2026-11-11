@@ -61,7 +61,8 @@ function devDoStep(s) {
   const n = guardiansFreed();
   const want = player.order.slice(0, Math.min(4, n + 1));
   if (n >= 4) want.push(...ORDER.filter((r) => !want.includes(r)).slice(0, n - 3));
-  player.runes = [...new Set([...player.runes, ...want])];
+  player.runes = [...new Set([...player.runes, ...want])].filter((r) => !isDom(r));
+  if (player.dom && F.porto2 && !player.runes.includes("fogo")) player.runes.push("fogo");
 }
 /** Pula para a etapa i: tudo antes dela fica feito. */
 function devJumpTo(i) {

@@ -4145,7 +4145,7 @@ const NPCS = {
       const o = player.order;
       const L = {
         1: [
-          `O Bosque Murmurante fica a oeste. A Runa ${RUNE_OF[o[1]]} dorme com o Ent Guardião, e ele teme ${RUNE_WITH_ARTICLE[o[0]]}, a runa que vive em você.`,
+          `O Bosque Murmurante fica a oeste. A Runa ${RUNE_OF[o[1]]} dorme com o Ent Guardião, e ele teme ${RUNE_WITH_ARTICLE[o[0]]}, ${player.dom ? "o dom" : "a runa"} que vive em você.`,
           "Antes de partir: treine com o Instrutor Kael, compre comida e água no mercado e volte para casa quando escurecer. A noite é perigosa.",
           "E procure o Professor Bruno Honda, ao lado da fonte. Ele é o único que ainda lê a escrita antiga de Vesper.",
         ],
@@ -4173,7 +4173,7 @@ const NPCS = {
           ["Arquimaga Odelia", "Ainda dá tempo de escolher outro caminho. Os próximos Guardiões podem ser libertados."],
         ];
       }
-      if (player.flags.flash && player.runes.length === 4)
+      if (player.flags.flash && odeliaStage() === 4)
         return [
           ["Arquimaga Odelia", "Então você viu o eco. Sim... Vesper é meu irmão."],
           [
@@ -4185,7 +4185,7 @@ const NPCS = {
             "Sua missão nunca foi destruí-lo, aprendiz. É libertá-lo da prisão que ele mesmo criou.",
           ],
         ];
-      return L[player.runes.length].map((t) => ["Arquimaga Odelia", t]);
+      return (L[odeliaStage()] || L[4]).map((t) => ["Arquimaga Odelia", t]);
     },
   },
   bruno: {
@@ -4688,7 +4688,7 @@ const NPCS = {
         ],
         [
           "Professora Selene",
-          `Os livros espalhados pelas salas ainda guardam feitiços. Os Tomos ${RUNE_OF[player.aff]} vão ensinar a magia do seu elemento.`,
+          `Os livros espalhados pelas salas ainda guardam feitiços. Os Tomos ${RUNE_OF[player.aff]} vão ensinar a magia do seu ${player.dom ? "dom" : "elemento"}.`,
         ],
         [
           "Professora Selene",

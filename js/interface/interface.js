@@ -338,7 +338,7 @@ const STEPS = [
     pos: () => ZONES.bosque.guardPos,
     lvl: 3,
     get d() {
-      return `O Guardião está no extremo oeste do Bosque Murmurante. Ele é fraco contra ${RUNE_WITH_ARTICLE[player.order[0]]}, a sua runa: use um feitiço duplo dela.`;
+      return `O Guardião está no extremo oeste do Bosque Murmurante. Ele é fraco contra ${RUNE_WITH_ARTICLE[player.order[0]]}, ${player.dom ? "o seu dom: use o golpe duplo dele" : "a sua runa: use um feitiço duplo dela"}.`;
     },
     done: () => player.guards.includes("bosque"),
   },
@@ -652,7 +652,7 @@ function openQuests() {
   <div class="qs ${player.spells.length === 14 ? "done" : ""}">Grimório completo: ${player.spells.length}/14 magias<div class="qtip">Teste combinações de duas runas na batalha. Cada combinação nova é uma magia recuperada.</div></div>
   ${urgent() ? `<div class="qs cur" style="color:#ff8a8a"> <b style="color:#ff8a8a">${urgent().t}</b><div class="qd">${urgent().d}</div></div>` : ""}
   <div class="qs">Tesouros: ${player.taken.length}/${totalC} baús abertos<div class="qtip">Baús azuis são raros e baús dourados brilhantes são LENDÁRIOS, com os itens mais fortes do jogo.</div></div>
-  <div class="qs ${player.tomes.length >= 3 ? "done" : ""}">Antiga Academia Arcana: ${player.tomes.length}/3 tomos do seu elemento<div class="qtip">A entrada fica no noroeste da vila (arco roxo). Os tomos ensinam feitiços novos de ${RUNES[player.aff].nome}.</div></div>
+  <div class="qs ${player.tomes.length >= 3 ? "done" : ""}">Antiga Academia Arcana: ${player.tomes.length}/3 tomos do seu ${player.dom ? "dom" : "elemento"}<div class="qtip">A entrada fica no noroeste da vila (arco roxo). Os tomos ensinam feitiços novos de ${RUNES[player.aff].nome}.</div></div>
   <div class="qs">Amizades: ${Object.keys(FRIENDS).filter((id) => friendshipLevel(id) >= 3).length} melhores amigos<div class="qtip">Converse, dê presentes e trabalhe com os moradores. Veja tudo em I → Amizades.</div></div>
   <div class="qs ${(player.ecos || []).length >= 5 ? "done" : ""}">Ecos Corrompidos libertados: ${(player.ecos || []).length}/5<div class="qtip">Monstros gigantes com aura roxa e  guardam magia presa: Lobo Alfa (Bosque), Hidra (Pântano), Roc (Picos), Quimera (Academia) e Colosso (Torre). Cada um dá um Selo da Canção com bônus permanentes.</div></div>
   <div class="qs ${player.visited.includes("porto") && player.visited.includes("serra") ? "done" : ""}">Vilas vizinhas: ${["porto", "serra"].filter((z) => player.visited.includes(z)).length}/2 visitadas<div class="qtip">Use as placas de estrada (amarelas no mapa) ou o Estábulo: a carruagem leva a Porto Brisamar (litoral) e Pedravale (serra). A primeira viagem é grátis!</div></div>

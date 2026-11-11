@@ -703,7 +703,7 @@ function renderInv() {
     h += `<div class="qtip">Habilidades são usadas na batalha pelo botão Habilidades. Sua afinidade: <b style="color:${RUNES[player.aff].cor}">${RUNES[player.aff].nome}</b>.</div>`;
     for (const id in SKILLS) {
       const k = SKILLS[id];
-      if (k.el && k.el !== player.aff) continue;
+      if (!skillShown(k)) continue;
       const u = skillUnlocked(id);
       if (k.tome && !u) {
         h += `<div class="irow"><div><div class="nm" style="color:#6d6188">??? (Tomo ${["I", "II", "III"][k.tome - 1]})</div><div class="ds">Encontre este tomo na Antiga Academia Arcana.</div></div><span class="pr">Escola</span></div>`;

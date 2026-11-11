@@ -473,7 +473,7 @@ function renderSkillPanel() {
     .forEach((btn) => (btn.onclick = () => useSkill(btn.dataset.sk)));
 }
 function renderRunePanel() {
-  byId("rbtns").innerHTML = player.runes
+  byId("rbtns").innerHTML = castList()
     .map((rune, i) => {
       const sealed = !!battle.sealed[rune];
       const picked = battle.sel.filter((r) => r === rune).length;
@@ -930,14 +930,14 @@ function useUltimate() {
   battle.busy = true;
   battle.res = 0;
   const ec = enemyCenter();
-  const power = 22 * player.runes.length * levelScale() * dmgMul(player.runes) * randomBetween(0.95, 1.05);
+  const power = 22 * Math.max(1, castList().length) * levelScale() * dmgMul(castList()) * randomBetween(0.95, 1.05);
   const dmg = Math.max(1, Math.round(power));
   battle.e.hp -= dmg;
   battle.eshake = 0.5;
   game.shake = 0.3;
   const heal = Math.round(maxHp() * 0.15);
   healPlayer(heal);
-  player.runes.forEach((r, i) =>
+  castList().forEach((r, i) =>
     setTimeout(() => burst(ec.x, ec.y, [RUNES[r].cor, "#fff"], 30, 200), i * 90),
   );
   floatText(ec.x, ec.y - 40, String(dmg), "#ffe066");
@@ -1015,13 +1015,13 @@ function tomeSkill(skill) {
 /** Drenar e Eco Arcano: dano direto. */
 function directDamageSkill(id) {
   const isEcho = id === "eco";
-  const base = isEcho ? 14 * player.runes.length : 20;
-  const bonus = dmgMul(isEcho ? player.runes : []);
+  const base = isEcho ? 14 * Math.max(1, castList().length) : 20;
+  const bonus = dmgMul(isEcho ? castList() : []);
   const dmg = Math.max(1, Math.round(base * levelScale() * bonus * randomBetween(0.9, 1.1)));
   damageEnemy(dmg);
   battle.eshake = 0.3;
   const ec = enemyCenter();
-  const colors = isEcho ? player.runes.map((r) => RUNES[r].cor) : ["#c77dff", COLORS.HEAL];
+  const colors = isEcho ? castList().map((r) => RUNES[r].cor) : ["#c77dff", COLORS.HEAL];
   burst(ec.x, ec.y, colors, 30, 150);
   let text = ` ${dmg} de dano.`;
   if (!isEcho) {
