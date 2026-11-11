@@ -1,9 +1,9 @@
 /**
  * ECOS DO ARCANO — dons.js
- * Os Dons: o poder com que o aprendiz começa.
+ * Os Dons: o elemento com que o aprendiz começa (Raio, Gelo, Metal ou Veneno).
  *
  * As seis runas foram roubadas pelo Silêncio, então não faz sentido o jogador
- * já começar com uma delas. Na criação ele escolhe um DOM, um poder próprio
+ * já começar com uma delas. Na criação ele escolhe um DOM, um elemento próprio
  * que não é runa. No começo da aventura o dom é a única magia que ele tem;
  * cada runa recuperada dos Guardiões soma novos feitiços (e combinações com
  * o dom) e libera a habilidade daquela runa.
@@ -17,62 +17,64 @@
 "use strict";
 
 const DONS = {
-  canto: {
-    nome: "Canto",
-    t: "Canto Arcano",
-    cor: "#ff8ad0",
-    art: "o Canto",
-    de: "do Canto",
-    d: "Sua voz vira magia. Ondas de som cortam, atordoam e cegam os inimigos.",
-    combo: "Canção",
-    s1: { nome: "Nota Aguda", pow: 9, mp: 0, lore: "A primeira nota. Onde o Silêncio cai, alguém ainda precisa cantar." },
-    s2: { nome: "Grito Ressonante", pow: 20, blind: 2, mp: 7, lore: "Uma voz forte o bastante faz até a pedra lembrar que tem eco." },
-    sk: "hino",
-    icon: { fill: "M10 3l10-2v13.5a3.5 3.5 0 1 1-2-3.1V5.4l-6 1.2v10.9a3.5 3.5 0 1 1-2-3.1Z" },
+  raio: {
+    nome: "Raio",
+    t: "Raio",
+    cor: "#ffd23f",
+    art: "o Raio",
+    de: "do Raio",
+    d: "A eletricidade das tempestades. Golpes rápidos que acertam várias vezes.",
+    combo: "Raio",
+    s1: { nome: "Choque", pow: 9, mp: 0, lore: "Um estalo na ponta dos dedos. O céu também começou assim." },
+    s2: { nome: "Relâmpago Duplo", pow: 12, hits: 2, mp: 8, lore: "O raio nunca cai duas vezes no mesmo lugar. A não ser que você mande." },
+    sk: "sobrecarga",
+    tomes: ["trovao", "clarao", "furiaCeus"],
+    icon: { fill: "M13 2 4 14h6l-1 8 9-12h-6l1-8Z" },
   },
-  mente: {
-    nome: "Mente",
-    t: "Mente Desperta",
-    cor: "#8fa8ff",
-    art: "a Mente",
-    de: "da Mente",
-    d: "Telecinese e intuição. Você empurra, esmaga e adivinha o próximo golpe.",
-    combo: "Visão",
-    s1: { nome: "Empurrão Mental", pow: 9, mp: 0, lore: "Pensar com força é o primeiro feitiço que nenhuma runa ensina." },
-    s2: { nome: "Esmagar Mental", pow: 22, weaken: 2, mp: 7, lore: "A dúvida pesa mais do que qualquer rocha." },
-    sk: "previsao",
+  gelo: {
+    nome: "Gelo",
+    t: "Gelo",
+    cor: "#aee8ff",
+    art: "o Gelo",
+    de: "do Gelo",
+    d: "O frio que para tudo. Congela os inimigos e confunde os ataques deles.",
+    combo: "Geada",
+    s1: { nome: "Estilhaço de Gelo", pow: 9, mp: 0, lore: "Uma lasca de inverno, afiada como a primeira manhã de neve." },
+    s2: { nome: "Nevasca", pow: 18, freeze: 1, mp: 8, lore: "Quando o vento esquece de soprar, o frio toma conta." },
+    sk: "espelho",
+    tomes: ["lancaG", "geada", "zero"],
+    icon: { stroke: true, fill: "M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 3.5l3 2 3-2M9 20.5l3-2 3 2" },
+  },
+  metal: {
+    nome: "Metal",
+    t: "Metal",
+    cor: "#b8c4d0",
+    art: "o Metal",
+    de: "do Metal",
+    d: "Ferro e aço obedecem a você. Golpes pesados que quebram defesas e uma pele de ferro.",
+    combo: "Lâmina",
+    s1: { nome: "Lâmina de Aço", pow: 9, mp: 0, lore: "Todo ferreiro sabe: o metal lembra de cada martelada." },
+    s2: { nome: "Martelo de Ferro", pow: 22, weaken: 2, mp: 7, lore: "Nada fica de pé depois que o ferro decide cair." },
+    sk: "peleFerro",
+    tomes: ["lanca", "correntes", "forja"],
+    icon: { fill: "M3 7h14l4 3h-6v3c0 2 2 3 4 3v3H5v-3c2 0 4-1 4-3v-3H3Z" },
+  },
+  veneno: {
+    nome: "Veneno",
+    t: "Veneno",
+    cor: "#9be35a",
+    art: "o Veneno",
+    de: "do Veneno",
+    d: "Toxinas da floresta e dos pântanos. Envenena, rouba a vida e enfraquece o inimigo.",
+    combo: "Peçonha",
+    s1: { nome: "Dardo Tóxico", pow: 8, drain: true, mp: 0, lore: "Uma gota basta. A paciência faz o resto." },
+    s2: { nome: "Nuvem Venenosa", pow: 18, drain: true, mp: 7, lore: "O pântano ensinou: quem respira a névoa errada não respira mais." },
+    sk: "antidoto",
+    tomes: ["vibora", "miasma", "peste"],
     icon: {
-      fill: "M2 12C5 6 9 4 12 4s7 2 10 8c-3 6-7 8-10 8s-7-2-10-8Z",
-      detail: "M12 8a4 4 0 1 0 .01 0Z",
+      fill: "M12 2c3 5 7 9 7 13a7 7 0 0 1-14 0c0-4 4-8 7-13Z",
+      detail: "M10 12.5a1.5 1.5 0 1 0 .01 0ZM14 16a1.2 1.2 0 1 0 .01 0Z",
     },
-  },
-  fera: {
-    nome: "Fera",
-    t: "Espírito da Fera",
-    cor: "#e0665a",
-    art: "a Fera",
-    de: "da Fera",
-    d: "Um espírito animal luta ao seu lado. Garras rápidas, golpes múltiplos e couro duro.",
-    combo: "Fúria",
-    s1: { nome: "Garra Espiritual", pow: 9, mp: 0, lore: "O lobo que mora em você nunca dormiu, nem no Silêncio." },
-    s2: { nome: "Investida da Matilha", pow: 13, hits: 2, mp: 8, lore: "Quem luta com a matilha nunca luta sozinho." },
-    sk: "couro",
-    icon: {
-      fill: "M12 11c3 0 6 3.5 6 6.5 0 2-1.6 3-3 3-1.2 0-2-.6-3-.6s-1.8.6-3 .6c-1.4 0-3-1-3-3 0-3 3-6.5 6-6.5ZM5.5 6a2 2.5 0 1 0 .01 0ZM18.5 6a2 2.5 0 1 0 .01 0ZM9 2.2a2 2.6 0 1 0 .01 0ZM15 2.2a2 2.6 0 1 0 .01 0Z",
-    },
-  },
-  vida: {
-    nome: "Pulso Vital",
-    t: "Pulso Vital",
-    cor: "#7be36b",
-    art: "o Pulso Vital",
-    de: "do Pulso Vital",
-    d: "A força da própria vida. Golpes que roubam vigor e curas poderosas.",
-    combo: "Seiva",
-    s1: { nome: "Toque Vital", pow: 8, drain: true, mp: 0, lore: "Toda vida pulsa. Basta encostar para sentir, e para tomar." },
-    s2: { nome: "Onda de Vigor", pow: 18, drain: true, mp: 7, lore: "O coração bate duas vezes, e o inimigo sente as duas." },
-    sk: "renovar",
-    icon: { fill: "M12 21C5 15 2 12 2 8a5 5 0 0 1 10-1 5 5 0 0 1 10 1c0 4-3 7-10 13Z" },
   },
 };
 const DOM_IDS = Object.keys(DONS);
@@ -89,31 +91,65 @@ for (const id of DOM_IDS) {
 
 /* ---- habilidades e tomos de cada dom ---- */
 Object.assign(SKILLS, {
-  hino: { nome: "Hino de Coragem", el: "canto", mp: 8, cd: 4, desc: "Seus próximos 2 feitiços causam +80% de dano." },
-  previsao: { nome: "Previsão", el: "mente", mp: 8, cd: 4, desc: "Você esquiva dos próximos 2 ataques." },
-  couro: { nome: "Couro de Urso", el: "fera", mp: 8, cd: 4, desc: "Por 2 turnos, -70% de dano recebido e reflete 25%." },
-  renovar: { nome: "Renovação", el: "vida", mp: 10, cd: 4, desc: "Cura 15% do HP agora e por 3 turnos. Remove veneno." },
+  sobrecarga: { nome: "Sobrecarga", el: "raio", mp: 8, cd: 4, desc: "Seus próximos 2 feitiços causam +80% de dano." },
+  espelho: { nome: "Espelho de Gelo", el: "gelo", mp: 8, cd: 4, desc: "Reflexos de gelo te escondem: você esquiva dos próximos 2 ataques." },
+  peleFerro: { nome: "Pele de Ferro", el: "metal", mp: 8, cd: 4, desc: "Por 2 turnos, -70% de dano recebido e reflete 25%." },
+  antidoto: { nome: "Antídoto", el: "veneno", mp: 10, cd: 4, desc: "Cura 15% do HP agora e por 3 turnos. Remove veneno." },
 
-  acorde: { nome: "Acorde Cortante", tome: 1, el: "canto", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Canto." },
-  ninar: { nome: "Canção de Ninar", tome: 2, el: "canto", mp: 12, cd: 3, pow: 14, blind: 3, weaken: 2, desc: "Dano, cega e enfraquece." },
-  sinfonia: { nome: "Sinfonia Final", tome: 3, el: "canto", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
+  trovao: { nome: "Trovão", tome: 1, el: "raio", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Raio." },
+  clarao: { nome: "Clarão Elétrico", tome: 2, el: "raio", mp: 12, cd: 3, pow: 14, blind: 3, weaken: 2, desc: "Dano, cega e enfraquece." },
+  furiaCeus: { nome: "Fúria dos Céus", tome: 3, el: "raio", mp: 20, cd: 4, pow: 19, hits: 3, desc: "Três raios fortes seguidos." },
 
-  lancaM: { nome: "Lança Psíquica", tome: 1, el: "mente", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Mente." },
-  ilusao: { nome: "Ilusão", tome: 2, el: "mente", mp: 12, cd: 3, pow: 14, blind: 3, weaken: 2, desc: "Dano, cega e enfraquece." },
-  colapso: { nome: "Colapso Mental", tome: 3, el: "mente", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
+  lancaG: { nome: "Lança de Gelo", tome: 1, el: "gelo", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Gelo." },
+  geada: { nome: "Geada Profunda", tome: 2, el: "gelo", mp: 12, cd: 3, pow: 14, weaken: 3, blind: 2, desc: "Dano, enfraquece e cega." },
+  zero: { nome: "Zero Absoluto", tome: 3, el: "gelo", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
 
-  mordida: { nome: "Mordida do Lobo", tome: 1, el: "fera", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Fera." },
-  rugido: { nome: "Rugido", tome: 2, el: "fera", mp: 12, cd: 3, pow: 14, weaken: 3, desc: "Dano e enfraquece por 3 turnos." },
-  manada: { nome: "Estouro da Manada", tome: 3, el: "fera", mp: 20, cd: 4, pow: 19, hits: 3, desc: "Três golpes fortes seguidos." },
+  lanca: { nome: "Lança de Ferro", tome: 1, el: "metal", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Metal." },
+  correntes: { nome: "Correntes", tome: 2, el: "metal", mp: 12, cd: 3, pow: 14, weaken: 3, desc: "Dano e prende o inimigo, que bate mais fraco por 3 turnos." },
+  forja: { nome: "Coração da Forja", tome: 3, el: "metal", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
 
-  espinho: { nome: "Espinho Vital", tome: 1, el: "vida", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Pulso Vital." },
-  bencaoV: { nome: "Bênção da Vida", tome: 2, el: "vida", mp: 16, cd: 4, heal: 0.5, desc: "Cura 50% do HP e regenera por 3 turnos." },
-  florescer: { nome: "Florescer Eterno", tome: 3, el: "vida", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
+  vibora: { nome: "Picada da Víbora", tome: 1, el: "veneno", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Veneno." },
+  miasma: { nome: "Miasma", tome: 2, el: "veneno", mp: 12, cd: 3, pow: 14, blind: 3, weaken: 2, desc: "Dano, cega e enfraquece." },
+  peste: { nome: "Peste", tome: 3, el: "veneno", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
 });
-SKILL_EFFECTS.hino = SKILL_EFFECTS.furia;
-SKILL_EFFECTS.previsao = SKILL_EFFECTS.passo;
-SKILL_EFFECTS.couro = SKILL_EFFECTS.rocha;
-SKILL_EFFECTS.renovar = SKILL_EFFECTS.mare;
+SKILL_EFFECTS.sobrecarga = SKILL_EFFECTS.furia;
+SKILL_EFFECTS.espelho = SKILL_EFFECTS.passo;
+SKILL_EFFECTS.peleFerro = SKILL_EFFECTS.rocha;
+SKILL_EFFECTS.antidoto = SKILL_EFFECTS.mare;
+
+/* ---- o clima também mexe com os dons ---- */
+Object.assign(WEATHER.tempestade.mul, { raio: 1.25 });
+Object.assign(WEATHER.chuva.mul, { raio: 1.1, metal: 0.9 });
+Object.assign(WEATHER.neve.mul, { gelo: 1.25, veneno: 0.9 });
+Object.assign(WEATHER.sol.mul, { gelo: 0.85 });
+Object.assign(WEATHER.neblina.mul, { veneno: 1.15 });
+WEATHER.tempestade.fx += " Raio +25%.";
+WEATHER.chuva.fx += " Raio +10% e Metal −10%.";
+WEATHER.neve.fx += " Gelo +25% e Veneno −10%.";
+WEATHER.sol.fx += " Gelo −15%.";
+WEATHER.neblina.fx += " Veneno +15%.";
+
+/* ---- quem escolheu um dom da primeira versão (Canto, Mente, Fera, Pulso Vital) ---- */
+const OLD_DOM = { canto: "metal", mente: "gelo", fera: "raio", vida: "veneno" };
+const OLD_TOME = { acorde: 1, ninar: 2, sinfonia: 3, lancaM: 1, ilusao: 2, colapso: 3, mordida: 1, rugido: 2, manada: 3, espinho: 1, bencaoV: 2, florescer: 3 };
+function migrateOldDom() {
+  const old = player && player.dom;
+  if (!old || !OLD_DOM[old]) return;
+  const nw = OLD_DOM[old];
+  player.dom = nw;
+  if (player.aff === old) player.aff = nw;
+  if (player.order && player.order[0] === old) player.order[0] = nw;
+  player.spells = (player.spells || []).map((k) => {
+    const parts = k.split("+").map((r) => (r === old ? nw : r));
+    return parts.length > 1 ? spellKey(parts) : parts[0];
+  });
+  if (player.mastery) for (const k of Object.keys(player.mastery)) if (k.split("+").includes(old)) {
+    const nk = spellKey(k.split("+").map((r) => (r === old ? nw : r)));
+    player.mastery[nk] = player.mastery[k];
+    delete player.mastery[k];
+  }
+  player.tomes = (player.tomes || []).map((t) => (OLD_TOME[t] ? DONS[nw].tomes[OLD_TOME[t] - 1] : t));
+}
 
 /* ---- feitiços do dom (o dom sozinho, duplo e combinado com cada runa) ---- */
 const DOM_COMBO_FX = {
@@ -206,6 +242,7 @@ showChoose = function () {
 (() => {
   const baseStart = startGame;
   startGame = function () {
+    migrateOldDom();
     installDom(player && player.dom);
     return baseStart.apply(this, arguments);
   };
