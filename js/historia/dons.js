@@ -1,6 +1,6 @@
 /**
  * ECOS DO ARCANO — dons.js
- * Os Dons: o elemento com que o aprendiz começa (Raio, Gelo, Metal ou Veneno).
+ * Os Dons: o elemento com que o aprendiz começa (Lava, Gelo, Raio, Metal, Cristal ou Veneno).
  *
  * As seis runas foram roubadas pelo Silêncio, então não faz sentido o jogador
  * já começar com uma delas. Na criação ele escolhe um DOM, um elemento próprio
@@ -18,6 +18,7 @@
 
 const DONS = {
   raio: {
+    rune: "ar",
     nome: "Raio",
     t: "Raio",
     cor: "#ffd23f",
@@ -32,6 +33,7 @@ const DONS = {
     icon: { fill: "M13 2 4 14h6l-1 8 9-12h-6l1-8Z" },
   },
   gelo: {
+    rune: "agua",
     nome: "Gelo",
     t: "Gelo",
     cor: "#aee8ff",
@@ -46,6 +48,7 @@ const DONS = {
     icon: { stroke: true, fill: "M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 3.5l3 2 3-2M9 20.5l3-2 3 2" },
   },
   metal: {
+    rune: "terra",
     nome: "Metal",
     t: "Metal",
     cor: "#b8c4d0",
@@ -60,9 +63,10 @@ const DONS = {
     icon: { fill: "M3 7h14l4 3h-6v3c0 2 2 3 4 3v3H5v-3c2 0 4-1 4-3v-3H3Z" },
   },
   veneno: {
+    rune: "sombra",
     nome: "Veneno",
     t: "Veneno",
-    cor: "#9be35a",
+    cor: "#c3e83a",
     art: "o Veneno",
     de: "do Veneno",
     d: "Toxinas da floresta e dos pântanos. Envenena, rouba a vida e enfraquece o inimigo.",
@@ -77,7 +81,54 @@ const DONS = {
     },
   },
 };
-const DOM_IDS = Object.keys(DONS);
+Object.assign(DONS, {
+  lava: {
+    rune: "fogo",
+    nome: "Lava",
+    t: "Lava",
+    cor: "#ff4f2e",
+    art: "a Lava",
+    de: "da Lava",
+    d: "O fogo que dorme debaixo da terra. Queima devagar e derrete qualquer defesa.",
+    combo: "Magma",
+    s1: { nome: "Gota de Magma", pow: 9, burn: 2, mp: 0, lore: "Uma gota que ainda lembra do coração do vulcão." },
+    s2: { nome: "Erupção", pow: 20, burn: 3, mp: 8, lore: "A montanha guarda a raiva por séculos. Depois devolve toda de uma vez." },
+    sk: "brasa",
+    tomes: ["rocha_derretida", "cinzas", "vulcao"],
+    icon: { fill: "M3 21l5-9 3 4 4-8 6 13Z", detail: "M15 8c0-2 1-3 2-4 0 1.5-1 2.5-2 4Z" },
+  },
+  cristal: {
+    rune: "luz",
+    nome: "Cristal",
+    t: "Cristal",
+    cor: "#ff9ee6",
+    art: "o Cristal",
+    de: "do Cristal",
+    d: "Cristais que refletem e ofuscam. Cega os inimigos e cria barreiras de prisma.",
+    combo: "Prisma",
+    s1: { nome: "Lasca de Cristal", pow: 9, mp: 0, lore: "Dentro de cada cristal dorme uma luz que ninguém acendeu." },
+    s2: { nome: "Prisma Ofuscante", pow: 18, blind: 2, mp: 7, lore: "Mil reflexos, e só um deles é você." },
+    sk: "refracao",
+    tomes: ["lancaC", "prisaoC", "supernova"],
+    icon: { fill: "M12 2l6 7-6 13-6-13Z", detail: "M12 2 10 9h4Z" },
+  },
+});
+// na mesma ordem das runas de que nasceram: Chama, Maré, Vento, Terra, Luz, Sombra
+const DOM_IDS = ["lava", "gelo", "raio", "metal", "cristal", "veneno"];
+/** O feitiço que nasce quando o dom reencontra a runa de origem. */
+const DOM_FUSION = {
+  lava: { nome: "Coração do Vulcão", lore: "A Chama voltou para casa, e a montanha inteira acordou com ela." },
+  gelo: { nome: "Inverno Eterno", lore: "A Maré lembrou que o gelo também é água, só que com paciência." },
+  raio: { nome: "Tempestade Viva", lore: "O Vento trouxe as nuvens. O Raio só precisava disso." },
+  metal: { nome: "Gigante de Ferro", lore: "Todo metal nasceu dentro da Terra. Juntos, eles ficam de pé." },
+  cristal: { nome: "Prisma Solar", lore: "A Luz entra no cristal sozinha e sai como mil feixes." },
+  veneno: { nome: "Praga Noturna", lore: "A Sombra esconde, o Veneno espera. A noite é dos dois." },
+};
+/** O dom já reencontrou a runa de que nasceu? */
+function domAwake() {
+  const d = player && player.dom && DONS[player.dom];
+  return !!(d && player.runes.includes(d.rune));
+}
 const isDom = (id) => !!DONS[id];
 
 /* ---- os dons entram nas mesmas tabelas das runas (nome, cor, ícone) ---- */
@@ -112,6 +163,25 @@ Object.assign(SKILLS, {
   miasma: { nome: "Miasma", tome: 2, el: "veneno", mp: 12, cd: 3, pow: 14, blind: 3, weaken: 2, desc: "Dano, cega e enfraquece." },
   peste: { nome: "Peste", tome: 3, el: "veneno", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
 });
+Object.assign(SKILLS, {
+  brasa: { nome: "Coração em Brasa", el: "lava", mp: 8, cd: 4, desc: "Seus próximos 2 feitiços causam +80% de dano." },
+  refracao: { nome: "Refração", el: "cristal", mp: 8, cd: 4, desc: "Escudo de prisma por 2 turnos e esquiva do próximo ataque." },
+
+  rocha_derretida: { nome: "Rocha Derretida", tome: 1, el: "lava", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Lava." },
+  cinzas: { nome: "Nuvem de Cinzas", tome: 2, el: "lava", mp: 12, cd: 3, pow: 12, burn: 4, blind: 2, desc: "Dano, queima e cega." },
+  vulcao: { nome: "Vulcão", tome: 3, el: "lava", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
+
+  lancaC: { nome: "Lança de Cristal", tome: 1, el: "cristal", mp: 12, cd: 1, pow: 30, desc: "Dano forte de Cristal." },
+  prisaoC: { nome: "Prisão de Cristal", tome: 2, el: "cristal", mp: 12, cd: 3, pow: 12, weaken: 3, blind: 2, desc: "Dano, prende e cega." },
+  supernova: { nome: "Supernova Prismática", tome: 3, el: "cristal", mp: 20, cd: 4, pow: 55, pierce: true, desc: "Dano enorme que ignora resistências." },
+});
+SKILL_EFFECTS.brasa = SKILL_EFFECTS.furia;
+SKILL_EFFECTS.refracao = function () {
+  battle.shield = Math.max(battle.shield || 0, 2);
+  battle.dodge = Math.max(battle.dodge || 0, 1);
+  burstOnPlayer(["#ff9ee6", "#fff"], 30, 110);
+  return " Um prisma de cristal te protege e confunde o inimigo.";
+};
 SKILL_EFFECTS.sobrecarga = SKILL_EFFECTS.furia;
 SKILL_EFFECTS.espelho = SKILL_EFFECTS.passo;
 SKILL_EFFECTS.peleFerro = SKILL_EFFECTS.rocha;
@@ -123,10 +193,15 @@ Object.assign(WEATHER.chuva.mul, { raio: 1.1, metal: 0.9 });
 Object.assign(WEATHER.neve.mul, { gelo: 1.25, veneno: 0.9 });
 Object.assign(WEATHER.sol.mul, { gelo: 0.85 });
 Object.assign(WEATHER.neblina.mul, { veneno: 1.15 });
+Object.assign(WEATHER.chuva.mul, { lava: 0.85 });
+Object.assign(WEATHER.sol.mul, { lava: 1.1 });
+Object.assign(WEATHER.sol.mul, { cristal: 1.15 });
+Object.assign(WEATHER.nublado.mul, { cristal: 0.9 });
 WEATHER.tempestade.fx += " Raio +25%.";
-WEATHER.chuva.fx += " Raio +10% e Metal −10%.";
+WEATHER.chuva.fx += " Raio +10%, Metal −10% e Lava −15%.";
 WEATHER.neve.fx += " Gelo +25% e Veneno −10%.";
-WEATHER.sol.fx += " Gelo −15%.";
+WEATHER.sol.fx += " Cristal +15%, Lava +10% e Gelo −15%.";
+WEATHER.nublado.fx += " Cristal −10%.";
 WEATHER.neblina.fx += " Veneno +15%.";
 
 /* ---- quem escolheu um dom da primeira versão (Canto, Mente, Fera, Pulso Vital) ---- */
@@ -167,6 +242,10 @@ function installDom(id) {
   SPELLS[id] = Object.assign({ el: [id] }, d.s1);
   SPELLS[id + "+" + id] = Object.assign({ el: [id] }, d.s2);
   for (const r of ORDER) {
+    if (r === d.rune) {
+      SPELLS[spellKey([id, r])] = Object.assign({ el: [id, r], pow: 32, mp: 9 }, DOM_COMBO_FX[r], DOM_FUSION[id]);
+      continue;
+    }
     SPELLS[spellKey([id, r])] = Object.assign(
       {
         nome: `${d.combo} ${RUNE_OF[r]}`,
@@ -211,7 +290,7 @@ showChoose = function () {
   byId("cards").innerHTML = DOM_IDS.map((id, i) => {
       const d = DONS[id],
         k = SKILLS[d.sk];
-      return `<button class="card" data-r="${id}"><h4>${runeSVG(id, 22)}<span style="color:${d.cor}">${i + 1}. ${d.t}</span></h4><p>${d.d}</p><p>Habilidade: <b style="color:#fff">${k.nome}</b>. ${k.desc}</p></button>`;
+      return `<button class="card" data-r="${id}"><h4>${runeSVG(id, 22)}<span style="color:${d.cor}">${i + 1}. ${d.t}</span></h4><p>${d.d}</p><p style="color:${RUNES[d.rune].cor}">Nasceu da Runa ${RUNE_OF[d.rune]}: quando ela voltar, o seu dom desperta.</p><p>Habilidade: <b style="color:#fff">${k.nome}</b>. ${k.desc}</p></button>`;
     }).join("");
   byId("cards")
     .querySelectorAll(".card")
@@ -271,3 +350,26 @@ function odeliaStage() {
   const g = player.guards || [];
   return 1 + ["bosque", "pantano", "picos"].filter((z) => g.includes(z)).length;
 }
+
+/* ---- o dom desperta quando a runa de origem volta ---- */
+(() => {
+  const baseMul = dmgMul;
+  dmgMul = function (els) {
+    let m = baseMul.apply(this, arguments);
+    if (player.dom && els && els.includes(player.dom) && domAwake()) m *= 1.2;
+    return m;
+  };
+  const baseUpdate = update;
+  update = function () {
+    if (player && player.dom && player.flags && !player.flags.domAwake && domAwake() && game.mode === "world" && !game.dialog) {
+      player.flags.domAwake = true;
+      const d = DONS[player.dom];
+      say([
+        ["", `A Runa ${RUNE_OF[d.rune]} reconhece ${d.art} dentro de você: foi dela que o seu dom nasceu.`],
+        ["", `O seu dom DESPERTOU! Feitiços ${d.de} ficam 20% mais fortes, e ${RUNE_WITH_ARTICLE[d.rune]} com ${d.art} agora formam ${DOM_FUSION[player.dom].nome}.`],
+      ]);
+      saveGame();
+    }
+    return baseUpdate.apply(this, arguments);
+  };
+})();
