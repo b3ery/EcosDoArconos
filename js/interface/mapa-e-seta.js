@@ -260,7 +260,26 @@ function mapClick(e) {
 
 /* ===================== LIGAÇÕES ===================== */
 {
-  byId("cv").addEventListener("click", mapClick);
+  // Reage ao soltar o clique ou o dedo (no celular o "click" às vezes não chega).
+  // No celular, a camada do joystick fica por cima do canvas: aceita o toque nela também.
+  let down = null;
+  const onGame = (e) => e.target === byId("cv") || (e.target && e.target.id === "joyzone");
+  addEventListener("pointerdown", (e) => (down = onGame(e) ? [e.clientX, e.clientY] : null), true);
+  addEventListener("pointerup", (e) => {
+    if (!down || !onGame(e) || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 14) return (down = null);
+    down = null;
+    if (game.mode === "map") return mapClick(e);
+    // Clicar no minimapa do canto abre o mapa grande.
+    if (game.mode === "world" && !game.dialog && game.showMM !== false && ZONES[player.zone]) {
+      const z = ZONES[player.zone],
+        s = Math.min(96 / z.w, 72 / z.h),
+        ox = Math.round(viewWidth - 8 - z.w * s),
+        r = byId("cv").getBoundingClientRect();
+      const lx = ((e.clientX - r.left) / r.width) * viewWidth,
+        ly = ((e.clientY - r.top) / r.height) * 480;
+      if (lx >= ox - 4 && lx <= ox + z.w * s + 4 && ly >= 36 && ly <= 40 + z.h * s + 4) ((game.autoPath = null), openMap());
+    }
+  }, true);
   const cmBase = closeMap;
   closeMap = function () {
     hideMapInfo();
@@ -321,6 +340,37 @@ function mapClick(e) {
         x += widths[i];
       });
       ctx.restore();
+    }
+  };
+}
+
+/* ===================== OPÇÕES: CONTROLE ===================== */
+if (settings.control === undefined) settings.control = "teclado";
+{
+  const roBase = renderOptions;
+  renderOptions = function () {
+    roBase();
+    const box = byId("options");
+    if (!box || byId("optCtrl")) return;
+    const div = document.createElement("div");
+    div.id = "optCtrl";
+    const opt = (v, n) => `<button data-ctrl="${v}" class="${settings.control === v ? "on" : ""}">${n}</button>`;
+    div.innerHTML = `<h3>Como andar</h3><div class="juke">${opt("teclado", "Teclado / joystick")}${opt("clique", "Clicar no chão para andar")}</div><small>Escolha um. Com "Teclado", clicar no chão não move o personagem (clicar em pessoas continua abrindo o menu).</small>`;
+    (box.querySelector(".opt-body, .ov-body") || box).appendChild(div);
+    div.querySelectorAll("[data-ctrl]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          settings.control = b.dataset.ctrl;
+          saveSettings();
+          game.autoPath = null;
+          div.querySelectorAll("[data-ctrl]").forEach((x) => x.classList.toggle("on", x === b));
+        }),
+    );
+    if (!byId("ctrlCSS")) {
+      const st = document.createElement("style");
+      st.id = "ctrlCSS";
+      st.textContent = "#optCtrl .juke{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0} #optCtrl button.on{outline:2px solid var(--gold,#ffd34d)} #optCtrl small{opacity:.75}";
+      document.head.appendChild(st);
     }
   };
 }

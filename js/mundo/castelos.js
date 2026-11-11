@@ -44,6 +44,15 @@ function placeSeat(zone, b) {
     ])
       setZoneTile("porto", x, y, "T");
     placeSeat("porto", { x: 27, y: 26, w: 9, h: 3, door: [31], name: "Palácio das Marés", style: "palacio" });
+    // A ilha foi construída em cima do mar: os barcos que ficaram na areia vão para a água mais perto.
+    const water = (x, y) => P.map[y] && P.map[y][Math.round(x)] === "~";
+    P.town.boats = P.town.boats.map(([bx, by]) => {
+      if (water(bx, by)) return [bx, by];
+      for (let d = 1; d < 12; d++)
+        for (const [nx, ny] of [[bx - d, by], [bx + d, by], [bx, by + d], [bx - d, by + d], [bx + d, by + d]])
+          if (water(nx, ny) && water(nx + 1, ny) && !P.town.boats.some(([ox, oy]) => Math.abs(ox - nx) < 3 && oy === ny)) return [nx, ny];
+      return null;
+    }).filter(Boolean);
   }
   // Serra: terreno livre no canto de baixo à direita.
   const S = ZONES.serra;

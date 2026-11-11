@@ -182,6 +182,8 @@ function tapWalkTo(tx, ty) {
 }
 for (const el of [byId("joyzone"), byId("joy")]) el && el.addEventListener("pointerdown", () => (game.autoPath = null));
 byId("cv").addEventListener("click", (e) => {
+  // Só anda clicando se o jogador escolheu esse controle nas Opções.
+  if (settings.control !== "clique") return;
   if (game.mode !== "world" || game.dialog || !game.cam || game.fish) return;
   const r = byId("cv").getBoundingClientRect();
   const lx = ((e.clientX - r.left) / r.width) * viewWidth,

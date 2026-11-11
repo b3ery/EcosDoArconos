@@ -1095,7 +1095,7 @@ function initTownExtras() {
       },
       { kind: "umbrella", x: 49, y: 23, color: "#7ad36b" },
       { kind: "sandcastle", x: 57, y: 23, robe: "#f2c14e", hair: "#8a3a1a" },
-      { kind: "boat", x: 30, y: 30.3, v: -0.6 },
+      { kind: "boat", x: 50, y: 30.3, v: -0.6 },
     );
     for (let i = 0; i < 5; i++)
       actors.push({
@@ -1265,9 +1265,13 @@ function updateTownExtras(dt) {
       a.ry += (dy / dist) * step;
       a.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up";
     } else if (a.kind === "boat") {
-      a.x += a.v * dt;
-      if (a.x > 46) a.x = -4;
-      if (a.x < -4) a.x = 46;
+      // Só navega na água: chegou na areia (ou na ilha do palácio), dá meia-volta.
+      const nx = a.x + a.v * dt,
+        ahead = Math.round(nx + (a.v > 0 ? 1.6 : -1.6)),
+        row = Math.floor(a.y);
+      const sea = (x) => x >= 0 && x < ZONES.porto.w && tileAt("porto", x, row) === "~";
+      if (sea(ahead) && sea(Math.round(nx))) a.x = nx;
+      else a.v = -a.v;
     } else if (a.kind === "goat") {
       a.timer -= dt;
       if (a.timer <= 0) {
