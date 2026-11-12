@@ -290,7 +290,7 @@ showChoose = function () {
   byId("cards").innerHTML = DOM_IDS.map((id, i) => {
       const d = DONS[id],
         k = SKILLS[d.sk];
-      return `<button class="card" data-r="${id}"><h4>${runeSVG(id, 22)}<span style="color:${d.cor}">${i + 1}. ${d.t}</span></h4><p>${d.d}</p><p style="color:${RUNES[d.rune].cor}">Nasceu da Runa ${RUNE_OF[d.rune]}: quando ela voltar, o seu dom desperta.</p><p>Habilidade: <b style="color:#fff">${k.nome}</b>. ${k.desc}</p></button>`;
+      return `<button class="card" data-r="${id}"><h4>${runeSVG(id, 22)}<span style="color:${d.cor}">${i + 1}. ${d.t}</span></h4><p>${d.d}</p><p style="color:${RUNES[d.rune].cor}">Um fragmento da Runa ${RUNE_OF[d.rune]} ecoa neste dom. Quando você libertar essa runa, terá afinidade com ela.</p><p>Habilidade: <b style="color:#fff">${k.nome}</b>. ${k.desc}</p></button>`;
     }).join("");
   byId("cards")
     .querySelectorAll(".card")
@@ -335,7 +335,7 @@ showChoose = function () {
     if (player.dom && l[0])
       l[0] = [
         "Arquimaga Odelia",
-        `Acorde, ${player.name}. Eu sou Odelia. Quando o Silêncio caiu, eu resisti a ele, e ele me impediu de envelhecer. As seis runas se calaram... mas em você vive outro poder: ${RUNE_WITH_ARTICLE[player.dom]}. Por enquanto, é toda a magia que existe no mundo.`,
+        `Acorde, ${player.name}. Eu sou Odelia. Quando o Silêncio caiu, eu resisti a ele, e ele me impediu de envelhecer. As seis runas se calaram... mas um pedaço da Runa ${RUNE_OF[DONS[player.dom].rune]} ficou ecoando em você, e virou ${RUNE_WITH_ARTICLE[player.dom]}. Por enquanto, é toda a magia que existe no mundo. Quando você libertar a runa inteira, ela vai te reconhecer.`,
       ];
     return l;
   };
@@ -356,7 +356,11 @@ function odeliaStage() {
   const baseMul = dmgMul;
   dmgMul = function (els) {
     let m = baseMul.apply(this, arguments);
-    if (player.dom && els && els.includes(player.dom) && domAwake()) m *= 1.2;
+    if (player.dom && els && domAwake()) {
+      if (els.includes(player.dom)) m *= 1.2;
+      // afinidade: o fragmento reconhece a runa inteira
+      if (els.includes(DONS[player.dom].rune)) m *= 1.25;
+    }
     return m;
   };
   const baseUpdate = update;
@@ -365,11 +369,39 @@ function odeliaStage() {
       player.flags.domAwake = true;
       const d = DONS[player.dom];
       say([
-        ["", `A Runa ${RUNE_OF[d.rune]} reconhece ${d.art} dentro de você: foi dela que o seu dom nasceu.`],
-        ["", `O seu dom DESPERTOU! Feitiços ${d.de} ficam 20% mais fortes, e ${RUNE_WITH_ARTICLE[d.rune]} com ${d.art} agora formam ${DOM_FUSION[player.dom].nome}.`],
+        ["", `A Runa ${RUNE_OF[d.rune]} reconhece o pedaço dela que ecoava em você. O fragmento e a runa inteira se encontram.`],
+        ["", `O seu dom DESPERTOU! Você tem afinidade com a Runa ${RUNE_OF[d.rune]}: feitiços dela causam +25% de dano e custam menos mana. Feitiços ${d.de} ficam 20% mais fortes, e ${RUNE_WITH_ARTICLE[d.rune]} com ${d.art} formam ${DOM_FUSION[player.dom].nome}.`],
       ]);
       saveGame();
     }
     return baseUpdate.apply(this, arguments);
+  };
+})();
+
+/* ---- afinidade com a runa de origem: feitiços dela custam menos mana ---- */
+(() => {
+  const baseCost = spellCost;
+  spellCost = function (k) {
+    const c = baseCost.apply(this, arguments);
+    if (!c || !player.dom || !domAwake()) return c;
+    return k.split("+").includes(DONS[player.dom].rune) ? Math.max(1, Math.ceil(c * 0.75)) : c;
+  };
+})();
+
+/* ---- o Guardião que guarda a runa do seu fragmento sente o eco ---- */
+(() => {
+  const baseStart = startBattle;
+  startBattle = function (type) {
+    const r = baseStart.apply(this, arguments);
+    const B = battle,
+      d = player && player.dom && DONS[player.dom];
+    if (story() && d && B && B.e && B.e.boss && B.e.rune === d.rune && !player.runes.includes(d.rune)) {
+      B.e.weak = [...new Set([...(B.e.weak || []), player.dom])];
+      B.e.max = Math.round(B.e.max * 0.85);
+      B.e.hp = Math.min(B.e.hp, B.e.max);
+      B.echoFrag = true;
+      setTimeout(() => battle === B && battleLog(`✦ O fragmento da Runa ${RUNE_OF[d.rune]} ecoa dentro de você! ${B.e.nome} hesita, reconhecendo o pedaço que falta. (−15% de vida e fraco contra ${d.art})`), 3400);
+    }
+    return r;
   };
 })();
