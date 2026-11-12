@@ -87,7 +87,7 @@ canvas {
 }
 
 .ui {
-  font-size: clamp(13px, 2.7cqw, 24px);
+  font-size: calc(clamp(13px, 2.7cqw, 24px) * var(--fs, 1));
   color: var(--text);
   line-height: 1.1;
 }
@@ -1613,7 +1613,7 @@ body.mland #tgtpill {
     min-height: 2.1em;
   }
   .ui {
-    font-size: clamp(12px, 2.9cqw, 24px);
+    font-size: calc(clamp(12px, 2.9cqw, 24px) * var(--fs, 1));
   }
   #choice {
     width: min(94%, 28em);
@@ -1659,7 +1659,7 @@ body.fillw #screen {
 }
 
 body.fillw .ui {
-  font-size: clamp(12px, 1.5cqw, 21px);
+  font-size: calc(clamp(12px, 1.5cqw, 21px) * var(--fs, 1));
 }
 
 body.fillw #keys {
@@ -1696,7 +1696,7 @@ body.mland #screen {
 }
 
 body.mland .ui {
-  font-size: clamp(11px, 1.75cqw, 17px);
+  font-size: calc(clamp(11px, 1.75cqw, 17px) * var(--fs, 1));
 }
 
 body.mland #touch {
@@ -7059,11 +7059,12 @@ body.mland #dport {
 }
 
 /* Acessibilidade: letra maior */
-body.font-g :is(#dialog, #choice, #toast, #options, #inv, #quests, #shop, #coach, #hud, #jornal, #mortes, #arvore, #diariovida, #guide, #pie) {
-  font-size: 115%;
+/* Letra maior: multiplica o tamanho de cada tela (computador, celular deitado...). */
+body.font-g {
+  --fs: 1.15;
 }
-body.font-e :is(#dialog, #choice, #toast, #options, #inv, #quests, #shop, #coach, #hud, #jornal, #mortes, #arvore, #diariovida, #guide, #pie) {
-  font-size: 132%;
+body.font-e {
+  --fs: 1.32;
 }
 /* Modo calmo: sem tremer a interface */
 body.calm .shake,

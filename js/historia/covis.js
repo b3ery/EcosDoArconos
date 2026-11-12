@@ -131,7 +131,7 @@ const inRoomA = () => player.x < LAIR.door[0];
 const SIMON = { tree: [9, 5], seeds: [[5, 2], [13, 2], [5, 8], [13, 8]], cols: ["#7ad36b", "#f2c14e", "#ff8ab8", "#e8f0ff"], tone: [392, 494, 587, 698] };
 function simonPlay(L) {
   const S = lairState(L);
-  if (!S.seq) S.seq = Array.from({ length: 5 }, () => Math.floor(Math.random() * 4));
+  if (!S.seq) S.seq = Array.from({ length: 7 }, () => Math.floor(Math.random() * 4));
   S.pos = 0;
   game.simon = { t: 0, i: -1 };
 }
@@ -158,8 +158,8 @@ const blockAt = (S, x, y) => (S.blocks || []).findIndex((b) => b[0] === x && b[1
 const platesDone = (S) => PUSH.plates.every((p) => blockAt(S, p[0], p[1]) >= 0);
 
 /* ===================== 3. CORREDOR DOS VENTOS (Grifo) ===================== */
-const GUSTS = [5, 8, 11, 14, 17];
-const gustPhase = (i) => ((game.t + i * 0.55) % 2.4) / 2.4; // 0..1
+const GUSTS = [4, 6, 8, 10, 12, 14, 16];
+const gustPhase = (i) => ((game.t + i * 0.47) % 1.9) / 1.9; // 0..1
 const gustOn = (i) => gustPhase(i) > 0.55; // ~1,1 s de rajada
 const gustWarn = (i) => gustPhase(i) > 0.4 && !gustOn(i);
 
@@ -216,7 +216,7 @@ function lairInteract(x, y) {
     game.seedFlash = { i, t: game.t };
     if (S.seq[S.pos] === i) {
       S.pos++;
-      if (S.pos >= S.seq.length) lairSolved(L, "As cinco sementes brotam ao mesmo tempo. Raízes recuam da parede como cortinas.");
+      if (S.pos >= S.seq.length) lairSolved(L, "As sete sementes brotam ao mesmo tempo. Raízes recuam da parede como cortinas.");
     } else {
       S.pos = 0;
       if (!settings.calm) game.shake = 0.15;
