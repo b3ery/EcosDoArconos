@@ -872,6 +872,42 @@ body.mland #tgtpill {
   display: none;
   background: rgba(8, 5, 14, 0.88);
 }
+/* A escolha de elemento rola se não couber (celular deitado, com a barra do navegador). */
+#choose {
+  overflow-y: auto;
+  justify-content: safe center;
+}
+.card .cf {
+  font-weight: 600;
+}
+@media (max-height: 520px) {
+  #choose {
+    padding: 2% 7%;
+  }
+  #choose h2 {
+    font-size: 1.15em;
+    margin: 0;
+  }
+  #choose .text-muted {
+    font-size: 0.78em;
+    line-height: 1.2;
+  }
+  #choose .cards {
+    gap: 0.35em;
+    margin-top: 0.3em;
+  }
+  #choose .card {
+    padding: 0.25em 0.5em;
+  }
+  #choose .card p {
+    margin: 0.05em 0;
+    font-size: 0.8em;
+    line-height: 1.15;
+  }
+  #choose .card .ck small {
+    display: none;
+  }
+}
 
 #choose h2 {
   font-family: "Pixelify Sans", sans-serif;

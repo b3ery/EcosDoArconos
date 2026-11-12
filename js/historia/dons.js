@@ -290,7 +290,7 @@ showChoose = function () {
   byId("cards").innerHTML = DOM_IDS.map((id, i) => {
       const d = DONS[id],
         k = SKILLS[d.sk];
-      return `<button class="card" data-r="${id}"><h4>${runeSVG(id, 22)}<span style="color:${d.cor}">${i + 1}. ${d.t}</span></h4><p>${d.d}</p><p style="color:${RUNES[d.rune].cor}">Um fragmento da Runa ${RUNE_OF[d.rune]} ecoa neste dom. Quando você libertar essa runa, terá afinidade com ela.</p><p>Habilidade: <b style="color:#fff">${k.nome}</b>. ${k.desc}</p></button>`;
+      return `<button class="card" data-r="${id}"><h4>${runeSVG(id, 22)}<span style="color:${d.cor}">${i + 1}. ${d.t}</span></h4><p class="cd">${d.d}</p><p class="cf" style="color:${RUNES[d.rune].cor}">✦ Fragmento da Runa ${RUNE_OF[d.rune]}</p><p class="ck">Habilidade: <b style="color:#fff">${k.nome}</b><small>. ${k.desc}</small></p></button>`;
     }).join("");
   byId("cards")
     .querySelectorAll(".card")
