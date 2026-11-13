@@ -228,7 +228,7 @@ function journeyHTML() {
     N = player.nyx || {},
     S = player.siege || {};
   const row = (ic, t, d) => `<div class="jr-row">${iconHTML(ic, 18)}<div><b>${t}</b><small>${d}</small></div></div>`;
-  const GU = [["bosque", "Ent"], ["pantano", "Serpente"], ["picos", "Grifo"], ["mina", "Basilisco"], ["porto", "Leviatã"]];
+  const GU = [["bosque", "Ent"], ...(player.dom ? [["farol", "Fênix"]] : []), ["pantano", "Serpente"], ["picos", "Grifo"], ["mina", "Basilisco"], ["porto", "Leviatã"]];
   const cards = Object.entries(CHAPTER_CARDS).map(([id, c]) => `<span class="jr-chip ${(player.cards || []).includes(id) ? "on" : ""}">${c[0]}: ${c[1]}</span>`).join("");
   const guards = GU.map(([z, n]) => `<span class="jr-chip ${player.guards.includes(z) ? "on" : ""}">${player.guards.includes(z) ? "✓ " : ""}${n}</span>`).join("");
   const nyxTxt = !N.s1 ? "Você ainda não cruzou com ela." : N.dead ? "Ela caiu nos Picos. Por sua mão." : N.ally ? "Aliada. Ela luta do seu lado." : N.final ? "Vocês se enfrentaram na Torre. Ela seguiu o próprio caminho." : `Confiança: ${"♥".repeat(Math.max(0, N.trust || 0)) || "nenhuma"} (precisa de 2 para ela ficar do seu lado)`;

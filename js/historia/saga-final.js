@@ -284,7 +284,7 @@ function ecoEndScene(W, H, t) {
         const B = OLD_BOSSES[z];
         return say([["", B.lore]], () =>
           choice(B.nome, `Um Chefe Antigo, muito mais forte que um Guardião (nível 10 ou mais). Ele troca de fraqueza no meio da luta. Vencer dá um item LENDÁRIO.`, [
-            { t: "Despertar o Antigo", icon: "skull", fn: () => ((game.oldFight = z), startBattle(B.id, null)) },
+            { t: "Despertar o Antigo", icon: "skull", fn: () => ((game.oldFight = z), startBattle(B.id, null), battle && (battle.oldFight = z)) },
             { t: "Deixar dormir (por enquanto)", icon: "heart", fn: () => {} },
           ]),
         );
@@ -324,10 +324,11 @@ function ecoEndScene(W, H, t) {
   };
   const prBase = applyPostBattleRewards;
   applyPostBattleRewards = function () {
-    const z = game.oldFight;
+    // Só conta se ESTA luta for a do Chefe Antigo (perder ou fugir não deixa o prêmio pendurado).
+    const z = battle && battle.oldFight ? battle.oldFight : null;
+    game.oldFight = null;
     const r = prBase.apply(this, arguments);
     if (z) {
-      game.oldFight = null;
       oldDone()[z] = true;
       const B = OLD_BOSSES[z];
       addItem(B.item);

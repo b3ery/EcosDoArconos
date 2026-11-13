@@ -128,7 +128,7 @@ function chSolved(id, msg) {
   if (!settings.calm) game.shake = 0.3;
   [523, 659, 784].forEach((f, i) => setTimeout(() => playSound(f, 0.2, "triangle", 0.05), i * 110));
   const C = CHAMBER[id];
-  say([["", msg], ["", C.last ? `A última porta se abre. O ${ENEMIES[C.L.guard].nome} espera lá dentro.` : "A passagem se abre. A escada desce para a próxima câmara."]]);
+  say([["", msg], ["", C.last ? `A última porta se abre. ${["serpente", "fenixf"].includes(C.L.guard) ? "A" : "O"} ${ENEMIES[C.L.guard].nome} espera lá dentro.` : "A passagem se abre. A escada desce para a próxima câmara."]]);
 }
 
 /* ===================== IR E VOLTAR ===================== */

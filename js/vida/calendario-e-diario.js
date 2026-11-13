@@ -45,7 +45,8 @@ function diaryWatch() {
     spouse: player.spouse,
     dating: player.dating,
     kids: (player.kids || []).length,
-    guards: (player.guards || []).length,
+    guards: freedGuardRegions().length,
+    guardList: freedGuardRegions(),
     home: player.home,
     houses: (player.houses || []).length,
     pets: (player.pets || []).length,
@@ -63,7 +64,10 @@ function diaryWatch() {
     const k = player.kids[player.kids.length - 1];
     logEvent("baby", `Nasceu ${k.g === "f" ? "a" : "o"} pequen${k.g === "f" ? "a" : "o"} ${k.name}.`);
   }
-  if (now.guards > s.guards) logEvent("skull", `Venceu o Guardião de ${ZONE_DEFS[player.guards[player.guards.length - 1]]?.nome || "uma região"}.`);
+  if (now.guards > s.guards) {
+    const g = freedGuardRegions().filter((z) => !(s.guardList || []).includes(z))[0];
+    logEvent("skull", `Venceu o Guardião de ${g === "farol" ? "o Farol de Brisamar" : ZONE_DEFS[g]?.nome || "uma região"}.`);
+  }
   if (now.home !== s.home && now.home) logEvent("house", `Mudou para ${allHouses()[now.home]?.n || "uma casa nova"}.`);
   if (now.houses > s.houses) logEvent("coin", "Comprou uma casa.");
   if (now.pets > s.pets) logEvent("paw", `Adotou ${player.pets[player.pets.length - 1].name}.`);

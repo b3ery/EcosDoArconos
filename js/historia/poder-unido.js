@@ -9,12 +9,12 @@
 
 "use strict";
 
-const GUARD_NAMES = { bosque: ["Ent", "#7ad36b"], pantano: ["Serpente", "#9ad0c0"], picos: ["Grifo", "#c8b08a"], mina: ["Basilisco", "#b48aff"], porto: ["Leviatã", "#5aa0e8"] };
+const GUARD_NAMES = { bosque: ["Ent", "#7ad36b"], farol: ["Fênix", "#ff7a3d"], pantano: ["Serpente", "#9ad0c0"], picos: ["Grifo", "#c8b08a"], mina: ["Basilisco", "#b48aff"], porto: ["Leviatã", "#5aa0e8"] };
 
 /** Quem chega para ajudar: Guardiões libertados, aliados e quem você ajudou. */
 function unionHelpers() {
   const h = [];
-  for (const z of player.guards || []) if (GUARD_NAMES[z]) h.push({ n: GUARD_NAMES[z][0], c: GUARD_NAMES[z][1], p: 0.03, l: `O ${GUARD_NAMES[z][0]} empresta a força dele.` });
+  for (const z of player.guards || []) if (GUARD_NAMES[z]) h.push({ n: GUARD_NAMES[z][0], c: GUARD_NAMES[z][1], p: 0.03, l: ["farol", "pantano"].includes(z) ? `A ${GUARD_NAMES[z][0]} empresta a força dela.` : `O ${GUARD_NAMES[z][0]} empresta a força dele.` });
   const N = player.nyx || {};
   if (N.ally && !N.dead) h.push({ n: "Nyx", c: "#6ff0dc", p: 0.05, l: "Nyx canta com a própria voz, pela primeira vez." });
   if (player.flags.kaelChoice === "ajudou" || player.flags.kaelSalvo) h.push({ n: "Kael", c: "#ff9a6a", p: 0.04, l: "Kael grita o seu nome e ataca junto." });

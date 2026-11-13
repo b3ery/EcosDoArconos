@@ -86,6 +86,10 @@ function genJobs() {
   });
   return list;
 }
+/** Regiões cujo Guardião já foi vencido (sem repetir: o covil e a câmara também entram em player.guards). */
+function freedGuardRegions() {
+  return ["bosque", "farol", "pantano", "picos", "mina", "porto"].filter((z) => (player.guards || []).includes(z));
+}
 function guardiansFreed() {
   return player.guards.filter((z) => ["bosque", "pantano", "picos", "mina", "porto"].includes(z)).length;
 }

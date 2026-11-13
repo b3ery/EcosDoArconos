@@ -90,7 +90,7 @@ function lairSolved(L, msg) {
   saveGame();
   if (!settings.calm) game.shake = 0.35;
   [523, 659, 784].forEach((f, i) => setTimeout(() => playSound(f, 0.2, "triangle", 0.05), i * 120));
-  say([["", msg], ["", `A passagem para o fundo do covil se abriu. O ${(ENEMIES[L.guard] || {}).nome || "Guardião"} espera lá dentro. +80 XP.`]]);
+  say([["", msg], ["", `A passagem se abriu: a escada desce para a câmara 2 de 5. ${["serpente", "fenixf"].includes(L.guard) ? "A" : "O"} ${(ENEMIES[L.guard] || {}).nome || "Guardião"} espera lá no fundo. +80 XP.`]]);
 }
 function enterLair(L) {
   lairApply(L);
