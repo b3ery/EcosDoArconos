@@ -7123,3 +7123,28 @@ body.calm .shout {
     padding: 6px 10px !important;
   }
 }
+
+/* Criador: o "Começar" nunca some atrás da barra do navegador do celular.
+ * A janela cabe na altura VISÍVEL (dvh), e o boneco encolhe antes dos botões. */
+.cc-win {
+  max-height: calc(100dvh - 12px);
+}
+.cc-stage {
+  min-height: 0;
+}
+.cc-room {
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+}
+.cc-room canvas {
+  max-height: 60%;
+  max-width: 100%;
+  object-fit: contain;
+}
+.cc-btns {
+  flex: none;
+}
+.cc-btns button.go {
+  position: sticky;
+  bottom: 0;
+}
