@@ -19,7 +19,8 @@ function playCine(draw, dur, next) {
 }
 function endCine() {
   const c = game.cine;
-  if (!c || game.t - c.t0 < Math.min(2.5, c.dur)) return;
+  // Não pula sem querer: só deixa seguir depois que quase todo o texto apareceu.
+  if (!c || game.t - c.t0 < Math.min(c.dur * 0.75, 4)) return;
   game.cine = null;
   document.body.classList.remove("cutscene");
   // Se uma luta começou por baixo da cena, volta para ela (antes ficava presa no mapa).
@@ -52,12 +53,14 @@ addEventListener("pointerdown", (e) => {
     ctx.imageSmoothingEnabled = false;
     ctx.textAlign = "center";
     c.draw(viewWidth, 480, t);
-    if (t > 2.5) {
+    // A cena espera você: o aviso aparece quando todo o texto já entrou,
+    // e ela só segue quando você toca (ou aperta Enter).
+    if (t > c.dur) {
       ctx.font = '600 14px "Pixelify Sans", sans-serif';
       ctx.fillStyle = `rgba(255,255,255,${0.5 + 0.5 * Math.sin(t * 4)})`;
       ctx.fillText(TOUCH ? "Toque para continuar" : "Enter para continuar", viewWidth / 2, 466);
     }
     ctx.restore();
-    if (t > c.dur) endCine();
+    if (settings.cineAuto && t > c.dur + 4) endCine();
   };
 }

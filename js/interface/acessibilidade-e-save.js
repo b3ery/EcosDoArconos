@@ -117,6 +117,7 @@ function importSaveCode() {
     const html = `<h3>Acessibilidade</h3>
       <div class="opt"><span>Tamanho da letra</span><div class="seg">${seg("font", [["n", "Normal"], ["g", "Grande"], ["e", "Enorme"]], settings.font || "n")}</div></div>
       <div class="opt"><span>Tremores e flashes</span><div class="seg">${seg("calm", [["0", "Ligados"], ["1", "Desligados"]], settings.calm ? "1" : "0")}</div></div>
+      <div class="opt"><span>Cenas e capítulos</span><div class="seg">${seg("cineAuto", [["0", "Esperam meu toque"], ["1", "Seguem sozinhas"]], settings.cineAuto ? "1" : "0")}</div></div>
       <h3>Seu jogo salvo</h3>
       <div class="opt"><span>Levar para outro aparelho</span><div class="sv-btns"><button id="svExpF">Baixar arquivo</button><button id="svExpC">Copiar código</button></div></div>
       <div class="opt"><span>Trazer de outro aparelho</span><div class="sv-btns"><button id="svImpF">Abrir arquivo</button><button id="svImpC">Colar código</button></div></div>`;
@@ -125,7 +126,7 @@ function importSaveCode() {
     box.querySelectorAll("[data-a11y]").forEach((b) => {
       b.onclick = () => {
         const k = b.dataset.a11y;
-        settings[k] = k === "calm" ? b.dataset.v === "1" : b.dataset.v;
+        settings[k] = k === "calm" || k === "cineAuto" ? b.dataset.v === "1" : b.dataset.v;
         saveSettings();
         applyA11y();
         renderOptions();

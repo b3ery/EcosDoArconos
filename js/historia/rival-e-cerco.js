@@ -62,7 +62,8 @@ function chapterCard(kicker, title, sub) {
   return (W, H, t) => {
     ctx.fillStyle = "#06040b";
     ctx.fillRect(0, 0, W, H);
-    const a = Math.min(1, t / 0.8) * Math.min(1, Math.max(0, 3.4 - t) / 0.6);
+    // Entra devagar e fica na tela até você tocar.
+    const a = Math.min(1, t / 1.2);
     ctx.save();
     ctx.globalAlpha = Math.max(0, a);
     ctx.textAlign = "center";
