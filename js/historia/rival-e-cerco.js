@@ -456,3 +456,26 @@ function restoreTick() {
     say([["Narrador", line]], () => seBase.apply(this, arguments));
   };
 }
+
+/* ---- Nyx na luta com o mesmo visual do mapa ----
+ * Antes ela usava o desenho do Diretor da Academia (capelo, óculos e barba
+ * branca) e parecia uma pessoa idosa na batalha. */
+for (const k of ["nyx1", "nyx2", "nyx3"]) ENEMIES[k].shape = "nyx";
+(() => {
+  const base = drawEnemy;
+  drawEnemy = function (type, x, y, u, t, extra = {}) {
+    const e = ENEMIES[type];
+    if (!e || e.shape !== "nyx") return base.apply(this, arguments);
+    const cx = x + 8 * u,
+      cy = y + 8 * u;
+    const g = ctx.createRadialGradient(cx, cy, u, cx, cy, u * 10);
+    g.addColorStop(0, type === "nyx3" ? "rgba(150,70,220,.45)" : "rgba(47,184,168,.35)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(cx - u * 10, cy - u * 10, u * 20, u * 20);
+    ctx.save();
+    if (extra.hit) ctx.filter = "brightness(2)";
+    drawSprite(wizardRects(type === "nyx3" ? "#1b6f66" : NYX_LOOK.robe, NYX_LOOK.hat, NYX_LOOK.hair, null, "left", Math.floor(t * 3) % 2, 2), x, y, u, false);
+    ctx.restore();
+  };
+})();
