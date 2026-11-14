@@ -39,7 +39,7 @@ const CH_ORDER = {
 const CH_INFO = {
   maze: { n: "O Labirinto", sub: "Todas as paredes são iguais. Quase todas.", hint: "Um labirinto. Ache a saída do outro lado. Quanto mais runas você já libertou, mais escuro ele fica." },
   levers: { n: "Alavancas da Runa", sub: "A ordem certa abre. A errada machuca.", hint: "Leia a tábua gravada perto da entrada: ela diz a ordem das alavancas. Errar a ordem dá um choque e recomeça." },
-  plates: { n: "Placas de Luz", sub: "Uma luz acende a outra.", hint: "Toque nas placas para acendê-las. Cuidado: cada placa também vira as vizinhas (cima, baixo e lados). Acenda TODAS. A alavanca do canto recomeça." },
+  plates: { n: "Placas de Luz", sub: "Uma luz acende a outra.", hint: "Toque nas placas para acendê-las. Cada toque vira a placa E as vizinhas de cima, de baixo e dos lados: parado na frente de uma placa, você vê marcadas as que vão virar. Acenda TODAS. Travou? A alavanca do canto dá uma dica ou recomeça." },
   watch: { n: "Vigias do Silêncio", sub: "Eles não dormem. Eles não piscam.", hint: "Vigias andam de um lado para o outro. Atravesse a sala sem que eles encostem em você, ou volta para o começo." },
   arena: { n: "Arena dos Calados", sub: "Só sai quem vence.", hint: "Pise no círculo do centro para chamar os inimigos. Vença todas as ondas para abrir a passagem." },
 };
@@ -191,13 +191,17 @@ function chReset(id) {
   }
   if (C.mech === "plates") {
     const G = plGrid(id);
-    if (!S.lit || S.lit.length !== G.cells.length) {
-      // parte de tudo aceso e aperta placas ao acaso: sempre tem solução
+    if (!S.lit || S.lit.length !== G.cells.length || !S.need) {
+      // Parte de tudo aceso e "aperta" algumas placas diferentes. A solução é
+      // apertar essas mesmas placas de novo (S.need guarda quais faltam).
       S.lit = G.cells.map(() => true);
-      const presses = 4 + t;
-      for (let p = 0; p < presses; p++) plPress(S, G, Math.floor(Math.random() * G.cells.length));
-      if (S.lit.every(Boolean)) plPress(S, G, 0);
+      S.need = G.cells.map(() => false);
+      const presses = Math.min(G.cells.length - 2, 2 + Math.floor(t / 2));
+      const order = G.cells.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, presses);
+      for (const i of order) plPress(S, G, i), (S.need[i] = true);
       S.start = S.lit.slice();
+      S.needStart = S.need.slice();
+      S.taps = 0;
     }
   }
   if (C.mech === "arena") S.left = S.left || 0;
@@ -237,7 +241,7 @@ function chTarget(x, y) {
     if (LEVER.pos.some((p) => near(p, x, y))) return S.ok ? "Alavanca" : "Puxar a alavanca";
   }
   if (C.mech === "plates") {
-    if (near(PL.reset, x, y)) return "Recomeçar as placas";
+    if (near(PL.reset, x, y)) return "Alavanca (recomeçar ou dica)";
     if (plGrid(player.zone).cells.some((p) => near(p, x, y))) return S.ok ? "Placa acesa" : "Tocar na placa";
   }
   if (C.mech === "arena" && near(ARENA.sigil, x, y) && !S.ok) return "Chamar os inimigos";
@@ -292,14 +296,35 @@ function chInteract(x, y) {
   }
   if (C.mech === "plates") {
     const G = plGrid(id);
-    if (l === "Recomeçar as placas") {
-      S.lit = (S.start || S.lit).slice();
-      playSound(200, 0.2, "square", 0.04);
-      return toast("As placas voltam como estavam.", 1400), true;
+    if (l === "Alavanca (recomeçar ou dica)") {
+      choice("Placas de Luz", "Cada placa que você toca vira ELA e as vizinhas de cima, de baixo e dos lados (acesa vira apagada, apagada vira acesa). O objetivo é deixar TODAS acesas.", [
+        { t: "Pedir uma dica (mostra uma placa certa)", icon: "star", fn: () => ((S.hint = S.need.findIndex(Boolean)), toast("Toque na placa que está piscando.", 2400)) },
+        {
+          t: "Recomeçar do jeito que estava",
+          icon: "flag",
+          fn: () => {
+            S.lit = (S.start || S.lit).slice();
+            S.need = (S.needStart || S.need).slice();
+            S.hint = -1;
+            playSound(200, 0.2, "square", 0.04);
+            toast("As placas voltam como estavam.", 1400);
+          },
+        },
+        { t: "Voltar", icon: "heart", fn: () => {} },
+      ]);
+      return true;
     }
     if (l === "Tocar na placa") {
       const i = G.cells.findIndex((p) => near(p, x, y));
       plPress(S, G, i);
+      if (S.need) S.need[i] = !S.need[i];
+      S.taps = (S.taps || 0) + 1;
+      if (S.hint === i || (S.hint >= 0 && !S.need[S.hint])) S.hint = -1;
+      // depois de muitas tentativas, uma placa certa começa a piscar sozinha
+      if (S.taps >= 12 && S.taps % 6 === 0 && S.need) {
+        S.hint = S.need.findIndex(Boolean);
+        toast("A sala sussurra: tente a placa que está piscando.", 2600);
+      }
       playSound(S.lit[i] ? 660 : 330, 0.12, "triangle", 0.04);
       if (S.lit.every(Boolean)) chSolved(id, "Todas as placas brilham ao mesmo tempo. A sala inteira se ilumina.");
     }
@@ -376,7 +401,32 @@ function drawChamber(t) {
         ctx.fillStyle = `rgba(255,224,138,${0.15 + 0.1 * Math.sin(t * 4 + i)})`;
         ctx.fillRect(x * T - 4, y * T - 4, T + 8, T + 8);
       }
+      if (!S.ok && S.hint === i) {
+        ctx.strokeStyle = `rgba(120,220,255,${0.5 + 0.5 * Math.sin(t * 8)})`;
+        ctx.lineWidth = 4;
+        ctx.strokeRect(x * T, y * T, T, T);
+      }
     });
+    // prévia: a placa na sua frente e as vizinhas que ela vai virar
+    if (!S.ok) {
+      const [dx, dy] = DIR_VECTORS[player.dir] || [0, 0];
+      const fi = G.cells.findIndex(([cx, cy]) => cx === player.x + dx && cy === player.y + dy);
+      if (fi >= 0) {
+        const fx = fi % G.n,
+          fy = Math.floor(fi / G.n);
+        for (const [ox, oy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = fx + ox,
+            ny = fy + oy;
+          if (nx < 0 || ny < 0 || nx >= G.n || ny >= G.n) continue;
+          const [px, py] = G.cells[ny * G.n + nx];
+          ctx.strokeStyle = "rgba(255,255,255,.85)";
+          ctx.setLineDash([4, 3]);
+          ctx.lineWidth = 2;
+          ctx.strokeRect(px * T + 1, py * T + 1, T - 2, T - 2);
+          ctx.setLineDash([]);
+        }
+      }
+    }
     const [rx, ry] = PL.reset;
     ctx.fillStyle = "#6a5a48";
     ctx.fillRect(rx * T + 8, ry * T + 18, 16, 8);
