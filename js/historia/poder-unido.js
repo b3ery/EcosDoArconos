@@ -1,7 +1,7 @@
 /**
  * ECOS DO ARCANO — poder-unido.js (modo História)
  * Na luta final, quando o Silenciador chega à metade da vida, aparece o botão
- * "✦ Unir todos os poderes": os cinco Guardiões, todas as runas e todo mundo
+ * "✦ Unir todos os poderes": os Guardiões libertados, todas as runas e todo mundo
  * que você ajudou pelo caminho atacam juntos, numa cena só.
  * Quanto mais gente você ajudou, mais forte fica o golpe.
  * Modifica (envolve) funções de outros arquivos: renderBattle.

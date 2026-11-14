@@ -110,7 +110,7 @@ const NEW_STEPS = {
   ],
   // antes do Grifo
   grif: [puzzleStep(PZ_SCALE, "Equilibre a Balança dos Anões em Pedravale", "O caminho do Grifo está selado pelos anões. Só abre para quem equilibrar a balança deles.")],
-  // antes de contar das quatro runas
+  // antes de contar que a barreira caiu
   r4: [calmStep("ervas", "Colete as ervas raras para a Curandeira Maíra", "Os feridos do Silêncio precisam de remédio: uma erva no Bosque, uma no Pântano e uma nos Picos.")],
   // antes do Leviatã
   levi: [puzzleStep(PZ_PIPES, "Conserte os Canais do Porto", "O Leviatã dorme no cais, preso pelos canais secos. Faça a água voltar a correr.")],

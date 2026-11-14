@@ -432,7 +432,7 @@ const STEPS = [
   },
   {
     id: "r4",
-    t: "Conte à Odelia que as quatro runas voltaram",
+    t: "Conte à Odelia que a barreira do sul caiu",
     zone: "vila",
     pos: () => npcPos("odelia"),
     d: "Volte à vila e fale com a Arquimaga Odelia. A barreira ao sul vai se abrir.",
@@ -607,7 +607,7 @@ function questHint(q, r) {
   if (player.zone === "vila")
     return (
       `Saia da vila pelo ${exitWord(SIDE_OF[q.zone])} até ${r.hop}.` +
-      (q.zone === "torre" && player.runes.length < 4 ? " (precisa das 4 runas)" : "")
+      (q.zone === "torre" && player.runes.length < 4 ? " (precisa de 4 das 6 runas)" : "")
     );
   return "Volte para a Vila de Cinzaluz pela saída por onde você entrou.";
 }
@@ -649,7 +649,7 @@ function openQuests() {
   if (ci < STEPS.length - 1) h += `<div class="qs fut">${iconHTML("eye", 12)} Mais ${STEPS.length - 1 - ci} capítulos ainda por descobrir...</div>`;
   h += `<h3>Missões opcionais</h3>
   <div class="qs ${player.pages.length === 5 ? "done" : ""}">Diário de Vesper: ${player.pages.length}/5 páginas<div class="qtip">Procure papéis brilhando em cada região. Eles contam o segredo da história.</div></div>
-  <div class="qs ${player.spells.length === 14 ? "done" : ""}">Grimório completo: ${player.spells.length}/14 magias<div class="qtip">Teste combinações de duas runas na batalha. Cada combinação nova é uma magia recuperada.</div></div>
+  <div class="qs ${player.spells.length >= Object.keys(SPELLS).length ? "done" : ""}">Grimório completo: ${player.spells.length}/${Object.keys(SPELLS).length} magias<div class="qtip">Teste combinações de duas runas na batalha. Cada combinação nova é uma magia recuperada.</div></div>
   ${urgent() ? `<div class="qs cur" style="color:#ff8a8a"> <b style="color:#ff8a8a">${urgent().t}</b><div class="qd">${urgent().d}</div></div>` : ""}
   <div class="qs">Tesouros: ${player.taken.length}/${totalC} baús abertos<div class="qtip">Baús azuis são raros e baús dourados brilhantes são LENDÁRIOS, com os itens mais fortes do jogo.</div></div>
   <div class="qs ${player.tomes.length >= 3 ? "done" : ""}">Antiga Academia Arcana: ${player.tomes.length}/3 tomos do seu ${player.dom ? "dom" : "elemento"}<div class="qtip">A entrada fica no noroeste da vila (arco roxo). Os tomos ensinam feitiços novos de ${RUNES[player.aff].nome}.</div></div>

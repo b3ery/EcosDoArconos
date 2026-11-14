@@ -4160,7 +4160,7 @@ const NPCS = {
           "Antes de subir, passe em Pedravale. A Anciã Berta sabe algo sobre o meu irmão... digo, sobre Vesper.",
         ],
         4: [
-          "As quatro runas... a barreira ao sul se desfez.",
+          "Quatro das seis runas despertas... a barreira ao sul se desfez. As duas últimas estão com o Basilisco, na Mina, e com o Leviatã, no Cais.",
           "Na Torre do Silêncio está aquele que calou o mundo. Há algo que eu deveria ter contado... Não. Primeiro, chegue à torre.",
           "Descanse em casa e compre suprimentos antes de ir. E, aprendiz... volte.",
         ],
@@ -4473,7 +4473,7 @@ const NPCS = {
         queueMoral("berta");
         saveGame();
         return [
-          ["Anciã Berta", "Duas runas livres... Então é você. Sente aqui, criança. Vou contar o que Pedravale esconde."],
+          ["Anciã Berta", "Runas livres outra vez... Então é você. Sente aqui, criança. Vou contar o que Pedravale esconde."],
           ["Anciã Berta", "Trezentos anos atrás, um mago chamado Vesper subiu esta serra e pediu aos anões um cajado capaz de trancar a magia."],
           ["Anciã Berta", "Os anões forjaram, mas guardaram o molde. Para reabri-lo, precisamos de um Fragmento Arcano da Mina de Cristal. Traga um à Forja Anã."],
         ];
@@ -4740,7 +4740,7 @@ const NPCS = {
       return player.runes.length < 4
         ? [
             ["Guarda Tomé", "Ninguém passa pela barreira do sul. Dizem que lá fica a Torre do Silêncio."],
-            ["Guarda Tomé", "Só quem carregar as quatro runas consegue rompê-la."],
+            ["Guarda Tomé", "Só quem despertar quatro das seis runas consegue rompê-la."],
           ]
         : [["Guarda Tomé", "A barreira caiu! Que as runas te protejam, aprendiz."]];
     },
@@ -4899,14 +4899,14 @@ function GUARD_POST(type, rune) {
 }
 const STORY = [
   "Há trezentos anos, a magia era a essência do mundo. Ela fluía pelos rios, dançava entre as árvores, atravessava as montanhas e iluminava os céus.",
-  "Todos os feitiços nasciam das Quatro Runas Primordiais: Chama, Maré, Terra e Vento, forças ancestrais que mantinham o equilíbrio entre a natureza e os seres vivos.",
+  "Todos os feitiços nasciam das Seis Runas: quatro da natureza, Chama, Maré, Terra e Vento, e duas do céu, Luz e Sombra. Juntas, elas mantinham o equilíbrio entre a natureza e os seres vivos.",
   "Os magos não precisavam apenas estudar para dominar seus poderes. Eles precisavam ouvir a Canção Arcana, uma melodia invisível que conectava todas as formas de magia.",
   "Entretanto, tudo mudou na noite que ficou conhecida como o Grande Silêncio.",
   "Sem aviso, a Canção Arcana desapareceu. As runas perderam suas vozes, os grimórios ficaram em branco e os magos esqueceram os feitiços que haviam dominado durante séculos.",
   "Criaturas antes pacíficas foram corrompidas, florestas perderam sua vitalidade e antigas cidades mergulharam no esquecimento. A magia havia sido silenciada.",
   "Durante gerações, ninguém soube explicar o que aconteceu. Alguns acreditavam que os deuses haviam abandonado o mundo. Outros diziam que a magia havia simplesmente morrido. Mas a verdade era muito mais sombria.",
   "Séculos depois, na pequena Vila de Cinzaluz, um jovem aprendiz desperta com uma habilidade considerada impossível: consegue ouvir um fraco eco da magia perdida.",
-  "Dentro de si ainda vive uma das Quatro Runas, a última centelha de um poder que o mundo acreditava extinto.",
+  "Dentro de si ainda ecoa um pedaço das Seis Runas, a última centelha de um poder que o mundo acreditava extinto.",
   "Porque a magia nunca deixou de existir. Ela apenas esperava por alguém capaz de ouvi-la novamente.",
 ];
 function INTRO() {
@@ -4950,7 +4950,7 @@ const FLASH = [
 ];
 const FINALE = [
   ["", "Após a longa batalha, a máscara do Silenciador começa a se partir."],
-  ["", "Você ergue as quatro runas, e a Canção Arcana volta a ecoar pela torre."],
+  ["", "Você ergue as seis runas, e a Canção Arcana volta a ecoar pela torre."],
   ["O Silenciador", "Não... Se libertar a magia, ela desaparecerá novamente!"],
   ["Você", "Você tentou salvá-la, mas esqueceu por que ela era tão importante."],
   ["O Silenciador", "Eu... só queria protegê-la..."],

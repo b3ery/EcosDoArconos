@@ -2464,7 +2464,7 @@ function schoolMenu() {
         [
           "Professora Helena",
           [
-            "Hoje vamos aprender as quatro runas primordiais... e as duas escondidas!",
+            "Hoje vamos aprender as seis runas: as quatro da natureza... e as duas do céu!",
             "Aula de história: como Cinzaluz foi fundada por Aurion.",
             "Matemática mágica: quantas combinações de runas existem?",
           ][Math.floor(Math.random() * 3)],
@@ -2663,7 +2663,7 @@ const SIDEQ = [
     r: 250,
   },
   {
-    t: "Liberte os 5 Guardiões",
+    t: "Liberte 5 Guardiões",
     p: () => guardiansFreed(),
     n: 5,
     r: 400,

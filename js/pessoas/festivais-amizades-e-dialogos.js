@@ -860,7 +860,7 @@ function castleMenu() {
             say([
               [
                 n,
-                "As quatro runas estão com você. A Torre do Silêncio espera ao sul. Que a Canção Arcana te proteja.",
+                "As runas estão voltando para você. A Torre do Silêncio espera ao sul. Que a Canção Arcana te proteja.",
               ],
             ]);
         },
@@ -883,7 +883,7 @@ function castleMenu() {
           say([
             [
               "",
-              "Tapeçarias contam a história das Quatro Runas. Uma delas mostra dois irmãos magos de mãos dadas.",
+              "Tapeçarias contam a história das Seis Runas. Uma delas mostra dois irmãos magos de mãos dadas.",
             ],
           ]),
       },
@@ -896,7 +896,7 @@ function castleMenu() {
 }
 function templeMenu() {
   const n = "Padre Anselmo";
-  choice("Templo da Luz", "Velas tremulam diante de um vitral com as Quatro Runas.", [
+  choice("Templo da Luz", "Velas tremulam diante de um vitral com as Seis Runas.", [
     { t: "Adotar uma criança (doação de 50 ouro)", fn: adoptChild },
     {
       t: player.blessDay === player.day ? "Bênção ativa hoje" : "Receber bênção (20 ouro)",
@@ -2118,7 +2118,7 @@ function ctxLines(id) {
   if (player.look.outfit === "real") L.push("Com essa roupa até parece nobreza!");
   if (g === 1) L.push("Dizem que você libertou o Ent do bosque. É verdade?");
   if (g === 2) L.push("Duas runas de volta! A vila inteira está falando de você.");
-  if (g >= 3) L.push("As quatro runas estão com você... a Torre do Silêncio espera. Tenha cuidado.");
+  if (g >= 3) L.push("Já são várias runas de volta... a Torre do Silêncio espera. Tenha cuidado.");
   if (player.lvl >= 8)
     L.push("Você está ficando muito forte. Dá pra sentir a magia no ar quando você passa.");
   if (player.gold >= 1000) L.push("Tá cheio de ouro, hein? Não vai esquecer dos amigos!");

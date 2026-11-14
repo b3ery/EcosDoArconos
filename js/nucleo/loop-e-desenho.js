@@ -3582,7 +3582,7 @@ function drawTitle(t) {
   ctx.fillStyle = "#0e0818";
   ctx.fillRect(-200, 440, 1040, 40);
   ORDER.forEach((r, i) => {
-    const a = t * 0.5 + (i * Math.PI) / 2;
+    const a = t * 0.5 + (i * Math.PI * 2) / ORDER.length;
     glyph(r, 320 + Math.cos(a) * 190, 250 + Math.sin(a) * 60, 26, 0.4 + 0.4 * Math.sin(t * 2 + i));
   });
   ctx.restore();

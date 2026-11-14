@@ -38,7 +38,7 @@ function creditsHTML() {
       ${row("Magias recuperadas", `${n(player.spells)}/${Object.keys(SPELLS).length}`)}
       ${row("Combos secretos", `${n(player.combos)}/${typeof COMBOS !== "undefined" ? Object.keys(COMBOS).length : 8}`)}
       ${row("Páginas do diário de Vesper", `${n(player.pages)}/5`)}
-      ${row("Guardiões libertados", guardiansFreed())}
+      ${row("Guardiões libertados", `${freedGuardRegions().length}/${player.dom ? 6 : 5}`)}
       ${row("Ecos Corrompidos", `${n(player.ecos)}/5`)}
       ${row("Segredos encontrados", `${n(player.secretsFound)}/${typeof SECRET_SPOTS !== "undefined" ? SECRET_SPOTS.length : 12}`)}
       ${row("Missões da turma", `${typeof arcsDone === "function" ? arcsDone().length : 0}/6`)}

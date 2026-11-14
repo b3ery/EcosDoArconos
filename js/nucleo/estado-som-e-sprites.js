@@ -1907,7 +1907,7 @@ function drawEnemy(type, x, y, u, t, extra = {}) {
     ctx.fillStyle = g;
     ctx.fillRect(cx - u * 12, cy - u * 12, u * 24, u * 24);
     ORDER.forEach((r, i) => {
-      const a = t * 1.2 + (i * Math.PI) / 2;
+      const a = t * 1.2 + (i * Math.PI * 2) / ORDER.length;
       glyph(
         r,
         cx + Math.cos(a) * u * 10,

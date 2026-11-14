@@ -35,7 +35,7 @@ const LANDMARKS = [
   { id: "gruta", z: "porto", n: "Gruta da Maré", need: "agua", lore: "Na maré baixa mágica, uma gruta cheia de conchas que cantam quando o vento passa. A mesma canção da caixinha de música da Odelia.", r: { gold: 60, mp: 4 } },
   { id: "rochedo", z: "porto", n: "Rochedo das Gaivotas", need: "ar", lore: "Lá no alto, um velho telescópio apontado para a Torre do Silêncio. Alguém ficou vigiando durante anos.", r: { gold: 50, items: [["pocao", 2]] } },
   { id: "forno", z: "serra", n: "Forno Esquecido", need: "fogo", lore: "Um forno anão apagado. Dentro, o primeiro molde do cajado de Vesper, rachado. Ele tentou muitas vezes.", r: { gold: 55, hp: 5 } },
-  { id: "veio", z: "serra", n: "Veio de Cristal", need: "terra", lore: "Um veio de cristal que brilha com as cores das quatro runas. Os anões dizem que foi aqui que a magia nasceu.", r: { gold: 70, items: [["fragmento", 1]] } },
+  { id: "veio", z: "serra", n: "Veio de Cristal", need: "terra", lore: "Um veio de cristal que brilha com as cores das seis runas. Os anões dizem que foi aqui que a magia nasceu.", r: { gold: 70, items: [["fragmento", 1]] } },
   { id: "cachoeira", z: "serra", n: "Cachoeira Escondida", need: "agua", lore: "Atrás da água, uma sala com dois banquinhos de pedra. Um tem o nome dela; o outro, o dele.", r: { gold: 50, mp: 4 } },
 ];
 const LM_REGIONS = ["bosque", "pantano", "picos", "porto", "serra"];

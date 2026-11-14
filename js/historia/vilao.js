@@ -261,7 +261,7 @@ const MORAL = {
   },
   odelia4: {
     title: "A barreira caiu",
-    text: "As quatro runas estão de volta. Odelia te pede para voltar viva(o) da Torre.",
+    text: "Quatro das seis runas estão de volta. Odelia te pede para voltar viva(o) da Torre.",
     hero: { t: "Prometer voltar", rep: 4, fx: () => addItem("pocaoG", 2), lines: [["Arquimaga Odelia", "Leve isto. E cumpra a promessa. (2 Grandes Poções)"]] },
     villain: {
       t: "\"Quem vai voltar com a Canção sou eu\"",
