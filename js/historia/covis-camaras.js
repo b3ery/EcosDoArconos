@@ -238,7 +238,8 @@ function chTarget(x, y) {
   if (near(LAIR.door, x, y) && !chOpen(player.zone)) return "Passagem fechada";
   if (C.mech === "levers") {
     if (near(LEVER.tab, x, y)) return "Ler a tábua gravada";
-    if (LEVER.pos.some((p) => near(p, x, y))) return S.ok ? "Alavanca" : "Puxar a alavanca";
+    const li = LEVER.pos.findIndex((p) => near(p, x, y));
+    if (li >= 0) return S.ok ? "Alavanca" : `Puxar a alavanca ${RUNE_OF[LEVER_RUNES[li]]}`;
   }
   if (C.mech === "plates") {
     if (near(PL.reset, x, y)) return "Alavanca (recomeçar ou dica)";
@@ -275,7 +276,7 @@ function chInteract(x, y) {
       const rev = lairTier() >= 3;
       return say([["", `Na tábua, símbolos gravados ${rev ? "DE TRÁS PARA FRENTE (comece pelo último)" : "em ordem"}: ${(rev ? seq.slice().reverse() : seq).join(" → ")}.`]]), true;
     }
-    if (l === "Puxar a alavanca") {
+    if (l.startsWith("Puxar a alavanca")) {
       const i = LEVER.pos.findIndex((p) => near(p, x, y));
       playSound(300 + i * 60, 0.15, "square", 0.04);
       if (S.seq[S.pos] === i) {
@@ -597,7 +598,13 @@ function drawMazeDark() {
       const S = chState(A.id);
       S.left = Math.max(0, (S.left || 1) - 1);
       saveGame();
-      if (S.left > 0 && player.zone === A.id) setTimeout(() => game.mode === "world" && arenaNext(A.id), 1400);
+      if (S.left > 0 && player.zone === A.id) {
+        const heal = Math.round(maxHp() * 0.2);
+        player.hp = Math.min(maxHp(), player.hp + heal);
+        player.mp = Math.min(maxMp(), player.mp + Math.round(maxMp() * 0.2));
+        toast(`Fôlego entre as ondas: +${heal} HP e um pouco de mana.`, 2000);
+        setTimeout(() => game.mode === "world" && arenaNext(A.id), 1400);
+      }
       else if (player.zone === A.id) setTimeout(() => chSolved(A.id, "O último inimigo cai. O círculo da arena se apaga, e a parede do fundo se abre."), 1200);
     }
     return r;
@@ -651,3 +658,65 @@ function drawMazeDark() {
     s.pos = () => (zones.includes(player.zone) ? LAIR.guard : p0.call(s));
   }
 }
+
+/* ===================== PONTO DE DESCANSO ===================== */
+/* Nas salas de "atravessar" (Corredor dos Ventos, Maré e Vigias), passar do
+ * meio da sala marca um ponto de descanso: um erro devolve você para ele, e
+ * não mais para o começo. O lugar é sempre seguro (fora das colunas de vento
+ * e de vigia; na maré, em cima de uma pedra). */
+const CP_SPOTS = { gust: [11, 5], tide: [11, 7], watch: [9, 5] };
+function cpMech() {
+  const L = lairOfZone(player.zone);
+  if (L && (L.mech === "gust" || L.mech === "tide")) return lairState(L).ok ? null : L.mech;
+  const C = chamberOf(player.zone);
+  if (C && C.mech === "watch") return chState(player.zone).ok ? null : "watch";
+  return null;
+}
+function drawCheckpoint() {
+  const m = cpMech();
+  if (!m) return;
+  const [x, y] = CP_SPOTS[m],
+    T = TILE,
+    on = game.cp && game.cp.zone === player.zone;
+  ctx.fillStyle = on ? "#7ad36b" : "rgba(200,200,220,.6)";
+  ctx.fillRect(x * T + 14, y * T + 4, 3, 24);
+  ctx.fillStyle = on ? "#7ad36b" : "rgba(200,200,220,.5)";
+  ctx.beginPath();
+  ctx.moveTo(x * T + 17, y * T + 4);
+  ctx.lineTo(x * T + 28, y * T + 9);
+  ctx.lineTo(x * T + 17, y * T + 14);
+  ctx.fill();
+}
+(() => {
+  const kbBase = knockBack;
+  knockBack = function (msg) {
+    const m = cpMech();
+    if (m && game.cp && game.cp.zone === player.zone) {
+      [player.x, player.y] = CP_SPOTS[m];
+      player.rx = player.x;
+      player.ry = player.y;
+      game.autoPath = null;
+      if (!settings.calm) game.shake = 0.3;
+      playSound(120, 0.3, "sawtooth", 0.04);
+      return toast(msg.split("!")[0] + "! De volta ao ponto de descanso.", 2200);
+    }
+    return kbBase.apply(this, arguments);
+  };
+  const upBase = update;
+  update = function () {
+    const r = upBase.apply(this, arguments);
+    if (game.cp && game.cp.zone !== player.zone) game.cp = null;
+    const m = story() && cpMech();
+    if (m && !game.cp && player.x >= CP_SPOTS[m][0] && player.x < LAIR.door[0]) {
+      game.cp = { zone: player.zone };
+      playSound(660, 0.15, "triangle", 0.05);
+      toast("Ponto de descanso! Se algo te pegar daqui pra frente, você volta para cá.", 2600);
+    }
+    return r;
+  };
+  const cdBase = crewDrawList;
+  crewDrawList = function (list, t) {
+    cdBase(list, t);
+    if (story() && cpMech()) list.push({ y: 997, draw: () => drawCheckpoint() });
+  };
+})();
