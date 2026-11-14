@@ -18,7 +18,7 @@ const HOUSE_FEATURES = {
   mansao: { quintal: true, andar: true },
 };
 const STAIRS = [12, 2],
-  BACKDOOR = [2, 1],
+  BACKDOOR = [7, 1], // no meio da parede de cima (antes ficava em cima da cama)
   YARD_DOOR = [3, 0];
 function houseFeat() {
   return HOUSE_FEATURES[typeof homeTier === "function" ? homeTier() : "casa"] || HOUSE_FEATURES.casa;

@@ -168,18 +168,8 @@ function lifeJobsMenu() {
 
 /** Opções extras em casa no modo vida. */
 function lifeHomeItems() {
-  if (!lifeMode()) return [];
-  return [
-    {
-      t: "Tomar banho (30 min)",
-      fn: () => {
-        player[`hygiene`] = 100;
-        player.clock = Math.min(1439, player.clock + 30);
-        saveGame();
-        say([["", "Água quentinha e sabão de ervas. Higiene cheia!"]]);
-      },
-    },
-  ];
+  // O banho agora é no banheiro (porta na parede da direita da sala), não na cama.
+  return [];
 }
 
 /** Texto do objetivo no topo da tela, no modo vida. */
