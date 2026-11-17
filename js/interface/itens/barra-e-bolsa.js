@@ -90,10 +90,11 @@ function hbRender(force) {
   }
   const st = document.createElement("style");
   st.textContent = `
-  #hotbar{position:absolute;left:50%;bottom:1.2%;transform:translateX(-50%);display:none;gap:3px;z-index:7;padding:4px;border-radius:8px;background:rgba(14,10,24,.72);border:2px solid #4a3a6a}
-  .hb-slot{position:relative;width:2.6em;height:2.6em;padding:0;display:grid;place-items:center;border-radius:5px;background:linear-gradient(#2e2348,#221a36);border:2px solid #3a2a5a;min-width:0}
-  .hb-slot.sel{border-color:#ffe08a;box-shadow:0 0 0 2px rgba(255,224,138,.35)}
-  .hb-slot.empty{opacity:.55}
+  #hotbar{position:absolute;left:50%;bottom:1.2%;transform:translateX(-50%);display:none;gap:0;z-index:7;padding:0;border-radius:2px;background:transparent;border:3px solid rgba(20,20,20,.55)}
+  .hb-slot{position:relative;width:2.6em;height:2.6em;padding:0;display:grid;place-items:center;border-radius:0;background:rgba(40,40,40,.32);border:2px solid rgba(190,190,190,.45);box-shadow:none;min-width:0}
+  .hb-slot:hover{background:rgba(255,255,255,.12)}
+  .hb-slot.sel{border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+  .hb-slot.empty{opacity:1}
   .hb-slot .hb-k{position:absolute;left:3px;top:1px;font-size:.55em;color:#b8a8d8}
   .hb-slot b{position:absolute;right:3px;bottom:1px;font-size:.62em;color:#fff;text-shadow:0 1px 0 #000}
   .hb-slot i{position:absolute;right:3px;top:1px;font-size:.55em;font-style:normal;color:#ffe08a}
@@ -102,15 +103,6 @@ function hbRender(force) {
   .inv-cell .inv-nm{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);display:none;z-index:5;padding:.25em .55em;border-radius:5px;background:rgba(16,6,32,.94);border:2px solid #5a2a9a;color:#fff;font-size:.72em;line-height:1.2;white-space:nowrap;pointer-events:none;box-shadow:0 2px 0 rgba(0,0,0,.4)}
   .inv-cell:hover .inv-nm,.inv-cell.touch .inv-nm{display:block}
   .inv-grid{overflow:visible!important;max-height:none!important}
-  /* bolsa transparente por cima do jogo, como no Minecraft */
-  #inv.inv-new{background:rgba(14,9,26,.62)!important;box-shadow:0 0 0 100vmax rgba(0,0,0,.18)}
-  #inv.inv-new .gh{background:rgba(40,26,14,.55)!important}
-  #inv.inv-new .inv-doll,#inv.inv-new .inv-pv,#inv.inv-new .inv-eq{background:rgba(26,16,40,.45)!important}
-  #inv.inv-new .inv-grid{background:rgba(18,12,30,.35)!important}
-  #inv.inv-new .inv-cell:not(.empty){background:rgba(46,35,72,.7)!important}
-  #inv.inv-new .inv-cell.empty{background:rgba(26,19,40,.35)!important}
-  #inv.inv-new .inv-detail{background:rgba(20,14,34,.6)!important}
-  #inv.inv-new .inv-hb-row button{background:rgba(58,42,24,.6)}
   .inv-hb h4{text-align:center}
   .inv-hb{margin-top:.6em}
   .inv-hb h4{margin:0 0 .3em;font-size:.8em;color:#d8c8ff;font-weight:600}
