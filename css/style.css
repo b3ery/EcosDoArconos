@@ -7148,3 +7148,37 @@ body.calm .shout {
   position: sticky;
   bottom: 0;
 }
+
+/* ==========================================================================
+   COMPUTADOR: BOTÕES MAIORES (mouse e telas grandes)
+   ========================================================================== */
+@media (min-width: 900px) and (min-height: 560px) and (hover: hover) {
+  #fsb,
+  #optb,
+  #goalb {
+    font-size: 1.25em !important;
+    min-width: 2.1em;
+    min-height: 2.1em;
+    padding: 0.2em 0.5em !important;
+    opacity: 0.92 !important;
+  }
+  #fsb { top: 13% !important; }
+  #optb { top: 20% !important; }
+  #goalb { top: 27% !important; }
+  .tbtn {
+    font-size: 1.05em;
+    padding: 0.3em 0.7em;
+    min-width: 2.8em;
+    min-height: 2.2em;
+    opacity: 0.92;
+  }
+  #battle .brow button {
+    font-size: 1.08em;
+    min-height: 2.5em;
+  }
+  #choice button,
+  #dialog button {
+    font-size: 1.08em;
+    min-height: 2.4em;
+  }
+}
