@@ -5,7 +5,7 @@
  *  2. Três revelações (com 2, 4 e 6 runas): Vesper quebrou uma lasca da runa
  *     antes de se perder e a escondeu num berço de Cinzaluz; o eco passou de
  *     geração em geração até você. É o último pedaço bom de Vesper.
- *  3. Falas por dom: Odelia, Nyx, os Guardiões e o Silenciador reagem ao seu
+ *  3. Falas por dom: Odelia, os Guardiões e o Silenciador reagem ao seu
  *     elemento.
  *  4. Textos que ainda não conheciam a Fênix do Farol (abertura, Odelia,
  *     Serpente fraca contra a Chama).
@@ -15,7 +15,7 @@
  *  7. Epílogo que lembra a sua jornada.
  *  8. Dublagem: as falas novas do Narrador entram no roteiro.
  * Modifica (envolve) funções de outros arquivos: applyStoryAdjustments,
- * buildVoiceScript, crewDrawList, enterZone, GUARD_PRE, INTRO, nyxSay,
+ * buildVoiceScript, crewDrawList, enterZone, GUARD_PRE, INTRO,
  * possessGuardian, rewardGuardian, silencerMeeting, startEpilogue,
  * startPlayerTurn, update.
  */
@@ -58,46 +58,40 @@ const FRAG_REVEAL = [
     ],
   },
 ];
-/** Falas de cada dom: Odelia (abertura), Nyx, Guardiões, Silenciador e o momento da luta final. */
+/** Falas de cada dom: Odelia (abertura), Guardiões, Silenciador e o momento da luta final. */
 const DOM_TALK = {
   lava: {
     odelia: "Lava... A Chama que se escondeu debaixo da terra para não ser apagada. Muito esperta.",
-    nyx: "Você cheira a vulcão. Então é verdade: ainda sobrou um pedaço da Chama por aí.",
     guard: "Esse calor em você... não é a Chama inteira. É só uma brasa teimosa.",
     sil: "Eu lembro dessa brasa. Eu a arranquei da Chama com as minhas próprias mãos. Ainda queima?",
     final: "A brasa dentro de você se recusa a apagar. O Silêncio tenta abafá-la, e ela só cresce.",
   },
   gelo: {
     odelia: "Gelo... A Maré que parou para esperar. Ela sempre foi a mais paciente das runas.",
-    nyx: "Ficou mais frio aqui do nada. É você? Então ainda sobrou um pedaço da Maré.",
     guard: "Esse frio em você... é a Maré congelada esperando o degelo.",
     sil: "Esse frio... eu congelei a Maré para ela não fugir de mim. Um pedaço fugiu mesmo assim.",
     final: "O gelo em você não derrete. O Silêncio bate nele e se parte em mil pedaços.",
   },
   raio: {
     odelia: "Raio... O Vento que guardou uma tempestade dentro do peito. Prepare-se para não dormir à noite.",
-    nyx: "Seu cabelo está arrepiado. Isso é eco do Vento, não é? Achei que ele tinha morrido.",
     guard: "Esse estalo em você... é o Vento que aprendeu a trovejar.",
     sil: "Esse estalo... eu calei o Vento, mas esqueci de calar o trovão dele.",
     final: "O trovão dentro de você explode. Nenhum silêncio aguenta um raio caindo.",
   },
   metal: {
     odelia: "Metal... O coração da Terra, duro demais para quebrar. Combina com você.",
-    nyx: "Você pisa pesado, como quem carrega uma montanha. Eco da Terra, aposto.",
     guard: "Esse peso em você... é o coração de ferro da Terra.",
     sil: "Esse ferro... eu tentei derreter a Terra. O coração dela não quis derreter.",
     final: "O ferro dentro de você não dobra. O Silêncio empurra, e você continua de pé.",
   },
   cristal: {
     odelia: "Cristal... A Luz presa numa pedra para não se perder no escuro. Bonito.",
-    nyx: "Você brilha um pouco no escuro, sabia? Eco da Luz. Eu achava que ela tinha acabado.",
     guard: "Esse brilho em você... é a Luz guardada dentro de um cristal.",
     sil: "Esse brilho... eu apaguei a Luz inteira. Menos esse pedacinho escondido numa pedra.",
     final: "O cristal em você reflete a luz das seis runas de uma vez. O Silêncio não tem onde se esconder.",
   },
   veneno: {
     odelia: "Veneno... A Sombra que aprendeu a se defender. Cuidado: ela morde quem a subestima.",
-    nyx: "Tem algo amargo no ar perto de você. Eco da Sombra. Até que combina com você.",
     guard: "Esse amargo em você... é a Sombra que virou espinho.",
     sil: "Esse amargo... eu bebi a Sombra inteira. Um gole ficou para trás, e ele me envenena até hoje.",
     final: "O veneno em você corre também no Silêncio. Ele treme, enfraquece, recua.",
@@ -257,13 +251,6 @@ function epilogueRecap() {
     if (fragOn() && B && GUARD_REGION[type] && !GUARD_PRE[type]) setTimeout(() => battle === B && battleLog(`${ENEMIES[type].nome}: "${DOM_TALK[player.dom].guard}"`), 2600);
     return r;
   };
-  if (typeof nyxSay === "function") {
-    const nyBase = nyxSay;
-    nyxSay = function (lines, cb) {
-      if (fragOn() && Array.isArray(lines) && lines[0] && /capa verde-escura está agachada/.test(lines[0][1] || "")) lines = [lines[0], lines[1], DOM_TALK[player.dom].nyx, ...lines.slice(2)];
-      return nyBase.call(this, lines, cb);
-    };
-  }
   const smBase = silencerMeeting;
   silencerMeeting = function (start) {
     if (!fragOn()) return smBase.apply(this, arguments);

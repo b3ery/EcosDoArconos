@@ -2,8 +2,7 @@
  * ECOS DO ARCANO — pos-jogo.js (modo História)
  *  1. Créditos com "fotos" dos momentos da sua jornada.
  *  2. Livro de Lendas: toda a lore que você descobriu, para reler.
- *  3. Arco final da Nyx: depois de zerar, ela pede ajuda para recuperar a voz.
- *  4. Vozes dos personagens: Odelia, Vesper e Nyx entram no roteiro de dublagem.
+ *  4. Vozes dos personagens: Odelia e Vesper entram no roteiro de dublagem.
  *  5. Viagem rápida pelos altares já visitados.
  *  6. Montaria do Grifo: depois de libertá-lo, ele te leva voando.
  *  7. O clima muda o caminho: lagos congelam na neve; pontes alagam na tempestade.
@@ -329,37 +328,12 @@ function startDaily() {
   };
 }
 
-/* ===================== 3. O ARCO FINAL DA NYX ===================== */
-ENEMIES.ecoNyx = Object.assign({}, ENEMIES.nyx3, { nome: "O Eco que Roubou a Voz", hp: 360, atk: 19, xp: 300, cor: "#3a1f5a" });
-ENEMY_LEVELS.ecoNyx = { base: 11, min: 11, boss: true };
-const nyxArcOn = () => pjOn() && player.finished && player.nyx && player.nyx.ally && !player.nyx.dead;
-const lilySpot = () => spotOf("pantano", "voz-da-nyx");
-function nyxArcTick() {
-  if (!nyxArcOn() || player.flags.nyxArc || game.mode !== "world" || game.dialog || game.cine || player.zone !== "vila") return;
-  player.flags.nyxArc = 1;
-  saveGame();
-  say([
-    ["Nyx", "Ei. Posso te pedir uma coisa? Só uma."],
-    ["Nyx", "A minha voz voltou... mas não inteira. Tem um pedaço dela preso no Pântano, na Ilha dos Lírios. Eu ouço ele de noite."],
-    ["Nyx", "O Silêncio deixou um eco lá. Ele canta com a MINHA voz. Me ajuda a trazer ela de volta?"],
-    ["", "Nova missão: vá ao Pântano das Brumas e procure o lírio que canta."],
-  ]);
-}
-const NYX_SONG = [
-  ["", "O eco se desfaz em mil notas. Elas voam pelo pântano e entram, uma por uma, na garganta de Nyx."],
-  ["Nyx", "...Ah. AH. É... é a minha voz. A minha de verdade."],
-  ["", "Pela primeira vez, Nyx canta. É desafinado, é baixinho, e é a coisa mais bonita que o pântano ouviu em trezentos anos."],
-  ["Nyx", "Obrigada. Eu nunca disse isso pra ninguém. Obrigada."],
-];
-
 /* ===================== 1. CRÉDITOS COM FOTOS ===================== */
 function journeyMoments() {
   const out = [],
     f = player.guardFate || {};
   for (const [type, nm] of [["ent", "Ent"], ["fenixf", "Fênix"], ["serpente", "Serpente"], ["grifo", "Grifo"], ["basilisco", "Basilisco"], ["leviata", "Leviatã"]])
     if (f[type]) out.push({ draw: type, t: nm, s: f[type] === "vilao" ? "Você arrancou a runa" : ["fenixf", "serpente"].includes(type) ? "Você a libertou" : "Você o libertou" });
-  const N = player.nyx || {};
-  if (N.s1) out.push({ draw: "nyx1", t: "Nyx", s: N.dead ? "Caiu nos Picos" : N.ally ? (player.flags.nyxVoz ? "Cantou de novo" : "Virou aliada") : "Seguiu o próprio caminho" });
   if (player.dom && DONS[player.dom]) out.push({ glyph: player.dom, t: DONS[player.dom].nome, s: player.flags.domAwake ? "O seu dom despertou" : "O seu dom" });
   out.push({ draw: "silenciador", t: "O Silenciador", s: player.villainEnd ? "Você tomou o lugar dele" : player.flags.ecoEnd ? "Vesper voltou inteiro" : "Vesper foi libertado" });
   return out;
@@ -396,11 +370,9 @@ function openLegends() {
 }
 
 /* ===================== 4. VOZES DOS PERSONAGENS ===================== */
-const NYX_LINES = ["Então você é a pessoa que a velha Odelia mandou. Achei que seria mais alta.", "Meu nome é Nyx. O Silenciador me paga em silêncio, e eu gosto do pagamento.", "As runas são dele. Volta pra casa, aprendiz, antes que alguém se machuque.", "Você de novo. Tem noção de quanta gente queria estar no seu lugar? Escolhida, ensinada, protegida...", "Eu fui uma criança que perdeu a voz numa febre. Ninguém me ouvia. O Silenciador foi o único que veio.", "...Não faz isso. Não finge que se importa.", "(Ela hesita um segundo a mais do que devia.) Em guarda!", "Lado errado? Só existe o lado de quem te escuta.", "Vem!", "Por quê...? Eu tentei te machucar duas vezes.", "...Escuta. Quando a máscara dele rachar, ele fica com medo. Medo de verdade. Bate com força nessa hora.", "E aprendiz... obrigada. Faz muito tempo que eu não digo isso.", "Claro. Todo mundo vai embora. Eu já devia saber.", "Você me ouviu quando ninguém ouvia. Agora eu escolho o meu lado.", "Vamos calar esse Silêncio. Lá em cima, eu luto com você.", "Ele me deu a voz dele. Agora eu falo o que ele quer. Que bonito, não é?", "Se você quer subir, vai ter que passar por mim.", "Tch... Sorte de principiante.", "Isso não acabou, aprendiz. Eu sempre chego antes.", "...Você é muito estranha, sabia?", "(Ela some na névoa, mas olha para trás uma vez.)", "Ele prometeu que eu nunca mais ficaria sem voz... e eu fiquei sem nada.", "Sobe. Termina isso. Eu... vou estar torcendo. Do meu jeito."];
 if (typeof VOICE_SECTIONS !== "undefined") {
   VOICE_SECTIONS.ODE = { n: "Arquimaga Odelia", quando: "Falas da Odelia que não mudam com o seu nome ou elemento.", dir: "Voz de mulher sábia e cansada, com carinho de irmã mais velha. Às vezes firme, às vezes chorosa." };
   VOICE_SECTIONS.VES = { n: "Vesper", quando: "Sonhos, ecos e o fim da história.", dir: "Voz de homem jovem e cansado, como quem carrega um peso há trezentos anos. Nos sonhos, quase sussurrado." };
-  VOICE_SECTIONS.NYV = { n: "Nyx", quando: "Encontros com a Nyx e o arco final dela.", dir: "Voz jovem, irônica e afiada. No fim, quando a voz volta, mais suave e insegura." };
   const vb = buildVoiceScript;
   buildVoiceScript = function () {
     const S = vb();
@@ -411,10 +383,8 @@ if (typeof VOICE_SECTIONS !== "undefined") {
     const said = (arr, who) => arr.filter((l) => l[0] && l[0].startsWith(who)).map((l) => l[1]);
     const ode = [...said(EPILOGUE, "Arquimaga Odelia"), "Vesper... quebrou uma runa? Ele nunca faria isso. A não ser que... a não ser que fosse para salvá-la.", "Ele sempre foi assim. Estragava uma coisa pequena para proteger uma grande.", "Um berço em Cinzaluz. Trezentos anos e eu nunca procurei no lugar mais óbvio.", "Ele escondia as coisas importantes nas mãos das crianças. Dizia que ninguém desconfia de quem ainda não sabe falar.", "Então ainda existe um pedaço bom dele. E está em você.", "Aprendiz... obrigada por carregar o meu irmão até aqui. Agora leve ele para casa."];
     const ves = [...VESPER_DREAMS.flatMap((D) => D.lines.filter((l) => l[0] === "Vesper").map((l) => l[1])), ...said(EPILOGUE, "Vesper"), ...said(ECO_END, "Vesper"), "Se você achou isto... então deu certo. Obrigado, pequeno."];
-    const nyx = [...NYX_LINES, ...NYX_SONG.filter((l) => l[0] === "Nyx").map((l) => l[1]), "Ei. Posso te pedir uma coisa? Só uma.", "A minha voz voltou... mas não inteira. Tem um pedaço dela preso no Pântano, na Ilha dos Lírios. Eu ouço ele de noite.", "O Silêncio deixou um eco lá. Ele canta com a MINHA voz. Me ajuda a trazer ela de volta?"];
     add("ODE", ode, "Odelia");
     add("VES", ves, "Vesper");
-    add("NYV", nyx, "Nyx");
     return S;
   };
   if (typeof indexVoices === "function") indexVoices();
@@ -510,9 +480,6 @@ function applyPjSettings() {
         ]);
       }
       if (z === "vila" && near(dailySpot(), x, y)) return startDaily();
-      if (nyxArcOn() && player.flags.nyxArc && !player.flags.nyxVoz && z === "pantano" && near(lilySpot(), x, y)) {
-        return say([["", "Um lírio da névoa canta sozinho... com a voz da Nyx. A névoa se junta e forma uma figura."]], () => ((game.nyxArcFight = true), startBattle("ecoNyx", null)));
-      }
     }
     return iaBase(x, y);
   };
@@ -522,7 +489,6 @@ function applyPjSettings() {
       const z = player.zone;
       if (player.finished && z === "torre" && near(infSpot(), x, y)) return "Torre Infinita";
       if (z === "vila" && near(dailySpot(), x, y)) return player.dailyDay === player.day ? "Desafio do dia (feito)" : "Desafio do dia";
-      if (nyxArcOn() && player.flags.nyxArc && !player.flags.nyxVoz && z === "pantano" && near(lilySpot(), x, y)) return "O lírio que canta";
     }
     return tgBase(x, y);
   };
@@ -530,11 +496,9 @@ function applyPjSettings() {
   walkable = function (z, x, y) {
     if (z === player.zone && pjOn()) {
       const s = sagaCache["vila|desafio-do-dia"],
-        t = sagaCache["torre|torre-infinita"],
-        l = sagaCache["pantano|voz-da-nyx"];
+        t = sagaCache["torre|torre-infinita"];
       if (z === "vila" && s && s[0] === x && s[1] === y) return false;
       if (z === "torre" && player.finished && t && t[0] === x && t[1] === y) return false;
-      if (z === "pantano" && l && l[0] === x && l[1] === y && nyxArcOn() && player.flags.nyxArc && !player.flags.nyxVoz) return false;
     }
     return wk(z, x, y);
   };
@@ -570,47 +534,7 @@ function applyPjSettings() {
         ctx.restore();
       };
     }
-    if (z === "pantano" && nyxArcOn() && player.flags.nyxArc && !player.flags.nyxVoz) {
-      const [x, y] = lilySpot();
-      list.push({
-        y: y + 0.01,
-        draw: () => {
-          ctx.fillStyle = `rgba(200,170,255,${0.3 + 0.2 * Math.sin(t * 3)})`;
-          ctx.beginPath();
-          ctx.arc(x * T + 16, y * T + 16, 18, 0, 7);
-          ctx.fill();
-          ctx.fillStyle = "#f0e8ff";
-          for (let i = 0; i < 5; i++) ctx.fillRect(x * T + 16 + Math.cos(i * 1.25) * 6 - 2, y * T + 14 + Math.sin(i * 1.25) * 6 - 2, 4, 4);
-        },
-      });
-    }
   };
-  const upBase = update;
-  update = function () {
-    const r = upBase.apply(this, arguments);
-    if (pjOn()) nyxArcTick();
-    if (game.nyxArcFight && !battle && game.mode === "world" && !game.dialog) game.nyxArcFight = game.nyxArcStarted ? null : game.nyxArcFight;
-    return r;
-  };
-  const sbBase = startBattle;
-  startBattle = function (type) {
-    const r = sbBase.apply(this, arguments);
-    if (type === "ecoNyx" && battle) game.nyxArcStarted = true;
-    return r;
-  };
-  const prBase = applyPostBattleRewards;
-  applyPostBattleRewards = function (enemy, type) {
-    const nyxWin = battle && battle.type === "ecoNyx";
-    const r = prBase.apply(this, arguments);
-    if (nyxWin) {
-      player.flags.nyxVoz = true;
-      game.nyxArcFight = null;
-      saveGame();
-      setTimeout(() => say(NYX_SONG), 900);
-    }
-    return r;
-  };
-  ACHIEVEMENTS.push(["nyxVoz", "A voz de verdade", "Ajude a Nyx a recuperar a voz inteira.", "heart", () => !!(player.flags || {}).nyxVoz]);
   ACHIEVEMENTS.push(["torre10", "Sem fim", "Chegue ao andar 10 da Torre Infinita.", "flag", () => (player.infBest || 0) >= 10]);
   ACHIEVEMENTS.push(["desafio7", "Desafiante", "Vença 7 Desafios do dia.", "sword", () => (player.dailyWins || 0) >= 7]);
 

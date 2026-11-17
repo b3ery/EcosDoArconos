@@ -10,7 +10,7 @@
  *     possuído. O fragmento volta para Vesper e o traz de volta inteiro.
  *  6. Chefes Antigos: um por região, escondido (só aparece de perto).
  *  7. Baús Rúnicos: um por região, só abrem com uma runa que vem depois.
- *  8. Nyx e os Chefes Antigos trocam de fraqueza no meio da luta.
+ *  8. Os Chefes Antigos trocam de fraqueza no meio da luta.
  *  9. Golpe em dupla: o melhor amigo da turma ataca junto com o seu dom.
  * 10. Recapitulação ao voltar para o jogo.
  * 11. Missões (Q) separadas por capítulo.
@@ -234,7 +234,7 @@ function ecoEndScene(W, H, t) {
       B.guardAlly = "Ent Guardião";
       setTimeout(() => battle === B && battleLog("✦ As raízes do Ent atravessam o chão da Torre! Ele veio lutar do seu lado."), 2400);
     }
-    if (OLD_TYPES.includes(type) || /^nyx/.test(type)) B.canShift = true;
+    if (OLD_TYPES.includes(type)) B.canShift = true;
     return r;
   };
   const etBase = enemyTurn;

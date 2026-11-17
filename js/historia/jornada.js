@@ -218,20 +218,17 @@ function crewReactLine(id, type) {
   let l = pool[hashStr(id + type) % pool.length].replace("a/o", genderWord("o", "a", "e"));
   const sil = (player.silenced || [])[0];
   if (sil && NPCS[sil] && hashStr(id) % 2) l += ` ...E a ${shortName(sil)}? Ela não fala mais. Dá um aperto ver.`;
-  if (player.nyx && player.nyx.ally && hashStr(id) % 3 === 0) l += " E que história é essa de você andar com uma caçadora de capa verde?";
   return l;
 }
 
 /* ===================== JORNADA (J) ===================== */
 function journeyHTML() {
   const F = player.flags || {},
-    N = player.nyx || {},
     S = player.siege || {};
   const row = (ic, t, d) => `<div class="jr-row">${iconHTML(ic, 18)}<div><b>${t}</b><small>${d}</small></div></div>`;
   const GU = [["bosque", "Ent"], ...(player.dom ? [["farol", "Fênix"]] : []), ["pantano", "Serpente"], ["picos", "Grifo"], ["mina", "Basilisco"], ["porto", "Leviatã"]];
   const cards = Object.entries(CHAPTER_CARDS).map(([id, c]) => `<span class="jr-chip ${(player.cards || []).includes(id) ? "on" : ""}">${c[0]}: ${c[1]}</span>`).join("");
   const guards = GU.map(([z, n]) => `<span class="jr-chip ${player.guards.includes(z) ? "on" : ""}">${player.guards.includes(z) ? "✓ " : ""}${n}</span>`).join("");
-  const nyxTxt = !N.s1 ? "Você ainda não cruzou com ela." : N.dead ? "Ela caiu nos Picos. Por sua mão." : N.ally ? "Aliada. Ela luta do seu lado." : N.final ? "Vocês se enfrentaram na Torre. Ela seguiu o próprio caminho." : `Confiança: ${"♥".repeat(Math.max(0, N.trust || 0)) || "nenhuma"} (precisa de 2 para ela ficar do seu lado)`;
   const sg = (k, a, b) => (S[k] && S[k] !== "andando" && S[k] !== "pulado" ? `Você salvou ${shortName(S[k])}; ${shortName(S[k] === a ? b : a)} perdeu a voz${(player.silenced || []).includes(S[k] === a ? b : a) ? "" : " (já voltou)"}.` : "Ainda não aconteceu.");
   const encs = ENCOUNTERS.map((e) => `<span class="jr-chip ${e.id in enc() ? "on" : ""}">${e.who}${e.id in enc() ? ": " + enc()[e.id] : ""}</span>`).join("");
   const kael = { ajudou: "Você ficou do lado dele.", exilado: "Você contou para a Odelia e ele foi embora.", perdido: player.flags.kaelSalvo ? "Ele se perdeu, mas você o salvou na Torre." : "Ele se perdeu no Silêncio." }[F.kaelChoice] || "Ainda não decidido.";
@@ -241,7 +238,6 @@ function journeyHTML() {
   <h3>Capítulos</h3><div class="jr-chips">${cards}</div>
   <h3>Guardiões</h3><div class="jr-chips">${guards}</div>
   <h3>Pessoas</h3>
-  ${row("star", "Nyx, a Caçadora de Runas", nyxTxt)}
   ${row("sword", "Instrutor Kael", kael)}
   ${row("book", "Professor Honda e o diário", honda)}
   ${row("sparkle", "Sonhos com Vesper", `${player.dreams || 0} de ${VESPER_DREAMS.length}${F.dreamPromise ? " · você prometeu lembrar dele" : ""}`)}
@@ -373,7 +369,6 @@ function ambientTick(dt) {
 
 /* ===================== CONQUISTAS NOVAS ===================== */
 ACHIEVEMENTS.push(
-  ["nyxAliada", "Ninguém fica para trás", "Faça a Nyx lutar do seu lado na Torre.", "heart", () => !!(player.nyx && player.nyx.ally)],
   ["cerco", "Escudo de Cinzaluz", "Sobreviva aos dois ataques do Silêncio à vila.", "armor", () => !!(player.siege && player.siege.c1done && player.siege.c2done)],
   ["estrada", "Gente da estrada", "Viva 5 encontros pelo caminho.", "flag", () => Object.keys(player.enc || {}).length >= 5],
   ["sonhos", "Sonhando com Vesper", "Tenha todos os sonhos com Vesper.", "sparkle", () => (player.dreams || 0) >= VESPER_DREAMS.length],

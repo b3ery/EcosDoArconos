@@ -26,7 +26,6 @@ const VOICE_SECTIONS = {
   TOR: { n: "A Torre do Silêncio", quando: "Chegada à Torre e a lembrança que aparece na porta.", dir: "Grave e misterioso. Medo contido." },
   GUA: { n: "Guardiões libertados", quando: "Cena da runa voltando, logo depois de vencer cada Guardião.", dir: "Sussurrado e nostálgico, como um eco antigo. As duas frases no mesmo áudio." },
   LEM: { n: "Lembranças dos irmãos", quando: "Lembranças em tom sépia ao achar páginas do diário de Vesper.", dir: "Voz de memória: suave, um pouco mais lenta, com carinho. As falas entre aspas podem ganhar um toque de voz de criança." },
-  NYX: { n: "Nyx, a Caçadora de Runas", quando: "Encontros com a Nyx (Bosque, Pântano, Picos e Torre) e o destino dela no final.", dir: "Tenso e visual, como quem descreve uma cena de filme. Nas três últimas (epílogo), tom de conto." },
   CER: { n: "O Silêncio ataca Cinzaluz", quando: "Invasões à vila.", dir: "Urgente, ritmo mais rápido, quase sem ar." },
   EST: { n: "Gente pelo caminho e pedidos", quando: "Encontros na estrada e missões sem luta.", dir: "Narrador próximo, de conversa. Leve nas cenas alegres, seco nas cenas cruéis." },
   SON: { n: "Sonhos com Vesper", quando: "Ao dormir, quando Vesper aparece em sonho.", dir: "Bem baixo, flutuante, como se estivesse longe." },
@@ -50,7 +49,7 @@ function buildVoiceScript() {
   if (typeof GUARD_ECHO !== "undefined") Object.entries(GUARD_ECHO).forEach(([g, l]) => add("GUA", g.toUpperCase(), l.join(" "), { cue: "guard:" + g, nota: (ENEMIES[g] || {}).nome || g }));
   if (typeof FLASHBACKS !== "undefined") FLASHBACKS.forEach((F, i) => add("LEM", two(i + 1), `${F.t}. ${F.lines.join(" ")}`, { cue: "fb:" + F.t, nota: `Lembrança ${i + 1}: ${F.t}` }));
   const loose = typeof VOICE_LOOSE !== "undefined" ? VOICE_LOOSE : {};
-  for (const sec of ["NYX", "CER", "EST", "SON"]) (loose[sec] || []).forEach((t, i) => add(sec, two(i + 1), t));
+  for (const sec of ["CER", "EST", "SON"]) (loose[sec] || []).forEach((t, i) => add(sec, two(i + 1), t));
   add("SON", two((loose.SON || []).length + 1), "Você sonha...", { cue: "sonho", nota: "Tela do sonho, antes das falas de Vesper" });
   if (typeof LANDMARKS !== "undefined") LANDMARKS.forEach((L) => add("LUG", L.id.toUpperCase(), L.lore, { nota: `${L.n} (${(ZONES[L.z] || {}).nome || L.z})` }));
   if (typeof PUZZLES !== "undefined") PUZZLES.forEach((P) => add("QC", P.id.toUpperCase(), P.win, { nota: P.n }));

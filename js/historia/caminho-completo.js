@@ -97,27 +97,20 @@ const NEW_STEPS = {
   ent: [puzzleStep(PZ_CODE, "Abra o Cofre de Vesper no Bosque", "O Ent está preso por um selo antigo. A chave está num cofre de runas, num pedestal do Bosque Murmurante.")],
   // antes do Porto (depois de contar à Odelia)
   porto1: [
-    calmStep("tortas", "Descubra quem roubou as tortas da Dona Cocada", "A vila está abalada e a Dona Cocada precisa de alguém de cabeça fria."),
-    calmStep("carta", "Encontre a carta rasgada da Dona Flor", "O vento espalhou a carta mais preciosa da Dona Flor pela vila."),
     puzzleStep(PZ_MOSAIC, "Monte o Mosaico de Vesper na vila", "Um mosaico antigo da vila esconde uma lembrança dos irmãos."),
   ],
   // antes da Serpente
   serp: [puzzleStep(PZ_LIGHTS, "Acenda o Selo das Runas no Pântano", "A Serpente dorme atrás de um selo de dezesseis runas, num pedestal do Pântano das Brumas.")],
   // antes de ir a Pedravale (depois de contar à Odelia)
-  serra1: [
-    calmStep("bardo", "Ajude o Bardo Lírio a lembrar a canção", "O Silêncio comeu metade das canções da vila."),
-    calmStep("enigmas", "Resolva os Enigmas da Biblioteca", "A Bibliotecária Iara guarda os segredos da Academia atrás de charadas."),
-  ],
+  serra1: [],
   // antes do Grifo
   grif: [puzzleStep(PZ_SCALE, "Equilibre a Balança dos Anões em Pedravale", "O caminho do Grifo está selado pelos anões. Só abre para quem equilibrar a balança deles.")],
   // antes de contar que a barreira caiu
-  r4: [calmStep("ervas", "Colete as ervas raras para a Curandeira Maíra", "Os feridos do Silêncio precisam de remédio: uma erva no Bosque, uma no Pântano e uma nos Picos.")],
+  r4: [],
   // antes do Leviatã
   levi: [puzzleStep(PZ_PIPES, "Conserte os Canais do Porto", "O Leviatã dorme no cais, preso pelos canais secos. Faça a água voltar a correr.")],
   // antes da Torre
   sile: [
-    calmStep("entregas", "Faça as entregas da Rosa antes do pão esfriar", "Cinzaluz precisa ficar de pé até o fim."),
-    calmStep("lia", "Ajude a Lia a falar com o Bardo", "Antes da última luta, a vila merece um pouco de coragem e amor."),
     {
       id: "x-lugares",
       get t() {
