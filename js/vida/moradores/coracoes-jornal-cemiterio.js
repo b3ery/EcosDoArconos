@@ -218,14 +218,15 @@ OVERLAY_MODES.hearts = "hearts";
   };
   mk("jnb", "scroll", "Jornal", () => openPaper());
   mk("htb", "heart", "Corações", () => openHearts("deck"));
+  mk("calb", "clock", "Calendário", () => openCalendar());
   const st = document.createElement("style");
   st.textContent = `
   .lifeb{position:absolute;left:1%;z-index:6;display:none;align-items:center;gap:.35em;font-size:.82em;padding:.25em .55em;opacity:.92}
   .lifeb i{display:none;position:absolute;right:-4px;top:-4px;width:11px;height:11px;border-radius:50%;background:#ff4a5a;border:2px solid #fff}
   .lifeb.new i{display:block}
-  #jnb{top:27%}#htb{top:33.5%}
+  #jnb{top:27%}#htb{top:33.5%}#calb{top:40%}
   body.tallui .lifeb,body.ontitle .lifeb{display:none!important}
-  @media (max-height:520px){.lifeb span{display:none}.lifeb{font-size:.75em}#jnb{top:30%}#htb{top:39%}}
+  @media (max-height:520px){.lifeb span{display:none}.lifeb{font-size:.75em}#jnb{top:30%}#htb{top:39%}#calb{top:48%}}
   #hearts{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:30;background:rgba(10,6,18,.72)}
   .ht-box{width:min(94%,26em);max-height:94%;overflow:auto;background:linear-gradient(#2a1838,#1a1028);border:3px solid #ff6a9a;border-radius:16px;padding:.7em;color:#fff;box-shadow:0 8px 0 rgba(0,0,0,.4)}
   .ht-tabs{display:flex;gap:.35em;margin-bottom:.6em}.ht-tabs button{flex:1;font-size:.85em;padding:.35em}.ht-tabs button.on{background:#ff6a9a;color:#2a0a18}.ht-tabs #htx{flex:0 0 2.4em}
@@ -268,7 +269,7 @@ OVERLAY_MODES.hearts = "hearts";
     if (acc < 0.3) return r;
     acc = 0;
     const show = !!(player && player.name && lifeMode() && game.mode === "world" && !game.dialog && !game.cine);
-    for (const id of ["jnb", "htb"]) byId(id).style.display = show ? "flex" : "none";
+    for (const id of ["jnb", "htb", "calb"]) byId(id).style.display = show ? "flex" : "none";
     if (show) {
       const n = (player.news || []).length + ":" + ((player.news || []).slice(-1)[0] || {}).t;
       byId("jnb").classList.toggle("new", (player.news || []).length > 0 && player.paperSeen !== n);
@@ -284,3 +285,27 @@ OVERLAY_MODES.hearts = "hearts";
 })();
 
 /* O cemitério e a capela ficam em capela-e-cemiterio.js. */
+
+/* ===================== CALENDÁRIO COM OS EVENTOS NOVOS ===================== */
+{
+  const deBase = dayEvents;
+  dayEvents = function (d) {
+    const ev = deBase.apply(this, arguments);
+    if (!lifeMode()) return ev;
+    const alive = (id) => NPCS[id] && !(typeof isDead === "function" && isDead(id));
+    const C = player.council;
+    if (C && C.next === d) ev.push(["flag", C.prov ? "Primeira eleição para Presidente" : "Eleição para Presidente", "Apuração na praça. Candidatura em Ações → Eleição."]);
+    if (d % 3 === 1 && alive("andressa")) ev.push(["scroll", "Exposição dos Poemas do Pedro Poeta", "Biblioteca, à noite. Organização: Andressa."]);
+    if (d % 4 === 2 && alive("mylena")) ev.push(["note", "Noite de Arte no Ateliê", "Quadros, música e retrato ao vivo com a Mylena."]);
+    if (d % 5 === 3 && alive("marcos") && typeof todaysCondemned === "function") {
+      const keep = player.day;
+      player.day = d;
+      const c = todaysCondemned();
+      player.day = keep;
+      ev.push(["skull", `Execução: ${c.nm}`, `Meio-dia, praça do castelo. O General Marcos lê a sentença (${c.crime}).`]);
+    }
+    for (const w of (player.soc && player.soc.wed) || []) if (w.day === d && !w.done && w.inv && w.inv !== "-") ev.push(["ring", `Casamento de ${shortName(w.a)} e ${shortName(w.b)}`, `Templo da Luz, 17h.${w.inv === "sim" ? " Você confirmou presença!" : ""}`]);
+    for (const f of (player.funerals && player.funerals.list) || []) if (f.day === d && !f.done) ev.push(["candle", `Velório de ${shortName(f.id)}`, `Capela e Cemitério, 10h.${f.inv === "sim" ? " Você confirmou presença." : ""}`]);
+    return ev;
+  };
+}
