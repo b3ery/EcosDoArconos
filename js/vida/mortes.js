@@ -707,6 +707,18 @@ function drawDeathScene() {
     if (D.fx === "sangue") drawFx("sangue", W, H, t, cx, cy);
     // O corpo.
     const fall = Math.min(1, t / 0.8);
+    if (D.env === "forca") {
+      // pendurado na corda, balançando devagar
+      const G = H * 0.62,
+        rx = W / 2 + 21.5,
+        ry = G - 138 + Math.min(1, t / 0.4) * 8;
+      ctx.save();
+      ctx.translate(rx, ry);
+      ctx.rotate(Math.sin(t * 1.6) * 0.08 * Math.max(0.2, 1 - t / 8));
+      rect(-1.5, -10, 3, 12, "#c8b48a");
+      drawSprite(heroRects(d.look, "down", null), -32, 0, 4, false);
+      ctx.restore();
+    }
     ctx.save();
     ctx.translate(cx, D.bed ? cy - 40 : cy - 14);
     if (D.water) ctx.translate(0, Math.min(40, t * 14));
@@ -715,7 +727,7 @@ function drawDeathScene() {
     const tint = (c, a) => (/^#[0-9a-f]{6}$/i.test(c) ? shade(c, a) : c);
     if (D.frozen) rects = rects.map(([x, y, w, h, c]) => [x, y, w, h, tint(c, 0.35)]).concat([[2, 2, 12, 14, "rgba(190,230,255,.45)"]]);
     if (D.burnt) rects = rects.map(([x, y, w, h, c]) => [x, y, w, h, tint(c, -0.55)]);
-    if (!D.buried || t < 1.4) drawSprite(rects, -32, -32, 4, false);
+    if ((!D.buried || t < 1.4) && D.env !== "forca") drawSprite(rects, -32, -32, 4, false);
     ctx.restore();
     if (D.water) rect(0, cy + 6, W, H - cy, "rgba(40,90,140,.6)");
     if (D.buried) drawFx("pedras", W, H, Math.min(t, 1.6), cx, cy);
