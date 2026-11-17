@@ -781,10 +781,10 @@ function drawDeathScene() {
     ctx.font = '700 19px "Pixelify Sans", sans-serif';
     ctx.fillText(d.name.slice(0, 16), gx, gy - 20);
     ctx.font = '600 13px "Pixelify Sans", sans-serif';
-    ctx.fillText(`${d.born} – ${d.age} anos`, gx, gy);
+    ctx.fillText(d.born === "" ? `${d.age} anos` : `${d.born} – ${d.age} anos`, gx, gy);
     ctx.font = '700 11px "Pixelify Sans", sans-serif';
     ctx.fillStyle = "#5a1a24";
-    ctx.fillText(d.title.slice(0, 30), gx, gy + 20);
+    ctx.fillText((d.stoneT || d.title).slice(0, 30), gx, gy + 20);
     ctx.fillStyle = "#24202e";
     ctx.font = '500 11px "Pixelify Sans", sans-serif';
     let line = "",
@@ -832,7 +832,7 @@ function drawDeathScene() {
     ctx.fillText(d.title, W / 2, 40);
     ctx.font = '600 13px "Pixelify Sans", sans-serif';
     ctx.fillStyle = d.novo ? "#ffe066" : "#bfb6d8";
-    ctx.fillText(`${d.novo ? "Nova morte descoberta! " : ""}Livro das Mortes: ${d.count}/${DEATH_IDS.length}`, W / 2, 64);
+    ctx.fillText(d.sub != null ? d.sub : `${d.novo ? "Nova morte descoberta! " : ""}Livro das Mortes: ${d.count}/${DEATH_IDS.length}`, W / 2, 64);
     if (t > 7) {
       ctx.font = '600 14px "Pixelify Sans", sans-serif';
       ctx.fillStyle = `rgba(255,255,255,${0.5 + 0.5 * Math.sin(t * 4)})`;
