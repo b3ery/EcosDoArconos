@@ -54,7 +54,9 @@ function registerContact(src, rel) {
     hat: src.hat ?? null,
     hair: src.hair,
     ps: src.ps || pickOne(CONTACT_PERSONALITIES),
-    fav: pickOne(CONTACT_FAVS),
+    fav: src.fav || pickOne(CONTACT_FAVS),
+    age: src.age || null,
+    want: src.want || null,
   };
   player.contacts.push(c);
   defineContact(c);
