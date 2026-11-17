@@ -113,15 +113,14 @@ function playVoice(e) {
  * Cada faixa do jogo procura audio/musica/<arquivo>.mp3. Por padrão o arquivo
  * tem o nome da faixa; MUSIC_FILES liga várias faixas a um arquivo só (a
  * música não recomeça ao passar de uma região para outra que usa o mesmo). */
-const MUSIC_FILES = {
-  final: "batalha-final",
-  cancao: "arcana",
-};
+// As músicas personalizadas foram retiradas: o jogo volta à trilha que ele mesmo compõe.
+// (Se um dia quiser de novo, é só pôr audio/musica/<faixa>.mp3: o jogo usa sozinho.)
+const MUSIC_FILES = {};
 // A Canção Arcana: a faixa que toca quando ela volta ao mundo.
 TRACKS.cancao = TRACKS.titulo;
 /* A música tema: "Épocas Sombrias" em tudo enquanto o mundo está em silêncio;
  * quando a Canção Arcana volta (final da história), "Arcana" vira o tema. */
-const THEME_TRACKS = ["titulo", "vila", "noite", "aventura", "floresta", "pantano", "serra", "mina", "porto", "torre", "casa"];
+const THEME_TRACKS = [];
 function arcanaBack() {
   if (!player || player.villainEnd) return false; // no final de vilão o mundo continua nas sombras
   return !!(player.finished || game.ep || game.rollDone);
