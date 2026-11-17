@@ -47,7 +47,7 @@ function cemGatePos() {
   for (const [x, y] of [[b.x + b.w, b.y + b.h], [b.x - 1, b.y + b.h], [b.x + b.w, b.y + b.h + 1], [b.x - 1, b.y + b.h + 1]]) if (walkable("vila", x, y)) return (cemGate = [x, y]);
   return null;
 }
-const cemOn = () => lifeMode() && player && player.name;
+const cemOn = () => !!(player && player.name);
 const at = (p, x, y) => p && p[0] === x && p[1] === y;
 function cemLabel(x, y) {
   if (!cemOn()) return null;
@@ -375,3 +375,55 @@ function drawCemGate() {
     }
   };
 })();
+
+/* ===================== NO MAPA ===================== */
+/** Uma cruz no mapa (M) e no minimapa mostra onde fica a Capela e o Cemitério. */
+{
+  const dmBase = drawMinimap;
+  drawMinimap = function (big, t) {
+    const r = dmBase.apply(this, arguments);
+    const g = cemOn() && player.zone === "vila" && cemGatePos();
+    if (!g) return r;
+    const z = ZONES.vila;
+    const s = big ? Math.min(560 / z.w, 330 / z.h) : Math.min(96 / z.w, 72 / z.h);
+    const ox = big ? Math.round(viewWidth / 2 - (z.w * s) / 2) : Math.round(viewWidth - 8 - z.w * s),
+      oy = big ? Math.round(236 - (z.h * s) / 2) : 40;
+    const cx = ox + (g[0] + 0.5) * s,
+      cy = oy + (g[1] + 0.5) * s,
+      k = big ? 5 : 3;
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#1a1420";
+    ctx.fillRect(cx - k / 2 - 1, cy - k * 1.6 - 1, k + 2, k * 3.2 + 2);
+    ctx.fillRect(cx - k * 1.3 - 1, cy - k * 0.8 - 1, k * 2.6 + 2, k + 2);
+    ctx.fillStyle = "#e8e0ff";
+    ctx.fillRect(cx - k / 2, cy - k * 1.6, k, k * 3.2);
+    ctx.fillRect(cx - k * 1.3, cy - k * 0.8, k * 2.6, k);
+    if (big) {
+      ctx.font = '700 13px "Pixelify Sans", sans-serif';
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#e8e0ff";
+      ctx.strokeStyle = "#1a1420";
+      ctx.lineWidth = 3;
+      ctx.strokeText("Capela e Cemitério", cx + 10, cy + 4);
+      ctx.fillText("Capela e Cemitério", cx + 10, cy + 4);
+    }
+    ctx.restore();
+    return r;
+  };
+}
+/* Primeira vez na vila: avisa onde fica. */
+{
+  let told = false;
+  const ezBase = enterZone;
+  enterZone = function () {
+    const r = ezBase.apply(this, arguments);
+    if (!told && player && player.name && player.zone === "vila" && !(player.flags && player.flags.cemTip)) {
+      told = true;
+      player.flags = player.flags || {};
+      player.flags.cemTip = true;
+      setTimeout(() => toast("Novo: Capela e Cemitério, pelo portão de arco ao lado do Templo da Luz (a cruz branca no mapa, tecla M).", 5200), 4000);
+    }
+    return r;
+  };
+}
