@@ -288,8 +288,15 @@
     if (!COMMON.has(b.style) || b.flats || b.big || b.small || (player && player.zone && player.zone.startsWith("pais-"))) return dbBase.apply(this, arguments);
     const famous = b.name && !/Casa para alugar|Casa à venda/.test(b.name);
     const mine = typeof isMyHomeBld === "function" && isMyHomeBld(b);
-    if (famous || mine || b.w < 4 || b.h < 3) return dbBase.apply(this, arguments);
+    if (famous || b.w < 4 || b.h < 3) return dbBase.apply(this, arguments);
     const L = look(b);
+    // casa comprada continua com a mesma cara; a pintura que você escolher vai por cima
+    const paint = mine && player.paint && player.paint[mine];
+    if (paint) {
+      if (paint.ext) L.wall = paint.ext;
+      if (paint.roof) ((L.roof = paint.roof), (L.r2 = shade(paint.roof, 0.18)));
+      if (paint.beam) L.beam = paint.beam;
+    }
     if (b._form == null) assignForms(player.zone);
     if (b._form != null) L.form = b._form;
     const F = FORMS[L.form];

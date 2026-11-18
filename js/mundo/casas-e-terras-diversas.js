@@ -316,10 +316,13 @@
     const mine = typeof isMyHomeBld === "function" && isMyHomeBld(b);
     const BIG = ["castle", "fortaleza", "palacio", "templo", "celeiro", "moinho", "farol", "mina"];
     // no exterior, todo prédio comum segue o estilo da terra (lojas também)
-    const can = (COMMON.has(b.style) && !famous && !mine) || (country() && !BIG.includes(b.style));
+    const can = (COMMON.has(b.style) && !famous) || (country() && !BIG.includes(b.style));
     if (!can) return dbBase.apply(this, arguments);
     const S0 = BUILDING_STYLES[b.style];
     let V = variantFor(b);
+    // casa comprada não perde o desenho: só a pintura escolhida muda as cores
+    const paint = mine && player.paint && player.paint[mine];
+    if (paint) V = Object.assign({}, V, paint.ext ? { wall: paint.ext } : {}, paint.roof ? { roof: paint.roof, r2: shade(paint.roof, 0.18) } : {}, paint.beam ? { beam: paint.beam } : {});
     // casinha de dois andares: nunca de toras nem de teto plano
     if (b.flats && (V.logs || V.flat)) V = Object.assign({}, V, TYPES.palha, { logs: false, flat: false });
     BUILDING_STYLES[b.style] = Object.assign({}, S0, V);
