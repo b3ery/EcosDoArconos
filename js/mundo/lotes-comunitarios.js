@@ -38,7 +38,9 @@
     salao: ["banco"],
     atelie: ["cavalete", "banco"],
     _: ["caixotes", "carroca", "barril", "banco"],
+    casa: ["banco", "lenha"],
   };
+  const HOUSE = new Set(["casa", "casa2", "home", "casebre", "sobrado", "mansao"]);
   const SKIP = new Set(["casa", "casa2", "home", "casebre", "sobrado", "mansao", "terreno"]);
   const YARD_SOLID = new Set(["porao", "lenha", "banco", "latrina", "colmeias", "galpao", "galinheiro", "poco", "forno", "pombal", "lago", "pomar", "placa", "chiqueiro"]);
   function solidPlans(Z) {
@@ -107,7 +109,9 @@
     });
     const free = (x, y) => m[y] && m[y][x] === "." && !near(x, y) && !otherWall(x, y) && !M.has(x + "," + y);
     for (const b of Z.town.bld) {
-      if (SKIP.has(b.style) || b.plan || b.lot) continue;
+      // casas com quintal próprio (plan) ou já em lote planejado ficam como estão;
+      // as outras casas do centro também ganham o seu lote
+      if (b.style === "terreno" || b.plan || b.lot) continue;
       cur = b;
       // fundos e lados: sebe
       const hedge = [];
@@ -130,14 +134,14 @@
       const ring = [];
       for (let x = b.x - 1; x <= b.x + b.w; x++) ring.push([x, b.y - 1], [x, b.y + b.h]);
       for (let y = b.y; y < b.y + b.h; y++) ring.push([b.x - 1, y], [b.x + b.w, y]);
-      for (const [x, y] of ring) if (paved(x, y)) (M.set(x + "," + y, "patio"), O.set(x + "," + y, b));
+      for (const [x, y] of ring) if (paved(x, y)) (M.set(x + "," + y, y === b.y + b.h && b.door.includes(x) ? "caminho" : "patio"), O.set(x + "," + y, b));
       // floreira nos dois cantos da frente, quando o canto é calçada
       for (const x of [b.x - 1, b.x + b.w]) {
         const y = b.y + b.h;
         if (M.get(x + "," + y) === "patio" && !b.door.some((dx) => Math.abs(dx - x) <= 1)) M.set(x + "," + y, "floreira");
       }
       // cada lote com as coisas do próprio ofício (diversidade de estruturas)
-      const kit = KIT[b.style] || KIT._;
+      const kit = KIT[b.style] || (HOUSE.has(b.style) ? KIT.casa : KIT._);
       const spots = [];
       for (let y = b.y + 1; y < b.y + b.h; y++) for (const x of [b.x + b.w, b.x - 1]) if (M.get(x + "," + y) === "patio") spots.push([x, y]);
       for (let x = b.x + 1; x < b.x + b.w - 1; x += 2) if (M.get(x + "," + (b.y - 1)) === "sebe") spots.push([x, b.y - 1]);
@@ -215,7 +219,7 @@
     const X = x * TILE,
       Y = y * TILE;
     const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
-    if (k.startsWith("p:")) return drawKit(k.slice(2), X, Y, R, x, y, t);
+    if (k.startsWith("p:")) return drawKit(k.slice(2), X, Y, R, x, y, t, OWNER[z] && OWNER[z].has(x + "," + y) ? z : null);
     if (k === "sebe") {
       const n = (dx, dy) => at(z, x + dx, y + dy) === "sebe";
       const l = n(-1, 0) ? 0 : 3,
@@ -232,24 +236,44 @@
       R(5, 15, 22, 10, "#5a3a22");
       for (let i = 0; i < 5; i++) (R(7 + i * 4, 13, 2, 6, "#3a6a2a"), R(6 + i * 4, 10 + (i % 2) * 2, 4, 4, ["#e86a8a", "#f2c14e", "#f6f2ea", "#b48aff", "#ff9a4a"][(i + x) % 5]));
     } else if (k === "grama") R(0, 0, 32, 32, "rgba(140,190,90,.16)");
-    else if (k === "patio" || k === "floreira") {
-      // pátio do lote: lajotas mais claras e meio-fio de pedra na beira do terreno
+    else if (k === "patio" || k === "floreira" || k === "caminho") {
+      // lote no estilo The Sims: gramado, caminho de pedra até a porta e
+      // cerquinha branca nos lados e nos fundos (a frente fica aberta, com meio-fio)
       const me = OWNER[z] && OWNER[z].get(x + "," + y);
       const own = (dx, dy) => {
         const nx = x + dx,
           ny = y + dy;
         const q = at(z, nx, ny);
-        if (q === "patio" || q === "floreira" || (q && q.startsWith("p:"))) return OWNER[z].get(nx + "," + ny) === me;
+        if (q === "sebe" || q === "canteiro" || q === "grama") return true; // a sebe já fecha o lote
+        if (q === "patio" || q === "floreira" || q === "caminho" || (q && q.startsWith("p:"))) return OWNER[z].get(nx + "," + ny) === me;
         return !!me && nx >= me.x && nx < me.x + me.w && ny >= me.y && ny < me.y + me.h;
       };
-      R(0, 0, 32, 32, "rgba(240,228,200,.32)");
-      for (let r = 0; r < 4; r++) for (let q = 0; q < 2; q++) R(q * 16 + (r % 2) * 8, r * 8, 15, 7, (r + q + x + y) % 3 ? "rgba(255,248,230,.14)" : "rgba(120,100,70,.12)");
-      const curb = "#8a8274",
-        hi = "#c9c2b2";
-      if (!own(0, -1)) (R(0, 0, 32, 3, curb), R(0, 0, 32, 1, hi));
-      if (!own(0, 1)) (R(0, 29, 32, 3, curb), R(0, 29, 32, 1, hi));
-      if (!own(-1, 0)) (R(0, 0, 3, 32, curb), R(0, 0, 1, 32, hi));
-      if (!own(1, 0)) (R(29, 0, 3, 32, curb), R(31, 0, 1, 32, hi));
+      if (k !== "caminho") {
+        dtBase.call(this, z, x, y, ".", t);
+        R(0, 0, 32, 32, "rgba(120,190,80,.18)");
+        for (let i = 0; i < 3; i++) R((x * 13 + i * 11) % 28, (y * 7 + i * 9) % 26 + 2, 2, 3, "#5f9a3e");
+      } else {
+        R(6, 0, 20, 32, "#cdbb98");
+        for (let r = 0; r < 4; r++) R(7 + (r % 2) * 4, r * 8 + 1, 14, 6, r % 2 ? "#b9a682" : "#ddd0b2");
+      }
+      const front = me && y >= me.y + me.h;
+      const post = "#f4efe4",
+        sh = "#9a9282";
+      const fenceH = (yy) => {
+        R(0, yy, 32, 3, post);
+        R(0, yy + 3, 32, 1, sh);
+        for (let i = 2; i < 32; i += 8) (R(i, yy - 6, 3, 10, post), R(i + 3, yy - 5, 1, 9, sh));
+      };
+      const fenceV = (xx) => {
+        R(xx, 0, 3, 32, post);
+        R(xx + 3, 0, 1, 32, sh);
+        for (let j = 2; j < 32; j += 8) R(xx - 1, j, 5, 3, post);
+      };
+      if (!own(0, -1)) fenceH(4);
+      if (!own(-1, 0)) fenceV(1);
+      if (!own(1, 0)) fenceV(28);
+      if (!own(0, 1) && front) (R(0, 29, 32, 3, "#8a8274"), R(0, 29, 32, 1, "#c9c2b2"));
+      else if (!own(0, 1)) fenceH(26);
       if (k === "floreira") {
         R(5, 12, 22, 16, "#6e6960");
         R(6, 13, 20, 6, "#4a3020");
@@ -258,8 +282,8 @@
       }
     }
   };
-  function drawKit(k, X, Y, R, x, y, t) {
-    R(0, 0, 32, 32, "rgba(240,228,200,.22)");
+  function drawKit(k, X, Y, R, x, y, t, z) {
+    if (z) (dtBase(z, x, y, ".", t), R(0, 0, 32, 32, "rgba(120,190,80,.18)"));
     R(4, 24, 26, 6, "rgba(0,0,0,.22)"); // sombra
     const wood = "#7a5230",
       dk = "#4a2e17";
