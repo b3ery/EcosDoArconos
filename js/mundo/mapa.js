@@ -2076,119 +2076,7 @@ function interactAt(x, y) {
     return;
   }
   if (wk) {
-    choice(wk.nm + ", morador" + (player.zone === "vila" ? " de Cinzaluz" : ""), "Para e olha para você.", [
-      ...walkerContactItems(wk),
-      {
-        t: "Cumprimentar",
-        fn: () => {
-          say([
-            [
-              wk.nm,
-              fillN(
-                pickUnheard(
-                  "walk",
-                  ctxLines("").concat([
-                    wk.line,
-                    "Olá! Belo dia, não?",
-                    "Opa, tudo bem?",
-                    "Bom te ver por aqui!",
-                  ]),
-                ),
-              ),
-            ],
-          ]);
-          game.bubbles.push({
-            x: wk.x,
-            y: wk.y,
-            icon: "wave",
-            t: 2.4,
-          });
-        },
-      },
-      {
-        t: "Puxar conversa",
-        fn: () => {
-          if (Math.random() < 0.45) {
-            const gl = gossipLines();
-            say([
-              [wk.nm, "Sabe o que andam falando de você? " + gl[Math.floor(Math.random() * gl.length)]],
-              ["Você", ["Sério?!", "Quem falou isso?", "Hmpf. Fofoqueiros."][Math.floor(Math.random() * 3)]],
-            ]);
-            return;
-          }
-          const l = pickUnheard("walkpool", WALKER_POOL.concat(WALKER_LINES));
-          say([
-            [wk.nm, l],
-            [
-              "Você",
-              ["Sério?", "Que interessante!", "Hahaha, não acredito!", "Vou ficar de olho."][
-                Math.floor(Math.random() * 4)
-              ],
-            ],
-            [
-              wk.nm,
-              [
-                "Pois é! Até mais.",
-                "Bom papo! Cuide-se.",
-                "Volte sempre que quiser prosear.",
-                "Agora deixa eu ir, que a feira não espera.",
-              ][Math.floor(Math.random() * 4)],
-            ],
-          ]);
-        },
-      },
-      {
-        t: "Flertar ♥",
-        fn: () => {
-          say([
-            ["Você", "Você vem sempre por aqui?"],
-            [
-              "Morador",
-              [
-                "Hahaha! Que cantada antiga!",
-                "Ai, que vergonha! *sai rindo*",
-                "Sou casado, mas obrigado pelo elogio!",
-              ][Math.floor(Math.random() * 3)],
-            ],
-          ]);
-          game.bubbles.push({
-            x: wk.x,
-            y: wk.y,
-            icon: "blush",
-            t: 2.4,
-          });
-        },
-      },
-      {
-        t: "Partir para a briga ",
-        fn: () => startBrawl(null, wk.nm, wk),
-      },
-      {
-        t: "Ser grosseiro ",
-        fn: () => {
-          repAdd(-1);
-          player.rudeCount = (player.rudeCount || 0) + 1;
-          say([
-            ["Você", "Sai do meu caminho!"],
-            ["Morador", "Que grosseria! Vou contar pra todo mundo!"],
-          ]);
-          game.bubbles.push({
-            x: wk.x,
-            y: wk.y,
-            icon: "anger",
-            t: 2.4,
-          });
-          wk.flee = 4;
-          Object.keys(FRIENDS).forEach((k) => {
-            if (Math.random() < 0.3) player.rel[k] = Math.max(0, friendship(k) - 1);
-          });
-        },
-      },
-      {
-        t: "Sair",
-        fn: null,
-      },
-    ]);
+    walkerMenu(wk);
     return;
   }
   if (c === "D" && tw) {
@@ -2441,4 +2329,121 @@ function interactAt(x, y) {
       ],
     ]);
   }
+}
+
+/** Menu de quem anda pela rua (e de quem está dentro das lojas, sem ser contato). */
+function walkerMenu(wk) {
+  choice(wk.nm + ", morador" + (player.zone === "vila" ? " de Cinzaluz" : ""), "Para e olha para você.", [
+    ...walkerContactItems(wk),
+    {
+      t: "Cumprimentar",
+      fn: () => {
+        say([
+          [
+            wk.nm,
+            fillN(
+              pickUnheard(
+                "walk",
+                ctxLines("").concat([
+                  wk.line,
+                  "Olá! Belo dia, não?",
+                  "Opa, tudo bem?",
+                  "Bom te ver por aqui!",
+                ]),
+              ),
+            ),
+          ],
+        ]);
+        game.bubbles.push({
+          x: wk.x,
+          y: wk.y,
+          icon: "wave",
+          t: 2.4,
+        });
+      },
+    },
+    {
+      t: "Puxar conversa",
+      fn: () => {
+        if (Math.random() < 0.45) {
+          const gl = gossipLines();
+          say([
+            [wk.nm, "Sabe o que andam falando de você? " + gl[Math.floor(Math.random() * gl.length)]],
+            ["Você", ["Sério?!", "Quem falou isso?", "Hmpf. Fofoqueiros."][Math.floor(Math.random() * 3)]],
+          ]);
+          return;
+        }
+        const l = pickUnheard("walkpool", WALKER_POOL.concat(WALKER_LINES));
+        say([
+          [wk.nm, l],
+          [
+            "Você",
+            ["Sério?", "Que interessante!", "Hahaha, não acredito!", "Vou ficar de olho."][
+              Math.floor(Math.random() * 4)
+            ],
+          ],
+          [
+            wk.nm,
+            [
+              "Pois é! Até mais.",
+              "Bom papo! Cuide-se.",
+              "Volte sempre que quiser prosear.",
+              "Agora deixa eu ir, que a feira não espera.",
+            ][Math.floor(Math.random() * 4)],
+          ],
+        ]);
+      },
+    },
+    {
+      t: "Flertar ♥",
+      fn: () => {
+        say([
+          ["Você", "Você vem sempre por aqui?"],
+          [
+            "Morador",
+            [
+              "Hahaha! Que cantada antiga!",
+              "Ai, que vergonha! *sai rindo*",
+              "Sou casado, mas obrigado pelo elogio!",
+            ][Math.floor(Math.random() * 3)],
+          ],
+        ]);
+        game.bubbles.push({
+          x: wk.x,
+          y: wk.y,
+          icon: "blush",
+          t: 2.4,
+        });
+      },
+    },
+    {
+      t: "Partir para a briga ",
+      fn: () => startBrawl(null, wk.nm, wk),
+    },
+    {
+      t: "Ser grosseiro ",
+      fn: () => {
+        repAdd(-1);
+        player.rudeCount = (player.rudeCount || 0) + 1;
+        say([
+          ["Você", "Sai do meu caminho!"],
+          ["Morador", "Que grosseria! Vou contar pra todo mundo!"],
+        ]);
+        game.bubbles.push({
+          x: wk.x,
+          y: wk.y,
+          icon: "anger",
+          t: 2.4,
+        });
+        wk.flee = 4;
+        Object.keys(FRIENDS).forEach((k) => {
+          if (Math.random() < 0.3) player.rel[k] = Math.max(0, friendship(k) - 1);
+        });
+      },
+    },
+    {
+      t: "Sair",
+      fn: null,
+    },
+  ]);
 }
