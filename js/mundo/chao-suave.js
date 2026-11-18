@@ -462,6 +462,10 @@
     const M = new Map();
     const free = (x, y) => Z.map[y] && Z.map[y][x] === "." && !M.has(x + "," + y);
     for (const b of Z.town.bld) {
+      if (b.plan) {
+        for (const [k, kind] of Object.entries(b.plan)) M.set(k, { part: kind, b, plan: true });
+        continue;
+      }
       if (!HOMES.has(b.style) || b.small || (b.name && !/^Casa|Sítio|Fazenda|Mansão/.test(b.name))) continue;
       const hb = hsh(b.x * 7, b.y * 3 + z.length);
       const back = hb < 0.5 ? "porco" : hb < 0.75 ? "pomar" : "galinhas";
@@ -492,6 +496,7 @@
       Y = y * TILE;
     const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
     const k = C.part;
+    if (C.plan) return planTile(k, X, Y, R, x, y, t, C);
     if (k === "terreiro") {
       // terra batida, com o que a família usa todo dia
       R(0, 0, TILE, TILE, "#9a8258");
@@ -577,5 +582,171 @@
     if (C.right) (R(30, 0, 2, TILE, rail), R(29, 4, 3, 5, postC), R(29, 20, 3, 5, postC));
     if (C.far) (R(0, 1, TILE, 2, rail), R(0, 5, TILE, 2, rail), R(2, -2, 3, 10, postC), R(17, -2, 3, 10, postC));
     if (k !== "terreiro" && C.dy === 2) R(0, TILE - 2, TILE, 2, "rgba(60,40,20,.35)");
+  }
+
+  /* ----- o quintal planejado (Bairro dos Lotes) ----- */
+  const shadow = (X, Y, w) => ((ctx.fillStyle = "rgba(0,0,0,.22)"), ctx.beginPath(), ctx.ellipse(X + 16, Y + 28, w, 3, 0, 0, 7), ctx.fill());
+  function planTile(k, X, Y, R, x, y, t, C) {
+    const night = typeof nightAlpha === "function" && nightAlpha() > 0.25;
+    switch (k) {
+      case "grama":
+      case "gramado":
+        // grama aparada do lote, um pouco mais clara que a de fora
+        R(0, 0, 32, 32, "rgba(140,190,90,.18)");
+        if ((x + y) % 4 === 0) (R(8, 18, 1, 4, "#4a7a32"), R(10, 17, 1, 5, "#4a7a32"), R(12, 19, 1, 3, "#4a7a32"));
+        break;
+      case "flores":
+        R(2, 6, 28, 22, "#5a7a3a");
+        for (let i = 0; i < 8; i++) (R(4 + (i % 4) * 7, 8 + Math.floor(i / 4) * 10, 2, 6, "#3a6a2a"), R(3 + (i % 4) * 7, 6 + Math.floor(i / 4) * 10, 4, 4, ["#e86a8a", "#f2c14e", "#f6f2ea", "#b48aff"][(i + x + y) % 4]));
+        R(1, 27, 30, 2, "#9a9488");
+        break;
+      case "placa":
+        R(14, 10, 3, 18, "#5a3a1e");
+        R(5, 6, 22, 10, "#8a5e32");
+        R(6, 7, 20, 8, "#a8784a");
+        R(8, 10, 16, 1, "#4a2e17");
+        R(8, 12, 12, 1, "#4a2e17");
+        break;
+      case "ervas":
+        R(2, 4, 28, 24, "#5a3a1e");
+        R(3, 5, 26, 22, "#6b4a2a");
+        for (let i = 0; i < 6; i++) (R(5 + (i % 3) * 9, 7 + Math.floor(i / 3) * 10, 6, 7, ["#6aa84a", "#8ac05a", "#5a9a7a"][i % 3]), R(7 + (i % 3) * 9, 6 + Math.floor(i / 3) * 10, 2, 2, i % 2 ? "#b48aff" : "#f6f2ea"));
+        break;
+      case "horta":
+        R(0, 2, 32, 28, "#6b4a2a");
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) (R(2 + c * 8, 4 + r * 9, 5, 5, ["#4a8a3a", "#6aa84a", "#8a4a8a"][(r + c + x) % 3]), R(3 + c * 8, 4 + r * 9, 3, 1, "#9ad06a"));
+        break;
+      case "porao":
+        // alçapão de madeira com batente de pedra, encostado na casa
+        R(4, 8, 24, 20, "#7a7468");
+        R(6, 10, 20, 16, "#5a3a1e");
+        R(6, 10, 9, 16, "#7a4f2a");
+        R(17, 10, 9, 16, "#7a4f2a");
+        for (const yy of [13, 22]) R(6, yy, 20, 2, "#3a3a3a");
+        R(13, 17, 2, 2, "#c9a040");
+        R(17, 17, 2, 2, "#c9a040");
+        break;
+      case "lenha":
+        shadow(X, Y, 12);
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 4 - r; c++) (R(3 + c * 6 + r * 3, 20 - r * 5, 5, 5, "#7a5a32"), R(4 + c * 6 + r * 3, 21 - r * 5, 2, 2, "#c9a06a"));
+        R(23, 20, 7, 7, "#6b4a2a");
+        R(26, 13, 1, 8, "#8a6a3a");
+        R(24, 13, 4, 2, "#9a9aa0");
+        break;
+      case "banco":
+        shadow(X, Y, 13);
+        R(5, 12, 22, 4, "#8a5e32");
+        R(5, 12, 22, 1, "#a8784a");
+        R(7, 16, 3, 9, "#5a3a1e");
+        R(22, 16, 3, 9, "#5a3a1e");
+        R(3, 22, 26, 3, "#7a4f2a");
+        R(11, 9, 4, 3, "#b8693a"); // caneco de barro
+        R(18, 10, 5, 2, "#e8d8b0");
+        break;
+      case "varal":
+        R(2, 4, 2, 24, "#6b4423");
+        R(28, 4, 2, 24, "#6b4423");
+        R(2, 6, 28, 1, "#c9b080");
+        for (let i = 0; i < 3; i++) R(6 + i * 8, 7, 6, 9 + (i % 2) * 2, ["#e8e0d0", "#c94a5a", "#5a7ab0"][(i + x) % 3]);
+        break;
+      case "latrina":
+        // casinha estreita de tábuas com a lua na porta, no fundo do terreno
+        shadow(X, Y, 9);
+        R(8, 4, 16, 24, "#7a5a32");
+        for (let i = 0; i < 4; i++) R(8 + i * 4, 4, 1, 24, "#5a3a1e");
+        R(6, 1, 20, 5, "#5a4a3a");
+        R(12, 12, 8, 16, "#5a3a1e");
+        ctx.fillStyle = "#f2e0a0";
+        ctx.beginPath();
+        ctx.arc(X + 16, Y + 9, 2.5, 0.6, 5.7);
+        ctx.fill();
+        break;
+      case "colmeias":
+        for (const ox of [3, 17]) {
+          shadow(X + ox - 9, Y, 6);
+          R(ox, 22, 12, 4, "#6b4423");
+          for (let r = 0; r < 4; r++) R(ox + r, 10 + r * 3, 12 - r * 2, 3, r % 2 ? "#c9a24a" : "#d9b45a");
+          R(ox + 5, 20, 2, 2, "#3a2414");
+        }
+        for (let i = 0; i < 4; i++) R(6 + ((t * 30 + i * 17) % 22), 4 + Math.sin(t * 6 + i) * 3, 2, 2, "#f2c14e");
+        break;
+      case "galpao":
+        shadow(X, Y, 14);
+        R(2, 8, 28, 20, "#7a5a32");
+        for (let i = 0; i < 7; i++) R(2 + i * 4, 8, 1, 20, "#5a3a1e");
+        R(0, 3, 32, 7, "#5a4a3a");
+        R(11, 15, 10, 13, "#4a2e17");
+        R(24, 14, 3, 12, "#8a8a96"); // ancinho encostado
+        break;
+      case "galinheiro":
+        R(2, 14, 14, 13, "#8a5e32");
+        R(1, 10, 16, 5, "#6b4423");
+        R(7, 20, 4, 7, "#3a2414");
+        for (let c = 0; c < 2; c++) {
+          const ox = 18 + c * 6 + Math.round(Math.sin(t * 3 + c + x) * 2),
+            peck = Math.sin(t * 5 + c) > 0.6 ? 2 : 0;
+          R(ox, 20, 6, 5, "#f6f2ea");
+          R(ox + 4, 17 + peck, 3, 3, "#f6f2ea");
+          R(ox + 5, 16 + peck, 1, 1, "#e03a3a");
+        }
+        break;
+      case "chiqueiro":
+        R(1, 6, 30, 22, "#7a6040");
+        R(1, 6, 30, 2, "#8a5e32");
+        R(1, 26, 30, 2, "#8a5e32");
+        const mx = Math.round(Math.sin(t * 0.8 + x) * 4);
+        R(7 + mx, 14, 14, 8, "#f2a8b0");
+        R(20 + mx, 15, 5, 5, "#f2a8b0");
+        R(24 + mx, 16, 2, 2, "#e08890");
+        R(22 + mx, 15, 1, 1, "#1a1a1a");
+        R(4, 20, 8, 4, "#5a4a30");
+        break;
+      case "poco":
+        shadow(X, Y, 13);
+        R(5, 16, 22, 12, "#8f897d");
+        R(5, 16, 22, 3, "#b8b2a4");
+        R(8, 18, 16, 3, "#2a5a8a");
+        R(6, 4, 2, 13, "#6b4423");
+        R(24, 4, 2, 13, "#6b4423");
+        R(4, 2, 24, 4, "#8c3b2e");
+        R(15, 6, 1, 7, "#c9b080");
+        R(13, 12, 5, 4, "#8a5a2e");
+        break;
+      case "forno":
+        // forno de pão de barro (só mansão: era caro e perigoso ter um)
+        shadow(X, Y, 14);
+        ctx.fillStyle = "#b8693a";
+        ctx.beginPath();
+        ctx.arc(X + 16, Y + 22, 13, Math.PI, 0);
+        ctx.fill();
+        R(3, 22, 26, 6, "#9a5a32");
+        R(11, 16, 10, 10, "#2a1a10");
+        R(12, 20, 8, 5, night ? "#ff8a3a" : "#5a2a1a");
+        R(22, 6, 4, 8, "#8a4a2a");
+        break;
+      case "pombal":
+        shadow(X, Y, 8);
+        R(14, 14, 4, 14, "#5a3a1e");
+        R(8, 4, 16, 12, "#f2eee4");
+        for (const ox of [10, 17]) R(ox, 8, 4, 4, "#3a2414");
+        R(6, 1, 20, 4, "#8c3b2e");
+        R(10 + Math.round(Math.sin(t * 2) * 6), 0, 3, 2, "#e8e8f0");
+        break;
+      case "lago":
+        R(0, 0, 32, 32, "#3f86c7");
+        R(0, 0, 32, 3, "#6ab0e0");
+        if ((x + y) % 2 === 0) (R(8, 12, 8, 5, "#3d8a3a"), R(11, 10, 3, 3, "#ff9ac8"));
+        R(4 + ((t * 8 + x * 9) % 20), 22, 4, 2, "#f2a83a"); // peixe
+        break;
+      case "pomar":
+        shadow(X, Y, 10);
+        R(15, 14, 3, 13, "#5a3a1e");
+        ctx.fillStyle = "#2e6a32";
+        circle(X + 16, Y + 11, 10);
+        ctx.fillStyle = "#4a8a3e";
+        circle(X + 13, Y + 8, 5);
+        for (let i = 0; i < 4; i++) R(9 + ((i * 7 + x) % 14), 5 + ((i * 5 + y) % 11), 3, 3, i % 2 ? "#e0403a" : "#f2a83a");
+        break;
+    }
   }
 })();

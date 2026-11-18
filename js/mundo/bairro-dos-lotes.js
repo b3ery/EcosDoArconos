@@ -1,20 +1,26 @@
 /**
  * ECOS DO ARCANO — bairro-dos-lotes.js
- * Cinzaluz cresce mais 56 colunas para o leste: o Bairro dos Lotes.
- * Referência: na vila medieval cada família tinha um lote do tamanho da sua
- * condição. Lote GRANDE (mansão): casa larga de dois andares, quintal fundo
- * (terreiro, horta, roça, bichos) e um jardim com pomar e poço. Lote MÉDIO:
- * casa com quintal. Lote PEQUENO: casinhas geminadas, coladas, sem quintal, e
- * com um vizinho morando em cima (escada de madeira por fora).
- * Três ruas de leste a oeste, ligadas por duas avenidas. Só monta o mapa; o
- * desenho dos quintais fica em chao-suave.js.
+ * O Bairro dos Lotes, planejado como os lotes do The Sims: cada casa tem o
+ * seu terreno retangular, cercado, de frente para a rua.
+ *  - RECUO: a casa não encosta na rua. Na frente fica um jardim com
+ *    caminho de pedra da rua até a porta e uma placa com o nome da família.
+ *  - QUINTAL nos fundos, com o que as casas medievais tinham de verdade:
+ *    latrina no fundo do terreno, colmeias, lenha, banco e mesa, varal,
+ *    galpão de ferramentas, alçapão do porão, horta de ervas, galinheiro ou
+ *    chiqueiro. Mansão ainda tem poço, forno de pão, pombal e lago de peixes.
+ *  - TAMANHOS: lote GRANDE (mansão, 13 de largura e quintal fundo), MÉDIO
+ *    (casa, 9 de largura) e PEQUENO (casinha geminada, 4 de largura, só o
+ *    jardinzinho da frente e um vizinho morando em cima).
+ * O mapa cresce 60 colunas para caber tudo com folga. O desenho do quintal
+ * fica em chao-suave.js; usar as coisas do quintal fica em quintais.js.
  */
 
 "use strict";
 
+const LOTES = { lots: [] };
 (function expandLotes() {
   const z = ZONES.vila;
-  const ADD = 56,
+  const ADD = 60,
     oldW = z.w,
     W = oldW + ADD;
   const m = z.map.map((r) => r.split(""));
@@ -27,60 +33,98 @@
   const fill = (x0, y0, x1, y1, c) => {
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) set(x, y, c);
   };
-  const X0 = oldW + 2;
-  // ruas e avenidas
-  fill(oldW - 2, 26, W - 1, 27, ",");
+  const X0 = oldW + 1;
+  // ruas: três de leste a oeste e três avenidas de norte a sul
+  for (const y of [26, 44, 60]) fill(oldW - 2, y, W - 2, y + 1, ",");
   m[26][W - 1] = ",";
   m[27][W - 1] = ",";
-  for (const y of [44, 60]) fill(oldW - 2, y, W - 2, y + 1, ",");
-  fill(X0, 2, X0 + 1, 61, ",");
-  const MID = X0 + 27;
-  fill(MID, 2, MID + 1, 61, ",");
-  fill(W - 4, 2, W - 3, 61, ",");
-  const LOT = {
-    L: { w: 8, h: 5, span: 11, depth: 7, style: "casa2", big: true },
-    M: { w: 5, h: 4, span: 7, depth: 5, style: "casa" },
-    S: { w: 3, h: 4, span: 3, depth: 0, style: "casa", small: true },
+  const AV = [X0, X0 + 29, W - 3];
+  for (const ax of AV) fill(ax, 2, ax + 1, 61, ",");
+  const TYPE = {
+    L: { w: 8, h: 5, span: 13, depth: 7, style: "casa2", big: true },
+    M: { w: 5, h: 4, span: 9, depth: 6, style: "casa" },
+    S: { w: 3, h: 4, span: 4, depth: 0, style: "casa", small: true },
   };
   const BANDS = [
-    { bottom: 25, segs: [["L", "M", "S", "S"], ["M", "S", "S", "S", "M"]] },
-    { bottom: 43, segs: [["S", "S", "S", "M", "M"], ["L", "M", "S"]] },
-    { bottom: 59, segs: [["M", "L", "S", "S"], ["S", "S", "M", "L"]] },
+    { road: 26, segs: [["L", "M", "S", "S"], ["M", "S", "S", "M"]] },
+    { road: 44, segs: [["S", "S", "S", "M", "M"], ["L", "M", "S"]] },
+    { road: 60, segs: [["M", "L", "S", "S"], ["S", "S", "M", "L"]] },
   ];
   const NAMES = ["Mansão dos Valmor", "Mansão Rosacruz", "Mansão dos Albuquerque", "Mansão Pedralva", "Mansão dos Trovador"];
+  const FAM = ["Família Ferreira", "Família Moleiro", "Família Pastora", "Família Tecelã", "Família Lenhador", "Família Vinhal", "Família Ribeiro", "Família Oleira", "Família Carvalho", "Família Bento", "Família Rosário", "Família Sardinha"];
   let id = 0,
-    nm = 0;
+    nm = 0,
+    fm = 0;
+  const hs = (a, b) => (((a * 73856093) ^ (b * 19349663)) >>> 0) % 1000 / 1000;
   for (const band of BANDS) {
     band.segs.forEach((seg, si) => {
-      let x = si === 0 ? X0 + 3 : MID + 3;
-      const limit = si === 0 ? MID - 1 : W - 5;
+      let x = AV[si] + 2;
+      const limit = AV[si + 1] - 1;
       for (const k of seg) {
-        const L = LOT[k];
-        if (x + L.span > limit + 1) break;
-        const bx = x + Math.floor((L.span - L.w) / 2),
-          by = band.bottom - L.h + 1;
-        const b = { id: "lt" + id++, style: L.style, x: bx, y: by, w: L.w, h: L.h, door: [bx + Math.floor(L.w / 2)], depth: L.depth };
-        if (L.big) ((b.big = true), (b.name = NAMES[nm++ % NAMES.length]));
-        if (L.small) ((b.small = true), (b.flats = true));
+        const T = TYPE[k];
+        if (x + T.span > limit) break;
+        const lx0 = x,
+          lx1 = x + T.span - 1;
+        const by = band.road - 3 - T.h + 1; // recuo de 2 linhas de jardim na frente
+        const bx = lx0 + Math.floor((T.span - T.w) / 2);
+        const b = { id: "lt" + id++, style: T.style, x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true };
+        if (T.big) ((b.big = true), (b.name = NAMES[nm++ % NAMES.length]));
+        if (T.small) ((b.small = true), (b.flats = true));
+        const fam = T.big ? b.name : FAM[fm++ % FAM.length];
+        const top = by - T.depth;
+        // cerca do lote (lados e fundo); a frente fica aberta no caminho
+        if (!T.small) {
+          for (let y = top - 1; y <= band.road - 1; y++) (set(lx0, y, "f"), set(lx1, y, "f"));
+          fill(lx0, top - 1, lx1, top - 1, "f");
+          for (let xx = lx0; xx <= lx1; xx++) if (Math.abs(xx - b.door[0]) > 0) set(xx, band.road - 1, "f");
+        }
         fill(b.x, b.y, b.x + b.w - 1, b.y + b.h - 1, "H");
         set(b.door[0], b.y + b.h - 1, "D");
         z.town.doors[b.door[0] + "," + (b.y + b.h - 1)] = b;
+        // caminho de pedra da porta até a rua
+        for (let y = b.y + b.h; y < band.road; y++) set(b.door[0], y, ",");
         z.town.bld.push(b);
-        // jardim da mansão: além do quintal, pomar, canteiros e um poço
-        if (L.big) {
-          const gy0 = by - L.depth - 1,
-            gy1 = Math.max(gy0 - 3, band.bottom - 16);
-          for (let y = gy0; y >= gy1; y--)
-            for (let xx = x; xx < x + L.span; xx++) {
-              if (y < 2) continue;
-              const r = (xx * 7 + y * 3) % 5;
-              set(xx, y, r === 0 ? "T" : r === 2 ? "w" : ".");
-            }
-          set(x + Math.floor(L.span / 2), gy0 - 1, "W");
+        // plano do quintal
+        const plan = {};
+        if (!T.small) {
+          const ix0 = lx0 + 1,
+            ix1 = lx1 - 1;
+          const cells = [];
+          for (let y = top; y < by; y++) for (let xx = ix0; xx <= ix1; xx++) cells.push([xx, y]);
+          const put = (xx, y, kind) => (plan[xx + "," + y] = kind);
+          const h0 = hs(lx0, band.road);
+          // junto da casa: porão, lenha, banco e mesa, varal
+          put(bx, by - 1, "porao");
+          put(bx + T.w - 1, by - 1, "lenha");
+          if (T.w >= 5) put(bx + 2, by - 1, "banco");
+          if (ix1 - ix0 >= 6) put(ix0, by - 1, "varal");
+          // meio: horta de ervas e canteiros
+          for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 3, h0 < 0.5 ? "ervas" : "horta");
+          if (T.depth >= 6) for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 4, h0 < 0.5 ? "horta" : "flores");
+          // fundo: latrina num canto, colmeias, galpão, bichos
+          put(ix1, top, "latrina");
+          put(ix0, top, "galpao");
+          put(ix0 + 1, top, h0 < 0.6 ? "colmeias" : "galinheiro");
+          if (ix1 - ix0 >= 4) put(ix1 - 2, top, h0 < 0.4 ? "chiqueiro" : "galinheiro");
+          if (T.big) {
+            put(ix0 + 2, top + 1, "poco");
+            put(ix1 - 1, by - 2, "forno");
+            put(ix0 + 4, top, "pombal");
+            for (let xx = ix0 + 5; xx <= ix0 + 7; xx++) (put(xx, top + 1, "lago"), put(xx, top + 2, "lago"));
+            put(ix1 - 1, top + 2, "pomar");
+            put(ix1 - 2, top + 2, "pomar");
+          }
+          for (const [xx, y] of cells) if (!plan[xx + "," + y]) plan[xx + "," + y] = "grama";
         }
-        // entre os lotes médios e grandes, uma faixa de cerca viva
-        if (!L.small) for (let y = by - L.depth; y < by + L.h; y++) set(x + L.span - 1, y, y < by ? "f" : ".");
-        x += L.span;
+        // jardim da frente: flores dos lados do caminho e a placa da família
+        const front = [];
+        for (let y = b.y + b.h; y < band.road - (T.small ? 0 : 1); y++)
+          for (let xx = lx0 + (T.small ? 0 : 1); xx <= lx1 - (T.small ? 0 : 1); xx++) if (xx !== b.door[0]) front.push([xx, y]);
+        for (const [xx, y] of front) plan[xx + "," + y] = (xx + y) % 3 === 0 ? "flores" : "gramado";
+        if (front.length) plan[front[0][0] + "," + front[0][1]] = "placa";
+        b.plan = plan;
+        LOTES.lots.push({ b, fam, x0: lx0, x1: lx1, top, road: band.road, size: k });
+        x += T.span + (T.small ? 0 : 1);
       }
     });
   }
