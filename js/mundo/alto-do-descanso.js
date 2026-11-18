@@ -11,7 +11,7 @@
 
 "use strict";
 
-const DESC_Y = 62; // primeira linha nova (antes da última faixa da vila)
+const DESC_Y = BAIRRO_Y + BAIRRO_H; // primeira linha nova (logo abaixo do Bairro das Flores)
 const DESC_H = 11;
 const DESC = {
   wall: { x0: 36, x1: 50, y0: DESC_Y + 1, y1: DESC_Y + 9 },

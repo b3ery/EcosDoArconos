@@ -152,5 +152,21 @@
     }
     Z.map = m.map((r) => r.join(""));
   }
+  // casas que já vieram com lote pronto (o Bairro das Flores) e os terrenos vazios
+  for (const zid of Object.keys(ZONES)) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.town || !Z.town.bld) continue;
+    let k = 0;
+    for (const b of Z.town.bld) if (b.plan && !b.lot) LOTES.yards.push({ b, fam: b.name || "Família " + FAMS[(k++ * 5 + 3) % FAMS.length], zid, size: "M", center: true });
+  }
+  if (typeof BAIRRO_LOTES !== "undefined") {
+    ZONES.vila.town.extraPlans = ZONES.vila.town.extraPlans || [];
+    for (const [id, L] of Object.entries(BAIRRO_LOTES))
+      if (L.empty) {
+        const b = { id: "terreno_" + id, plan: L.plan, x: L.x, y: L.y, w: L.w, h: L.h, door: [L.x], style: "terreno" };
+        ZONES.vila.town.extraPlans.push(b);
+        LOTES.yards.push({ b, fam: "Terreno vazio · à venda", zid: "vila", size: "M", center: true });
+      }
+  }
   for (const zid of Object.keys(ZONES)) if (zid === "vila" || zid === "porto" || zid === "serra" || zid === "solmar" || zid === "rosalva" || zid.startsWith("pais-")) yardsFor(zid);
 })();

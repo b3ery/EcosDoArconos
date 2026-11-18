@@ -461,7 +461,7 @@
     if (CROFT.has(z)) return CROFT.get(z);
     const M = new Map();
     const free = (x, y) => Z.map[y] && Z.map[y][x] === "." && !M.has(x + "," + y);
-    for (const b of Z.town.bld) {
+    for (const b of Z.town.bld.concat(Z.town.extraPlans || [])) {
       if (b.plan) {
         for (const [k, kind] of Object.entries(b.plan)) M.set(k, { part: kind, b, plan: true });
         continue;
