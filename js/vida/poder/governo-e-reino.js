@@ -434,3 +434,65 @@
     }
   };
 })();
+
+/* ===================== O REGIME E OS TRABALHADORES =====================
+   Cada regime pesa de um jeito na vida de quem trabalha:
+   - Monarquia: o imposto da Coroa decide (alto aperta o salário, baixo alivia).
+   - Monarquia constitucional: pouco melhor, com feriados respeitados.
+   - Democracia: salário melhor e trabalhador protegido (ninguém é obrigado a
+     nada).
+   - Comunismo: salário igual para todos os ofícios (o ganho de quem ganhava
+     muito cai, o de quem ganhava pouco sobe) e ração de pão todo dia.
+   - Ditadura: salário esmagado, turnos que cansam mais, e de vez em quando a
+     guarda leva todo mundo para a corveia (trabalho forçado sem pagar). */
+(() => {
+  const regime = () => {
+    if (!lifeMode()) return null;
+    if (player.council && player.council.chief === "player" && player.regime) return player.regime;
+    if (typeof isCommunist === "function" && isCommunist()) return "comunismo";
+    if (player.council && !player.council.prov) return "democracia";
+    return "monarquia";
+  };
+  window.workRegime = regime;
+  const MUL = { constitucional: 1.05, democracia: 1.12, ditadura: 0.75 };
+  const jpBase = jobPay;
+  jobPay = function (base) {
+    const r = regime();
+    let b = base;
+    if (r === "comunismo") b = (base + 14) / 2; // achata: todos ganham parecido
+    let m = MUL[r] || 1;
+    if (r === "monarquia") m = { alto: 0.85, baixo: 1.05 }[player.royalTax] || 1;
+    return jpBase.call(this, Math.max(1, b * m));
+  };
+  // turno cansa mais na ditadura
+  if (typeof addNeed === "function") {
+    const anBase = addNeed;
+    addNeed = function (k, v) {
+      if (k === "energy" && v < 0 && player.job && regime() === "ditadura") v *= 1.3;
+      return anBase.call(this, k, v);
+    };
+  }
+  const ndBase = onNewDay;
+  onNewDay = function () {
+    const r0 = ndBase.apply(this, arguments);
+    const r = regime();
+    if (!r) return r0;
+    if (r === "comunismo") ((player.food = Math.min(100, (player.food || 0) + 20)), setTimeout(() => toast("Ração do Fundo do Povo: um pão para cada família. (+20 fome)", 3500), 9500));
+    if (r === "ditadura" && Math.random() < 0.2) {
+      setTimeout(() => say([["Guarda do Regime", "Corveia! Todo trabalhador para a muralha. Quatro horas de pedra, sem pagamento. Quem reclamar vai para a masmorra."]], () => (typeof passTime === "function" && passTime(4, "Quatro horas carregando pedra para a muralha do ditador..."), addNeed("energy", -25), addNeed("fun", -15))), 10000);
+    }
+    return r0;
+  };
+  // o que os trabalhadores falam do regime (usado pelos moradores dos lotes)
+  window.workerTalk = (poor) => {
+    const r = regime();
+    const L = {
+      monarquia: poor ? ["A Coroa cobra imposto até da galinha. E a gente come o quê?", "Trabalho de sol a sol pra pagar o dízimo do castelo."] : ["Com a Coroa, se o imposto tá baixo, dá pra viver.", "A Rainha não é má. Os coletores é que são."],
+      constitucional: ["Agora tem conselho e feriado de verdade. Melhorou um pouco.", "A Rainha virou enfeite, mas o salário subiu."],
+      democracia: ["Agora a gente vota! O patrão não pode mais mandar embora por nada.", "Salário melhor e ninguém é obrigado a trabalhar doente."],
+      comunismo: poor ? ["Pela primeira vez ganho igual ao ferreiro! E tem pão todo dia.", "No Fundo do Povo, ninguém passa fome."] : ["Trabalho o dobro e ganho igual ao preguiçoso do lado.", "Meu ouro foi todo para o Fundo do Povo. Grande coisa."],
+      ditadura: ["*olha pros lados* Não posso falar... a guarda escuta tudo.", "Levaram meu marido pra corveia e não devolveram.", "Salário? Que salário. A gente trabalha pra não ser preso."],
+    }[r];
+    return L ? pk(L) : null;
+  };
+})();

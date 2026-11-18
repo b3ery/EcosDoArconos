@@ -171,7 +171,8 @@
       desconfiado: ["Quem é você? O que quer no meu lote?", "Hm. Pode falar daí mesmo."],
     }[p.mood] || ["Bom dia."];
     const extra = p.work ? [["", `${p.nm.split(" ")[0]} está ${WORKTXT[p.work] || "trabalhando"}.`]] : [];
-    say([...extra, [p.nm, pk(lines)], ...(typeof genLine === "function" && Math.random() < 0.4 ? [[p.nm, genLine(null)]] : [])]);
+    const pol = typeof workerTalk === "function" && Math.random() < 0.5 ? workerTalk(p.L.size === "S") : null;
+    say([...extra, [p.nm, pk(lines)], ...(pol ? [[p.nm, pol]] : typeof genLine === "function" && Math.random() < 0.4 ? [[p.nm, genLine(null)]] : [])]);
   }
   const tgBase = targetAt;
   targetAt = function (x, y) {
