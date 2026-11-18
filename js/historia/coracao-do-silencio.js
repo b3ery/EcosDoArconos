@@ -289,7 +289,7 @@
   /* ===================== LIGAÇÕES ===================== */
   const sbBase = startBattle;
   startBattle = function (type) {
-    if (type === "silenciador" && story() && !player.flags.coracaoDone && !game.heartPass && player.zone !== ZID) {
+    if (type === "silenciador" && story() && !player.flags.coracaoDone && !game.heartPass && player.zone === "torre") {
       enterHeart({ zone: player.zone, x: player.x, y: player.y });
       return;
     }
