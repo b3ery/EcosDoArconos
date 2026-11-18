@@ -1448,6 +1448,87 @@
     };
   }
 
+  /* ===================== A ESTANTE DO ÍNDICE (Biblioteca Caída) ===================== */
+  const IDX_BOOKS = [
+    ["Fogo", "#c94a4a"],
+    ["Água", "#3a74c9"],
+    ["Terra", "#7a5a2e"],
+    ["Ar", "#9ad0d8"],
+  ];
+  function perms(a) {
+    if (a.length <= 1) return [a];
+    return a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map((p) => [x, ...p]));
+  }
+  function makeClues(sol) {
+    const N = sol.length,
+      names = sol.slice();
+    const kinds = [
+      () => {
+        const i = Math.floor(Math.random() * (N - 1));
+        return { t: `O livro de ${sol[i]} fica logo à esquerda do de ${sol[i + 1]}.`, f: (p) => p.indexOf(sol[i]) + 1 === p.indexOf(sol[i + 1]) };
+      },
+      () => {
+        const a = Math.floor(Math.random() * N);
+        let b = Math.floor(Math.random() * N);
+        while (b === a) b = Math.floor(Math.random() * N);
+        const [x, y] = a < b ? [sol[a], sol[b]] : [sol[b], sol[a]];
+        return { t: `${x} fica em algum lugar à esquerda de ${y}.`, f: (p) => p.indexOf(x) < p.indexOf(y) };
+      },
+      () => {
+        const mid = sol.slice(1, N - 1);
+        const x = mid[Math.floor(Math.random() * mid.length)];
+        return { t: `${x} não fica em nenhuma das pontas.`, f: (p) => p.indexOf(x) > 0 && p.indexOf(x) < N - 1 };
+      },
+      () => {
+        const i = Math.random() < 0.5 ? 0 : N - 1;
+        return { t: `${sol[i]} fica na ${i === 0 ? "primeira" : "última"} posição.`, f: (p) => p[i] === sol[i] };
+      },
+    ];
+    const all = perms(names);
+    for (let tries = 0; tries < 200; tries++) {
+      const clues = [];
+      let left = all;
+      while (left.length > 1 && clues.length < 5) {
+        const c = kinds[Math.floor(Math.random() * kinds.length)]();
+        if (clues.some((q) => q.t === c.t)) continue;
+        const nl = left.filter(c.f);
+        if (nl.length < left.length) clues.push(c), (left = nl);
+      }
+      if (left.length === 1) return clues.map((c) => c.t);
+    }
+    return [`A ordem é ${sol.join(", ")}.`];
+  }
+  window.indexPuzzle = function (onDone) {
+    const sol = shuffle(IDX_BOOKS.map((b) => b[0]));
+    const clues = makeClues(sol);
+    const slots = Array.from({ length: 4 }, (_, i) => ({ x: 60 + i * 62, y: 110, w: 50, h: 70, book: null }));
+    const st = dragStage({
+      title: "A Estante do Índice",
+      sub: "Ponha os quatro livros na estante na ordem certa. As pistas estão gravadas na madeira:<br>" + clues.map((c) => "• " + c).join("<br>"),
+      time: 90,
+      ready: "Fechar a estante",
+      state: () => ({ items: shuffle(IDX_BOOKS).map(([n, c], i) => ({ x: 30 + i * 80, y: 196, w: 50, h: 40, label: n, c, tc: "#fff", n, sz: 10 })), slots }),
+      drop(S, it, p) {
+        for (const s of S.slots) if (s.book === it) s.book = null;
+        const sl = S.slots.find((s) => p.x > s.x - 8 && p.x < s.x + s.w + 8 && p.y > s.y - 20 && p.y < s.y + s.h + 20 && !s.book);
+        if (sl) (sl.book = it), (it.x = sl.x), (it.y = sl.y + 15), playSound(500, 0.04, "triangle");
+      },
+      draw(g) {
+        R(0, 0, W, H, "#2a2030");
+        R(44, 96, 264, 96, "#5a3a22");
+        for (const s of S.slots) R(s.x, s.y, s.w, s.h, "#2a1a10");
+        R(44, 186, 264, 8, "#8a6a3a");
+        S.slots.forEach((s, i) => T(String(i + 1), s.x + s.w / 2, s.y - 4, "#ffe08a", 10));
+        S.items.forEach(drawItem);
+      },
+      finish(S) {
+        if (S.slots.some((s) => !s.book)) return toast("Ainda falta livro na estante.", 1400), 0;
+        return S.slots.every((s, i) => s.book.n === sol[i]) ? 1 : 0;
+      },
+    });
+    run([st], (s, m) => onDone(s >= m * 0.9));
+  };
+
   /* ===================== QUAL GESTO PARA QUAL OFÍCIO ===================== */
   const isDrink = (m) => m && (m.drunk || m.water) && !m.food;
   const MAP = {
