@@ -2,7 +2,7 @@
  * ECOS DO ARCANO — marzoca-hiperfoco.js (Simulador)
  * O caos romântico da vila:
  *  - Personalidade FIEL: as meninas da turma (Andressa, Mylena, Julia, Malu e
- *    Júlia Oliveira) não pulam a cerca, não aceitam cantada e não largam o par.
+ *    Júlia Oliveira) e o Pedro Max não pulam a cerca, não aceitam cantada e não largam o par.
  *  - Lucas Marzoca tem hiperfoco no Matheus, no Marcos e no Luca: vai atrás
  *    deles pela vila, manda cantada, poema, flor... As esposas não gostam.
  *    Se a insistência der certo, vira namoro, briga, separação e até casamento.
@@ -15,7 +15,7 @@
 "use strict";
 
 (() => {
-  const FIEL = new Set(["andressa", "mylena", "julia", "malu", "juliaO"]);
+  const FIEL = new Set(["andressa", "mylena", "julia", "malu", "juliaO", "pedro"]);
   const FOCO = ["matheus", "marcos", "luca"];
   const isFiel = (id) => FIEL.has(id);
   window.isFiel = isFiel;
