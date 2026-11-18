@@ -421,7 +421,7 @@ function water(th, X, Y, t, h) {
       y = Y / TILE,
       wt = (a, b) => {
         const c = tileAt(player.zone, a, b);
-        return c === "~" || c === "=" || c === "F" || c === null;
+        return c === "~" || c === "=" || c === "F" || c === "#" || c === null;
       };
     const sc = shade(th.water, 0.45),
       dk = shade(th.water, -0.25);

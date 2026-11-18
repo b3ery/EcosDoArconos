@@ -120,18 +120,42 @@
     if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 4 + k * 6, Y - 8 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
     // musgo e telhas trocadas
     if (h % 3 === 0 && !V.flat) for (let k = 0; k < 5; k++) R(X + 14 + ((h >> k) % Math.max(1, W - 30)), Y + 6 + k * 6, 4, 2, k % 2 ? "#5a7a3a" : V.r2);
-    // andar de cima avançando sobre a rua (sobrado de cidade medieval)
-    if (h % 3 !== 2 && wallH > 36 && !V.flat && !V.logs) {
-      const up = Math.round(wallH * 0.48);
-      R(X - 4, wallTop, W + 8, up, V.wall);
-      R(X - 4, wallTop, W + 8, 3, V.beam);
-      R(X - 4, wallTop + up - 3, W + 8, 3, V.beam);
-      for (let k = 0; k <= b.w; k++) R(Math.min(X + W, X - 4 + k * TILE), wallTop, 3, up, V.beam);
-      if (!V.stone && !V.brick) for (let k = 0; k < b.w; k++) (R(X - 2 + k * TILE + 4, wallTop + 4, 2, up - 8, V.beam), R(X - 2 + k * TILE + 22, wallTop + 4, 2, up - 8, V.beam));
-      for (let k = 0; k < b.w; k++) (R(X + k * TILE + 11, wallTop + 6, 10, up - 12, "#4a2e17"), R(X + k * TILE + 12, wallTop + 7, 8, up - 14, nightAlpha() > 0.25 ? "#ffd98a" : "#5a7aa0"), R(X + k * TILE + 15, wallTop + 7, 2, up - 14, "#4a2e17"));
-      // mãos-francesas e a sombra do balanço sobre a parede de baixo
-      R(X - 4, wallTop + up, W + 8, 3, "rgba(0,0,0,.28)");
-      for (const bx of [X - 2, X + W - 1]) (R(bx, wallTop + up, 3, 6, V.beam));
+    // sobrado: um andar inteiro a mais, avançando sobre a rua, e o telhado em cima
+    if (h % 3 !== 2 && !V.flat && !V.logs) {
+      const ex = 34; // altura do andar de cima
+      const fy = Y + roofH - 6 - ex; // topo do andar novo
+      R(X - 4, fy, W + 8, ex, V.wall);
+      R(X - 4, fy, W + 8, 3, V.beam);
+      R(X - 4, fy + ex - 3, W + 8, 3, V.beam);
+      for (let k = 0; k <= b.w; k++) R(Math.min(X + W + 1, X - 4 + k * TILE), fy, 3, ex, V.beam);
+      if (!V.stone && !V.brick) for (let k = 0; k < b.w; k++) ((ctx.strokeStyle = V.beam), (ctx.lineWidth = 2), ctx.beginPath(), ctx.moveTo(X - 1 + k * TILE, fy + 3), ctx.lineTo(X + 13 + k * TILE, fy + ex - 3), ctx.stroke());
+      if (V.brick) for (let r = 0; r < ex / 6; r++) for (let k = 0; k < W / 12; k++) R(X - 4 + (r % 2) * 6 + k * 12, fy + 3 + r * 6, 11, 1, "rgba(60,20,10,.35)");
+      for (let k = 0; k < b.w; k++) {
+        const wx = X + k * TILE + 11;
+        R(wx - 1, fy + 8, 12, 16, "#4a2e17");
+        R(wx, fy + 9, 10, 14, nightAlpha() > 0.25 ? "#ffd98a" : "#5a7aa0");
+        R(wx + 4, fy + 9, 2, 14, "#4a2e17");
+        R(wx, fy + 15, 10, 1, "#4a2e17");
+        R(wx - 2, fy + 24, 14, 2, V.beam);
+      }
+      R(X - 4, fy + ex, W + 8, 3, "rgba(0,0,0,.3)"); // sombra do balanço
+      for (const bx of [X - 3, X + W - 1]) R(bx, fy + ex, 3, 7, V.beam);
+      // telhado de novo, mais alto
+      const rh = roofH;
+      const top = fy - rh + 6;
+      ctx.fillStyle = V.roof;
+      if (V.thatch) fillPolygon(X - 8, fy + 2, X + W + 8, fy + 2, X + W / 2, top - 18);
+      else fillPolygon(X - 6, fy + 2, X + W + 6, fy + 2, X + W - 14, top - 10, X + 14, top - 10);
+      ctx.fillStyle = V.r2;
+      for (let r = 0; r < (rh + 10) / 7; r++) {
+        const yy = top - 8 + r * 7;
+        if (yy > fy) break;
+        const inset = V.thatch ? Math.max(0, W / 2 - ((yy - top + 18) / (rh + 20)) * (W / 2 + 8)) : 14 - (r * 20) / ((rh + 10) / 7);
+        ctx.fillRect(X + inset - 4, yy, W - 2 * inset + 8, 2);
+      }
+      R(X - 6, fy - 1, W + 12, 3, "rgba(0,0,0,.25)");
+      if (V.chim) for (let k = 0; k < V.chim; k++) (R(X + W - 30 - k * 40, top - 20, 10, 24, "#6b6258"), R(X + W - 32 - k * 40, top - 22, 14, 4, "#4a453e"));
+      if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 4 + k * 6, top - 8 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
     }
     // janelas: venezianas ou floreiras
     if (Hh - roofH > 30)

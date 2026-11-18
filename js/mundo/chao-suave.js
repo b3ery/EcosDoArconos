@@ -143,6 +143,15 @@
   const GRASSY = new Set(["vila", "bosque", "serra", "picos", "pantano", "porto"]);
   const dtBase = drawTile;
   drawTile = function (z, x, y, c, t) {
+    // borda do mapa encostada no mar: o mar continua, sem muro
+    if (c === "#") {
+      const Zb = ZONES[z];
+      if (Zb && Zb.town) {
+        let wet = false;
+        for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]]) if (tileAt(z, x + dx, y + dy) === "~") wet = true;
+        if (wet) return dtBase.call(this, z, x, y, "~", t);
+      }
+    }
     // tapa a fresta de meio pixel entre ladrilhos quando o zoom não é inteiro
     const Z0 = ZONES[z],
       th0 = Z0 && THEMES[Z0.theme];
@@ -218,7 +227,7 @@
       Y = y * TILE;
     const land = (dx, dy) => {
       const q = tileAt(z, x + dx, y + dy);
-      return q !== null && !WET.has(q) ? q : null;
+      return q !== null && q !== "#" && !WET.has(q) ? q : null;
     };
     const nearLand = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]].some(([dx, dy]) => land(dx, dy));
     // água funda no meio fica mais escura
@@ -243,6 +252,29 @@
         put(d, 1, "rgba(60,44,26,.45)"); // barranco
         put(d + 1, 6, "rgba(150,215,235,.32)"); // água rasa, clara
         if ((i + Math.floor(performance.now() / 300)) % 9 < 6) put(d + 1, 1, "rgba(235,248,255,.7)"); // espuma fina
+      }
+      // ondas da praia: a espuma sobe na areia e volta, devagar
+      if (Z.theme === "porto" && q !== "," && q !== "#") {
+        const ph = performance.now() / 1000;
+        for (let i = 0; i < TILE; i += 2) {
+          const wx = horiz ? X + i : X,
+            wy = horiz ? Y : Y + i;
+          const d = Math.round(2 + noise(wx, wy, 70) * 7);
+          const reach = Math.round(3 + Math.sin(ph * 1.3 + (wx + wy) * 0.02) * 3); // vai e volta
+          const len = 2;
+          ctx.fillStyle = "rgba(245,252,255,.85)";
+          const o = Math.max(0, d - reach);
+          if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + o : Y + TILE - o - len, 2, len);
+          else ctx.fillRect(dx < 0 ? X + o : X + TILE - o - len, Y + i, len, 2);
+          ctx.fillStyle = "rgba(120,180,210,.35)"; // areia molhada que a onda deixa
+          if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + Math.max(0, o - 3) : Y + TILE - o, 2, 3);
+          else ctx.fillRect(dx < 0 ? X + Math.max(0, o - 3) : X + TILE - o, Y + i, 3, 2);
+        }
+        // uma segunda onda chegando, mais longe
+        const w2 = 8 + Math.round(((ph * 4 + x * 3) % 10));
+        ctx.fillStyle = "rgba(235,248,255,.45)";
+        if (horiz) ctx.fillRect(X + 2, dy < 0 ? Y + w2 : Y + TILE - w2 - 1, TILE - 4, 1);
+        else ctx.fillRect(dx < 0 ? X + w2 : X + TILE - w2 - 1, Y + 2, 1, TILE - 4);
       }
       // pedrinhas no fundo raso
       for (let k = 0; k < 2; k++) {
