@@ -145,22 +145,118 @@ const DEV_SCENES = {
   "Reencontro": () => playCine(reunionScene, 8),
 };
 
-/* ===================== PAINEL ===================== */
+/* ===================== PAINEL (versão para apresentação) =====================
+   Abas simples com botões grandes: cada botão testa uma mecânica.
+   Começo · Lugares · Tempo e clima · História · Simulador · Avançado */
+let devTab = "comeco";
+const DEV_PLACES = () => {
+  const L = typeof LOTES !== "undefined" ? LOTES.lots.filter((q) => q.zid === "vila") : [];
+  const lot = (k) => L.find((q) => q.size === k);
+  const at = (z, x, y) => () => devGoZone(z, [x, y]);
+  const lotSpot = (k) => () => {
+    const q = lot(k);
+    if (q) devGoZone("vila", [q.b.door[0], q.road + 1]);
+  };
+  const mata = (town, i) => () => {
+    const id = `mata-${town}-${i}`;
+    if (typeof buildLocalForest !== "function") return;
+    buildLocalForest(id);
+    const Z = ZONES[id];
+    devGoZone(id, Object.values(Z.open)[0]);
+  };
+  return [
+    ["Cinzaluz", [["Praça e fonte", "house", at("vila", 31, 24)], ["Sua casa e quintal", "house", () => devGoZone("vila", [5, 18])], ["Taverna", "mug", at("vila", 16, 19)], ["Castelo", "crown", at("vila", 31, 13)]]],
+    ["Bairros em lotes", [["Alto dos Nobres (mansões)", "crown", lotSpot("L")], ["Rua dos Ofícios (classe média)", "house", lotSpot("M")], ["Beco dos Remendos (pobres)", "house", lotSpot("S")], ["Bairro das Flores", "flower", at("vila", 30, 59)]]],
+    ["Reinos", [["Marés (porto)", "fish", () => devGoZone("porto")], ["Pedravale (serra)", "gem", () => devGoZone("serra")], ["Solmar (festival)", "sun", () => devGoZone("solmar")], ["Rosalva", "wine", () => devGoZone("rosalva")]]],
+    ["Além-mar", [["Zahar (deserto)", "sun", () => devGoZone("pais-zahar")], ["Gelomar (gelo)", "snow", () => devGoZone("pais-gelo")], ["Jadeluz", "flower", () => devGoZone("pais-jade")], ["Verdemata", "herb", () => devGoZone("pais-verde")]]],
+    ["Florestas", [["Mata do Rio Grande", "water", mata("vila", 0)], ["Cachoeira Grande", "water", mata("pais-verde-3", 2)], ["Vulcão de Ferrofundo", "sun", mata("pais-ferro", 2)], ["Montanha nevada", "snow", mata("pais-gelo", 1)], ["Savana", "paw", mata("pais-ouro", 0)]]],
+  ];
+};
+const DEV_ACTIONS = {
+  comeco: [
+    ["Liberar tudo", "star", () => devUnlockAll()],
+    ["Invencível", "heart", () => ((game.devGod = !game.devGod), toast(`Invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600)), () => game.devGod],
+    ["+1000 de ouro", "coin", () => ((player.gold += 1000), toast("+1000 de ouro.", 1400))],
+    ["Encher fome, sede e energia", "bread", () => ((player.food = player.water = 100), (player.stamina = 100), typeof addNeed === "function" && lifeMode() && ["energy", "fun", "social", "hygiene", "bladder"].forEach((n) => addNeed(n, 100)), toast("Tudo cheio.", 1400))],
+    ["Revelar mapas", "scroll", () => devRevealMap()],
+    ["Trocar de modo (História ↔ Simulador)", "book", () => ((player.mode = lifeMode() ? "historia" : "vida"), saveGame(), toast(`Agora: ${lifeMode() ? "Simulador de Vida" : "Modo História"}. Recarregando...`, 1500), setTimeout(() => location.reload(), 900))],
+  ],
+  tempo: [
+    ["Manhã (8h)", "sun", () => devClock(8)],
+    ["Meio-dia", "sun", () => devClock(12)],
+    ["Hora dourada (17h30)", "sun", () => devClock(17.5)],
+    ["Noite (22h)", "zzz", () => devClock(22)],
+    ["+1 dia", "scroll", () => passTime(24, "DEV: um dia depois.")],
+    ["Próxima estação", "flower", () => ((player.day += 7), toast(`Estação: ${season().n || season().id}.`, 1600))],
+    ["Sol", "sun", () => devWeather("sol")],
+    ["Chuva", "rain", () => devWeather("chuva")],
+    ["Tempestade", "storm", () => devWeather("tempestade")],
+    ["Neve", "snow", () => devWeather("neve")],
+    ["Neblina", "fog", () => devWeather("neblina")],
+  ],
+  historia: [
+    ["Vencer a luta", "sword", () => devWinBattle()],
+    ["Resolver quebra-cabeça / covil", "lock", () => devSolvePuzzle()],
+    ["Vencer as provas da Torre", "star", () => devSolveTrials()],
+  ],
+  simulador: [
+    ["Minigame: padeiro", "bread", () => devGame("padeiro")],
+    ["Minigame: ferreiro", "sword", () => devGame("ferreiro")],
+    ["Minigame: cavalariço", "paw", () => devGame("cavalarico")],
+    ["Minigame: bardo", "note", () => devGame("bardo")],
+    ["Minigame: troco", "coin", () => devGame("balconista")],
+    ["Minigame: lenhador", "herb", () => devGame("lenhador")],
+    ["Minigame: colheita", "herb", () => devGame("fazendeiro")],
+    ["Minigame: mina", "gem", () => devGame("minerador")],
+    ["Desastre: incêndio", "sun", () => devDisaster("fire")],
+    ["Desastre: terremoto", "skull", () => devDisaster("quake")],
+  ],
+};
+function devClock(h) {
+  player.clock = Math.round(h * 60);
+  toast(`Hora: ${Math.floor(h)}h${h % 1 ? "30" : ""}.`, 1400);
+}
+function devWeather(w) {
+  player.weather = w;
+  toast(`Clima: ${(WEATHER[w] && WEATHER[w].n) || w}.`, 1400);
+}
+function devGame(id) {
+  closeDevPanel();
+  if (typeof gestureTest === "function") gestureTest(id, {});
+}
+function devDisaster(k) {
+  closeDevPanel();
+  if (!lifeMode()) return toast("Desastres são do Simulador de Vida.", 2000);
+  if (typeof disasterTest !== "undefined" && disasterTest[k]) disasterTest[k]();
+}
 function devPanelHTML() {
   const cur = curStep();
-  const steps = STEPS.map((s, i) => `<option value="${i}" ${s === cur ? "selected" : ""}>${i + 1}. ${s.done() ? "✓ " : ""}${s.t}</option>`).join("");
-  const zones = Object.keys(ZONES)
-    .filter((z) => ZONES[z].nome)
-    .map((z) => `<option value="${z}" ${z === player.zone ? "selected" : ""}>${ZONES[z].nome}</option>`)
-    .join("");
-  const scenes = Object.keys(DEV_SCENES).map((k) => `<option>${k}</option>`).join("");
-  return `<div class="gh"><h2>Modo DEV</h2><button id="devx">Fechar (F9)</button></div>
-  <small>Etapa: <b>${cur.id}</b> · ${player.zone} ${player.x},${player.y} · nível ${player.lvl} · ${lifeMode() ? "Simulador" : "História"}</small>
-  <div class="dv-row"><button data-dv="all">Liberar tudo</button><button data-dv="god" class="${game.devGod ? "on" : ""}">Invencível</button><button data-dv="win">Vencer a luta</button><button data-dv="pz">Resolver quebra-cabeça / covil</button><button data-dv="trials">Vencer provas da Torre</button><button data-dv="map">Revelar mapas</button></div>
-  <label>Pular para a etapa</label><div class="dv-row"><select id="dvStep">${steps}</select><button data-dv="jump">Ir</button></div>
-  <label>Ir para a região</label><div class="dv-row"><select id="dvZone">${zones}</select><button data-dv="zone">Ir</button></div>
-  <label>Ver cena</label><div class="dv-row"><select id="dvScene">${scenes}</select><button data-dv="scene">Ver</button></div>
-  <div class="dv-row"><button data-dv="off">Sair da versão dev</button></div>`;
+  const tabs = [["comeco", "Começo"], ["lugares", "Lugares"], ["tempo", "Tempo e clima"], ["historia", "História"], ["simulador", "Simulador"], ["avancado", "Avançado"]];
+  const btn = (id, [n, ic, , on]) => `<button class="dv-big ${on && on() ? "on" : ""}" data-act="${id}">${iconHTML(ic, 18)}<span>${n}</span></button>`;
+  let body = "";
+  if (devTab === "lugares")
+    body = DEV_PLACES()
+      .map(([g, list], gi) => `<h4>${g}</h4><div class="dv-grid">${list.map((p, i) => `<button class="dv-big" data-place="${gi}:${i}">${iconHTML(p[1], 18)}<span>${p[0]}</span></button>`).join("")}</div>`)
+      .join("");
+  else if (devTab === "historia") {
+    const steps = STEPS.map((s, i) => `<option value="${i}" ${s === cur ? "selected" : ""}>${i + 1}. ${s.done() ? "✓ " : ""}${s.t}</option>`).join("");
+    const scenes = Object.keys(DEV_SCENES).map((k) => `<option>${k}</option>`).join("");
+    body = `<div class="dv-grid">${DEV_ACTIONS.historia.map((a, i) => btn("historia:" + i, a)).join("")}</div>
+      <h4>Pular para a etapa</h4><div class="dv-row"><select id="dvStep">${steps}</select><button data-dv="jump" class="go">Ir</button></div>
+      <h4>Ver uma cena</h4><div class="dv-row"><select id="dvScene">${scenes}</select><button data-dv="scene" class="go">Ver</button></div>`;
+  } else if (devTab === "avancado") {
+    const zones = Object.keys(ZONES)
+      .filter((z) => ZONES[z].nome)
+      .map((z) => `<option value="${z}" ${z === player.zone ? "selected" : ""}>${ZONES[z].nome}</option>`)
+      .join("");
+    body = `<h4>Ir para qualquer lugar</h4><div class="dv-row"><select id="dvZone">${zones}</select><button data-dv="zone" class="go">Ir</button></div>
+      <small>Etapa: <b>${cur.id}</b> · ${player.zone} ${player.x},${player.y} · nível ${player.lvl}</small>
+      <div class="dv-row"><button data-dv="off">Sair da versão dev</button></div>`;
+  } else body = `<div class="dv-grid">${(DEV_ACTIONS[devTab] || []).map((a, i) => btn(devTab + ":" + i, a)).join("")}</div>`;
+  return `<div class="gh"><h2>Painel de testes</h2><button id="devx">✕</button></div>
+  <small class="dv-now">${lifeMode() ? "Simulador de Vida" : "Modo História"} · ${ZONES[player.zone] ? ZONES[player.zone].nome : player.zone} · dia ${player.day}, ${String(Math.floor(player.clock / 60)).padStart(2, "0")}h</small>
+  <div class="dv-tabs">${tabs.map(([k, n]) => `<button data-tab="${k}" class="${k === devTab ? "on" : ""}">${n}</button>`).join("")}</div>
+  ${body}`;
 }
 function openDevPanel() {
   let el = byId("devpanel");
@@ -173,27 +269,36 @@ function openDevPanel() {
   el.innerHTML = devPanelHTML();
   el.style.display = "block";
   byId("devx").onclick = closeDevPanel;
+  el.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => ((devTab = b.dataset.tab), openDevPanel())));
+  el.querySelectorAll("[data-act]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const [g, i] = b.dataset.act.split(":");
+        DEV_ACTIONS[g][+i][2]();
+        if (byId("devpanel").style.display === "block") openDevPanel();
+      }),
+  );
+  el.querySelectorAll("[data-place]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const [g, i] = b.dataset.place.split(":").map(Number);
+        DEV_PLACES()[g][1][i][2]();
+        closeDevPanel();
+      }),
+  );
   el.querySelectorAll("[data-dv]").forEach(
     (b) =>
       (b.onclick = () => {
         const a = b.dataset.dv;
-        if (a === "all") devUnlockAll();
-        else if (a === "god") ((game.devGod = !game.devGod), toast(`DEV: invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600));
-        else if (a === "win") return devWinBattle();
-        else if (a === "pz") return devSolvePuzzle();
-        else if (a === "trials") devSolveTrials();
-        else if (a === "map") devRevealMap();
-        else if (a === "jump") return (closeDevPanel(), devJumpTo(+byId("dvStep").value));
-        else if (a === "zone") return devGoZone(byId("dvZone").value);
-        else if (a === "scene") return (closeDevPanel(), DEV_SCENES[byId("dvScene").value]());
-        else if (a === "off") {
+        if (a === "jump") return (closeDevPanel(), devJumpTo(+byId("dvStep").value));
+        if (a === "zone") return devGoZone(byId("dvZone").value);
+        if (a === "scene") return (closeDevPanel(), DEV_SCENES[byId("dvScene").value]());
+        if (a === "off") {
           try {
             localStorage.removeItem("ecosDev");
           } catch (e) {}
           location.href = location.pathname.replace(/dev\.html$/, "index.html");
-          return;
         }
-        openDevPanel();
       }),
   );
 }
@@ -206,11 +311,17 @@ if (DEV) {
   st.textContent = `#devbtn{position:fixed;left:8px;bottom:8px;z-index:9999;background:#c0392b;color:#fff;font:700 12px monospace;border:2px solid #fff;border-radius:6px;padding:4px 8px;opacity:.85}
   #devpanel{position:absolute;right:8px;top:8px;width:min(460px,94vw);max-height:92vh;overflow:auto;z-index:9998;padding:10px 14px;font-size:13px}
   #devpanel label{display:block;margin-top:8px;opacity:.8} #devpanel select{flex:1;min-width:0;max-width:100%}
-  .dv-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0} #devpanel button.on{outline:2px solid #ffd34d}`;
+  .dv-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0} #devpanel button.on{outline:2px solid #ffd34d}
+  #devpanel h4{margin:10px 0 4px;font-size:12px;color:#ffe08a;text-transform:uppercase;letter-spacing:.08em}
+  #devpanel .dv-now{display:block;opacity:.8;margin-bottom:6px}
+  .dv-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 8px}.dv-tabs button{padding:5px 10px;font-size:12px}.dv-tabs button.on{background:#c9a03a;color:#1a1028}
+  .dv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+  .dv-big{display:flex;align-items:center;gap:6px;text-align:left;padding:8px;font-size:12px;line-height:1.15;min-height:42px}
+  .dv-big span{flex:1}`;
   document.head.appendChild(st);
   const b = document.createElement("button");
   b.id = "devbtn";
-  b.textContent = "DEV";
+  b.textContent = "TESTES (F9)";
   b.onclick = () => (byId("devpanel") && byId("devpanel").style.display === "block" ? closeDevPanel() : openDevPanel());
   document.body.appendChild(b);
   addEventListener("keydown", (e) => {

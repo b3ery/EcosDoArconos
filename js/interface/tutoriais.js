@@ -126,7 +126,8 @@
   };
 
   const seen = () => (player.tuts = player.tuts || {});
-  const tipsOn = () => settings.tutTips !== false;
+  // "Não, já sei jogar" vale para tudo: nenhum cartão de tutorial abre sozinho
+  const tipsOn = () => settings.tutTips !== false && !(player && player.noTips);
   const pending = [];
   let cur = null;
 
@@ -260,6 +261,7 @@
       (b) =>
         (b.onclick = () => {
           settings.tutTips = b.dataset.tt === "1";
+          if (player) player.noTips = !settings.tutTips;
           saveSettings();
           box.querySelector("#optTuts").remove();
           renderOptions();

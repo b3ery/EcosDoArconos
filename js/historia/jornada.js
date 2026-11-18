@@ -290,7 +290,7 @@ function tutAskTick() {
   player.tutAsked = true;
   choice("Primeira vez aqui?", "Quer umas dicas rápidas enquanto joga? (Dá para rever nas Opções.)", [
     { t: "Sim, me mostra", icon: "book", fn: () => ((player.tutStep = 0), saveGame()) },
-    { t: "Não, já sei jogar", icon: "door", fn: () => ((player.tutDone = true), saveGame()) },
+    { t: "Não, já sei jogar", icon: "door", fn: () => ((player.tutDone = true), (player.noTips = true), saveGame()) },
   ]);
   return true;
 }
