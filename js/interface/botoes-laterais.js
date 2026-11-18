@@ -55,3 +55,25 @@
   };
   addEventListener("resize", () => setTimeout(place, 50));
 })();
+
+/* Tela cheia agora fica dentro do Menu (o botão solto some; a tecla F continua valendo). */
+{
+  const st = document.createElement("style");
+  st.textContent = `#fsb{display:none!important}`;
+  document.head.appendChild(st);
+  const roFs = renderOptions;
+  renderOptions = function () {
+    roFs.apply(this, arguments);
+    const box = byId("options");
+    if (!box || box.querySelector("#optFull")) return;
+    const on = !!document.fullscreenElement;
+    const html = `<div class="opt" id="optFull"><span>Tela cheia (F)</span><div class="seg"><button id="optfsb" class="${on ? "on" : ""}">${on ? "Sair da tela cheia" : "Entrar em tela cheia"}</button></div></div>`;
+    const firstOpt = box.querySelector(".opt");
+    if (firstOpt) firstOpt.insertAdjacentHTML("beforebegin", html);
+    else box.insertAdjacentHTML("beforeend", html);
+    byId("optfsb").onclick = () => {
+      toggleFull();
+      setTimeout(() => (box.querySelector("#optFull") && box.querySelector("#optFull").remove(), renderOptions()), 300);
+    };
+  };
+}

@@ -171,9 +171,7 @@
       p = prof(j);
     const tav = j.id === "taverneiro";
     const m = cu.want;
-    const steps = tav ? (isDrink(m) ? ["Pegar a caneca", "Encher do barril", "Entregar sem derramar"] : ["Pegar o prato", "Servir do caldeirão", "Enfeitar o prato"]) : STEPS[j.id] || ["Preparar", "Caprichar", "Entregar"];
-    const icon = tav ? (isDrink(m) ? "mug" : "stew") : p.icon;
-    timingGame(`${cu.nm}: ${wantName(cu)}`, icon, steps, tav ? "Aperte no verde. Capricho e rapidez rendem gorjeta." : `Encomenda de ${cu.nm}. Capricho e rapidez rendem gorjeta.`, (s, max) => {
+    jobGame(j.id, m, `${cu.nm}: ${cap(wantName(cu))}`, (s, max) => {
       const q = s / max,
         mood = cu.pat / cu.max;
       const pay = Math.max(1, Math.round(jobPay(p.pay) * (0.5 + q)));
@@ -209,7 +207,7 @@
           t: `${pe.order.m.n} para ${pe.nm} (${Math.ceil(pe.order.pat)}s)`,
           icon: isDrink(pe.order.m) ? "mug" : "stew",
           fn: () =>
-            timingGame(`Preparar: ${pe.order.m.n}`, isDrink(pe.order.m) ? "mug" : "stew", isDrink(pe.order.m) ? ["Pegar a caneca", "Encher", "Tirar a espuma"] : ["Esquentar", "Servir", "Arrumar a bandeja"], `Depois leve até ${pe.nm}.`, (s, max) => {
+            jobGame("taverneiro", pe.order.m, `Preparar: ${pe.order.m.n}`, (s, max) => {
               W.tray = { pe, m: pe.order.m, q: s / max };
               toast(`Bandeja pronta: ${pe.order.m.n}. Leve até ${pe.nm}!`, 2000);
             }),
