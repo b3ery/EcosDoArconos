@@ -140,29 +140,44 @@
         },
         {
           // vila do rio: um riacho desce pela esquerda, com duas pontes
-          paint: (set, fill) => {
-            fill(6, 1, 7, 21, "~");
+          paint: (set, fill, mm) => {
+            const m2 = (x, y, cs) => mm && mm[y] && cs.includes(mm[y][x]);
+            // o riacho serpenteia: o leito muda de lugar e de largura
+            const bed = [];
+            for (let y = 1; y <= 21; y++) {
+              const cx = 5 + Math.round(Math.sin(y / 3.2 + n) * 1.6),
+                wd = 2 + ((y + n) % 5 < 2 ? 1 : 0);
+              bed[y] = [cx - 1, cx - 1 + wd - 1];
+              fill(bed[y][0], y, bed[y][1], y, "~");
+              // nas curvas, o leito liga com a linha de cima (sem buraco)
+              if (bed[y - 1]) fill(Math.min(bed[y][0], bed[y - 1][0]), y, Math.max(bed[y][1], bed[y - 1][1]) - (wd > 2 ? 1 : 0), y, "~");
+            }
             fill(1, 8, 42, 8, ",");
             fill(1, 15, 42, 15, ",");
-            fill(6, 8, 7, 8, "=");
-            fill(6, 15, 7, 15, "=");
-            fill(6, 20, 7, 20, "=");
+            for (const y of [8, 15, 20]) fill(bed[y][0] - 1, y, bed[y][1] + 1, y, "=");
             fill(14, 10, 30, 13, ",");
-            fill(1, 20, 5, 20, ",");
-            fill(8, 20, 42, 20, ",");
+            fill(1, 20, 42, 20, ",");
+            for (const y of [8, 15, 20]) fill(bed[y][0], y, bed[y][1], y, "=");
             fill(21, 13, 22, 21, ",");
             fill(21, 8, 22, 10, ",");
             shore(set, fill);
             // o riacho desce até o mar (porto) ou acaba num lago (interior)
-            if (port) fill(6, 21, 7, 22, "~");
-            else (fill(4, 21, 9, 23, "~"), fill(5, 24, 8, 24, "~"));
+            if (port) fill(bed[21][0] - 1, 21, bed[21][1] + 1, 22, "~"); // a foz alarga antes do mar
+            else
+              for (let y = 20; y <= 24; y++)
+                for (let x = 1; x <= 11; x++) {
+                  // lago em forma de gota irregular
+                  const e = ((x - 5.5) / 4.2) ** 2 + ((y - 22.4) / 1.9) ** 2 + Math.sin(x * 1.7 + y) * 0.12;
+                  if (e < 1) set(x, y, "~");
+                }
+            // o que sobrou da lavoura e da cerca em volta do lago vira margem limpa
+            if (!port) for (let y = 20; y <= 24; y++) for (let x = 1; x <= 10; x++) if (m2(x, y, "gfY")) set(x, y, ".");
           },
           bld: [
             { id: Z + "1", style: "templo", x: 9, y: 2, w: 5, h: 5, door: [11], name: d.n[1] },
             { id: Z + "2", style: palStyle, x: 16, y: 1, w: 12, h: 6, door: [21, 22], name: palName },
             { id: Z + "3", style: st(0), x: 30, y: 3, w: 5, h: 4, door: [32] },
             RENT,
-            { id: Z + "11", style: "moinho", x: 1, y: 10, w: 4, h: 4, door: [2], name: "Moinho do Riacho" },
             { id: Z + "5", style: "taverna", x: 9, y: 16, w: 6, h: 3, door: [11], name: d.n[2] },
             { id: Z + "6", style: "armazem", x: 16, y: 16, w: 4, h: 3, door: [17], name: d.n[3] },
             { id: Z + "7", style: st(1), x: 25, y: 16, w: 5, h: 3, door: [27] },

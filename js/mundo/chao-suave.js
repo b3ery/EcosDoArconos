@@ -60,21 +60,82 @@
     return clear.get(th);
   };
 
+  // Textura do chão: 512x512 texels de 2px (1024px de mundo), ruído que se
+  // repete sem emenda e pontilhado Bayer 4x4 entre 4 tons. Desenhada uma vez
+  // por tema e só copiada depois.
+  const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16 - 0.5);
+  const pnoise = (x, y, P) => {
+    const x0 = Math.floor(x),
+      y0 = Math.floor(y);
+    const fx = sm(x - x0),
+      fy = sm(y - y0);
+    const g = (a, b) => hsh(((a % P) + P) % P, ((b % P) + P) % P);
+    const a = g(x0, y0),
+      b = g(x0 + 1, y0),
+      c = g(x0, y0 + 1),
+      d = g(x0 + 1, y0 + 1);
+    return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
+  };
+  const TEX = new Map();
+  function texture(th) {
+    const k = th.g1 + th.g2;
+    if (TEX.has(k)) return TEX.get(k);
+    const N = 512,
+      cv = document.createElement("canvas");
+    cv.width = cv.height = N;
+    const g = cv.getContext("2d"),
+      img = g.createImageData(N, N),
+      D = img.data;
+    const P = shades(th).map(rgb);
+    for (let y = 0; y < N; y++)
+      for (let x = 0; x < N; x++) {
+        const v = pnoise(x / 64, y / 64, 8) * 0.6 + pnoise(x / 24, y / 24, N / 24 | 0 || 21) * 0.25 + pnoise(x / 8, y / 8, 64) * 0.15;
+        const q = Math.max(0, Math.min(3, Math.round(v * 3.4 - 0.2 + BAYER[(y & 3) * 4 + (x & 3)] * 0.9)));
+        const c = P[q],
+          i = (y * N + x) * 4;
+        D[i] = c[0];
+        D[i + 1] = c[1];
+        D[i + 2] = c[2];
+        D[i + 3] = 255;
+      }
+    g.putImageData(img, 0, 0);
+    TEX.set(k, cv);
+    return cv;
+  }
   const gBase = ground;
   ground = function (th, X, Y, h) {
     if (!th || !th.g1 || !th.g2) return gBase.apply(this, arguments);
     const P = shades(th);
-    // 4 pedaços de 16px por ladrilho, cada um com o tom do ruído naquele ponto
-    for (let sy = 0; sy < 2; sy++)
-      for (let sx = 0; sx < 2; sx++) {
-        const wx = X + sx * 16 + 8,
-          wy = Y + sy * 16 + 8;
-        const n = noise(wx, wy, 150) * 0.75 + noise(wx, wy, 46) * 0.25;
-        ctx.fillStyle = P[Math.min(3, Math.floor(n * 4.2))];
-        ctx.fillRect(X + sx * 16, Y + sy * 16, 17, 17);
-      }
-    // pontinhos e estações do desenho de antes, sem a cor chapada por cima
-    return gBase.call(this, noFill(th), X, Y, h);
+    const T = texture(th);
+    const sx = (((X >> 1) % 512) + 512) % 512,
+      sy = (((Y >> 1) % 512) + 512) % 512;
+    const smo = ctx.imageSmoothingEnabled;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(T, sx, sy, 16, 16, X, Y, TILE + 0.5, TILE + 0.5);
+    ctx.imageSmoothingEnabled = smo;
+    // flores só onde há "campina" (canteiros naturais); fora delas, nada de
+    // pontinho espalhado: o desenho de antes recebe um h baixo
+    const meadow = noise(X + 16, Y + 16, 110) > 0.64;
+    const r = gBase.call(this, noFill(th), X, Y, meadow ? h : 0.2);
+    // tufos de grama: riscos de 1px agrupados, topo claro, base escura
+    if (th === THEMES.vila || th === THEMES.bosque || th.g1 === (THEMES.vila && THEMES.vila.g1)) {
+      const dens = noise(X + 7, Y + 3, 60);
+      if (dens > 0.45)
+        for (let k = 0; k < 2; k++) {
+          const tx = X + 3 + Math.floor(hsh(X + k * 11, Y) * 24),
+            ty = Y + 6 + Math.floor(hsh(X, Y + k * 13) * 20);
+          ctx.fillStyle = P[0];
+          ctx.fillRect(tx - 1, ty + 4, 6, 1);
+          for (let b = 0; b < 3; b++) {
+            const hgt = 3 + ((b + k) % 2) * 2;
+            ctx.fillStyle = P[0];
+            ctx.fillRect(tx + b * 2, ty + 5 - hgt, 1, hgt);
+            ctx.fillStyle = P[3];
+            ctx.fillRect(tx + b * 2, ty + 5 - hgt, 1, 1);
+          }
+        }
+    }
+    return r;
   };
 
   /* ----- a borda entre a grama e o caminho ----- */
@@ -93,6 +154,8 @@
     const r = dtBase.apply(this, arguments);
     const Z = ZONES[z];
     if (Z && c === "~") shore(z, x, y, Z);
+    if (Z && c === "=") plank(z, x, y, t);
+    if (Z && Z.town && !Z.town.indoor) croftTile(z, x, y, Z, t);
     if (!Z || c !== "," || !GRASSY.has(Z.theme)) return r;
     if ((typeof inPlazaT === "function" && inPlazaT(z, x, y)) || (typeof inMarket === "function" && inMarket(z, x, y))) return r;
     const th = THEMES[Z.theme];
@@ -157,42 +220,330 @@
       const q = tileAt(z, x + dx, y + dy);
       return q !== null && !WET.has(q) ? q : null;
     };
-    const sides = [
-      [0, -1],
-      [0, 1],
-      [-1, 0],
-      [1, 0],
-    ];
+    const nearLand = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]].some(([dx, dy]) => land(dx, dy));
+    // água funda no meio fica mais escura
+    if (!nearLand) ((ctx.fillStyle = "rgba(10,40,80,.22)"), ctx.fillRect(X, Y, TILE, TILE));
+    const sides = [[0, -1], [0, 1], [-1, 0], [1, 0]];
     for (const [dx, dy] of sides) {
       const q = land(dx, dy);
       if (!q) continue;
       const horiz = dy !== 0;
-      for (let i = 0; i < TILE; i += 2) {
+      for (let i = 0; i < TILE; i++) {
         const wx = horiz ? X + i : dx < 0 ? X : X + TILE,
           wy = horiz ? (dy < 0 ? Y : Y + TILE) : Y + i;
-        // a margem entra e sai da água seguindo um ruído: o rio "serpenteia"
-        const d = Math.round(2 + noise(wx * 1.7, wy * 1.7, 38) * 11);
-        ctx.fillStyle = landColor(Z, q, wx, wy);
-        if (horiz) ctx.fillRect(X + i, dy < 0 ? Y : Y + TILE - d, 2, d);
-        else ctx.fillRect(dx < 0 ? X : X + TILE - d, Y + i, d, 2);
-        // barranco de terra molhada e espuma acompanhando a curva
-        ctx.fillStyle = "rgba(70,52,30,.45)";
-        if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + d : Y + TILE - d - 1, 2, 1);
-        else ctx.fillRect(dx < 0 ? X + d : X + TILE - d - 1, Y + i, 1, 2);
-        ctx.fillStyle = "rgba(225,242,255,.55)";
-        if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + d + 1 : Y + TILE - d - 2, 2, 1);
-        else ctx.fillRect(dx < 0 ? X + d + 1 : X + TILE - d - 2, Y + i, 1, 2);
+        // curva suave (ruído largo), sem serrilhado
+        const d = Math.round(2 + noise(wx, wy, 70) * 7);
+        const put = (o, len, col) => {
+          ctx.fillStyle = col;
+          if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + o : Y + TILE - o - len, 1, len);
+          else ctx.fillRect(dx < 0 ? X + o : X + TILE - o - len, Y + i, len, 1);
+        };
+        put(0, d, landColor(Z, q, wx, wy)); // terra avançando
+        put(d - 2 < 0 ? 0 : d - 2, 2, q === "," ? "#9a8256" : "#c9b88a"); // faixa de areia/terra molhada
+        put(d, 1, "rgba(60,44,26,.45)"); // barranco
+        put(d + 1, 6, "rgba(150,215,235,.32)"); // água rasa, clara
+        if ((i + Math.floor(performance.now() / 300)) % 9 < 6) put(d + 1, 1, "rgba(235,248,255,.7)"); // espuma fina
+      }
+      // pedrinhas no fundo raso
+      for (let k = 0; k < 2; k++) {
+        const h2 = noise(X + k * 13 + dx * 5, Y + k * 7 + dy * 5, 9);
+        const o = 10 + Math.floor(h2 * 4),
+          p2 = 4 + Math.floor(h2 * 22);
+        ctx.fillStyle = "rgba(120,130,120,.5)";
+        if (horiz) ctx.fillRect(X + p2, dy < 0 ? Y + o : Y + TILE - o - 2, 3, 2);
+        else ctx.fillRect(dx < 0 ? X + o : X + TILE - o - 3, Y + p2, 2, 3);
       }
     }
-    // cantos arredondados onde a água faz curva
-    const corner = (cx, cy, qa, qb, sx, sy) => {
+    // cantos arredondados (curva de 10px) onde a margem dobra
+    const corner = (qa, qb, sx, sy) => {
       if (!qa || !qb) return;
-      ctx.fillStyle = landColor(Z, qa, cx, cy);
-      for (let k = 0; k < 10; k++) ctx.fillRect(sx < 0 ? X : X + TILE - (10 - k), sy < 0 ? Y + k : Y + TILE - 1 - k, 10 - k, 1);
+      ctx.fillStyle = landColor(Z, qa, X + (sx > 0 ? TILE : 0), Y + (sy > 0 ? TILE : 0));
+      for (let k = 0; k < 11; k++) {
+        const w = Math.round(11 - Math.sqrt(Math.max(0, 121 - (11 - k) * (11 - k))));
+        ctx.fillRect(sx < 0 ? X : X + TILE - w, sy < 0 ? Y + k : Y + TILE - 1 - k, w, 1);
+      }
     };
-    corner(X, Y, land(-1, 0), land(0, -1), -1, -1);
-    corner(X + TILE, Y, land(1, 0), land(0, -1), 1, -1);
-    corner(X, Y + TILE, land(-1, 0), land(0, 1), -1, 1);
-    corner(X + TILE, Y + TILE, land(1, 0), land(0, 1), 1, 1);
+    // curva por dentro: terra só na diagonal vira uma pontinha redonda
+    const inner = (q, sx, sy) => {
+      if (!q) return;
+      ctx.fillStyle = landColor(Z, q, X + (sx > 0 ? TILE : 0), Y + (sy > 0 ? TILE : 0));
+      for (let k = 0; k < 6; k++) {
+        const w = Math.round(Math.sqrt(36 - k * k));
+        ctx.fillRect(sx < 0 ? X : X + TILE - w, sy < 0 ? Y + k : Y + TILE - 1 - k, w, 1);
+      }
+      ctx.fillStyle = "rgba(235,248,255,.6)";
+      ctx.fillRect(sx < 0 ? X + 6 : X + TILE - 7, sy < 0 ? Y + 1 : Y + TILE - 2, 1, 1);
+    };
+    if (!land(-1, 0) && !land(0, -1)) inner(land(-1, -1), -1, -1);
+    if (!land(1, 0) && !land(0, -1)) inner(land(1, -1), 1, -1);
+    if (!land(-1, 0) && !land(0, 1)) inner(land(-1, 1), -1, 1);
+    if (!land(1, 0) && !land(0, 1)) inner(land(1, 1), 1, 1);
+    corner(land(-1, 0), land(0, -1), -1, -1);
+    corner(land(1, 0), land(0, -1), 1, -1);
+    corner(land(-1, 0), land(0, 1), -1, 1);
+    corner(land(1, 0), land(0, 1), 1, 1);
+  }
+
+  /* ----- árvores: copa em camadas, borda irregular, tamanhos variados ----- */
+  const TREE = {
+    pri: [["#1f4a26", "#2e6a32", "#4a8a3e", "#7ab04a"], "#f2b8d0"],
+    ver: [["#1d3f22", "#2a5a2e", "#3e7a3a", "#62a04a"], null],
+    out: [["#6a2a10", "#9a4a1a", "#c97a2a", "#e8a84a"], null],
+    inv: [["#1f3a2e", "#2a4a3a", "#3d5e4a", "#5a7a62"], null],
+  };
+  function tree(X, Y, h, t, edge) {
+    const sid = typeof season === "function" ? season().id : "ver";
+    const [C, bloom] = TREE[sid] || TREE.ver;
+    const s = 0.82 + h * 0.4; // tamanho
+    const ox = edge ? Math.round((hsh(X, Y + 1) - 0.5) * 10) : 0,
+      oy = edge ? Math.round((hsh(X + 5, Y) - 0.5) * 8) : 0;
+    const cx = X + 16 + ox,
+      cy = Y + 12 + oy;
+    const sway = Math.sin(t * 0.8 + h * 9) * 0.6;
+    // sombra no chão
+    ctx.fillStyle = "rgba(0,0,0,.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx + 2, Y + 29 + oy * 0.3, 12 * s, 4 * s, 0, 0, 7);
+    ctx.fill();
+    // tronco com raiz
+    ctx.fillStyle = "#4a3020";
+    ctx.fillRect(cx - 3, cy + 4, 6, 14 * s);
+    ctx.fillStyle = "#3a2418";
+    ctx.fillRect(cx - 5, cy + 4 + 14 * s - 2, 3, 2);
+    ctx.fillRect(cx + 2, cy + 4 + 14 * s - 2, 3, 2);
+    ctx.fillStyle = "#5e3e28";
+    ctx.fillRect(cx - 2, cy + 6, 1, 10 * s);
+    // copa: círculos sobrepostos, do escuro (embaixo) ao claro (em cima à esquerda)
+    const blob = (dx, dy, r, col) => ((ctx.fillStyle = col), circle(cx + dx * s + sway, cy + dy * s, r * s));
+    blob(0, 2, 13, C[0]);
+    blob(-6, 0, 9, C[0]);
+    blob(6, 1, 9, C[0]);
+    blob(-2, -3, 11, C[1]);
+    blob(5, -2, 8, C[1]);
+    blob(-6, -5, 7, C[2]);
+    blob(2, -7, 7, C[2]);
+    blob(-5, -8, 3.5, C[3]);
+    blob(1, -10, 2.5, C[3]);
+    // borda irregular: pixels soltos para fora da silhueta
+    ctx.fillStyle = C[0];
+    for (let k = 0; k < 7; k++) {
+      const a = k * 0.9 + h * 6;
+      ctx.fillRect(Math.round(cx + Math.cos(a) * 14 * s + sway), Math.round(cy + 1 + Math.sin(a) * 12 * s), 2, 2);
+    }
+    ctx.fillStyle = "rgba(0,0,0,.18)";
+    ctx.fillRect(Math.round(cx - 10 * s), Math.round(cy + 10 * s), Math.round(20 * s), 2);
+    if (bloom && h > 0.55) for (let k = 0; k < 4; k++) ((ctx.fillStyle = bloom), ctx.fillRect(Math.round(cx - 8 + hsh(X + k, Y) * 16), Math.round(cy - 6 + hsh(X, Y + k) * 12), 2, 2));
+    if (sid === "inv") ((ctx.fillStyle = "#f2f6fa"), ctx.beginPath(), ctx.ellipse(cx - 1, cy - 8 * s, 9 * s, 3.5 * s, 0, 0, 7), ctx.fill());
+  }
+  function bush(X, Y, h) {
+    const sid = typeof season === "function" ? season().id : "ver";
+    const C = (TREE[sid] || TREE.ver)[0];
+    ctx.fillStyle = "rgba(0,0,0,.2)";
+    ctx.beginPath();
+    ctx.ellipse(X + 16, Y + 28, 11, 3, 0, 0, 7);
+    ctx.fill();
+    ctx.fillStyle = C[0];
+    circle(X + 11, Y + 22, 7);
+    circle(X + 21, Y + 22, 7);
+    ctx.fillStyle = C[1];
+    circle(X + 15, Y + 18, 7);
+    ctx.fillStyle = C[2];
+    circle(X + 13, Y + 16, 3);
+    if (h > 0.7) ((ctx.fillStyle = "#c94a5a"), ctx.fillRect(X + 18, Y + 19, 2, 2), ctx.fillRect(X + 10, Y + 21, 2, 2));
+  }
+  const dwBase = drawWall;
+  drawWall = function (theme, X, Y, h, t) {
+    if (theme !== "bosque") return dwBase.apply(this, arguments);
+    // borda da mata: uma árvore, ou um arbusto, nunca a mesma em fila
+    const edge = true;
+    const pick = hsh(X >> 5, Y >> 5);
+    if (pick < 0.22) return bush(X, Y, h);
+    return tree(X, Y, hsh(X + 3, Y + 9), t, edge);
+  };
+
+  /* ----- pontes e píeres de madeira ----- */
+  function plank(z, x, y, t) {
+    const X = x * TILE,
+      Y = y * TILE;
+    const q = (dx, dy) => tileAt(z, x + dx, y + dy);
+    const water = (c) => c === "~" || c === null;
+    const wood = (c) => c === "=";
+    // ponte atravessa de lado (rio em pé) ou píer entra no mar (de pé)
+    // o sentido da ponte é o lado em que ela é mais comprida
+    const run = (dx, dy) => {
+      let n = 0;
+      for (let k = 1; k <= 6 && wood(q(dx * k, dy * k)); k++) n++;
+      return n;
+    };
+    const hr = run(-1, 0) + run(1, 0),
+      vr = run(0, -1) + run(0, 1);
+    const horiz = hr !== vr ? hr > vr : (!water(q(-1, 0)) || wood(q(-1, 0))) && (!water(q(1, 0)) || wood(q(1, 0)));
+    const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
+    // água por baixo e a sombra do tabuleiro
+    R(0, 0, TILE, TILE, "#3f86c7");
+    R(horiz ? 0 : 3, horiz ? 3 : 0, horiz ? TILE : 28, horiz ? 28 : TILE, "rgba(10,30,60,.35)");
+    const tone = (i) => ["#9a6a3a", "#8a5e32", "#a8784a", "#93643a"][(i + x * 3 + y) % 4];
+    if (horiz) {
+      // tábuas atravessadas (no sentido da correnteza), uma por uma
+      for (let i = 0; i < 8; i++) {
+        R(i * 4, 4, 4, 22, tone(i));
+        R(i * 4, 4, 1, 22, "#6b4423");
+        if ((i + x) % 3 === 0) R(i * 4 + 2, 14, 1, 1, "#4a2e17");
+      }
+      // vigas e corrimão com postes
+      R(0, 4, TILE, 2, "#5a3a1e");
+      R(0, 24, TILE, 2, "#5a3a1e");
+      R(0, 0, TILE, 2, "#7a4f2a");
+      R(0, 28, TILE, 2, "#7a4f2a");
+      for (const px of [2, 26]) (R(px, -2, 4, 8, "#5a3a1e"), R(px, 24, 4, 8, "#5a3a1e"), R(px + 1, -2, 1, 7, "#8a5e32"));
+    } else {
+      // píer: tábuas no comprimento, estacas na água e uma corda
+      for (let i = 0; i < 8; i++) {
+        R(4, i * 4, 24, 4, tone(i));
+        R(4, i * 4, 24, 1, "#6b4423");
+        if ((i + y) % 3 === 0) R(15, i * 4 + 2, 1, 1, "#4a2e17");
+      }
+      if (!wood(q(-1, 0))) R(4, 0, 2, TILE, "#5a3a1e");
+      if (!wood(q(1, 0))) R(26, 0, 2, TILE, "#5a3a1e");
+      for (const [px, dx] of [[0, -1], [28, 1]]) if (!wood(q(dx, 0))) (R(px, 10, 4, 12, "#4a2e17"), R(px + 1, 10, 1, 11, "#6b4423"), R(px - 1, 21, 6, 2, "rgba(200,230,255,.5)"));
+      if (y % 2 === 0 && !wood(q(-1, 0))) {
+        ctx.strokeStyle = "#c9b080";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(X + 2, Y + 12);
+        ctx.quadraticCurveTo(X + 2, Y + 30, X + 2, Y + 44);
+        ctx.stroke();
+      }
+    }
+  }
+
+
+  /* ----- o lote de cada casa (burgage/toft & croft) -----
+     Referência: nas vilas medievais cada casa ficava num lote estreito de
+     frente para a rua; nos fundos, uma faixa comprida dividida do vizinho por
+     cerca. Perto da casa, o terreiro (poço, lenha, galpão, bichos); depois a
+     horta; no fundo, a roça, o pomar ou o chiqueiro. */
+  const HOMES = new Set(["casa", "casa2", "home", "pousada"]);
+  const CROFT = new Map();
+  function crofts(z, Z) {
+    if (CROFT.has(z)) return CROFT.get(z);
+    const M = new Map();
+    const free = (x, y) => Z.map[y] && Z.map[y][x] === "." && !M.has(x + "," + y);
+    for (const b of Z.town.bld) {
+      if (!HOMES.has(b.style) || (b.name && !/^Casa|Sítio|Fazenda/.test(b.name))) continue;
+      const hb = hsh(b.x * 7, b.y * 3 + z.length);
+      const back = hb < 0.5 ? "porco" : hb < 0.75 ? "pomar" : "galinhas";
+      const garden = hsh(b.x, b.y) < 0.5 ? "horta" : "milho";
+      let rows = 0;
+      for (let dy = 1; dy <= 4; dy++) {
+        const y = b.y - dy;
+        let ok = true;
+        for (let x = b.x; x < b.x + b.w; x++) if (!free(x, y)) ok = false;
+        if (!ok) break;
+        rows = dy;
+      }
+      if (!rows) continue;
+      for (let dy = 1; dy <= rows; dy++)
+        for (let x = b.x; x < b.x + b.w; x++) {
+          // perto da casa: terreiro; no meio: horta; no fundo: bichos/pomar
+          const part = dy === 1 ? "terreiro" : dy === rows && rows >= 3 ? back : garden;
+          M.set(x + "," + (b.y - dy), { part, b, dy, rows, left: x === b.x, right: x === b.x + b.w - 1, far: dy === rows, i: x - b.x });
+        }
+    }
+    CROFT.set(z, M);
+    return M;
+  }
+  function croftTile(z, x, y, Z, t) {
+    const C = crofts(z, Z).get(x + "," + y);
+    if (!C) return;
+    const X = x * TILE,
+      Y = y * TILE;
+    const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
+    const k = C.part;
+    if (k === "terreiro") {
+      // terra batida, com o que a família usa todo dia
+      R(0, 0, TILE, TILE, "#9a8258");
+      for (let i = 0; i < 4; i++) R(3 + ((i * 11 + x * 5) % 26), 5 + ((i * 7 + y * 3) % 22), 2, 1, "#7a6542");
+      const w = C.b.w;
+      if (C.i === 0 && w >= 3) {
+        // poço de pedra pequeno
+        R(6, 12, 20, 14, "#8f897d");
+        R(6, 12, 20, 3, "#b8b2a4");
+        R(9, 14, 14, 3, "#2a5a8a");
+        R(8, 2, 2, 12, "#6b4423");
+        R(22, 2, 2, 12, "#6b4423");
+        R(6, 1, 20, 3, "#8c3b2e");
+      } else if (C.i === w - 1) {
+        // galpão de tábuas com telhadinho
+        R(3, 8, 26, 20, "#7a5a32");
+        for (let i = 0; i < 6; i++) R(3 + i * 5, 8, 1, 20, "#5a3a1e");
+        R(1, 4, 30, 6, "#5a4a3a");
+        R(12, 16, 8, 12, "#4a2e17");
+      } else if (C.i === 1) {
+        // lenha empilhada e um machado no toco
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 4 - r; c++) (R(3 + c * 6 + r * 3, 22 - r * 5, 5, 5, "#7a5a32"), R(4 + c * 6 + r * 3, 23 - r * 5, 2, 2, "#c9a06a"));
+        R(22, 20, 7, 6, "#6b4a2a");
+        R(25, 14, 1, 7, "#8a6a3a");
+        R(23, 14, 4, 2, "#9a9aa0");
+      } else {
+        // varal com roupa
+        R(2, 6, 1, 20, "#6b4423");
+        R(29, 6, 1, 20, "#6b4423");
+        R(2, 8, 28, 1, "#c9b080");
+        for (let i = 0; i < 3; i++) R(6 + i * 8, 9, 6, 8, ["#e8e0d0", "#c94a5a", "#5a7ab0"][(i + x) % 3]);
+      }
+    } else if (k === "horta" || k === "milho") {
+      R(0, 0, TILE, TILE, "#6b4a2a");
+      for (let r = 0; r < 4; r++) R(0, 6 + r * 8, TILE, 2, "#5a3a1e");
+      for (let r = 0; r < 4; r++)
+        for (let c = 0; c < 4; c++) {
+          const cx = 2 + c * 8 + (r % 2) * 3,
+            cy = 1 + r * 8;
+          if (k === "horta") (R(cx, cy, 5, 4, ["#4a8a3a", "#6aa84a", "#8a4a8a"][(r + c + x) % 3]), R(cx + 1, cy, 3, 1, "#9ad06a"));
+          else (R(cx + 2, cy - 3, 1, 8, "#5a8a2a"), R(cx, cy, 2, 1, "#7aa83a"), R(cx + 3, cy + 1, 2, 1, "#7aa83a"), R(cx + 1, cy - 3, 2, 2, "#e8c04a"));
+        }
+    } else if (k === "pomar") {
+      if ((x + y) % 2 === 0) {
+        ctx.fillStyle = "rgba(0,0,0,.2)";
+        ctx.beginPath();
+        ctx.ellipse(X + 16, Y + 27, 9, 3, 0, 0, 7);
+        ctx.fill();
+        R(15, 14, 3, 12, "#5a3a1e");
+        ctx.fillStyle = "#2e6a32";
+        circle(X + 16, Y + 12, 9);
+        ctx.fillStyle = "#4a8a3e";
+        circle(X + 13, Y + 9, 5);
+        for (let i = 0; i < 4; i++) R(9 + ((i * 7 + x) % 14), 6 + ((i * 5 + y) % 10), 3, 3, (x + i) % 2 ? "#e0403a" : "#f2a83a");
+      }
+    } else {
+      R(0, 0, TILE, TILE, "#8a7350");
+      const ph = t * (k === "galinhas" ? 3 : 0.8) + x * 1.7 + y;
+      const mx = Math.round(Math.sin(ph * 0.5) * 5),
+        my = Math.round(Math.cos(ph * 0.3) * 3);
+      if (k === "galinhas" && (x + y) % 2 === 0)
+        for (let c = 0; c < 2; c++) {
+          const ox = 6 + c * 12 + mx * (c ? -1 : 1),
+            oy = 12 + my,
+            peck = Math.sin(ph * 2 + c) > 0.6 ? 2 : 0;
+          R(ox, oy, 8, 6, "#f6f2ea");
+          R(ox + 6, oy - 3 + peck, 4, 4, "#f6f2ea");
+          R(ox + 7, oy - 4 + peck, 2, 1, "#e03a3a");
+          R(ox + 10, oy - 2 + peck, 2, 1, "#f2a020");
+          R(ox + 2, oy + 6, 1, 2, "#f2a020");
+          R(ox + 5, oy + 6, 1, 2, "#f2a020");
+        }
+      if (k === "porco") {
+        if (C.i === 0) (R(2, 6, 14, 12, "#7a5a32"), R(2, 4, 14, 3, "#5a4a3a"));
+        if ((x + y) % 2 === 0) (R(9 + mx, 14, 16, 9, "#f2a8b0"), R(23 + mx, 15, 5, 6, "#f2a8b0"), R(27 + mx, 17, 2, 3, "#e08890"), R(25 + mx, 16, 1, 1, "#1a1a1a"), R(10 + mx, 23, 2, 3, "#e08890"), R(21 + mx, 23, 2, 3, "#e08890"));
+        R(18, 26, 12, 4, "#6a5030");
+      }
+    }
+    // cercas: dividem do vizinho (lados) e fecham o fundo; a casa é a frente
+    const rail = "#7a4f2a",
+      postC = "#8a5e32";
+    if (C.left) (R(0, 0, 2, TILE, rail), R(0, 4, 3, 5, postC), R(0, 20, 3, 5, postC));
+    if (C.right) (R(30, 0, 2, TILE, rail), R(29, 4, 3, 5, postC), R(29, 20, 3, 5, postC));
+    if (C.far) (R(0, 1, TILE, 2, rail), R(0, 5, TILE, 2, rail), R(2, -2, 3, 10, postC), R(17, -2, 3, 10, postC));
+    if (k !== "terreiro" && C.dy === 2) R(0, TILE - 2, TILE, 2, "rgba(60,40,20,.35)");
   }
 })();

@@ -120,8 +120,19 @@
     if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 4 + k * 6, Y - 8 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
     // musgo e telhas trocadas
     if (h % 3 === 0 && !V.flat) for (let k = 0; k < 5; k++) R(X + 14 + ((h >> k) % Math.max(1, W - 30)), Y + 6 + k * 6, 4, 2, k % 2 ? "#5a7a3a" : V.r2);
-    // andar de cima avançando sobre a rua (casa de cidade)
-    if (h % 4 === 1 && Hh > 96 && !V.flat) (R(X - 3, wallTop + wallH * 0.45, W + 6, 4, V.beam), R(X - 3, wallTop + wallH * 0.45 + 4, W + 6, 2, "rgba(0,0,0,.25)"));
+    // andar de cima avançando sobre a rua (sobrado de cidade medieval)
+    if (h % 3 !== 2 && wallH > 36 && !V.flat && !V.logs) {
+      const up = Math.round(wallH * 0.48);
+      R(X - 4, wallTop, W + 8, up, V.wall);
+      R(X - 4, wallTop, W + 8, 3, V.beam);
+      R(X - 4, wallTop + up - 3, W + 8, 3, V.beam);
+      for (let k = 0; k <= b.w; k++) R(Math.min(X + W, X - 4 + k * TILE), wallTop, 3, up, V.beam);
+      if (!V.stone && !V.brick) for (let k = 0; k < b.w; k++) (R(X - 2 + k * TILE + 4, wallTop + 4, 2, up - 8, V.beam), R(X - 2 + k * TILE + 22, wallTop + 4, 2, up - 8, V.beam));
+      for (let k = 0; k < b.w; k++) (R(X + k * TILE + 11, wallTop + 6, 10, up - 12, "#4a2e17"), R(X + k * TILE + 12, wallTop + 7, 8, up - 14, nightAlpha() > 0.25 ? "#ffd98a" : "#5a7aa0"), R(X + k * TILE + 15, wallTop + 7, 2, up - 14, "#4a2e17"));
+      // mãos-francesas e a sombra do balanço sobre a parede de baixo
+      R(X - 4, wallTop + up, W + 8, 3, "rgba(0,0,0,.28)");
+      for (const bx of [X - 2, X + W - 1]) (R(bx, wallTop + up, 3, 6, V.beam));
+    }
     // janelas: venezianas ou floreiras
     if (Hh - roofH > 30)
       for (let k = 0; k < b.w; k++) {
@@ -148,6 +159,42 @@
     }
   }
 
+  /* ----- casas geminadas: fecha o vão estreito entre duas casas ----- */
+  const bldAt = (Z, x, y) => Z.town.bld.find((b) => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h);
+  const dtB = drawTile;
+  drawTile = function (z, x, y, c, t) {
+    const r = dtB.apply(this, arguments);
+    const Z = ZONES[z];
+    if (c !== "." || !Z || !Z.town || Z.town.indoor) return r;
+    const L = bldAt(Z, x - 1, y),
+      Rb = bldAt(Z, x + 1, y);
+    if (!L || !Rb || L === Rb || !COMMON.has(L.style) || !COMMON.has(Rb.style) || L.y + L.h !== Rb.y + Rb.h) return r;
+    const top = Math.max(L.y, Rb.y),
+      bot = L.y + L.h;
+    if (y < top || y >= bot) return r;
+    const V = variantFor(L);
+    const X = x * TILE,
+      Y = y * TILE,
+      rel = (y - top) * TILE,
+      H = (bot - top) * TILE,
+      roofH = Math.max(36, Math.round(H * 0.5));
+    const RR = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
+    // telhado e parede contínuos entre as duas casas
+    for (let yy = 0; yy < TILE; yy++) {
+      const gy = rel + yy;
+      ctx.fillStyle = gy < roofH ? ((gy >> 3) % 2 ? V.roof : V.r2) : V.wall;
+      ctx.fillRect(X, Y + yy, TILE, 1);
+    }
+    if (rel + TILE > roofH && rel < roofH + 4) RR(0, Math.max(0, roofH - rel - 3), TILE, 3, "rgba(0,0,0,.25)");
+    if (rel + TILE > roofH) {
+      RR(0, Math.max(0, roofH - rel), 3, TILE, V.beam);
+      RR(29, Math.max(0, roofH - rel), 3, TILE, V.beam);
+      if (y === bot - 2 || (bot - top <= 3 && y === bot - 1)) (RR(10, 4, 12, 12, "#4a2e17"), RR(11, 5, 10, 10, nightAlpha() > 0.25 ? "#ffd98a" : "#5a7aa0"));
+    }
+    if (y === bot - 1) RR(0, TILE - 8, TILE, 8, "#7a7468");
+    return r;
+  };
+
   /* ===================== A PAISAGEM DE CADA TERRA ===================== */
   const PROPS = { coral: ["palmeira", "concha", "palmeira"], zahar: ["cacto", "tenda", "cacto", "duna"], brumas: ["morta", "lapide", "lampiao"], verde: ["gigante", "totem", "samambaia"], gelo: ["pinheiro", "gelo", "pinheiro"], ferro: ["lava", "bigorna", "vapor"], ouro: ["palmeira", "estatua"], jade: ["cerejeira", "lanterna", "bambu", "cerejeira"], gigantes: ["dedo", "dedo", "musgo"] };
   const cache = {};
@@ -164,7 +211,16 @@
         // não encosta em porta nem em caminho
         if ([[0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => "D,=".includes(z.map[y + dy][x + dx]))) continue;
         const hh = hash(x + salt, y);
-        if (hh % 9 === 0) out.push([x, y, L[hh % L.length]]);
+        if (hh % 9 !== 0) continue;
+        const k = L[hh % L.length];
+        const big = ["palmeira", "gigante", "cerejeira", "pinheiro", "dedo", "morta", "bambu", "estatua", "totem", "tenda"].includes(k);
+        // nada grudado: longe de outro enfeite e das árvores do mapa
+        const minD = big ? 3 : 2;
+        if (out.some(([a, b]) => Math.abs(a - x) + Math.abs(b - y) < minD + (big ? 1 : 0))) continue;
+        let treeNear = false;
+        for (let dy = -2; dy <= 2 && !treeNear; dy++) for (let dx = -2; dx <= 2; dx++) if ("TH".includes((z.map[y + dy] || "")[x + dx] || "")) treeNear = true;
+        if (big && treeNear) continue;
+        out.push([x, y, k]);
       }
     return (cache[zid] = out);
   }
