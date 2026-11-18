@@ -14,6 +14,8 @@
 "use strict";
 
 (() => {
+  // todo quintal cercado precisa de uma entrada (abre um portão onde faltar)
+  if (typeof openYardGates === "function") openYardGates();
   const mine = (b) => typeof isMyHomeBld === "function" && isMyHomeBld(b);
   // as células do quintal atrás da casa onde dá para pisar
   function yardSpot(b) {

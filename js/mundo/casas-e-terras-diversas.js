@@ -585,9 +585,20 @@
     const id = zid.split("-")[1],
       L = PROPS[id] || [];
     const salt = zid.length * 7 + (+(zid.split("-")[2] || 1)) * 13;
+    // dentro de lote (quintal, jardim, corredor do lado da casa) não nasce enfeite
+    const inLot = new Set();
+    if (typeof LOTES !== "undefined")
+      for (const L of LOTES.lots.concat(LOTES.yards || []))
+        if (L.zid === zid) {
+          const x0 = L.x0 ?? L.b.x - 1,
+            x1 = L.x1 ?? L.b.x + L.b.w,
+            y0 = L.top != null ? L.top - 1 : L.b.y - 6,
+            y1 = L.road ?? L.b.y + L.b.h + 2;
+          for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) inLot.add(x + "," + y);
+        }
     for (let y = 1; y < z.h - 1; y++)
       for (let x = 1; x < z.w - 1; x++) {
-        if (z.map[y][x] !== ".") continue;
+        if (z.map[y][x] !== "." || inLot.has(x + "," + y)) continue;
         // não encosta em porta nem em caminho
         if ([[0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => "D,=".includes(z.map[y + dy][x + dx]))) continue;
         const hh = hash(x + salt, y);
