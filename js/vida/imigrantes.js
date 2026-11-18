@@ -32,6 +32,14 @@
     gigantes: { n: "Gigântia", robes: ["#8a8474", "#6a6a5a"], hat: null, names: ["Pedrão", "Musgo", "Lasca"], say: ["Ora pois, vosmecê nunca viu um gigante? Eu vi um mexer o dedo.", "Saí da ilha depois de trinta anos sozinho. Tanta gente aqui!", "Canto baixinho de noite, por costume. Não liga."] },
   };
   const IDS = Object.keys(C);
+  const JOBS = ["lavrador(a) nos Campos do Leste", "ajudante na Ferraria do Leste", "vendedor(a) de chá na praça", "tecelã(o) na Tecelagem Nova", "pescador(a) no rio", "cozinheira(o) na taverna", "pastor(a) das ovelhas", "carregador(a) no armazém"];
+  // as casas do Bairro Novo (Campos do Leste) viram as casas dos imigrantes
+  const HOUSES = () => ZONES.vila.town.bld.filter((b) => b.id && /^le(1[3-9]|20)$/.test(b.id));
+  function homeOf(b) {
+    const L = (player.imm && player.imm.list) || [];
+    const i = HOUSES().indexOf(b);
+    return i >= 0 && L[i] ? L[i] : null;
+  }
   const S = () => (player.imm = player.imm || { list: [], border: "controladas", fest: 0 });
   const avg = () => {
     const r = player.realm;
@@ -53,7 +61,7 @@
       const n = 1 + (Math.random() < pull * 0.3 ? 1 : 0) + (Math.random() < pull * 0.15 ? 1 : 0);
       for (let i = 0; i < n; i++) {
         const c = pk(IDS);
-        I.list.push({ c, nm: `${pk(C[c].names)} de ${C[c].n}`, since: player.day });
+        I.list.push({ c, nm: `${pk(C[c].names)} de ${C[c].n}`, since: player.day, job: pk(JOBS) });
         came++;
       }
     }
@@ -123,11 +131,33 @@
     ]);
   }
   window.borderMenu = borderMenu;
+  if (typeof bldAction === "function") {
+    const baBase = bldAction;
+    bldAction = function (b) {
+      const q = lifeMode() && player.zone === "vila" && b && homeOf(b);
+      if (q) {
+        const c = C[q.c];
+        return say([[q.nm, pk(c.say)], ["", `${q.nm.split(" de ")[0]} mora aqui desde o dia ${q.since} e trabalha como ${q.job}.`]]);
+      }
+      return baBase.apply(this, arguments);
+    };
+  }
+  if (typeof targetAt === "function") {
+    const tgBase = targetAt;
+    targetAt = function (x, y) {
+      if (lifeMode() && player.zone === "vila" && tileAt("vila", x, y) === "D") {
+        const b = ZONES.vila.town.doors[x + "," + y];
+        const q = b && homeOf(b);
+        if (q) return `Casa de ${q.nm}`;
+      }
+      return tgBase(x, y);
+    };
+  }
   const chBase = choice;
   choice = function (title, text, opts) {
     if (title === "Política" && lifeMode() && Array.isArray(opts) && !opts.some((o) => /Imigração/.test(o.t))) {
       const I = S();
-      const it = typeof playerRules === "function" && playerRules() ? { t: `Imigração e fronteiras (${I.list.length} imigrantes)`, icon: "door", fn: borderMenu } : { t: `Ver os imigrantes da vila (${I.list.length})`, icon: "smile", fn: () => say([["", I.list.length ? `Moram em Cinzaluz: ${[...new Set(I.list.map((q) => C[q.c].n))].map((n) => `${I.list.filter((q) => C[q.c].n === n).length} de ${n}`).join(", ")}.` : "Ainda não chegou ninguém de além-mar."]]) };
+      const it = typeof playerRules === "function" && playerRules() ? { t: `Imigração e fronteiras (${I.list.length} imigrantes)`, icon: "door", fn: borderMenu } : { t: `Ver os imigrantes da vila (${I.list.length})`, icon: "smile", fn: () => say([["", I.list.length ? `Moram em Cinzaluz: ${[...new Set(I.list.map((q) => C[q.c].n))].map((n) => `${I.list.filter((q) => C[q.c].n === n).length} de ${n}`).join(", ")}.` : "Ainda não chegou ninguém de além-mar."], ...I.list.slice(0, 6).map((q) => ["", `${q.nm}: ${q.job}${HOUSES().some((b) => homeOf(b) === q) ? " · mora no Bairro Novo" : ""}.`])]) };
       opts = opts.slice(0, -1).concat([it, opts[opts.length - 1]]);
     }
     return chBase.call(this, title, text, opts);

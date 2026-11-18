@@ -349,6 +349,11 @@
     if (ag < 20 && !S.extinct) {
       const dead = 1 + Math.floor((20 - ag) / 5) + (Math.random() < 0.5 ? 1 : 0);
       S.deaths = (S.deaths || 0) + dead;
+      // cada morto tem nome e vai para o cemitério
+      const NOMES = ["Tomásia", "Bertoldo", "Genoveva", "Anselmo", "Clotilde", "Baltazar", "Rosalinda", "Firmino", "Leocádia", "Gaspar", "Iolanda", "Teobaldo", "Dorotéia", "Valdomiro"];
+      S.named = S.named || [];
+      for (let i = 0; i < dead; i++) S.named.push({ n: `${pk(NOMES)} ${pk(["do Moinho", "da Feira", "do Rio", "Ferreira", "Lavradora", "das Flores", "o Velho", "a Moça"])}`, day: player.day, sub: "Água podre dos poços" });
+      if (S.named.length > 40) S.named.splice(0, S.named.length - 40);
       realm().saude = Math.max(0, realm().saude - 4);
       news(`A água podre dos poços matou ${dead} morador(es) de Cinzaluz. ${S.deaths} mortos desde que os poços foram abandonados.`);
       setTimeout(() => toast(`Morreram ${dead} moradores bebendo água contaminada. O governo precisa limpar os poços!`, 5500), 4200);
@@ -612,6 +617,18 @@
                 R(-1, 2, 34, 2, "#5a2a1e");
               },
             });
+    };
+  }
+
+  if (typeof cemGraves === "function") {
+    const cgBase = cemGraves;
+    cemGraves = function () {
+      const L = cgBase.apply(this, arguments);
+      const named = (player.dis && player.dis.named) || [];
+      let k = named.length - 1;
+      // os túmulos antigos dão lugar aos mortos de agora (os mais recentes primeiro)
+      for (const g of L) if (g.old && k >= 0) (Object.assign(g, { n: named[k].n, sub: `Dia ${named[k].day} · ${named[k].sub}`, old: false, recent: true }), k--);
+      return L;
     };
   }
 
