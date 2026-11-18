@@ -230,3 +230,38 @@ addCos("aura", Object.entries(AURA2).map(([k, v]) => [k, v[0], v[1]]));
     }
   };
 }
+
+/* ===================== CHARUTO ===================== */
+/* Acessório novo, e o Luca, o Lucas Marzocca e o Matheus andam fumando. */
+addCos("acc", [["charuto", "Charuto", 60]]);
+ACC2.push(["charuto", "Charuto", 60]);
+function cigarRects(dir) {
+  if (dir === "up") return [[12, 5, 1, 1, "rgba(220,220,220,.55)"]];
+  const t = Math.floor(performance.now() / 400) % 3;
+  return [
+    [9, 8, 3, 1, "#6a4428"],
+    [11, 8, 1, 1, "#4a2e18"],
+    [12, 8, 1, 1, "#ff7a3d"],
+    [12, 6 - t, 1, 1, "rgba(220,220,220,.6)"],
+    [13, 4 - t, 1, 1, "rgba(220,220,220,.4)"],
+  ];
+}
+{
+  const accBase = acc2Rects;
+  acc2Rects = function (a, dir, tr) {
+    if (a === "charuto") return cigarRects(dir);
+    return accBase.apply(this, arguments);
+  };
+  const SMOKERS = ["luca", "lucas", "matheus"];
+  const keys = new Set(
+    SMOKERS.map((id) => typeof CREW_LOOKS !== "undefined" && CREW_LOOKS[id])
+      .filter(Boolean)
+      .map((c) => `${c.robe}|${c.hat ?? null}|${c.hair}`),
+  );
+  const wrBase = wizardRects;
+  wizardRects = function (robe, hat, hair, glow, dir) {
+    const r = wrBase.apply(this, arguments);
+    if (keys.has(`${robe}|${hat ?? null}|${hair}`)) r.push(...cigarRects(dir));
+    return r;
+  };
+}
