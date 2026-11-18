@@ -68,6 +68,21 @@
   }
   /* casebre de pobre, dois andares (uma família em cima, outra embaixo) */
   function poorHouse(b, t) {
+    // metade deles com a escada do outro lado (espelhado: a porta de baixo fica no meio do mesmo jeito)
+    if ((Math.floor(b.x / 4) + b.y + (hash(b.y, 3) % 2)) % 2 && !b._mir) {
+      const cx = b.x * TILE + (b.w * TILE) / 2;
+      ctx.save();
+      ctx.translate(cx * 2, 0);
+      ctx.scale(-1, 1);
+      b._mir = true;
+      try {
+        poorHouse(b, t);
+      } finally {
+        b._mir = false;
+        ctx.restore();
+      }
+      return;
+    }
     const X = b.x * TILE,
       Y = b.y * TILE,
       W = b.w * TILE,
@@ -84,6 +99,11 @@
       lean = h % 2 ? 2 : -2;
     R(X, g0, W, 36, wall);
     R(X + lean, u0, W, 34, wall);
+    // cada casebre de um jeito: pau a pique, tábuas, ou térreo de pedra
+    const mat = (h >> 3) % 3;
+    if (mat === 1) for (let k = 0; k < W; k += 7) (R(X + k, g0, 6, 36, ["#7a5a3a", "#6a4a2e", "#8a6a42"][(k / 7 + h) % 3]), R(X + lean + k, u0, 6, 34, ["#7a5a3a", "#6a4a2e", "#8a6a42"][(k / 7 + h + 1) % 3]));
+    if (mat === 2)
+      for (let r = 0; r < 5; r++) for (let k = 0; k < W / 10 + 1; k++) R(X + (r % 2) * 5 + k * 10, g0 + r * 7, Math.min(9, X + W - (X + (r % 2) * 5 + k * 10)), 6, (k + r + h) % 3 ? "#9a9284" : "#7a7468");
     for (let i = 0; i < 9; i++) R(X + 4 + ((i * 23 + h) % (W - 10)), g0 + 4 + ((i * 11) % 28), 5, 3, "rgba(80,60,40,.25)"); // manchas
     R(X + lean, u0 + 10 + (h % 7), 10, 12, "#7a5a32"); // tábua remendando o buraco
     R(X + lean + 1, u0 + 11 + (h % 7), 8, 1, "#5a3a1e");
@@ -111,8 +131,10 @@
     for (let i = 0; i < 2; i++) R(X + lean + W - 18 + i * 5, u0 + 8, 1, 24, "#2e1a0c");
     // palha rala e remendada
     const top = u0 - 30;
-    ctx.fillStyle = ["#a8884a", "#9a7a40", "#b0904e"][h % 3];
+    const roofK = (h >> 5) % 3; // palha, tabuinha de madeira ou telha remendada
+    ctx.fillStyle = roofK === 1 ? "#6a4a32" : roofK === 2 ? "#9a4a32" : ["#a8884a", "#9a7a40", "#b0904e"][h % 3];
     fillPolygon(X - 6 + lean, u0 + 4, X + W + 6 + lean, u0 + 4, X + W / 2 + lean, top);
+    if (roofK === 2) for (let i = 0; i < 4; i++) R(X + W / 2 + lean - 14 + ((h >> i) % 24), top + 12 + i * 4, 6, 3, i % 2 ? "#6a4a32" : "#c9a24a"); // telhas faltando, tapadas com tábua e palha
     ctx.fillStyle = "rgba(70,50,20,.35)";
     for (let yy = top + 8; yy < u0 + 2; yy += 6) {
       const hw = ((W / 2 + 6) * (yy - top)) / (u0 + 4 - top);
