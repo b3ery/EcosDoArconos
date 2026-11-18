@@ -25,6 +25,7 @@
     }
     return null;
   };
+  window.yardAt = lotAt;
   const LABEL = {
     porao: "Descer ao porão",
     latrina: "Usar a latrina",

@@ -395,6 +395,7 @@ const HIT_VERBS = ["Cortar", "Colher", "Quebrar", "Minerar", "Lutar", "Caçar"];
 function hitTargetActive() {
   if (game.mode !== "world" || game.dialog) return false;
   const tg = findTarget();
+  if (tg && typeof yardAt === "function" && yardAt(tg.x, tg.y)) return false; // coisas do quintal não usam o medidor de golpe
   return !!tg && HIT_VERBS.some((v) => tg.l.startsWith(v));
 }
 /** Aplica a qualidade do golpe; retorna quantas batidas contaram. */
