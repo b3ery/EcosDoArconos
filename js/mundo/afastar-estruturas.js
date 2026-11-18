@@ -84,6 +84,22 @@
           if (!fixed(c) && tryMove(c, need)) moved++;
           else if (!fixed(a) && tryMove(a, -need)) moved++;
         }
+    // respiro do rio: construção a menos de 3 tiles da água se afasta dela
+    // (a de cá do rio vai para a esquerda, a de lá vai para a direita)
+    const water = (x, y) => (m[y] || "")[x] === "~";
+    for (let pass = 0; pass < 3; pass++)
+      for (const b of Z.town.bld) {
+        if (fixed(b)) continue;
+        let gapR = 99,
+          gapL = 99;
+        for (let y = b.y; y < b.y + b.h; y++) {
+          for (let k = 0; k < 4; k++) if (water(b.x + b.w + k, y)) ((gapR = Math.min(gapR, k)), (k = 9));
+          for (let k = 0; k < 4; k++) if (water(b.x - 1 - k, y)) ((gapL = Math.min(gapL, k)), (k = 9));
+        }
+        if (gapR < 3) {
+          for (let k = 3 - gapR; k >= 1; k--) if (tryMove(b, -k)) ((moved++), (k = 0));
+        } else if (gapL < 3) for (let k = 3 - gapL; k >= 1; k--) if (tryMove(b, k)) ((moved++), (k = 0));
+      }
     Z.map = m.map((r) => r.join(""));
     return moved;
   }

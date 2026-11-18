@@ -16,6 +16,7 @@
 (() => {
   const Z = ZONES.vila;
   if (!Z) return;
+  const C0 = typeof VILA_X === "function" ? VILA_X(52) : 52; // coluna do rio (o mapa cresceu dos dois lados)
   const W = Z.w,
     H = Z.h;
   const PASS = new Set(".,PEL=gwubxhnkqAozYVZtRp".split(""));
@@ -54,15 +55,15 @@
   };
   // linhas do canal reto (x 52-53), e as linhas de ponte que ficam como estão
   const rows = [];
-  for (let y = 1; y < H - 1; y++) if (m0[y][52] === "~" && m0[y][53] === "~") rows.push(y);
+  for (let y = 1; y < H - 1; y++) if (m0[y][C0] === "~" && m0[y][C0 + 1] === "~") rows.push(y);
   const bridge = new Set();
-  for (let y = 1; y < H - 1; y++) for (let x = 48; x <= 57; x++) if (m0[y][x] === "=") (bridge.add(y), bridge.add(y - 1), bridge.add(y + 1), bridge.add(y - 2), bridge.add(y + 2));
+  for (let y = 1; y < H - 1; y++) for (let x = C0 - 5; x <= C0 + 6; x++) if (m0[y][x] === "=") (bridge.add(y), bridge.add(y - 1), bridge.add(y + 1), bridge.add(y - 2), bridge.add(y + 2));
   const SOFT = ".,wTu";
   // curva SUAVE: o deslocamento do canal muda no máximo 1 tile a cada 2 linhas
   // (nada de saltos); se uma linha não cabe, ela fica onde está e as vizinhas
   // se ajustam aos poucos até ela.
   const fitsAt = (m, y, a, w) => {
-    if (a < 49 || a + w - 1 > 56) return false;
+    if (a < C0 - 3 || a + w - 1 > C0 + 4) return false;
     for (let x = a; x < a + w; x++) if (!(SOFT.includes(m[y][x]) || m[y][x] === "~")) return false;
     return true;
   };
@@ -79,28 +80,28 @@
       if (o > prev && hold >= 1) o = prev + 1;
       else if (o < prev && hold >= 1) o = prev - 1;
       else o = prev;
-      if (!fitsAt(m, y, 52 + o, 2) || bridge.has(y)) o = bridge.has(y) ? 0 : fitsAt(m, y, 52 + prev, 2) ? prev : 0;
+      if (!fitsAt(m, y, C0 + o, 2) || bridge.has(y)) o = bridge.has(y) ? 0 : fitsAt(m, y, C0 + prev, 2) ? prev : 0;
       hold = o === prev ? hold + 1 : 0;
       off[y] = prev = o;
     }
     for (const y of rows.slice().reverse()) {
       const nb = off[y + 1];
       if (nb != null && Math.abs(off[y] - nb) > 1) off[y] = nb + Math.sign(off[y] - nb);
-      if (!fitsAt(m, y, 52 + off[y], 2)) off[y] = 0;
+      if (!fitsAt(m, y, C0 + off[y], 2)) off[y] = 0;
     }
     for (const y of rows) {
       const o = off[y];
       // fica um tile mais largo onde dá (o rio "respira")
-      const wide = Math.sin(y / 4.1 + 0.7) > 0.4 && fitsAt(m, y, 52 + o, 3);
+      const wide = Math.sin(y / 4.1 + 0.7) > 0.4 && fitsAt(m, y, C0 + o, 3);
       const w = wide ? 3 : 2;
-      for (const x of [52, 53]) if (x < 52 + o || x > 52 + o + w - 1) m[y][x] = ".";
-      for (let x = 52 + o; x < 52 + o + w; x++) m[y][x] = "~";
+      for (const x of [C0, C0 + 1]) if (x < C0 + o || x > C0 + o + w - 1) m[y][x] = ".";
+      for (let x = C0 + o; x < C0 + o + w; x++) m[y][x] = "~";
     }
     let cont = true;
     for (const y of rows) {
       if (!rows.includes(y - 1)) continue;
       let touch = false;
-      for (let x = 48; x <= 57; x++) if (m[y][x] === "~" && (m[y - 1][x] === "~" || m[y - 1][x] === "=")) touch = true;
+      for (let x = C0 - 5; x <= C0 + 6; x++) if (m[y][x] === "~" && (m[y - 1][x] === "~" || m[y - 1][x] === "=")) touch = true;
       if (!touch && !bridge.has(y)) cont = false;
     }
     if (cont && ok(m)) {
@@ -128,7 +129,7 @@
     const row = Z.map[y];
     let l = -1,
       r = -1;
-    for (let x = 47; x <= 58; x++)
+    for (let x = C0 - 6; x <= C0 + 7; x++)
       if (row[x] === "~") {
         if (l < 0) l = x;
         r = x;
