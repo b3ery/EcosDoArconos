@@ -532,5 +532,88 @@
     });
   };
 
+  /* ----- o poço, caprichado ----- */
+  // Poço de pedra redondo com telhadinho de telhas, manivela, corda e um
+  // balde de madeira balançando. A água brilha limpa, ou fica turva quando
+  // o governo abandona os poços.
+  if (typeof drawTile === "function") {
+    const dtBase = drawTile;
+    drawTile = function (z, x, y, c, t) {
+      if (c !== "W") return dtBase.apply(this, arguments);
+      // o chão do poço copia o chão em volta (rua de terra ou grama)
+      const nb = [tileAt(z, x - 1, y), tileAt(z, x + 1, y), tileAt(z, x, y + 1), tileAt(z, x, y - 1)];
+      const gc = nb.filter((q) => q === ",").length >= 2 ? "," : ".";
+      dtBase.call(this, z, x, y, gc, t);
+      const X = x * TILE,
+        Y = y * TILE;
+      const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
+      const bad = lifeMode() && player.realm && (player.realm.agua ?? 60) < 40 && ZONES[z] && ZONES[z].town;
+      // sombra
+      ctx.fillStyle = "rgba(0,0,0,.25)";
+      ctx.beginPath();
+      ctx.ellipse(X + 16, Y + 29, 14, 3.5, 0, 0, 7);
+      ctx.fill();
+      // corpo de pedra (duas fileiras, pedras alternadas)
+      R(4, 17, 24, 11, "#7a7468");
+      for (let r = 0; r < 2; r++) for (let k = 0; k < 4; k++) R(4 + k * 6 + (r % 2) * 3, 17 + r * 5, 5, 4, (k + r) % 2 ? "#8f897d" : "#a39d90");
+      R(4, 27, 24, 1, "#5a554c");
+      // borda de cima, com a água lá dentro
+      R(3, 14, 26, 4, "#b8b2a4");
+      R(3, 14, 26, 1, "#d0cabc");
+      R(6, 15, 20, 2, bad ? "#4a5a2a" : "#2a5a8a");
+      R(8 + ((t * 8) % 12), 15, 3, 1, bad ? "#8a8a5a" : "#9fd0f0");
+      // musgo e uma florzinha no pé
+      R(4, 24, 3, 3, "#4a7a3a");
+      R(26, 22, 2, 5, "#4a7a3a");
+      R(26, 21, 2, 2, "#e86a8a");
+
+    };
+
+    // postes, balde e telhadinho ficam na camada dos objetos (por cima do chão)
+    const cdP = crewDrawList;
+    crewDrawList = function (list, t) {
+      cdP(list, t);
+      const z = ZONES[player.zone],
+        cam = game.cam;
+      if (!z || !cam) return;
+      const x0 = Math.max(0, Math.floor(cam.camX / TILE) - 1),
+        y0 = Math.max(0, Math.floor(cam.camY / TILE) - 1),
+        x1 = Math.min(z.w - 1, x0 + Math.ceil(viewWidth / cam.Z / TILE) + 2),
+        y1 = Math.min(z.h - 1, y0 + Math.ceil(480 / cam.Z / TILE) + 2);
+      for (let y = y0; y <= y1; y++)
+        for (let x = x0; x <= x1; x++)
+          if (z.map[y][x] === "W")
+            list.push({
+              y: y - 0.05,
+              draw: () => {
+                const X = x * TILE,
+                  Y = y * TILE;
+                const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
+                // postes e travessa com manivela
+                R(5, 0, 3, 15, "#6b4423");
+                R(24, 0, 3, 15, "#6b4423");
+                R(6, 0, 1, 15, "#8a5a2e");
+                R(5, 3, 22, 2, "#5a3a1e");
+                R(27, 2, 3, 2, "#8a8a96");
+                R(29, 2, 1, 5, "#8a8a96");
+                // corda e balde balançando
+                const sw = Math.sin(t * 1.5 + x) * 1;
+                R(16 + sw, 5, 1, 6, "#c9b080");
+                R(13 + sw, 10, 7, 5, "#8a5a2e");
+                R(13 + sw, 10, 7, 1, "#a8784a");
+                R(13 + sw, 12, 7, 1, "#5a5a5a");
+                // telhadinho de telhas
+                ctx.fillStyle = "#8c3b2e";
+                fillPolygon(X - 1, Y + 2, X + 16, Y - 10, X + 33, Y + 2);
+                ctx.fillStyle = "#a8483a";
+                fillPolygon(X - 1, Y + 2, X + 16, Y - 10, X + 16, Y + 2);
+                for (let r = 0; r < 3; r++) R(3 + r * 3, -6 + r * 3, 26 - r * 6, 1, "rgba(60,20,10,.35)");
+                R(15, -12, 2, 3, "#5a3a1e");
+                R(-1, 2, 34, 2, "#5a2a1e");
+              },
+            });
+    };
+  }
+
   window.disasterTest = { fire: startFire, quake, state: D, getFire: () => fire, flooded: () => flooded(), spots: () => floodSpots(player.zone).length };
 })();
