@@ -498,6 +498,326 @@
     });
   }
 
+  /* ===================== MINIJOGOS DAS PROFISSÕES NOVAS ===================== */
+
+  /** Barbeiro: decorar o pedido do cliente e fazer o corte. */
+  function haircut() {
+    const OPTS = { Comprimento: ["Curto", "Médio", "Longo"], Franja: ["Sem franja", "Com franja"], Barba: ["Raspada", "Aparada", "Cheia"], Lados: ["Raspados", "Normais"] };
+    const want = Object.fromEntries(Object.entries(OPTS).map(([k, v]) => [k, pick(v)]));
+    const body = open("Cadeira do barbeiro", `O cliente diz: <b>"${Object.values(want).join(", ").toLowerCase()}"</b>. Memorize! O pedido some em 4 segundos.`);
+    const sel = {};
+    body.innerHTML = Object.entries(OPTS)
+      .map(([k, v]) => `<div class="jm-opt"><small>${k}</small><div>${v.map((o) => `<button class="jm-ing" data-k="${k}" data-v="${o}">${o}</button>`).join("")}</div></div>`)
+      .join("");
+    body.querySelectorAll("[data-k]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          sel[b.dataset.k] = b.dataset.v;
+          body.querySelectorAll(`[data-k="${b.dataset.k}"]`).forEach((q) => q.classList.toggle("ok", q === b));
+          playSound(500, 0.03, "triangle");
+        }),
+    );
+    const cut = () => finish(Object.keys(OPTS).filter((k) => sel[k] === want[k]).length / 4);
+    bigBtn(body, "Cortar! ✂").onclick = cut;
+    let t = 18;
+    loop((dt) => {
+      t -= dt;
+      if (t < 14) el.querySelector(".jm-sub").innerHTML = "O que era mesmo que ele pediu? Escolha e corte.";
+      setTime(`${Math.max(0, t).toFixed(1)}s`);
+      if (t <= 0) cut();
+    });
+  }
+
+  /** Bibliotecário: guardar os livros na ordem da numeração. */
+  function books() {
+    const nums = [];
+    while (nums.length < 8) {
+      const n = 100 + Math.floor(Math.random() * 800);
+      if (!nums.includes(n)) nums.push(n);
+    }
+    const order = nums.slice().sort((a, b) => a - b);
+    const body = open("Organizar a estante", "Guarde os livros na estante do MENOR número para o MAIOR. Clique no próximo da fila.");
+    body.innerHTML = `<div class="jm-shelf done"></div><div class="jm-shelf pile"></div>`;
+    const done = body.querySelector(".done"),
+      pile = body.querySelector(".pile");
+    const cols = ["#a84a4a", "#4a4aa8", "#5a9a4a", "#a8842a", "#7a3a8a", "#2a7a8a", "#8a5a2a", "#3a3a3a"];
+    let i = 0,
+      miss = 0,
+      t = 18;
+    nums.forEach((n, k) => {
+      const b = document.createElement("button");
+      b.className = "jm-book";
+      b.style.background = cols[k];
+      b.style.height = 54 + ((n * 7) % 26) + "px";
+      b.textContent = n;
+      b.onclick = () => {
+        if (n !== order[i]) return miss++, playSound(160, 0.05, "square"), b.classList.add("bad"), setTimeout(() => b.classList.remove("bad"), 300);
+        i++;
+        done.appendChild(b);
+        b.onclick = null;
+        playSound(400 + i * 40, 0.03, "sine");
+        if (i >= 8) finish(clamp(1 - miss * 0.1, 0.2, 1));
+      };
+      pile.appendChild(b);
+    });
+    loop((dt) => {
+      t -= dt;
+      setTime(`${Math.max(0, t).toFixed(1)}s`);
+      if (t <= 0) finish((i / 8) * 0.7);
+    });
+  }
+
+  /** Cavalariço: o cavalo mostra o que precisa; pegue a ferramenta certa rápido. */
+  function horse() {
+    const NEEDS = [
+      ["Está com fome", "Feno"],
+      ["Está com sede", "Balde d'água"],
+      ["Está sujo de lama", "Escova"],
+      ["Casco gasto", "Ferradura"],
+      ["Crina embaraçada", "Pente"],
+      ["Inquieto", "Carinho"],
+    ];
+    const body = open("Cuidar dos cavalos", "Leia o que o cavalo precisa e pegue a ferramenta certa antes que ele se irrite.");
+    body.innerHTML = `<div class="jm-horse"><span class="hz">🐴</span><b class="need"></b><div class="jm-meter"><i></i></div></div><div class="jm-grid"></div>`;
+    const need = body.querySelector(".need"),
+      bar = body.querySelector(".jm-meter i"),
+      grid = body.querySelector(".jm-grid");
+    let round = 0,
+      ok = 0,
+      cur = null,
+      left = 0;
+    const next = () => {
+      if (round >= 6) return finish(ok / 6);
+      cur = pick(NEEDS);
+      left = 2.6 - round * 0.15;
+      cur.max = left;
+      need.textContent = cur[0];
+      round++;
+    };
+    for (const [, tool] of NEEDS) {
+      const b = document.createElement("button");
+      b.className = "jm-ing";
+      b.textContent = tool;
+      b.onclick = () => {
+        if (!cur) return;
+        if (tool === cur[1]) ok++, playSound(800, 0.04, "sine");
+        else playSound(160, 0.06, "square"), toast("O cavalo bufou!", 600);
+        next();
+      };
+      grid.appendChild(b);
+    }
+    next();
+    loop((dt) => {
+      left -= dt;
+      bar.style.width = Math.max(0, (left / cur.max) * 100) + "%";
+      setTime(`${round}/6`);
+      if (left <= 0) toast("Demorou! O cavalo se irritou.", 700), next();
+    });
+  }
+
+  /** Moleiro: girar a mó no ritmo certo, alternando os dois lados. */
+  function crank() {
+    const body = open("Moer o trigo", "Alterne PUXA e EMPURRA (ou A e D) para girar a mó. Mantenha a velocidade na faixa verde: devagar não mói, rápido demais trava.");
+    body.innerHTML = `<div class="jm-mill"><div class="stone"></div><div class="jm-speed"><b class="z"></b><i></i></div></div><div class="jm-meter flour"><i></i></div>`;
+    const stone = body.querySelector(".stone"),
+      sp = body.querySelector(".jm-speed i"),
+      flour = body.querySelector(".flour i");
+    let v = 0,
+      ang = 0,
+      last = null,
+      inZone = 0,
+      t = 16,
+      stall = 0;
+    const push = (side) => {
+      if (stall > 0) return;
+      if (side === last) return (v = Math.max(0, v - 0.08));
+      last = side;
+      v = Math.min(1.1, v + 0.1);
+      playSound(140 + v * 120, 0.03, "triangle");
+    };
+    const row = document.createElement("div");
+    row.className = "jm-row";
+    body.appendChild(row);
+    bigBtn(row, "◀ Puxa", "alt").onclick = () => push("a");
+    bigBtn(row, "Empurra ▶", "alt").onclick = () => push("d");
+    G.key = (k) => (k === "a" || k === "arrowleft" ? push("a") : k === "d" || k === "arrowright" ? push("d") : 0);
+    loop((dt) => {
+      t -= dt;
+      if (stall > 0) stall -= dt;
+      v = Math.max(0, v - dt * 0.22);
+      if (v > 0.95) (stall = 1.2), (v = 0), toast("Rápido demais! A mó travou.", 900);
+      if (v >= 0.45 && v <= 0.78) inZone += dt;
+      ang += v * dt * 600;
+      stone.style.transform = `rotate(${ang}deg)`;
+      sp.style.height = Math.min(100, v * 90) + "%";
+      flour.style.width = Math.min(100, (inZone / 6) * 100) + "%";
+      setTime(`${Math.max(0, t).toFixed(1)}s`);
+      if (inZone >= 6) finish(1);
+      else if (t <= 0) finish(inZone / 6);
+    });
+  }
+
+  /** Açougueiro e peixeiro: pesar exatamente o que o cliente pediu. */
+  function scale(title, what) {
+    const goal = Math.round((0.6 + Math.random() * 2.6) * 10) / 10;
+    const body = open(title, `O cliente quer <b>${goal.toFixed(1).replace(".", ",")} kg de ${what}</b>. Ponha os pedaços na balança e embrulhe.`);
+    body.innerHTML = `<div class="jm-scale"><div class="dial"><b class="needle"></b></div><div class="kg">0,0 kg</div><div class="pile"></div></div>`;
+    const needle = body.querySelector(".needle"),
+      kg = body.querySelector(".kg"),
+      pile = body.querySelector(".pile");
+    let w = 0,
+      parts = [],
+      t = 14;
+    const draw = () => {
+      needle.style.transform = `rotate(${-90 + Math.min(4, w) * 45}deg)`;
+      kg.textContent = w.toFixed(1).replace(".", ",") + " kg";
+      pile.textContent = parts.map((p) => p.toFixed(1).replace(".", ",")).join(" + ");
+    };
+    const row = document.createElement("div");
+    row.className = "jm-row";
+    body.appendChild(row);
+    for (const p of [1, 0.5, 0.3, 0.2, 0.1]) bigBtn(row, `${String(p).replace(".", ",")} kg`, "alt").onclick = () => ((w = Math.round((w + p) * 10) / 10), parts.push(p), draw(), playSound(300, 0.03, "triangle"));
+    const row2 = document.createElement("div");
+    row2.className = "jm-row";
+    body.appendChild(row2);
+    bigBtn(row2, "Tirar o último", "alt").onclick = () => parts.length && ((w = Math.round((w - parts.pop()) * 10) / 10), draw());
+    const wrap = () => {
+      const e = Math.abs(w - goal);
+      finish(e < 0.05 ? 1 : e <= 0.15 ? 0.6 : e <= 0.3 ? 0.3 : 0);
+    };
+    bigBtn(row2, "Embrulhar").onclick = wrap;
+    draw();
+    loop((dt) => {
+      t -= dt;
+      setTime(`${Math.max(0, t).toFixed(1)}s`);
+      if (t <= 0) wrap();
+    });
+  }
+
+  /** Balconista: dar o troco certo. */
+  function change() {
+    const price = 3 + Math.floor(Math.random() * 45);
+    const paid = [10, 20, 50, 100].find((v) => v > price + 2) || 100;
+    const due = paid - price;
+    const body = open("Caixa do armazém", `A compra deu <b>${price} ouro</b>. O cliente pagou com <b>${paid}</b>. Dê o troco certo com as moedas.`);
+    body.innerHTML = `<div class="jm-paper troco">Troco: 0</div><div class="jm-coins"></div>`;
+    const tr = body.querySelector(".troco"),
+      cs = body.querySelector(".jm-coins");
+    let given = 0,
+      coins = [],
+      t = 15;
+    const draw = () => ((tr.textContent = `Troco: ${given}`), (cs.textContent = coins.join(" · ")));
+    const row = document.createElement("div");
+    row.className = "jm-row";
+    body.appendChild(row);
+    for (const c of [20, 10, 5, 2, 1]) bigBtn(row, `🪙 ${c}`, "alt").onclick = () => ((given += c), coins.push(c), draw(), playSound(900, 0.02, "sine"));
+    const row2 = document.createElement("div");
+    row2.className = "jm-row";
+    body.appendChild(row2);
+    bigBtn(row2, "Devolver tudo", "alt").onclick = () => ((given = 0), (coins = []), draw());
+    const give = () => {
+      if (given !== due) return toast(given > due ? "Você deu troco a mais! Prejuízo da loja." : "Faltou troco! O cliente reclamou.", 1600), finish(0.1);
+      let r = due,
+        min = 0;
+      for (const c of [20, 10, 5, 2, 1]) while (r >= c) (r -= c), min++;
+      finish(coins.length <= min ? 1 : 0.8);
+    };
+    bigBtn(row2, "Entregar o troco").onclick = give;
+    draw();
+    loop((dt) => {
+      t -= dt;
+      setTime(`${Math.max(0, t).toFixed(1)}s`);
+      if (t <= 0) give();
+    });
+  }
+
+  /** Bardo: repetir a melodia (memória). */
+  function melody() {
+    const NOTES = [
+      ["Dó", 523, "#e05050"],
+      ["Ré", 587, "#f2c14e"],
+      ["Mi", 659, "#7ad36b"],
+      ["Fá", 698, "#5fa0ff"],
+    ];
+    const body = open("Tocar para a taverna", "Ouça a melodia e repita na mesma ordem. Cada rodada tem uma nota a mais.");
+    body.innerHTML = `<div class="jm-lute"></div>`;
+    const lute = body.querySelector(".jm-lute");
+    const btns = NOTES.map(([n, f, c], i) => {
+      const b = document.createElement("button");
+      b.className = "jm-note";
+      b.style.background = c;
+      b.textContent = n;
+      b.onclick = () => press(i);
+      lute.appendChild(b);
+      return b;
+    });
+    const flash = (i) => {
+      btns[i].classList.add("on");
+      playSound(NOTES[i][1], 0.25, "triangle");
+      setTimeout(() => btns[i].classList.remove("on"), 280);
+    };
+    let seq = [],
+      pos = 0,
+      round = 0,
+      listening = false;
+    const play = () => {
+      listening = false;
+      el.querySelector(".jm-sub").textContent = "Ouça...";
+      seq.push(Math.floor(Math.random() * 4));
+      if (seq.length < 3) seq.push(Math.floor(Math.random() * 4), Math.floor(Math.random() * 4));
+      seq.forEach((n, k) => setTimeout(() => G && flash(n), 600 + k * 520));
+      setTimeout(() => G && ((listening = true), (pos = 0), (el.querySelector(".jm-sub").textContent = "Sua vez!")), 600 + seq.length * 520);
+    };
+    function press(i) {
+      if (!listening) return;
+      flash(i);
+      if (i !== seq[pos]) return toast("Desafinou!", 900), finish(round / 3);
+      pos++;
+      if (pos >= seq.length) {
+        round++;
+        if (round >= 3) return finish(1);
+        toast("Aplausos!", 700);
+        setTimeout(play, 500);
+      }
+    }
+    G.key = (k) => ["1", "2", "3", "4"].includes(k) && press(+k - 1);
+    play();
+    loop(() => setTime(`Rodada ${Math.min(3, round + 1)}/3`));
+  }
+
+  /** Joalheiro: achar as pedras com defeito. */
+  function gems() {
+    const body = open("Avaliar as pedras", "Algumas pedras têm uma rachadura ou mancha escura. Separe só as com DEFEITO e confirme.");
+    const n = 9,
+      bad = new Set();
+    while (bad.size < 3) bad.add(Math.floor(Math.random() * n));
+    const cols = ["#5fd0ff", "#ff6b8a", "#7ad36b", "#c77dff", "#f2c14e"];
+    body.innerHTML = `<div class="jm-gems"></div>`;
+    const box = body.querySelector(".jm-gems");
+    const picked = new Set();
+    let t = 15;
+    for (let i = 0; i < n; i++) {
+      const b = document.createElement("button");
+      b.className = "jm-gem";
+      b.style.setProperty("--c", pick(cols));
+      if (bad.has(i)) b.innerHTML = `<i style="left:${25 + Math.random() * 40}%;top:${25 + Math.random() * 40}%"></i>`;
+      b.onclick = () => (picked.has(i) ? picked.delete(i) : picked.add(i), b.classList.toggle("sel"), playSound(700, 0.03, "sine"));
+      box.appendChild(b);
+    }
+    const done = () => {
+      let hit = 0,
+        wrong = 0;
+      for (const i of picked) bad.has(i) ? hit++ : wrong++;
+      finish(clamp(hit / 3 - wrong * 0.3, 0, 1));
+    };
+    bigBtn(body, "Confirmar").onclick = done;
+    loop((dt) => {
+      t -= dt;
+      setTime(`${Math.max(0, t).toFixed(1)}s`);
+      if (t <= 0) done();
+    });
+  }
+
   /* ===================== QUAL JOGO PARA QUAL OFÍCIO ===================== */
   const HERBS = ["Guaco", "Hortelã", "Camomila", "Arnica", "Salgueiro", "Alecrim", "Mel", "Babosa", "Gengibre", "Urtiga", "Sálvia", "Erva-doce"];
   function jobGame(id, info, title, onDone) {
@@ -514,6 +834,15 @@
       pintor: () => mix(),
       marceneiro: () => measure(),
       professor: () => quiz(),
+      barbeiro: () => haircut(),
+      bibliotecario: () => books(),
+      cavalarico: () => horse(),
+      moleiro: () => crank(),
+      acougueiro: () => scale(title, "carne"),
+      peixeiro: () => scale(title, "peixe"),
+      balconista: () => change(),
+      bardo: () => melody(),
+      joalheiro: () => gems(),
       taverneiro: () => (info && (info.drunk || info.water) && !info.food ? pour(title, !!info.drunk) : recipe(title, recipeFor(name))),
     }[id];
     if (run) return run();
@@ -578,6 +907,25 @@
   #jmg .jm-ruler .tk{position:absolute;top:46px;transform:translateX(-50%);font-size:.7em;color:#ffe08a;border-left:2px solid #ffe08a;height:16px;padding-top:16px;line-height:1}
   #jmg .jm-ruler .tk.s{height:9px;padding:0;opacity:.6}
   #jmg .jm-ruler .saw{position:absolute;top:0;width:4px;height:54px;background:#e8e8f0;transform:translateX(-50%);box-shadow:0 0 6px #fff;transition:left .08s}
-  #jmg .jm-q{display:flex;flex-direction:column;gap:.3em}#jmg .jm-q b{font-size:1.2em;color:#ffe08a}`;
+  #jmg .jm-q{display:flex;flex-direction:column;gap:.3em}#jmg .jm-q b{font-size:1.2em;color:#ffe08a}
+  #jmg .jm-opt{display:flex;flex-direction:column;gap:.2em;width:100%}#jmg .jm-opt small{color:#c8b8e8}#jmg .jm-opt div{display:flex;gap:.3em;justify-content:center;flex-wrap:wrap}
+  #jmg .jm-shelf{display:flex;align-items:flex-end;gap:3px;min-height:84px;width:100%;padding:4px;border-bottom:6px solid #6b4423;justify-content:center;flex-wrap:wrap}
+  #jmg .jm-shelf.done{background:rgba(255,255,255,.04)}
+  #jmg .jm-book{width:2.4em;border:none;border-radius:3px 3px 0 0;color:#fff;font-size:.72em;writing-mode:vertical-rl;padding:2px 0;font-weight:bold}#jmg .jm-book.bad{outline:3px solid #e05050}
+  #jmg .jm-horse{display:flex;flex-direction:column;align-items:center;gap:.3em;width:100%}#jmg .jm-horse .hz{font-size:3em}#jmg .jm-horse .need{color:#ffe08a;font-size:1.15em}
+  #jmg .jm-mill{display:flex;align-items:center;gap:1.4em}#jmg .jm-mill .stone{width:100px;height:100px;border-radius:50%;background:repeating-conic-gradient(#8a8a92 0 20deg,#6a6a72 20deg 40deg);border:4px solid #4a4a52}
+  #jmg .jm-speed{position:relative;width:22px;height:110px;border:2px solid #aaa;border-radius:10px;overflow:hidden;background:#1a1a22}#jmg .jm-speed i{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(#e05050,#7ad36b,#5fa0ff)}
+  #jmg .jm-speed .z{position:absolute;left:0;right:0;bottom:40%;height:30%;border-top:2px dashed #7ad36b;border-bottom:2px dashed #7ad36b;z-index:1}
+  #jmg .jm-meter.flour i{background:linear-gradient(90deg,#f2eee4,#fff)}
+  #jmg .jm-scale{display:flex;flex-direction:column;align-items:center;gap:.3em}#jmg .jm-scale .dial{position:relative;width:140px;height:70px;border-radius:70px 70px 0 0;background:#e8e4dc;overflow:hidden}
+  #jmg .jm-scale .needle{position:absolute;left:69px;bottom:0;width:3px;height:62px;background:#c94a4a;transform-origin:bottom center;transition:transform .2s}
+  #jmg .jm-scale .kg{font-size:1.2em;color:#ffe08a}#jmg .jm-scale .pile{font-size:.8em;color:#c8b8e8;min-height:1em}
+  #jmg .jm-coins{font-size:.85em;color:#ffe08a;min-height:1em}
+  #jmg .jm-lute{display:grid;grid-template-columns:repeat(4,1fr);gap:.5em;width:100%}#jmg .jm-note{height:90px;border-radius:12px;border:3px solid rgba(0,0,0,.3);color:#1a1028;font-weight:bold;font-size:1.1em;opacity:.65}#jmg .jm-note.on{opacity:1;transform:scale(1.06);box-shadow:0 0 18px #fff}
+  #jmg .jm-gems{display:grid;grid-template-columns:repeat(3,1fr);gap:.6em}
+  #jmg .jm-gem{position:relative;width:64px;height:64px;border:none;background:none;padding:0}
+  #jmg .jm-gem::before{content:"";position:absolute;inset:10px;background:var(--c);transform:rotate(45deg);border-radius:6px;box-shadow:inset -6px -6px 0 rgba(0,0,0,.18),inset 6px 6px 0 rgba(255,255,255,.35)}
+  #jmg .jm-gem i{position:absolute;width:6px;height:6px;border-radius:50%;background:#1a1028;z-index:1;box-shadow:3px 2px 0 -1px #1a1028}
+  #jmg .jm-gem.sel{outline:3px solid #ffe08a;border-radius:10px}`;
   document.head.appendChild(st);
 })();

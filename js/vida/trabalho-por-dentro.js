@@ -68,6 +68,7 @@
     marceneiro: ["uma cadeira", "conserto de mesa", "um banquinho", "uma estante", "berço de bebê", "uma porta nova"],
     professor: ["dúvida de conta", "ler um texto", "ditado", "mapa dos reinos", "tabuada do 7"],
   };
+  window.JOB_ORDERS = ORDERS;
   const STEPS = {
     padeiro: ["Sovar a massa", "Modelar", "Tirar do forno"],
     ferreiro: ["Esquentar o ferro", "Martelar", "Temperar na água"],
@@ -498,7 +499,18 @@
     j.bad = 0;
     j.miss = 0;
     if (id === "acendedor") j.oil = 4;
-    if (insideJob(j)) toast(`Vá até ${workPlace(j) || "o seu posto"} (siga a seta) e entre: você trabalha lá dentro.`, 3000);
+    if (insideJob(j)) {
+      // Ofício de prédio: você já vai direto para dentro do seu posto.
+      const name = workPlace(j);
+      const town = ZONES[j.zone] && ZONES[j.zone].town;
+      const bd = town && town.bld.find((q) => q.name === name);
+      if (bd)
+        setTimeout(() => {
+          if (!player.job || game.dialog) return;
+          if (player.zone === "interior") leaveBuilding();
+          if (player.zone === j.zone) enterBuilding(bd);
+        }, 250);
+    }
   };
   const sfBase = swingFeedback;
   swingFeedback = function (x, y, icon) {
@@ -596,7 +608,7 @@
         const bonus = Math.max(2, Math.round(j.earned * 0.15));
         player.gold += bonus;
         j.earned += bonus;
-        note = `Avaliação do patrão: excelente! Bônus de ${bonus} ouro.`;
+        note = `${j.id === "guarda" ? "General Marcos" : "Avaliação do patrão"}: excelente! Bônus de ${bonus} ouro.`;
         if (player.warns[j.id]) player.warns[j.id]--;
       } else if (bad >= 3 && bad > good) {
         player.warns[j.id] = (player.warns[j.id] || 0) + 1;
@@ -604,9 +616,9 @@
           player.warns[j.id] = 0;
           player.fired = player.fired || {};
           player.fired[j.id] = player.day + 3;
-          note = `Avaliação do patrão: péssima. Terceira advertência: você foi DEMITID${genderWord("O", "A", "E")} de ${PROFESSIONS[j.id].n} por 3 dias.`;
-        } else note = `Avaliação do patrão: muitas reclamações. Advertência ${player.warns[j.id]}/3.`;
-      } else if (j.done > 0) note = `Avaliação do patrão: ${good > bad ? "bom trabalho" : "dá para melhorar"} (${good} elogio(s), ${bad} reclamação(ões)).`;
+          note = `${j.id === "guarda" ? "General Marcos" : "Avaliação do patrão"}: péssima. Terceira advertência: você foi DEMITID${genderWord("O", "A", "E")} de ${PROFESSIONS[j.id].n} por 3 dias.`;
+        } else note = `${j.id === "guarda" ? "General Marcos" : "Avaliação do patrão"}: muitas reclamações. Advertência ${player.warns[j.id]}/3.`;
+      } else if (j.done > 0) note = `${j.id === "guarda" ? "General Marcos" : "Avaliação do patrão"}: ${good > bad ? "bom trabalho" : "dá para melhorar"} (${good} elogio(s), ${bad} reclamação(ões)).`;
     }
     ejBase(reason);
     if (note) setTimeout(() => toast(note, 4200), 1400);
