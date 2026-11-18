@@ -234,7 +234,7 @@ const PROP_LABEL = {
   chair: "Sentar",
   books: "Ler um livro",
   manneq: "Ver a roupa do manequim",
-  rug: "Pista de dança",
+  rug: "Tapete bordado",
   pew: "Sentar e rezar",
   display: "Olhar a vitrine",
   shelfP: "Ver a prateleira",
