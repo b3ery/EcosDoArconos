@@ -1,2 +1,6 @@
 dist/
 node_modules/
+
+# capturas soltas na raiz não vão para o GitHub
+/*.png
+/*.jpg

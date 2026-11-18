@@ -285,7 +285,7 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 - **O Silêncio ataca Cinzaluz:** em duas invasões você só salva um lado, e quem fica para trás perde a voz até o próximo Guardião acordar.
 - **✦ Unir todos os poderes:** na luta final, quando a máscara racha, os Guardiões libertados (até seis, com a Fênix), o Kael, a Odelia, a turma e quem você ajudou na estrada atacam juntos. Quanto mais gente você ajudou, mais forte o golpe.
-- **7 missões sem luta:** investigar o Ladrão de Tortas, repetir a Canção do Bardo (jogo da memória), os Enigmas da Biblioteca, as Entregas da Rosa contra o relógio, as Ervas da Maíra em três regiões, a Carta rasgada da Dona Flor e ajudar a Lia a se declarar. Procure a estrela em cima da cabeça.
+- **7 missões sem luta (opcionais, fora da história principal):** investigar o Ladrão de Tortas, repetir a Canção do Bardo (jogo da memória), os Enigmas da Biblioteca, as Entregas da Rosa contra o relógio, as Ervas da Maíra em três regiões, a Carta rasgada da Dona Flor e ajudar a Lia a se declarar. Procure a estrela em cima da cabeça.
 - **Para zerar, é preciso fazer tudo:** as missões sem luta, os quebra-cabeças, a exploração e a gente da estrada são etapas da história, espalhadas pelos capítulos. Cada Guardião está preso por um selo, e o quebra-cabeça da região é a chave. A sala do Silenciador só abre no fim de tudo.
 - **Exploração:** 15 lugares escondidos (3 por região). Alguns você acha só de chegar perto; outros estão atrás de vinhas (Chama), pedras rachadas (Terra), água funda (Maré) ou névoa presa (Vento). Cada um conta um pedaço da história dos irmãos e dá recompensa (até vida e mana máximas).
 - **Covis dos Guardiões:** cada Guardião vive no fundo de uma caverna com um desafio próprio antes da sala dele: Sementes da Memória (Ent), labirinto na névoa (Serpente), Corredor dos Ventos (Grifo), blocos de cristal nas placas (Basilisco) e a maré que sobe e desce (Leviatã). O quebra-cabeça do pedestal da região é a chave da entrada.
@@ -316,10 +316,9 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 - **Mapa clicável (M):** clique ou toque em qualquer coisa para ver o que é, e em "Ir até lá" para andar sozinho. No mapa do mundo (Tab), clique numa região para ver Guardião, baús, quebra-cabeças e lugares escondidos.
 - **Lamento de Cinzaluz:** tema triste em Sol# maior que começa no vi grau (Mi#m, o mesmo som de Fá menor) e passeia pelos acordes tristes do campo harmônico (ii, iii, IV e vii°). Toca nos sonhos, lembranças, cartões de capítulo, na Torre e na vila ainda sem canção.
 
-## 🎙️ Dublagem e músicas próprias
+## 🎙️ Dublagem
 
 - **Narrador dublado:** 116 falas com código (AB-01, CAP-01, GUA-ENT...). Grave cada uma como `audio/voz/CÓDIGO.mp3` e o jogo toca sozinho na hora da fala; a música abaixa enquanto ele fala. Opções → Dublagem liga, desliga e ajusta o volume.
-- **Músicas próprias:** *Épocas Sombrias* é o tema de tudo (tela inicial, vila, casa, regiões) enquanto o mundo está em silêncio; quando a Canção Arcana volta no final, *Arcana* vira o tema. *Batalha Final* toca contra o Silenciador. Outro MP3 em `audio/musica/NOME.mp3` (ex.: `vila.mp3`, `batalha.mp3`) toca no lugar da música do jogo daquela faixa.
 
 ## 🛠️ Versão dev
 
@@ -340,6 +339,12 @@ Sem magia: uma vida inteira em Cinzaluz, com fome, sede, energia, higiene e dive
 - **30 jeitos de morrer**, cada um com a sua cena e velório, e o **Diário da Vida** para compartilhar. A família continua com o herdeiro.
 - **Vila viva:** jornal do dia, estações, festivais, incêndio, enchente, circo, rival pessoal, o Pedro Max ciumento, desafios e conquistas de dinastia.
 - **Menu de Ações** (tecla **Y**): tudo num lugar só. Objetivos do dia e um guia para começar.
+- **Democracia:** depois do golpe dos Iluministas há eleição para Presidente. Se Luca ou Marzocca vencer, Cinzaluz vira comunista (bandeiras vermelhas no castelo, Fundo do Povo, ração de pão).
+- **Convites** de casamento e de velório, **Capela Branca e Cemitério** no Alto do Descanso (sul da vila) e moradores que morrem de velhice.
+- **Corações:** o "Tinder" da vila, com cartões, match e encontros. Botões de **Jornal**, **Corações** e **Calendário** na tela.
+- **A turma tem papel na vila:** Andressa expõe os poemas do Pedro Poeta, a Princesa Julia cuida dos bichos de rua e do Aviário, a Mylena faz Noites de Arte e o General Marcos lê as sentenças da forca.
+- **32 carreiras, roupas novas e 14 moradores marcantes** (Dona Cotinha, Zeca Trovão, Bibi Pimenta...) com manias e segredos.
+- **Opções:** desligar sangue, ataques de monstros (História), golpe automático (Simulador) e o **Modo +18** opcional (palavrões, noite casual sem cenas explícitas, trisal).
 
 <br>
 
