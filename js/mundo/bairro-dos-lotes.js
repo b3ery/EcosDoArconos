@@ -25,7 +25,7 @@ LOTES.TYPE = {
 };
 LOTES.hs = (a, b) => (((a * 73856093) ^ (b * 19349663)) >>> 0) % 1000 / 1000;
 /** Põe um lote no mapa: casa recuada, cerca, caminho, jardim na frente e quintal nos fundos. */
-LOTES.place = function (E, k, x, road, bairro) {
+LOTES.place = function (E, k, x, road, bairro, reuse) {
   const { z, set, fill, zid } = E;
   const T = LOTES.TYPE[k];
   const hs = LOTES.hs;
@@ -34,10 +34,13 @@ LOTES.place = function (E, k, x, road, bairro) {
     lx1 = x + T.span - 1;
   const by = road - (T.small ? 2 : 3) - T.h + 1; // ricos e médios: 2 linhas de jardim; pobres: só a soleira
   const bx = lx0 + Math.floor((T.span - T.w) / 2);
-  const b = { id: (zid === "vila" ? "lt" : "lt-" + zid + "-") + E.id++, style: T.style, x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true };
-  if (T.big) ((b.big = true), (b.name = E.NAMES[E.nm++ % E.NAMES.length]));
+  // reuse: uma casa que já existia (da turma, do centro) muda para o lote, com o mesmo nome e os mesmos moradores
+  const b = reuse
+    ? Object.assign(reuse, { x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true })
+    : { id: (zid === "vila" ? "lt" : "lt-" + zid + "-") + E.id++, style: T.style, x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true };
+  if (T.big) ((b.big = true), reuse || (b.name = E.NAMES[E.nm++ % E.NAMES.length]));
   if (T.small) ((b.small = true), (b.flats = true));
-  const fam = T.big ? b.name : E.FAM[E.fm++ % E.FAM.length];
+  const fam = reuse ? reuse.name || E.FAM[E.fm++ % E.FAM.length] : T.big ? b.name : E.FAM[E.fm++ % E.FAM.length];
   const top = by - depth;
   if (!T.small) {
     for (let y = top - 1; y <= road - 1; y++) (set(lx0, y, "f"), set(lx1, y, "f"));
@@ -48,7 +51,7 @@ LOTES.place = function (E, k, x, road, bairro) {
   set(b.door[0], b.y + b.h - 1, "D");
   z.town.doors[b.door[0] + "," + (b.y + b.h - 1)] = b;
   for (let y = b.y + b.h; y < road; y++) set(b.door[0], y, ",");
-  z.town.bld.push(b);
+  if (!reuse) z.town.bld.push(b);
   const plan = {};
   if (!T.small) {
     const ix0 = lx0 + 1,
@@ -84,7 +87,7 @@ LOTES.place = function (E, k, x, road, bairro) {
   for (const [xx, y] of front) plan[xx + "," + y] = T.small ? ((xx * 3 + y) % 4 === 0 ? "caixotes" : "lama") : (xx + y) % 3 === 0 ? "flores" : "gramado";
   if (front.length) plan[front[0][0] + "," + front[0][1]] = "placa";
   b.plan = plan;
-  const L = { b, fam, x0: lx0, x1: lx1, top, road, size: k, bairro, zid };
+  const L = { b, fam, x0: lx0, x1: lx1, top, road, size: k, bairro, zid, reused: !!reuse };
   LOTES.lots.push(L);
   return L;
 };

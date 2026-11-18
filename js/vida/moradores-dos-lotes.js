@@ -38,7 +38,7 @@
     for (const b of cand.slice(0, zid.startsWith("pais-") ? 1 : 2)) b.big = true;
   }
   // cada bairro com o seu tipo de casa (depois que casas-e-realeza já classificou)
-  for (const L of LOTES.lots) L.b.style = L.size === "M" ? "casa" : L.size === "L" ? "casa2" : "casa";
+  for (const L of LOTES.lots) if (!L.reused) L.b.style = L.size === "M" ? "casa" : L.size === "L" ? "casa2" : "casa";
   // ao entrar num bairro, a placa do nome aparece
   let lastB = null;
   const upB = update;
@@ -87,7 +87,7 @@
     });
   };
   // lotes vazios no começo (com placa de vende-se)
-  for (const L of LOTES.lots) L.vacant = hs(L.x0, L.road) < 0.22;
+  for (const L of LOTES.lots) L.vacant = !L.reused && hs(L.x0, L.road) < 0.22;
 
   // as mansões também viram casas à venda quando vazias
   if (typeof allHouses === "function") {
@@ -96,6 +96,7 @@
       const list = ahBase.apply(this, arguments);
       for (const L of LOTES.lots) {
         const b = L.b;
+        if (L.reused && b.name) continue; // casa de alguém conhecido não está à venda
         const key = `${L.zid}:${b.door[0]},${b.y + b.h - 1}`;
         if (!list[key]) list[key] = { key, zone: L.zid, x: b.door[0], y: b.y + b.h - 1, n: b.name || `Casa do lote ${L.size === "S" ? "pequeno" : "médio"}`, price: { L: 3500, M: 1200, S: 400 }[L.size], size: { L: "grande", M: "média", S: "pequena" }[L.size], tier: L.size === "L" ? "mansao" : L.size === "M" ? "casa" : "casebre" };
         else list[key].price = { L: 3500, M: 1200, S: 400 }[L.size];
@@ -158,6 +159,13 @@
   };
   // família de cada lote
   for (const L of LOTES.lots) {
+    if (L.reused) {
+      // quem já morava na casa continua morando: a família do lote é a de sempre
+      L.people = [];
+      L.walk = [];
+      L.tasks = [];
+      continue;
+    }
     const cls = CLS[L.size],
       pal = palette(L, cls);
     const cc = typeof lotCountry === "function" && lotCountry(L.zid);
@@ -282,7 +290,7 @@
   const baBase = bldAction;
   bldAction = function (b) {
     const L = b && lifeMode() && lotOfB(b);
-    if (!L || !lives(L)) return baBase.apply(this, arguments);
+    if (!L || L.reused || !lives(L)) return baBase.apply(this, arguments);
     if (!day()) return say([["", `Toc, toc... Ninguém responde. A ${L.fam} já está dormindo.`]]);
     if (L.up)
       return choice("Casinha de dois andares", `Embaixo mora a ${L.fam}. Em cima, pela escada de fora, mora a ${L.upFam}.`, [
