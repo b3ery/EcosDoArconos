@@ -51,15 +51,15 @@
   };
   const HOME_GOODS = ["trigo", "vinho", "peixe", "tecido", "cristal"];
   const C9 = [
-    { id: "coral", n: "Ilhas Coralinas", x: 1300, y: 1750, r: 150, bio: "tropical", ruler: "Rainha Maré-Mansa", sells: ["especiaria", "perola"], wants: ["trigo", "tecido"], def: 30, hello: "Tambores na praia e colares de flores. O povo daqui nunca viu um navio tão grande." },
-    { id: "zahar", n: "Areias de Zahar", x: 1500, y: 560, r: 190, bio: "deserto", ruler: "Sultana Nahira", sells: ["seda", "especiaria"], wants: ["vinho", "madeira"], def: 60, hello: "Dunas douradas até o horizonte e um palácio de cúpulas azuis. Camelos olham você de cima." },
-    { id: "brumas", n: "Arquipélago das Brumas", x: 2150, y: 1250, r: 140, bio: "nevoa", ruler: "Os Anciãos Cinzentos", sells: ["erva"], wants: ["cristal", "peixe"], def: 40, hello: "A névoa se abre só o bastante para você ver as torres. Sinos tocam sozinhos." },
-    { id: "verde", n: "Terra de Verdemata", x: 2550, y: 2000, r: 200, bio: "selva", ruler: "Cacique Ybirá", sells: ["cacau", "madeira"], wants: ["ferro", "tecido"], def: 45, hello: "Árvores maiores que o castelo de Cinzaluz. Papagaios gritam o seu nome errado." },
+    { id: "coral", n: "Coralina", x: 1300, y: 1750, r: 150, bio: "tropical", ruler: "Rainha Maré-Mansa", sells: ["especiaria", "perola"], wants: ["trigo", "tecido"], def: 30, hello: "Tambores na praia e colares de flores. O povo daqui nunca viu um navio tão grande." },
+    { id: "zahar", n: "Zahar", x: 1500, y: 560, r: 190, bio: "deserto", ruler: "Sultana Nahira", sells: ["seda", "especiaria"], wants: ["vinho", "madeira"], def: 60, hello: "Dunas douradas até o horizonte e um palácio de cúpulas azuis. Camelos olham você de cima." },
+    { id: "brumas", n: "Brumária", x: 2150, y: 1250, r: 140, bio: "nevoa", ruler: "Os Anciãos Cinzentos", sells: ["erva"], wants: ["cristal", "peixe"], def: 40, hello: "A névoa se abre só o bastante para você ver as torres. Sinos tocam sozinhos." },
+    { id: "verde", n: "Verdemata", x: 2550, y: 2000, r: 200, bio: "selva", ruler: "Cacique Ybirá", sells: ["cacau", "madeira"], wants: ["ferro", "tecido"], def: 45, hello: "Árvores maiores que o castelo de Cinzaluz. Papagaios gritam o seu nome errado." },
     { id: "gelo", n: "Gelomar", x: 2300, y: 260, r: 170, bio: "gelo", ruler: "Jarl Ulfrida", sells: ["pele", "oleo"], wants: ["vinho", "trigo"], def: 70, hello: "Gelo boiando, casas de pedra com teto de grama e gente enorme de barba trançada." },
-    { id: "ferro", n: "Reino de Ferrofundo", x: 3050, y: 900, r: 160, bio: "vulcao", ruler: "Rei-Forjador Bram", sells: ["ferro"], wants: ["peixe", "erva"], def: 90, hello: "Um vulcão fuma no meio da ilha. Martelos batem dia e noite nas forjas." },
-    { id: "ouro", n: "Costa Dourada", x: 3350, y: 1750, r: 170, bio: "ouro", ruler: "Imperador Solano", sells: ["ouro"], wants: ["seda", "porcelana", "especiaria"], def: 110, hello: "Até os telhados brilham. Dizem que aqui se paga pão com pepitas." },
-    { id: "jade", n: "Império de Jadeluz", x: 3950, y: 650, r: 200, bio: "jade", ruler: "Imperatriz Lian-Shu", sells: ["cha", "porcelana", "seda"], wants: ["cristal", "ouro"], def: 130, hello: "Telhados curvos, lanternas vermelhas e jardins de pedra penteada. O porto é o maior que você já viu." },
-    { id: "gigantes", n: "Ilha dos Gigantes Adormecidos", x: 4150, y: 2050, r: 160, bio: "ruinas", ruler: "Ninguém (só estátuas)", sells: ["reliquia"], wants: [], def: 0, hello: "Estátuas de pedra do tamanho de montanhas, deitadas como se dormissem. Ninguém mora aqui... ou quase." },
+    { id: "ferro", n: "Ferrofundo", x: 3050, y: 900, r: 160, bio: "vulcao", ruler: "Rei-Forjador Bram", sells: ["ferro"], wants: ["peixe", "erva"], def: 90, hello: "Um vulcão fuma no meio da ilha. Martelos batem dia e noite nas forjas." },
+    { id: "ouro", n: "Áurea", x: 3350, y: 1750, r: 170, bio: "ouro", ruler: "Imperador Solano", sells: ["ouro"], wants: ["seda", "porcelana", "especiaria"], def: 110, hello: "Até os telhados brilham. Dizem que aqui se paga pão com pepitas." },
+    { id: "jade", n: "Jadeluz", x: 3950, y: 650, r: 200, bio: "jade", ruler: "Imperatriz Lian-Shu", sells: ["cha", "porcelana", "seda"], wants: ["cristal", "ouro"], def: 130, hello: "Telhados curvos, lanternas vermelhas e jardins de pedra penteada. O porto é o maior que você já viu." },
+    { id: "gigantes", n: "Gigântia", x: 4150, y: 2050, r: 160, bio: "ruinas", ruler: "Ninguém (só estátuas)", sells: ["reliquia"], wants: [], def: 0, hello: "Estátuas de pedra do tamanho de montanhas, deitadas como se dormissem. Ninguém mora aqui... ou quase." },
   ];
   const BIO = {
     tropical: ["#e8d8a0", "#3a9a4a"],
@@ -275,6 +275,9 @@
     for (const id of ["choice", "dialog", "toast", "pie"]) if (byId(id)) byId(id).style.zIndex = 50;
     game.mode = "sea";
     playSound(220, 0.4, "triangle");
+    startLoop();
+  }
+  function startLoop() {
     let last = performance.now();
     const frame = (now) => {
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -286,6 +289,32 @@
     };
     raf = requestAnimationFrame(frame);
   }
+  /** Desembarcar: a viagem fica parada no mar, esperando você voltar a bordo. */
+  function disembark(c) {
+    cancelAnimationFrame(raf);
+    S().voyage = { x: V.x, y: V.y, h: V.h, days: V.days, home: V.home, at: c.id };
+    S().fog = Array.from(V.fog).join("");
+    el.style.display = "none";
+    byId("choice").style.display = "none";
+    for (const id of ["choice", "dialog", "toast", "pie"]) if (byId(id)) byId(id).style.zIndex = "";
+    game.mode = "world";
+    V = null;
+  }
+  function reembark() {
+    const P = S().voyage;
+    if (!P || !S().ship) return say([["", "Sem navio no porto. Você vai precisar de outro jeito de voltar..."]]);
+    ensureEl();
+    V = { x: P.x, y: P.y, h: P.h + Math.PI, v: 0, sail: 0, days: P.days, acc: 0, wind: Math.random() * 6.28, hit: 0, flash: 0, home: P.home, tl: false, tr: false, near: null, msg: "De volta a bordo. Para onde agora?", msgT: 4, trail: [] };
+    S().voyage = null;
+    fogArr();
+    el.style.display = "block";
+    for (const id of ["choice", "dialog", "toast", "pie"]) if (byId(id)) byId(id).style.zIndex = 50;
+    game.mode = "sea";
+    startLoop();
+  }
+  window.seaDisembark = (id) => disembark(C9.find((c) => c.id === id));
+  window.seaReembark = reembark;
+  window.SEA_COUNTRIES = C9;
   function endVoyage(msg) {
     cancelAnimationFrame(raf);
     const s = S();
@@ -489,6 +518,7 @@
     if (c.id === "gigantes" && !s.flags) opts.push({ t: "Explorar as ruínas dos gigantes", icon: "eye", fn: () => ((s.flags = 1), (player.gold += 300), say([["", "Dentro da mão de pedra de um gigante, um baú esquecido: 300 de ouro e um mapa riscado com o nome Vesper."]], () => countryMenu(c))) });
     opts.push({ t: `Comprar barris aqui (+10 dias · ${12 + sh.crew} ouro)`, icon: "bread", fn: () => spend(12 + sh.crew) && ((sh.food += 10), (sh.water += 10), countryMenu(c)) });
     if (sh.hull < sh.max) opts.push({ t: `Consertar o casco no estaleiro deles (${Math.ceil((sh.max - sh.hull) * 3)} ouro)`, icon: "hammer", fn: () => spend(Math.ceil((sh.max - sh.hull) * 3)) && ((sh.hull = sh.max), countryMenu(c)) });
+    if (typeof countryTown === "function" && countryTown(c.id)) opts.unshift({ t: `Desembarcar e conhecer ${c.n}`, icon: "boots", fn: () => countryTown(c.id, true) });
     opts.push({ t: "Zarpar de novo", icon: "flag", fn: backToSea });
     const status = col ? "Colônia sua: paga tributo todo dia." : route ? "Rota de exportação ativa." : `Governante: ${c.ruler}. Eles querem: ${wants}.`;
     choice(c.n, `${c.hello}<br><small>${status} Porão ${cargoUsed(sh)}/${sh.cap} · casco ${Math.round(sh.hull)}/${sh.max} · ${sh.crew} marujos · comida ${Math.round(sh.food)}d · água ${Math.round(sh.water)}d</small>`, opts);

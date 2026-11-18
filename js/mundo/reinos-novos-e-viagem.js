@@ -123,6 +123,7 @@ Object.assign(KINGDOMS, {
   solmar: { n: "Reino de Solmar", short: "Solmar", zone: "solmar", ruler: "Rainha Marisol" },
   rosalva: { n: "Ducado de Rosalva", short: "Rosalva", zone: "rosalva", ruler: "Duque Leônidas" },
 });
+if (typeof BASE_RULERS !== "undefined") Object.assign(BASE_RULERS, { solmar: "Rainha Marisol", rosalva: "Duque Leônidas" });
 for (const a of ["aurelia", "mares", "serra"]) for (const b of ["solmar", "rosalva"]) KINGDOM_PAIRS.push([a, b]);
 KINGDOM_PAIRS.push(["solmar", "rosalva"]);
 
