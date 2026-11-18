@@ -72,43 +72,133 @@
         Z = zid(id, n);
       const st = (j) => STYLES[(j + n * 3 + id.length) % STYLES.length];
       ZONE_DEFS[Z] = { nome: `${kn}, ${c ? c.n : id}`, theme: d.theme, exits: {}, enemies: [] };
+      // Quatro plantas de cidade (praça central, anel murado, vila do rio e
+      // grande mercado). Os pontos fixos (costume na praça, placa da casa,
+      // estrada, cais) ficam sempre no mesmo lugar; o resto muda.
+      const tpl = (n + id.length) % 4;
+      const palStyle = n === 2 ? "castle" : n === 3 ? "fortaleza" : d.pal;
+      const palName = n === 1 ? d.n[0] : `Paço de ${kn}`;
+      const shore = (set, fill) => {
+        if (port) (fill(1, 23, 42, 24, "~"), fill(21, 21, 22, 24, "="));
+        else {
+          for (let x = 2; x <= 18; x++) for (const y of [22, 23, 24]) set(x, y, (x + y + n) % 3 ? "g" : "w");
+          for (let x = 25; x <= 41; x += 3) set(x, 22 + (x % 2), "T");
+          fill(26, 24, 40, 24, "f");
+        }
+      };
+      const RENT = { id: Z + "4", style: "casa", x: 38, y: 3, w: 4, h: 4, door: [39], name: "Casa para alugar" };
+      const L = [
+        {
+          paint: (set, fill) => (fill(1, 7, 42, 9, ","), fill(12, 10, 31, 14, ","), fill(1, 15, 42, 16, ","), fill(1, 20, 42, 20, ","), fill(21, 7, 22, 21, ","), shore(set, fill)),
+          bld: [
+            { id: Z + "1", style: "templo", x: 3, y: 2, w: 6, h: 5, door: [5], name: d.n[1] },
+            { id: Z + "2", style: palStyle, x: 15, y: 1, w: 14, h: 6, door: [21, 22], name: palName },
+            { id: Z + "3", style: st(0), x: 31, y: 3, w: 5, h: 4, door: [33] },
+            RENT,
+            { id: Z + "5", style: "taverna", x: 3, y: 17, w: 6, h: 3, door: [5], name: d.n[2] },
+            { id: Z + "6", style: "armazem", x: 11, y: 17, w: 5, h: 3, door: [13], name: d.n[3] },
+            { id: Z + "7", style: st(1), x: 28, y: 17, w: 4, h: 3, door: [29] },
+            { id: Z + "8", style: st(2), x: 34, y: 17, w: 5, h: 3, door: [36] },
+          ],
+          deco: [["T", [[1, 1], [12, 2], [30, 1], [42, 1], [10, 12], [33, 12], [1, 12], [42, 12]]], ["l", [[12, 10], [31, 10], [12, 14], [31, 14]]], ["b", [[15, 13], [16, 13], [27, 13], [28, 13]]]],
+        },
+        {
+          // anel murado: a praça redonda no meio, as casas em volta
+          paint: (set, fill) => {
+            fill(12, 7, 31, 7, ",");
+            fill(12, 16, 31, 16, ",");
+            fill(12, 7, 12, 16, ",");
+            fill(31, 7, 31, 16, ",");
+            for (let y = 9; y <= 14; y++) for (let x = 14; x <= 29; x++) if (Math.hypot((x - 21.5) / 1.6, y - 11.5) < 4.4) set(x, y, ",");
+            fill(1, 9, 12, 9, ",");
+            fill(31, 9, 42, 9, ",");
+            fill(1, 20, 42, 20, ",");
+            fill(21, 16, 22, 21, ",");
+            fill(21, 7, 22, 10, ",");
+            for (const x of [13, 30]) for (const y of [8, 15]) set(x, y, "p");
+            shore(set, fill);
+          },
+          bld: [
+            { id: Z + "2", style: palStyle, x: 2, y: 1, w: 9, h: 6, door: [6], name: palName },
+            { id: Z + "1", style: "templo", x: 14, y: 2, w: 6, h: 4, door: [16], name: d.n[1] },
+            { id: Z + "3", style: st(0), x: 24, y: 2, w: 5, h: 4, door: [26] },
+            RENT,
+            { id: Z + "5", style: "taverna", x: 2, y: 11, w: 6, h: 4, door: [4], name: d.n[2] },
+            { id: Z + "6", style: "armazem", x: 35, y: 11, w: 6, h: 4, door: [37], name: d.n[3] },
+            { id: Z + "7", style: st(1), x: 3, y: 17, w: 5, h: 3, door: [5] },
+            { id: Z + "8", style: st(2), x: 12, y: 17, w: 5, h: 3, door: [14] },
+            { id: Z + "9", style: st(3), x: 27, y: 17, w: 5, h: 3, door: [29] },
+            { id: Z + "10", style: st(4), x: 35, y: 17, w: 5, h: 3, door: [37] },
+          ],
+          deco: [["T", [[1, 8], [42, 8], [10, 18], [33, 18], [9, 14], [34, 14]]], ["l", [[14, 8], [29, 8], [14, 15], [29, 15]]], ["W", [[21, 15]]]],
+        },
+        {
+          // vila do rio: um riacho desce pela esquerda, com duas pontes
+          paint: (set, fill) => {
+            fill(6, 1, 7, 21, "~");
+            fill(1, 8, 42, 8, ",");
+            fill(1, 15, 42, 15, ",");
+            fill(6, 8, 7, 8, "=");
+            fill(6, 15, 7, 15, "=");
+            fill(6, 20, 7, 20, "=");
+            fill(14, 10, 30, 13, ",");
+            fill(1, 20, 5, 20, ",");
+            fill(8, 20, 42, 20, ",");
+            fill(21, 13, 22, 21, ",");
+            fill(21, 8, 22, 10, ",");
+            shore(set, fill);
+          },
+          bld: [
+            { id: Z + "1", style: "templo", x: 9, y: 2, w: 5, h: 5, door: [11], name: d.n[1] },
+            { id: Z + "2", style: palStyle, x: 16, y: 1, w: 12, h: 6, door: [21, 22], name: palName },
+            { id: Z + "3", style: st(0), x: 30, y: 3, w: 5, h: 4, door: [32] },
+            RENT,
+            { id: Z + "11", style: "moinho", x: 1, y: 10, w: 4, h: 4, door: [2], name: "Moinho do Riacho" },
+            { id: Z + "5", style: "taverna", x: 9, y: 16, w: 6, h: 3, door: [11], name: d.n[2] },
+            { id: Z + "6", style: "armazem", x: 16, y: 16, w: 4, h: 3, door: [17], name: d.n[3] },
+            { id: Z + "7", style: st(1), x: 25, y: 16, w: 5, h: 3, door: [27] },
+            { id: Z + "8", style: st(2), x: 33, y: 16, w: 5, h: 3, door: [35] },
+          ],
+          deco: [["T", [[9, 11], [9, 13], [33, 11], [40, 12], [3, 3], [3, 5]]], ["l", [[14, 10], [30, 10], [14, 13], [30, 13]]], ["b", [[16, 12], [27, 12]]]],
+        },
+        {
+          // grande mercado: uma praça enorme com poços nos cantos
+          paint: (set, fill) => {
+            fill(4, 8, 39, 15, ",");
+            fill(1, 16, 42, 16, ",");
+            fill(1, 20, 42, 20, ",");
+            fill(21, 16, 22, 21, ",");
+            fill(1, 7, 3, 7, ",");
+            fill(40, 7, 42, 7, ",");
+            shore(set, fill);
+          },
+          bld: [
+            { id: Z + "1", style: "templo", x: 3, y: 1, w: 7, h: 6, door: [6], name: d.n[1] },
+            { id: Z + "2", style: palStyle, x: 12, y: 1, w: 11, h: 6, door: [17, 18], name: palName },
+            { id: Z + "3", style: st(0), x: 25, y: 2, w: 5, h: 5, door: [27] },
+            { id: Z + "9", style: st(3), x: 31, y: 3, w: 5, h: 4, door: [33] },
+            RENT,
+            { id: Z + "5", style: "taverna", x: 2, y: 17, w: 6, h: 3, door: [4], name: d.n[2] },
+            { id: Z + "6", style: "armazem", x: 9, y: 17, w: 5, h: 3, door: [11], name: d.n[3] },
+            { id: Z + "7", style: st(1), x: 24, y: 17, w: 5, h: 3, door: [26] },
+            { id: Z + "8", style: st(2), x: 30, y: 17, w: 5, h: 3, door: [32] },
+            { id: Z + "10", style: st(4), x: 36, y: 17, w: 5, h: 3, door: [38] },
+          ],
+          deco: [["W", [[5, 9], [38, 9], [5, 14], [38, 14]]], ["l", [[8, 8], [35, 8], [8, 15], [35, 15]]], ["b", [[12, 14], [13, 14], [30, 14], [31, 14]]]],
+        },
+      ][tpl];
       ZONES[Z] = buildTown(Z, {
         w: W,
         h: H,
         arrive: port ? [21, 21] : [3, 20],
-        paint: (set, fill) => {
-          fill(1, 7, 42, 9, ",");
-          fill(12, 10, 31, 14, ",");
-          fill(1, 15, 42, 16, ",");
-          fill(1, 20, 42, 20, ",");
-          fill(21, 7, 22, 21, ",");
-          if (port) (fill(1, 23, 42, 24, "~"), fill(21, 21, 22, 24, "="));
-          else {
-            // reino do interior: hortas, pomar e pasto no lugar do mar
-            for (let x = 2; x <= 18; x++) for (const y of [22, 23, 24]) set(x, y, (x + y + n) % 3 ? "g" : "w");
-            for (let x = 25; x <= 41; x += 3) set(x, 22 + (x % 2), "T");
-            fill(26, 24, 40, 24, "f");
-          }
-        },
-        bld: [
-          { id: Z + "1", style: "templo", x: 3, y: 2, w: 6, h: 5, door: [5], name: d.n[1] },
-          { id: Z + "2", style: n === 2 ? "castle" : n === 3 ? "fortaleza" : d.pal, x: 15, y: 1, w: 14, h: 6, door: [21, 22], name: n === 1 ? d.n[0] : `Paço de ${kn}` },
-          { id: Z + "3", style: st(0), x: 31, y: 3, w: 5, h: 4, door: [33] },
-          { id: Z + "4", style: "casa", x: 38, y: 3, w: 4, h: 4, door: [39], name: "Casa para alugar" },
-          { id: Z + "5", style: "taverna", x: 3, y: 17, w: 6, h: 3, door: [5], name: d.n[2] },
-          { id: Z + "6", style: "armazem", x: 11, y: 17, w: 5, h: 3, door: [13], name: d.n[3] },
-          { id: Z + "7", style: st(1), x: 28, y: 17, w: 4, h: 3, door: [29] },
-          { id: Z + "8", style: st(2), x: 34, y: 17, w: 5, h: 3, door: [36] },
-        ],
+        paint: L.paint,
+        bld: L.bld,
         stalls: {},
         npcs: {},
-        deco: [
-          ["T", [[1, 1], [12, 2], [30, 1], [42, 1], [10, 12], [33, 12], [1, 12], [42, 12]]],
-          ["l", [[12, 10], [31, 10], [12, 14], [31, 14]]],
-          ["b", [[15, 13], [16, 13], [27, 13], [28, 13]]],
-        ],
+        deco: L.deco,
         boats: [],
       });
+      ZONES[Z].tpl = tpl;
       if (typeof addDoorPaths === "function") addDoorPaths(Z);
       const key = id + (n > 1 ? "-" + n : "");
       KINGDOMS[key] = { n: `${kn} (${c ? c.n : id})`, short: kn, zone: Z, ruler, far: true };

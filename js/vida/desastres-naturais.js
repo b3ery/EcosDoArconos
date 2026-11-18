@@ -434,5 +434,36 @@
     }
   };
 
+  /* ----- consequências na lavoura e numa vila vazia ----- */
+  if (typeof gatherInteract === "function") {
+    const giBase = gatherInteract;
+    gatherInteract = function (x, y) {
+      const c = typeof tileAt === "function" ? tileAt(player.zone, x, y) : null;
+      if (c === "g") {
+        if (flooded() && floodSpots(player.zone).some(([a, b]) => a === x && b === y)) return say([["", "O trigo apodreceu debaixo d'água. Não sobrou nada para colher."]]), true;
+        if (drought()) {
+          if (Math.random() < 0.6) return say([["", "Só palha seca e grão chocho. A seca levou esta parte da lavoura."]]), true;
+        }
+      }
+      return giBase.apply(this, arguments);
+    };
+  }
+  // vila abandonada não tem festa, nem exposição, nem aniversário, nem a turma na rua
+  for (const nm of ["festivalToday", "exhibitionToday", "birthdayToday"])
+    if (typeof window[nm] === "function") {
+      const base = window[nm];
+      window[nm] = function () {
+        if (lifeMode() && player && player.dis && player.dis.extinct && player.zone === "vila") return nm === "festivalToday" ? null : null;
+        return base.apply(this, arguments);
+      };
+    }
+  if (typeof crewVisible === "function") {
+    const cvBase = crewVisible;
+    crewVisible = function () {
+      if (lifeMode() && player.dis && player.dis.extinct && player.zone === "vila") return false;
+      return cvBase.apply(this, arguments);
+    };
+  }
+
   window.disasterTest = { fire: startFire, quake, state: D, getFire: () => fire, flooded: () => flooded(), spots: () => floodSpots(player.zone).length };
 })();

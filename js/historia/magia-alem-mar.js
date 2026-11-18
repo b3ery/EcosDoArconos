@@ -34,7 +34,15 @@
   };
   const HUNT = { ferro: "Caçadores do Rei-Forjador", ouro: "Guarda Dourada do Imperador", jade: "Lâminas da Imperatriz" };
   const MAGE = [17, 11];
-  const HIDES = [[10, 8], [33, 8], [10, 16], [33, 16], [26, 19]];
+  // esconderijos: os primeiros lugares livres de cada planta de cidade
+  const CAND = [[10, 8], [33, 8], [10, 16], [33, 16], [26, 19], [8, 21], [36, 21], [14, 9], [29, 9], [16, 19]];
+  const hideCache = {};
+  const hidesOf = (zid) => {
+    if (hideCache[zid]) return hideCache[zid];
+    const z = ZONES[zid];
+    return (hideCache[zid] = z ? CAND.filter(([x, y]) => ".,".includes(z.map[y][x])).slice(0, 5) : []);
+  };
+  const HIDES_ = () => hidesOf(player.zone);
   const S = () => (player.overseas = player.overseas || { done: {} });
 
   /* ----- missões ----- */
@@ -145,7 +153,7 @@
 
   /* ----- esconderijos, mago e desenho ----- */
   const at = (x, y, p) => x === p[0] && y === p[1];
-  const hideAt = (x, y) => story() && here() && HIDES.some((p) => at(x, y, p));
+  const hideAt = (x, y) => story() && here() && HIDES_().some((p) => at(x, y, p));
   const mageAt = (x, y) => story() && port() && Q[here()] && at(x, y, MAGE);
   const tgBase = targetAt;
   targetAt = function (x, y) {
@@ -165,7 +173,7 @@
   };
   const wkBase = walkable;
   walkable = function (z, x, y) {
-    if (story() && z && z.startsWith("pais-") && (HIDES.some((p) => at(x, y, p)) || (z.split("-").length === 2 && at(x, y, MAGE)))) return false;
+    if (story() && z && z.startsWith("pais-") && (hidesOf(z).some((p) => at(x, y, p)) || (z.split("-").length === 2 && at(x, y, MAGE)))) return false;
     return wkBase(z, x, y);
   };
   // quem está escondido não anda: o primeiro passo te tira do esconderijo
@@ -180,7 +188,7 @@
     if (!story() || !here()) return;
     const T = TILE;
     const R = (x, y, w, h, c) => ((ctx.fillStyle = c), ctx.fillRect(Math.round(x), Math.round(y), w, h));
-    HIDES.forEach(([x, y], i) =>
+    HIDES_().forEach(([x, y], i) =>
       list.push({
         y,
         draw: () => {
