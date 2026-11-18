@@ -465,5 +465,51 @@
     };
   }
 
+  /* ----- água suja: sem limpeza, o rio e a fonte apodrecem ----- */
+  const dirty = () => lifeMode() && realm() && realm().limp < 40 && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
+  const iaW = interactAt;
+  interactAt = function (x, y) {
+    const c = typeof tileAt === "function" ? tileAt(player.zone, x, y) : null;
+    const r = iaW.apply(this, arguments);
+    if (dirty() && (c === "~" || c === "W" || c === "F") && !(fire && fire.z === player.zone) && Math.random() < (realm().limp < 20 ? 0.6 : 0.35) && typeof getSick === "function" && !player.sick)
+      setTimeout(() => (toast("A água estava suja... seu estômago revira.", 3000), getSick(pk(["intox", "disenteria"]))), 900);
+    return r;
+  };
+  const cdW = crewDrawList;
+  crewDrawList = function (list, t) {
+    cdW(list, t);
+    if (!dirty()) return;
+    const z = ZONES[player.zone],
+      cam = game.cam,
+      T = TILE;
+    if (!cam) return;
+    const k = Math.min(1, (40 - realm().limp) / 30);
+    list.push({
+      y: -1.6,
+      draw: () => {
+        const x0 = Math.max(0, Math.floor(cam.camX / T)),
+          y0 = Math.max(0, Math.floor(cam.camY / T)),
+          x1 = Math.min(z.w - 1, x0 + Math.ceil(viewWidth / cam.Z / T) + 1),
+          y1 = Math.min(z.h - 1, y0 + Math.ceil(480 / cam.Z / T) + 1);
+        for (let y = y0; y <= y1; y++)
+          for (let x = x0; x <= x1; x++) {
+            const c = z.map[y][x];
+            if (c !== "~" && c !== "F" && c !== "W") continue;
+            // água turva, espuma e lixo boiando
+            ctx.fillStyle = `rgba(90,96,50,${0.35 + 0.35 * k})`;
+            ctx.fillRect(x * T, y * T, T, T);
+            if ((x * 7 + y * 13) % 4 === 0) {
+              const ox = (t * 6 + x * 11) % 22;
+              ctx.fillStyle = "#6a5a3a";
+              ctx.fillRect(x * T + 4 + ox, y * T + 12, 6, 4);
+              ctx.fillStyle = "#c9c0a0";
+              ctx.fillRect(x * T + 2 + ((ox + 9) % 24), y * T + 22, 4, 2);
+            }
+            if ((x + y) % 3 === 0) ((ctx.fillStyle = "rgba(220,220,190,.35)"), ctx.fillRect(x * T + 8, y * T + 4 + ((t * 4) % 20), 10, 2));
+          }
+      },
+    });
+  };
+
   window.disasterTest = { fire: startFire, quake, state: D, getFire: () => fire, flooded: () => flooded(), spots: () => floodSpots(player.zone).length };
 })();

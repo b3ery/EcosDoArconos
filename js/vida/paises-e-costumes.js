@@ -147,6 +147,9 @@
             fill(21, 13, 22, 21, ",");
             fill(21, 8, 22, 10, ",");
             shore(set, fill);
+            // o riacho desce até o mar (porto) ou acaba num lago (interior)
+            if (port) fill(6, 21, 7, 22, "~");
+            else (fill(4, 21, 9, 23, "~"), fill(5, 24, 8, 24, "~"));
           },
           bld: [
             { id: Z + "1", style: "templo", x: 9, y: 2, w: 5, h: 5, door: [11], name: d.n[1] },
