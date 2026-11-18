@@ -333,6 +333,7 @@ EcosDoArconos/
 - Cada arquivo trata de um assunto e explica no cabeçalho o que faz e quais funções de outros arquivos ele modifica. A ordem de carregamento fica no `index.html`.
 - **Truques para testar e apresentar:** no computador, segure **Ctrl** e digite **E C O**; no celular, toque 5 vezes no título do **Menu do jogo**. Aparece o painel **TESTES** (ou **F9**): ir a qualquer lugar, mudar hora e clima, abrir minigames, pular etapas da história. Também dá para abrir `dev.html`.
 - **Documentação técnica** (como o código é montado, padrões e índice de todos os arquivos): [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md).
+- **Trabalho acadêmico (ABNT):** [`docs/Ecos_do_Arcano_Documentacao_ABNT.docx`](docs/Ecos_do_Arcano_Documentacao_ABNT.docx).
 - **Apresentação:** [`docs/apresentacao-ecos-do-arcano.pptx`](docs/apresentacao-ecos-do-arcano.pptx).
 
 <br>
