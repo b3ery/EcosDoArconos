@@ -410,7 +410,7 @@ function toastTable() {
 
 /* ===================== FESTIVAIS MAIS FORTES ===================== */
 const FEST_FOOD = [
-  ["Espetinho de milho na brasa", 3, 15],
+  ["Espetinho de castanha na brasa", 3, 15],
   ["Maçã do amor", 3, 10],
   ["Pastel de feira", 4, 20],
   ["Algodão-doce de flor", 2, 6],

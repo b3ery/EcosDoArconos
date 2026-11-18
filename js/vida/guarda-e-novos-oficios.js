@@ -38,7 +38,7 @@
     barbeiro: ["corte e barba", "um degradê", "aparar a franja", "raspar a barba", "corte de noivo"],
     bibliotecario: ["devolver 3 livros", "achar um livro de runas", "renovar o empréstimo", "organizar a seção de mapas"],
     cavalarico: ["cuidar do cavalo dele", "escovar a égua", "trocar a ferradura", "dar feno ao potro"],
-    moleiro: ["um saco de farinha", "fubá para o bolo", "farinha de centeio", "moer a colheita dele"],
+    moleiro: ["um saco de farinha", "farinha para o bolo", "farinha de centeio", "moer a colheita dele"],
     acougueiro: ["carne para o ensopado", "costela", "linguiça", "carne moída"],
     peixeiro: ["sardinhas", "um robalo", "peixe para o almoço", "camarão"],
     balconista: ["um saco de sal", "óleo de lampião", "feijão e arroz", "pregos e corda"],

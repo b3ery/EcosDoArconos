@@ -1492,15 +1492,39 @@
       draw(g, S, dt) {
         R(0, 0, W, H, "#1a1a3a");
         for (let k = 0; k < 20; k++) C((k * 71) % W, (k * 37) % 120, 1, "#fff");
-        R(176, 120, 8, 120, "#3a3a42");
-        const sway = Math.sin(S.t * 1.7) * 18 + Math.sin(S.t * 3.1) * 6;
-        const lx = 180 + sway,
-          ly = 90;
-        R(lx - 16, ly - 20, 32, 40, "rgba(255,240,180,.15)");
-        g.strokeStyle = "#c9a050";
+        // poste de ferro com braço; o lampião pende numa corrente e balança
+        R(150, 40, 8, 200, "#2a2a32");
+        R(152, 40, 2, 200, "#4a4a52");
+        R(144, 228, 20, 12, "#2a2a32");
+        R(150, 40, 70, 6, "#2a2a32");
+        R(212, 36, 8, 14, "#2a2a32");
+        const ang = Math.sin(S.t * 1.7) * 0.35 + Math.sin(S.t * 3.1) * 0.1;
+        const px0 = 216,
+          py0 = 46,
+          len = 34;
+        const lx = px0 + Math.sin(ang) * len,
+          ly = py0 + Math.cos(ang) * len + 16;
+        g.strokeStyle = "#5a5a62";
         g.lineWidth = 2;
-        g.strokeRect(lx - 16, ly - 20, 32, 40);
-        R(lx - 2, ly + 4, 4, 8, "#e8e4dc");
+        g.setLineDash([3, 2]);
+        g.beginPath();
+        g.moveTo(px0, py0);
+        g.lineTo(lx, ly - 20);
+        g.stroke();
+        g.setLineDash([]);
+        g.save();
+        g.translate(lx, ly);
+        g.rotate(-ang * 0.6);
+        R(-12, -22, 24, 4, "#2a2a32");
+        R(-6, -26, 12, 4, "#2a2a32");
+        R(-14, -18, 28, 32, "rgba(255,240,180,.12)");
+        g.strokeStyle = "#2a2a32";
+        g.lineWidth = 3;
+        g.strokeRect(-14, -18, 28, 32);
+        R(-1, -18, 2, 32, "#2a2a32");
+        R(-12, 14, 24, 4, "#2a2a32");
+        R(-2, 4, 4, 8, "#e8e4dc");
+        g.restore();
         const fx = S.down ? S.p.x : 80,
           fy = S.down ? S.p.y : 200;
         g.strokeStyle = "#8a5a2e";
@@ -1664,6 +1688,308 @@
     });
     run([st], (s, m) => onDone(s >= m * 0.9));
   };
+
+  /** Fundo de aldeia medieval: casas enxaimel, torre da igreja e bandeirolas. */
+  function village(yb, night) {
+    const roofs = ["#8a3a2a", "#6b4423", "#7a2a2a", "#5a4a3a", "#8a5a2e"];
+    R(250, yb - 96, 26, 96, night ? "#2a2438" : "#bdb3a0");
+    g.fillStyle = night ? "#3a2a3a" : "#5a4a5a";
+    g.beginPath();
+    g.moveTo(246, yb - 96);
+    g.lineTo(263, yb - 130);
+    g.lineTo(280, yb - 96);
+    g.fill();
+    for (let i = 0; i < 6; i++) {
+      const x = i * 62 - 6,
+        w = 50,
+        h = 40 + ((i * 13) % 18);
+      R(x, yb - h, w, h, night ? "#3a3048" : "#efe6d2");
+      if (!night) {
+        g.fillStyle = "#4a2e17";
+        g.fillRect(x, yb - h, w, 3);
+        g.fillRect(x, yb - h / 2, w, 3);
+        g.fillRect(x, yb - h, 3, h);
+        g.fillRect(x + w - 3, yb - h, 3, h);
+        g.fillRect(x + w / 2 - 1, yb - h, 3, h);
+      }
+      R(x + 8, yb - h + 8, 8, 8, night ? "#ffd66b" : "#5a7a9a");
+      R(x + 32, yb - h + 8, 8, 8, night ? "#ffd66b" : "#5a7a9a");
+      g.fillStyle = night ? "#2a1e2a" : roofs[i % 5];
+      g.beginPath();
+      g.moveTo(x - 4, yb - h);
+      g.lineTo(x + w / 2, yb - h - 22);
+      g.lineTo(x + w + 4, yb - h);
+      g.fill();
+    }
+    const cols = ["#c94a4a", "#f2c14e", "#3a74c9", "#7ab04a", "#f2eecf"];
+    g.strokeStyle = "#5a3a22";
+    g.lineWidth = 1;
+    g.beginPath();
+    for (let i = 0; i <= 18; i++) g.lineTo(i * 20, 20 + Math.sin((i / 18) * Math.PI) * 16);
+    g.stroke();
+    for (let i = 0; i < 18; i++) {
+      const y = 20 + Math.sin(((i + 0.5) / 18) * Math.PI) * 16;
+      g.fillStyle = cols[i % cols.length];
+      g.beginPath();
+      g.moveTo(i * 20 + 3, y);
+      g.lineTo(i * 20 + 17, y);
+      g.lineTo(i * 20 + 10, y + 12);
+      g.fill();
+    }
+  }
+  /* ===================== JOGOS DOS FESTIVAIS MEDIEVAIS ===================== */
+
+  /** São João: pular a fogueira quando a chama baixa (golpe para cima). */
+  function bonfire() {
+    return {
+      title: "Pular a fogueira",
+      sub: "A chama sobe e desce. Quando ela estiver BAIXA, arraste o dedo para CIMA para pular. Três saltos para dar sorte no ano!",
+      time: 20,
+      state: () => ({ jumps: 0, burn: 0, jy: 0 }),
+      up(S, p, s) {
+        if (!s || s.y - p.y < 40 || S.jy > 0) return;
+        const flame = 0.5 + 0.5 * Math.sin(S.t * 2.4);
+        S.jy = 1;
+        if (flame < 0.4) S.jumps++, playSound(784, 0.1, "sine");
+        else S.burn++, playSound(160, 0.12, "sawtooth"), (S.msg2 = "Ai! Queimou a barra da roupa!");
+      },
+      draw(g, S, dt) {
+        sky("#141434", "#3a2a4a");
+        for (let k = 0; k < 20; k++) C((k * 71) % W, (k * 37) % 100, 1, "#fff");
+        village(190, true);
+        R(0, 190, W, 50, "#3a4a2a");
+        const flame = 0.5 + 0.5 * Math.sin(S.t * 2.4);
+        R(140, 186, 80, 10, "#5a3a22");
+        for (let k = 0; k < 5; k++) {
+          const h = 30 + flame * 70 + Math.sin(S.t * 9 + k) * 8;
+          g.fillStyle = ["#ff6a2a", "#ffb04a", "#ffe08a"][k % 3];
+          g.beginPath();
+          g.moveTo(148 + k * 14, 188);
+          g.lineTo(156 + k * 14, 188 - h);
+          g.lineTo(164 + k * 14, 188);
+          g.fill();
+        }
+        light(180, 150, 180, "rgba(255,140,50,A)", 0.3 + flame * 0.2);
+        if (S.jy > 0) S.jy = Math.max(0, S.jy - dt * 1.4);
+        const jy = Math.sin(S.jy * Math.PI) * 90;
+        const px = 60 + (1 - S.jy) * 0 + (S.jy > 0 ? (1 - S.jy) * 240 : 0);
+        const old = ctx;
+        ctx = g;
+        try {
+          drawSprite(wizardRects(player.look.robe || "#3d4fa8", null, player.look.hair || "#3a2414", null, "right", 1), S.jy > 0 ? px : 40, 158 - jy, 2);
+        } finally {
+          ctx = old;
+        }
+        S.msg = S.msg2 || `${S.jumps}/3 saltos`;
+      },
+      auto: (S) => (S.jumps >= 3 && S.jy === 0 ? Math.max(0.3, 1 - S.burn * 0.2) : null),
+      finish: (S) => S.jumps / 3,
+    };
+  }
+
+  /** Colheita: pegar maçã com a boca na tina d'água. */
+  function appleBob() {
+    const apples = Array.from({ length: 5 }, (_, i) => ({ x: 110 + i * 34, y: 150, ph: Math.random() * 6, got: false }));
+    return {
+      title: "Maçã na tina",
+      sub: "As maçãs boiam e fogem. Segure em cima da tina para mergulhar a cabeça e solte quando estiver em cima de uma maçã. Mãos para trás!",
+      time: 20,
+      state: () => ({ apples, got: 0, dive: 0, miss: 0 }),
+      up(S, p) {
+        const a = S.apples.find((q) => !q.got && Math.hypot(q.x - p.x, q.y - p.y) < 14);
+        if (a) (a.got = true), S.got++, playSound(700, 0.08, "sine");
+        else S.miss++, playSound(200, 0.06, "triangle"), (S.msg2 = "Splash! Só água.");
+      },
+      draw(g, S, dt) {
+        sky("#8ac8e8", "#f8e8b8");
+        village(150);
+        R(0, 150, W, 90, "#7a9a3a");
+        E(180, 170, 120, 40, "#6b4423");
+        E(180, 160, 108, 30, "#3a74c9");
+        for (const a of S.apples) {
+          if (a.got) continue;
+          a.ph += dt * 1.6;
+          a.x += Math.sin(a.ph) * 0.6;
+          a.y = 156 + Math.sin(a.ph * 1.3) * 3;
+          C(a.x, a.y, 9, "#c94a4a");
+          R(a.x - 1, a.y - 12, 2, 4, "#5a3a22");
+          R(a.x + 1, a.y - 11, 5, 3, "#5a9a3a");
+        }
+        if (S.down) (C(S.p.x, S.p.y - 6, 12, player.look.skin || "#e8b896"), R(S.p.x - 12, S.p.y - 20, 24, 8, player.look.hair || "#3a2414"));
+        S.msg = S.msg2 || `${S.got}/3 maçãs`;
+      },
+      auto: (S) => (S.got >= 3 ? Math.max(0.3, 1 - S.miss * 0.1) : null),
+      finish: (S) => S.got / 3,
+    };
+  }
+
+  /** Tiro com arco: puxar a corda para trás e soltar, com vento. */
+  function archery() {
+    return {
+      title: "Concurso de arco e flecha",
+      sub: "Puxe a flecha para TRÁS (arraste do arco para a esquerda) e solte. Mais puxada = mais longe. Olhe o vento na bandeira! Três flechas.",
+      time: 30,
+      state: () => ({ shots: [], arrow: null, wind: (Math.random() - 0.5) * 40 }),
+      up(S, p, s) {
+        if (!s || S.arrow || S.shots.length >= 3) return;
+        const pull = Math.min(120, Math.max(0, s.x - p.x));
+        const aim = (s.y - p.y) * 0.6;
+        S.arrow = { x: 76, y: 160, vx: pull * 3.2, vy: -aim * 2 - pull * 1.1, t: 0 };
+        playSound(300, 0.08, "triangle");
+      },
+      draw(g, S, dt) {
+        sky("#8ac8e8", "#d8eef8");
+        village(180);
+        R(0, 180, W, 60, "#5a8a3a");
+        // alvo de palha
+        R(306, 120, 6, 70, "#6b4423");
+        for (const [r, c] of [[22, "#f2eecf"], [17, "#c94a4a"], [11, "#f2eecf"], [6, "#c94a4a"]]) C(310, 130, r, c);
+        // bandeira de vento
+        R(200, 60, 3, 122, "#5a3a22");
+        R(196, 178, 11, 4, "#4a2e17");
+        g.fillStyle = "#c94a4a";
+        g.beginPath();
+        g.moveTo(203, 60);
+        g.lineTo(203 + S.wind, 66);
+        g.lineTo(203, 72);
+        g.fill();
+        // arqueiro
+        {
+          const old = ctx;
+          ctx = g;
+          try {
+            drawSprite(wizardRects(player.look.robe || "#3d4fa8", null, player.look.hair || "#3a2414", null, "right", 0), 40, 148, 2);
+          } finally {
+            ctx = old;
+          }
+        }
+        g.strokeStyle = "#8a5a2e";
+        g.lineWidth = 3;
+        g.beginPath();
+        g.arc(72, 160, 16, -1.2, 1.2);
+        g.stroke();
+        if (S.down && S.start && !S.arrow) dash(72, 160, 72 - Math.min(120, S.start.x - S.p.x) * 0.3, 160 - (S.start.y - S.p.y) * 0.2, "#fff");
+        const A = S.arrow;
+        if (A) {
+          A.t += dt;
+          A.vx += S.wind * dt * 1.5;
+          A.vy += 260 * dt;
+          A.x += A.vx * dt;
+          A.y += A.vy * dt;
+          R(A.x - 8, A.y - 1, 16, 2, "#5a3a22");
+          if (A.x >= 306 || A.y > 190) {
+            const d = A.x >= 306 ? Math.abs(A.y - 130) : 99;
+            S.shots.push(d);
+            S.arrow = null;
+            playSound(d < 6 ? 1047 : d < 22 ? 660 : 180, 0.1, "sine");
+          }
+        }
+        S.shots.forEach((d, i) => d < 22 && C(310, 130 + (i - 1) * 3, 2, "#1a1028"));
+        S.msg = S.shots.map((d) => (d < 6 ? "Na mosca!" : d < 22 ? "No alvo" : "Errou")).join(" · ");
+      },
+      auto: (S) => (S.shots.length >= 3 && !S.arrow ? S.shots.reduce((s, d) => s + (d < 6 ? 1 : d < 22 ? 0.5 : 0), 0) / 3 : null),
+      finish: (S) => S.shots.reduce((s, d) => s + (d < 6 ? 1 : d < 22 ? 0.5 : 0), 0) / 3,
+    };
+  }
+
+  /** Mastro de maio: dançar em volta trançando as fitas. */
+  const maypole = circleStage("Dança do mastro de maio", "Gire em volta do mastro no ritmo da música, trançando as fitas coloridas.", {
+    cx: 180,
+    cy: 150,
+    r: 70,
+    lo: 2.2,
+    hi: 5,
+    need: 6,
+    drawBg(S) {
+      sky("#9fd0f0", "#f8f0d8");
+      village(180);
+      R(0, 180, W, 60, "#7ab04a");
+      R(176, 30, 8, 160, "#d8c8a8");
+      C(180, 30, 8, "#ff6b8a");
+      const cols = ["#ff6b8a", "#f5d76e", "#5fa0ff", "#7ad36b", "#c77dff", "#fff"];
+      cols.forEach((c, i) => {
+        const a = S.rot + (i * Math.PI) / 3;
+        g.strokeStyle = c;
+        g.lineWidth = 3;
+        g.beginPath();
+        g.moveTo(180, 34);
+        g.lineTo(180 + Math.cos(a) * 80, 170 + Math.sin(a) * 18);
+        g.stroke();
+      });
+      for (let k = 0; k < Math.min(12, S.ok * 2); k++) R(176, 50 + k * 8, 8, 4, cols[k % 6]);
+      if (S.down) C(S.p.x, S.p.y, 8, player.look.robe || "#3d4fa8");
+    },
+  });
+
+  /** Corrida de sacos: pular alternando os dois pés. */
+  function sackRace() {
+    return {
+      title: "Corrida de sacos",
+      sub: "Toque ALTERNANDO no pé esquerdo e no direito (ou A e D) para pular dentro do saco. Ritmo, não pressa: trocar errado faz cair!",
+      time: 15,
+      state: () => ({ x: 20, last: null, falls: 0, rival: 20 }),
+      down(S, p) {
+        const side = p.x < W / 2 ? "a" : "d";
+        hop(S, side);
+      },
+      draw(g, S, dt) {
+        sky("#8ac8e8", "#f8e8b8");
+        village(160);
+        R(0, 160, W, 80, "#7ab04a");
+        R(330, 156, 4, 60, "#f2eecf");
+        R(0, 186, W, 2, "#5a8a3a");
+        R(0, 214, W, 2, "#5a8a3a");
+        S.rival += dt * 20;
+        const sack = (x, bottom, skin, hair) => {
+          R(x, bottom - 20, 18, 20, "#c9a878");
+          R(x, bottom - 20, 18, 3, "#a8885a");
+          R(x + 3, bottom - 30, 12, 10, skin);
+          R(x + 3, bottom - 32, 12, 4, hair);
+          R(x + 5, bottom - 26, 2, 2, "#1a1028");
+          R(x + 11, bottom - 26, 2, 2, "#1a1028");
+        };
+        sack(S.rival, 214, "#d9a07a", "#3a2414");
+        const hopY = S.hop > 0 ? Math.sin((S.hop / 0.3) * Math.PI) * 14 : 0;
+        if (S.hop > 0) S.hop -= dt;
+        if (hopY > 1) E(S.x + 9, 187, 9, 2, "rgba(0,0,0,.25)");
+        sack(S.x, 186 - hopY, player.look.skin || "#e8b896", player.look.hair || "#3a2414");
+        R(20, 220, 150, 18, "rgba(0,0,0,.3)");
+        R(190, 220, 150, 18, "rgba(0,0,0,.3)");
+        T("pé esquerdo (A)", 95, 233, "#fff", 10);
+        T("pé direito (D)", 265, 233, "#fff", 10);
+        S.msg = S.falls ? `Caiu ${S.falls}x` : "";
+      },
+      auto: (S) => (S.x >= 320 ? (S.rival < S.x ? 1 : 0.6) : S.rival >= 320 ? 0.2 : null),
+      finish: (S) => S.x / 320,
+    };
+  }
+  function hop(S, side) {
+    if (S.hop > 0) return;
+    if (side === S.last) {
+      S.falls++;
+      S.x = Math.max(20, S.x - 10);
+      playSound(140, 0.1, "square");
+      S.last = null;
+      return;
+    }
+    S.last = side;
+    S.x += 14;
+    S.hop = 0.3;
+    playSound(400, 0.04, "triangle");
+  }
+  window.festGame = function (kind, cb) {
+    const st = { fogueira: bonfire, maca: appleBob, arco: archery, mastro: () => maypole, sacos: sackRace }[kind];
+    if (!st) return;
+    const spec = st();
+    if (kind === "sacos") spec.key = 1;
+    run([spec], (s, m) => cb(s / m));
+  };
+  KEY_HANDLERS.ges2 = null;
+  addEventListener("keydown", (e) => {
+    if (game.mode !== "ges" || !S || !S.spec || S.spec.title !== "Corrida de sacos") return;
+    const k = e.key.toLowerCase();
+    if (k === "a" || k === "d") hop(S, k);
+  });
 
   /* ===================== QUAL GESTO PARA QUAL OFÍCIO ===================== */
   const isDrink = (m) => m && (m.drunk || m.water) && !m.food;

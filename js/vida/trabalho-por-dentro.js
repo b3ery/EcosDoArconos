@@ -58,7 +58,7 @@
   }
 
   const ORDERS = {
-    padeiro: ["2 pães de milho", "um bolo de fubá", "pão doce com coco", "uma broa", "6 pãezinhos", "rosca de canela"],
+    padeiro: ["2 pães de centeio", "um bolo de mel", "pão doce com coco", "uma broa", "6 pãezinhos", "rosca de canela"],
     ferreiro: ["uma ferradura", "pregos de telhado", "uma enxada", "dobradiças", "conserto de espada", "uma panela de ferro"],
     costureiro: ["barra da calça", "um vestido de festa", "remendo na capa", "botões novos", "uma túnica", "ajuste no manto"],
     cozinheiro: ["ensopado", "sopa de abóbora", "torta de carne", "peixe frito", "costela no mel", "omelete de ervas"],
@@ -627,7 +627,7 @@
   /* ===================== COMÉRCIO PRÓPRIO ===================== */
 
   const BIZ = {
-    padaria: { goods: ["um pão de milho", "um bolo de fubá", "uma broa", "pão doce"], cost: 2, price: 5, demand: 16, perish: true, value: 600, icon: "bread" },
+    padaria: { goods: ["um pão de centeio", "um bolo de mel", "uma broa", "pão doce"], cost: 2, price: 5, demand: 16, perish: true, value: 600, icon: "bread" },
     taverna: { goods: ["uma caneca de cerveja", "um ensopado", "um hidromel", "uma torta"], cost: 3, price: 8, demand: 18, perish: true, value: 1200, icon: "mug" },
     acougue: { goods: ["um quilo de carne", "linguiça", "costela", "toucinho"], cost: 4, price: 9, demand: 10, perish: true, value: 700, icon: "stew" },
     peixaria: { goods: ["um peixe", "camarão", "sardinhas", "um polvo"], cost: 3, price: 7, demand: 11, perish: true, value: 600, icon: "fish" },
