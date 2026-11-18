@@ -17,7 +17,81 @@
 
 "use strict";
 
-const LOTES = { lots: [] };
+const LOTES = { lots: [], bairros: {}, mud: [], lines: [] };
+LOTES.TYPE = {
+  L: { w: 8, h: 5, span: 12, depth: 7, style: "casa2", big: true },
+  M: { w: 5, h: 4, span: 9, depth: 6, style: "casa" },
+  S: { w: 3, h: 4, span: 3, depth: 0, style: "casa", small: true },
+};
+LOTES.hs = (a, b) => (((a * 73856093) ^ (b * 19349663)) >>> 0) % 1000 / 1000;
+/** Põe um lote no mapa: casa recuada, cerca, caminho, jardim na frente e quintal nos fundos. */
+LOTES.place = function (E, k, x, road, bairro) {
+  const { z, set, fill, zid } = E;
+  const T = LOTES.TYPE[k];
+  const hs = LOTES.hs;
+  const depth = Math.min(T.depth, E.maxDepth == null ? 99 : E.maxDepth);
+  const lx0 = x,
+    lx1 = x + T.span - 1;
+  const by = road - (T.small ? 2 : 3) - T.h + 1; // ricos e médios: 2 linhas de jardim; pobres: só a soleira
+  const bx = lx0 + Math.floor((T.span - T.w) / 2);
+  const b = { id: (zid === "vila" ? "lt" : "lt-" + zid + "-") + E.id++, style: T.style, x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true };
+  if (T.big) ((b.big = true), (b.name = E.NAMES[E.nm++ % E.NAMES.length]));
+  if (T.small) ((b.small = true), (b.flats = true));
+  const fam = T.big ? b.name : E.FAM[E.fm++ % E.FAM.length];
+  const top = by - depth;
+  if (!T.small) {
+    for (let y = top - 1; y <= road - 1; y++) (set(lx0, y, "f"), set(lx1, y, "f"));
+    fill(lx0, top - 1, lx1, top - 1, "f");
+    for (let xx = lx0; xx <= lx1; xx++) if (Math.abs(xx - b.door[0]) > 0) set(xx, road - 1, "f");
+  }
+  fill(b.x, b.y, b.x + b.w - 1, b.y + b.h - 1, "H");
+  set(b.door[0], b.y + b.h - 1, "D");
+  z.town.doors[b.door[0] + "," + (b.y + b.h - 1)] = b;
+  for (let y = b.y + b.h; y < road; y++) set(b.door[0], y, ",");
+  z.town.bld.push(b);
+  const plan = {};
+  if (!T.small) {
+    const ix0 = lx0 + 1,
+      ix1 = lx1 - 1;
+    const cells = [];
+    for (let y = top; y < by; y++) for (let xx = ix0; xx <= ix1; xx++) cells.push([xx, y]);
+    const put = (xx, y, kind) => y >= top && y < by && (plan[xx + "," + y] = kind);
+    const h0 = hs(lx0 + E.seed, road);
+    put(bx, by - 1, "porao");
+    put(bx + T.w - 1, by - 1, "lenha");
+    if (T.w >= 5) put(bx + 2, by - 1, "banco");
+    if (ix1 - ix0 >= 6) put(ix0, by - 1, "varal");
+    for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 3, h0 < 0.5 ? "ervas" : "horta");
+    if (depth >= 6) for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 4, h0 < 0.5 ? "horta" : "flores");
+    put(ix1, top, "latrina");
+    put(ix0, top, "galpao");
+    put(ix0 + 1, top, h0 < 0.6 ? "colmeias" : "galinheiro");
+    if (ix1 - ix0 >= 4) put(ix1 - 2, top, h0 < 0.4 ? "chiqueiro" : "galinheiro");
+    if (T.big) {
+      put(ix0 + 2, top + 1, "poco");
+      put(ix1 - 1, by - 2, "forno");
+      put(ix0 + 4, top, "pombal");
+      for (let xx = ix0 + 5; xx <= ix0 + 7; xx++) (put(xx, top + 1, "lago"), put(xx, top + 2, "lago"));
+      put(ix1 - 1, top + 2, "pomar");
+      put(ix1 - 2, top + 2, "pomar");
+    }
+    for (const [xx, y] of cells) if (!plan[xx + "," + y]) plan[xx + "," + y] = "grama";
+  }
+  const front = [];
+  for (let y = b.y + b.h; y < road - (T.small ? 0 : 1); y++)
+    for (let xx = lx0 + (T.small ? 0 : 1); xx <= lx1 - (T.small ? 0 : 1); xx++) if (xx !== b.door[0]) front.push([xx, y]);
+  for (const [xx, y] of front) plan[xx + "," + y] = T.small ? ((xx * 3 + y) % 4 === 0 ? "caixotes" : "lama") : (xx + y) % 3 === 0 ? "flores" : "gramado";
+  if (front.length) plan[front[0][0] + "," + front[0][1]] = "placa";
+  b.plan = plan;
+  const L = { b, fam, x0: lx0, x1: lx1, top, road, size: k, bairro, zid };
+  LOTES.lots.push(L);
+  return L;
+};
+const LOTE_NOMES_VALDARIA = {
+  NAMES: ["Mansão dos Valmor", "Mansão Rosacruz", "Mansão dos Albuquerque", "Mansão Pedralva", "Mansão dos Trovador"],
+  FAM: ["Família Ferreira", "Família Moleiro", "Família Pastora", "Família Tecelã", "Família Lenhador", "Família Vinhal", "Família Ribeiro", "Família Oleira", "Família Carvalho", "Família Bento", "Família Rosário", "Família Sardinha"],
+};
+
 (function expandLotes() {
   const z = ZONES.vila;
   const ADD = 60,
@@ -41,11 +115,6 @@ const LOTES = { lots: [] };
   const AV = [X0, X0 + 29, W - 3];
   fill(X0, 52, W - 3, 52, ","); // o beco de trás: uma linha só, apertado
   for (const ax of AV) fill(ax, 2, ax + 1, 61, ",");
-  const TYPE = {
-    L: { w: 8, h: 5, span: 12, depth: 7, style: "casa2", big: true },
-    M: { w: 5, h: 4, span: 9, depth: 6, style: "casa" },
-    S: { w: 3, h: 4, span: 3, depth: 0, style: "casa", small: true },
-  };
   // três bairros, um por rua: ricos no alto, classe média no meio, pobres embaixo
   const BANDS = [
     { road: 26, bairro: "nobres", segs: [["L", "L"], ["L", "L"]] },
@@ -53,87 +122,20 @@ const LOTES = { lots: [] };
     { road: 52, bairro: "remendos", alley: true, segs: [["S", "S", "S", "S", "S", "S", "S", "S"], ["S", "S", "S", "S", "S", "S", "S", "S"]] },
     { road: 60, bairro: "remendos", segs: [["S", "S", "S", "S", "S", "S", "S", "S"], ["S", "S", "S", "S", "S", "S", "S", "S"]] },
   ];
-  LOTES.bairros = {
-    nobres: { n: "Alto dos Nobres", d: "o bairro dos ricos", y0: 2, y1: 27 },
-    oficios: { n: "Rua dos Ofícios", d: "o bairro da classe média", y0: 28, y1: 45 },
-    remendos: { n: "Beco dos Remendos", d: "o bairro dos pobres", y0: 46, y1: 61 },
-    x0: X0,
-    x1: W - 2,
-  };
-  const NAMES = ["Mansão dos Valmor", "Mansão Rosacruz", "Mansão dos Albuquerque", "Mansão Pedralva", "Mansão dos Trovador"];
-  const FAM = ["Família Ferreira", "Família Moleiro", "Família Pastora", "Família Tecelã", "Família Lenhador", "Família Vinhal", "Família Ribeiro", "Família Oleira", "Família Carvalho", "Família Bento", "Família Rosário", "Família Sardinha"];
-  let id = 0,
-    nm = 0,
-    fm = 0;
-  const hs = (a, b) => (((a * 73856093) ^ (b * 19349663)) >>> 0) % 1000 / 1000;
+  LOTES.bairros.vila = [
+    { k: "nobres", n: "Alto dos Nobres", d: "o bairro dos ricos", x0: X0, x1: W - 2, y0: 2, y1: 27 },
+    { k: "oficios", n: "Rua dos Ofícios", d: "o bairro da classe média", x0: X0, x1: W - 2, y0: 28, y1: 45 },
+    { k: "remendos", n: "Beco dos Remendos", d: "o bairro dos pobres", x0: X0, x1: W - 2, y0: 46, y1: 61 },
+  ];
+  const E = { z, set, fill, zid: "vila", id: 0, nm: 0, fm: 0, seed: 0, ...LOTE_NOMES_VALDARIA };
   for (const band of BANDS) {
     band.segs.forEach((seg, si) => {
       let x = AV[si] + 2;
       const limit = AV[si + 1] - 1;
       for (const k of seg) {
-        const T = TYPE[k];
+        const T = LOTES.TYPE[k];
         if (x + T.span > limit) break;
-        const lx0 = x,
-          lx1 = x + T.span - 1;
-        const by = band.road - (T.small ? 2 : 3) - T.h + 1; // ricos e médios: 2 linhas de jardim; pobres: só a soleira
-        const bx = lx0 + Math.floor((T.span - T.w) / 2);
-        const b = { id: "lt" + id++, style: T.style, x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true };
-        if (T.big) ((b.big = true), (b.name = NAMES[nm++ % NAMES.length]));
-        if (T.small) ((b.small = true), (b.flats = true));
-        const fam = T.big ? b.name : FAM[fm++ % FAM.length];
-        const top = by - T.depth;
-        // cerca do lote (lados e fundo); a frente fica aberta no caminho
-        if (!T.small) {
-          for (let y = top - 1; y <= band.road - 1; y++) (set(lx0, y, "f"), set(lx1, y, "f"));
-          fill(lx0, top - 1, lx1, top - 1, "f");
-          for (let xx = lx0; xx <= lx1; xx++) if (Math.abs(xx - b.door[0]) > 0) set(xx, band.road - 1, "f");
-        }
-        fill(b.x, b.y, b.x + b.w - 1, b.y + b.h - 1, "H");
-        set(b.door[0], b.y + b.h - 1, "D");
-        z.town.doors[b.door[0] + "," + (b.y + b.h - 1)] = b;
-        // caminho de pedra da porta até a rua
-        for (let y = b.y + b.h; y < band.road; y++) set(b.door[0], y, ",");
-        z.town.bld.push(b);
-        // plano do quintal
-        const plan = {};
-        if (!T.small) {
-          const ix0 = lx0 + 1,
-            ix1 = lx1 - 1;
-          const cells = [];
-          for (let y = top; y < by; y++) for (let xx = ix0; xx <= ix1; xx++) cells.push([xx, y]);
-          const put = (xx, y, kind) => (plan[xx + "," + y] = kind);
-          const h0 = hs(lx0, band.road);
-          // junto da casa: porão, lenha, banco e mesa, varal
-          put(bx, by - 1, "porao");
-          put(bx + T.w - 1, by - 1, "lenha");
-          if (T.w >= 5) put(bx + 2, by - 1, "banco");
-          if (ix1 - ix0 >= 6) put(ix0, by - 1, "varal");
-          // meio: horta de ervas e canteiros
-          for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 3, h0 < 0.5 ? "ervas" : "horta");
-          if (T.depth >= 6) for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 4, h0 < 0.5 ? "horta" : "flores");
-          // fundo: latrina num canto, colmeias, galpão, bichos
-          put(ix1, top, "latrina");
-          put(ix0, top, "galpao");
-          put(ix0 + 1, top, h0 < 0.6 ? "colmeias" : "galinheiro");
-          if (ix1 - ix0 >= 4) put(ix1 - 2, top, h0 < 0.4 ? "chiqueiro" : "galinheiro");
-          if (T.big) {
-            put(ix0 + 2, top + 1, "poco");
-            put(ix1 - 1, by - 2, "forno");
-            put(ix0 + 4, top, "pombal");
-            for (let xx = ix0 + 5; xx <= ix0 + 7; xx++) (put(xx, top + 1, "lago"), put(xx, top + 2, "lago"));
-            put(ix1 - 1, top + 2, "pomar");
-            put(ix1 - 2, top + 2, "pomar");
-          }
-          for (const [xx, y] of cells) if (!plan[xx + "," + y]) plan[xx + "," + y] = "grama";
-        }
-        // jardim da frente: flores dos lados do caminho e a placa da família
-        const front = [];
-        for (let y = b.y + b.h; y < band.road - (T.small ? 0 : 1); y++)
-          for (let xx = lx0 + (T.small ? 0 : 1); xx <= lx1 - (T.small ? 0 : 1); xx++) if (xx !== b.door[0]) front.push([xx, y]);
-        for (const [xx, y] of front) plan[xx + "," + y] = T.small ? ((xx * 3 + y) % 4 === 0 ? "caixotes" : "lama") : (xx + y) % 3 === 0 ? "flores" : "gramado";
-        if (front.length) plan[front[0][0] + "," + front[0][1]] = "placa";
-        b.plan = plan;
-        LOTES.lots.push({ b, fam, x0: lx0, x1: lx1, top, road: band.road, size: k, bairro: band.bairro });
+        LOTES.place(E, k, x, band.road, band.bairro);
         x += T.span + 1; // um respiro entre uma casa e outra
       }
     });
@@ -148,10 +150,8 @@ const LOTES = { lots: [] };
   // Beco dos Remendos: poço comunitário e poças de lama no meio do beco
   set(AV[1] - 2, 62, "W");
   set(AV[2] - 4, 62, "W");
-  LOTES.lines = [];
-  for (let x = X0 + 5; x < W - 4; x += 7) LOTES.lines.push([x, 53]);
-  LOTES.mud = [];
-  for (let x = X0 + 4; x < W - 4; x += 5) LOTES.mud.push([x, 60 + (x % 2)]);
+  for (let x = X0 + 5; x < W - 4; x += 7) LOTES.lines.push([x, 53, "vila"]);
+  for (let x = X0 + 4; x < W - 4; x += 5) LOTES.mud.push([x, 60 + (x % 2), "vila"]);
   z.map = m.map((r) => r.join(""));
   z.w = W;
   z.open.e = [W - 1, 26];

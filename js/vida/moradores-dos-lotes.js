@@ -44,22 +44,22 @@
   const upB = update;
   update = function (dt) {
     upB(dt);
-    const B = LOTES.bairros;
-    if (!B || player.zone !== "vila" || game.mode !== "world") return void (lastB = null);
-    let cur = null;
-    if (player.x >= B.x0 && player.x <= B.x1) for (const k of ["nobres", "oficios", "remendos"]) if (player.y >= B[k].y0 && player.y <= B[k].y1) cur = k;
-    if (cur && cur !== lastB) game.banner = { text: `${B[cur].n} · ${B[cur].d}`, t: 2.6 };
+    const B = LOTES.bairros[player.zone];
+    if (!B || game.mode !== "world") return void (lastB = null);
+    const cur = B.find((q) => player.x >= q.x0 && player.x <= q.x1 && player.y >= q.y0 && player.y <= q.y1) || null;
+    if (cur && cur !== lastB) game.banner = { text: `${cur.n} · ${cur.d}`, t: 2.6 };
     lastB = cur;
   };
   // lama no Beco dos Remendos
   const cdM = crewDrawList;
   crewDrawList = function (list, t) {
     cdM(list, t);
-    if (player.zone !== "vila" || !LOTES.mud) return;
+    if (!LOTES.mud.some((q) => q[2] === player.zone)) return;
     list.push({
       y: -1.3,
       draw: () => {
-        for (const [x, y] of LOTES.mud) {
+        for (const [x, y, zz] of LOTES.mud) {
+          if (zz !== player.zone) continue;
           ctx.fillStyle = "rgba(70,52,30,.6)";
           ctx.beginPath();
           ctx.ellipse(x * TILE + 16, y * TILE + 18, 13, 6, 0, 0, 7);
@@ -68,7 +68,8 @@
           ctx.fillRect(x * TILE + 10, y * TILE + 16, 8, 2);
         }
         // varais atravessando o beco, de um telhado ao outro
-        for (const [x, y] of LOTES.lines || []) {
+        for (const [x, y, zz] of LOTES.lines) {
+          if (zz !== player.zone) continue;
           const X = x * TILE + 4,
             Y = y * TILE - 6,
             G = y * TILE + 28;
@@ -95,33 +96,87 @@
       const list = ahBase.apply(this, arguments);
       for (const L of LOTES.lots) {
         const b = L.b;
-        const key = `vila:${b.door[0]},${b.y + b.h - 1}`;
-        if (!list[key]) list[key] = { key, zone: "vila", x: b.door[0], y: b.y + b.h - 1, n: b.name || `Casa do lote ${L.size === "S" ? "pequeno" : "médio"}`, price: { L: 3500, M: 1200, S: 400 }[L.size], size: { L: "grande", M: "média", S: "pequena" }[L.size], tier: L.size === "L" ? "mansao" : L.size === "M" ? "casa" : "casebre" };
+        const key = `${L.zid}:${b.door[0]},${b.y + b.h - 1}`;
+        if (!list[key]) list[key] = { key, zone: L.zid, x: b.door[0], y: b.y + b.h - 1, n: b.name || `Casa do lote ${L.size === "S" ? "pequeno" : "médio"}`, price: { L: 3500, M: 1200, S: 400 }[L.size], size: { L: "grande", M: "média", S: "pequena" }[L.size], tier: L.size === "L" ? "mansao" : L.size === "M" ? "casa" : "casebre" };
         else list[key].price = { L: 3500, M: 1200, S: 400 }[L.size];
       }
       return list;
     };
   }
-  const houseKey = (L) => `vila:${L.b.door[0]},${L.b.y + L.b.h - 1}`;
+  const houseKey = (L) => `${L.zid}:${L.b.door[0]},${L.b.y + L.b.h - 1}`;
   const owned = (L) => player && (player.houses || []).includes(houseKey(L));
   const gone = () => player && player.dis && player.dis.extinct;
   const dead = (p) => player && player.lotDead && player.lotDead[p.id];
-  const lives = (L) => !L.vacant && !owned(L) && !gone();
+  const lives = (L) => !L.vacant && !owned(L) && !(L.zid === "vila" && gone());
   window.lotLives = lives;
 
+  /* ROUPA DE CADA CLASSE (como era de verdade): rico usa tecido caro de cor
+     forte (carmim, púrpura, azul-escuro, verde-esmeralda, o preto da moda
+     burguesa), gola de pele, corrente e barra bordada a ouro e chapéu;
+     classe média usa lã tingida com garança (vermelho), pastel-dos-tintureiros
+     (azul) e ocre, gola de linho, cinto de couro e avental; pobre usa lã crua,
+     sem tingir (marrom, cinza, aveia), com remendos, corda na cintura e barra
+     rasgada. Criados vestem a libré azul-clara. Além-mar, cada classe usa as
+     cores da terra: o rico mais forte e com ouro, o pobre desbotado. */
+  const RICH = ["#7a1a2a", "#3a1a5a", "#1a2a6a", "#1a4a2a", "#2a2228", "#6a1a1a"];
+  const MID = ["#8a3a2a", "#4a6a9a", "#5a6a3a", "#a8843a", "#6a4a3a", "#7a5a6a"];
+  const POOR = ["#7a6a52", "#8a7a60", "#5a5048", "#6a5a40", "#9a8c70", "#4a4a42"];
+  const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+  const mix = (a, b, t) => "#" + hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * t).toString(16).padStart(2, "0")).join("");
+  const CLS = { L: "rich", M: "mid", S: "poor" };
+  function palette(L, cls) {
+    const c = typeof lotCountry === "function" && lotCountry(L.zid);
+    const X = c && window.PAIS_X && window.PAIS_X[c];
+    if (!X) return cls === "rich" ? RICH : cls === "mid" ? MID : POOR;
+    if (cls === "rich") return X.robes.map((r) => mix(r, "#1a0a14", 0.25));
+    if (cls === "mid") return X.robes;
+    return X.robes.map((r) => mix(r, "#7a6a52", 0.65));
+  }
+  window.classOutfitRects = function (p, dir) {
+    const r = [];
+    const front = dir === "down";
+    if (p.cls === "rich") {
+      const gold = "#f2c14e",
+        fur = "#efe6d6";
+      r.push([5, 9, 6, 1, fur], [5, 9, 1, 1, "#c9bfae"], [10, 9, 1, 1, "#c9bfae"], [4, 14, 8, 1, fur], [4, 14, 1, 1, "#c9bfae"], [5, 12, 6, 1, gold], [6, 13, 1, 1, gold], [9, 13, 1, 1, gold]);
+      if (front) r.push([6, 10, 1, 1, gold], [7, 11, 2, 1, gold], [9, 10, 1, 1, gold], [7, 11, 2, 1, "#c94a5a"]);
+    } else if (p.cls === "mid") {
+      r.push([6, 9, 4, 1, "#e8e0d0"], [5, 12, 6, 1, "#5a3a1e"]);
+      if (front) r.push([7, 12, 1, 1, "#c9b080"]);
+      if (front && p.g === "f") r.push([6, 13, 4, 2, "#d9d0bc"], [6, 13, 4, 1, "#c9bfa8"]);
+    } else if (p.cls === "poor") {
+      const pa = mix(p.robe, "#3a2a1a", 0.35),
+        pb = mix(p.robe, "#c9b890", 0.4);
+      r.push([5, 12, 6, 1, "#b8a070"], [4, 14, 1, 1, "#3a2e22"], [7, 14, 1, 1, "#3a2e22"], [11, 14, 1, 1, "#3a2e22"], [6, 15, 2, 1, "#8a6a50"], [8, 15, 2, 1, "#8a6a50"]);
+      if (dir !== "up") r.push([5, 10, 2, 2, pa], [5, 10, 2, 1, mix(pa, "#000000", 0.2)], [9, 13, 2, 1, pb]);
+      else r.push([8, 10, 2, 2, pa]);
+    } else if (p.cls === "livery") {
+      r.push([5, 12, 6, 1, "#2a2a3a"], [6, 9, 4, 1, "#e8e0d0"]);
+      if (front) r.push([7, 10, 2, 2, "#c9a050"]);
+    }
+    return r;
+  };
   // família de cada lote
   for (const L of LOTES.lots) {
+    const cls = CLS[L.size],
+      pal = palette(L, cls);
+    const cc = typeof lotCountry === "function" && lotCountry(L.zid);
+    const XN = cc && window.PAIS_X && window.PAIS_X[cc] ? window.PAIS_X[cc].names : null;
+    const first = (g, i) => (XN ? XN[Math.floor(hs(L.x0 + L.top, i) * XN.length)] : FIRST[g][Math.floor(hs(L.x0, i) * 12)]);
+    const RHATS = ["#1a1a1a", "#7a1a2a", "#3a1a5a", "#1a2a6a"];
     const n = L.size === "S" ? 1 + (hs(L.x0, 3) < 0.5 ? 1 : 0) : L.size === "M" ? 2 + Math.floor(hs(L.x0, 5) * 3) : 3;
     L.people = [];
     for (let i = 0; i < n; i++) {
       const g = hs(L.x0 + i, 7) < 0.5 ? "m" : "f";
-      L.people.push({ id: L.b.id + "p" + i, nm: `${FIRST[g][Math.floor(hs(L.x0, i + 11) * 12)]} ${surname(L)}`, g, job: JOBS[Math.floor(hs(L.x0 + i, 13) * 12)], mood: MOOD[Math.floor(hs(L.x0 + i, 17) * 6)], robe: ROBES[Math.floor(hs(L.x0 + i, 19) * 8)], hair: HAIRS[Math.floor(hs(L.x0 + i, 23) * 6)], L });
+      const robe = pal[Math.floor(hs(L.x0 + i + L.top, 19) * pal.length)];
+      const hat = cls === "rich" && hs(L.x0 + i, 41) < 0.6 ? RHATS[Math.floor(hs(L.x0 + i, 43) * 4)] : cls === "poor" && hs(L.x0 + i, 47) < 0.3 ? "#8a7a60" : null;
+      L.people.push({ id: L.b.id + "p" + i, nm: `${first(g, i + 11)} ${surname(L)}`, g, cls, job: cls === "rich" ? ["mercador", "banqueiro", "armador", "mestre da guilda", "dama de companhia", "burgomestre"][Math.floor(hs(L.x0 + i, 13) * 6)] : JOBS[Math.floor(hs(L.x0 + i, 13) * 12)], mood: MOOD[Math.floor(hs(L.x0 + i, 17) * 6)], robe, hat, hair: HAIRS[Math.floor(hs(L.x0 + i, 23) * 6)], L });
     }
-    if (L.size === "L") L.people.push({ id: L.b.id + "cr", nm: "Criado Lourenço", g: "m", job: "criado", mood: "tímido", robe: "#2a2a3a", hair: "#3a2414", L }, { id: L.b.id + "ja", nm: "Jardineiro Abel", g: "m", job: "jardineiro", mood: "simpático", robe: "#4a6a3a", hair: "#d9d9d9", L, hat: "#c9a050" });
+    if (L.size === "L") L.people.push({ id: L.b.id + "cr", nm: "Criado Lourenço", g: "m", job: "criado", mood: "tímido", robe: "#7a9ac0", cls: "livery", hair: "#3a2414", L }, { id: L.b.id + "ja", nm: "Jardineiro Abel", g: "m", job: "jardineiro", mood: "simpático", robe: "#7a9ac0", cls: "livery", hair: "#d9d9d9", L, hat: "#c9a050" });
     if (L.size === "S") {
       const sn = ["Quaresma", "Pereira", "Sardinha", "Moleiro", "Rosário", "Bento", "Lagoa", "Freitas"][Math.floor(hs(L.x0, 37) * 8)];
       L.upFam = "Família " + sn;
-      L.up = { id: L.b.id + "up", nm: `${FIRST.f[Math.floor(hs(L.x0, 29) * 12)]} ${sn}`, g: "f", job: JOBS[Math.floor(hs(L.x0, 31) * 12)], mood: "fofoqueiro", L };
+      L.up = { id: L.b.id + "up", nm: `${first("f", 29)} ${sn}`, g: "f", job: JOBS[Math.floor(hs(L.x0, 31) * 12)], mood: "fofoqueiro", L };
     }
     // onde dá para andar no lote: grama, gramado e o caminho da frente
     L.walk = Object.entries(L.b.plan)
@@ -132,7 +187,18 @@
       .map(([k, kind]) => [...k.split(",").map(Number), kind]);
   }
   const day = () => currentHour() >= 7 && currentHour() < 19;
-  const actors = () => (lifeMode() && player.zone === "vila" && day() ? LOTES.lots.filter(lives).flatMap((L) => L.people.filter((p) => !dead(p))) : []);
+  const byZone = {};
+  for (const L of LOTES.lots) (byZone[L.zid] = byZone[L.zid] || []).push(L);
+  let acT = -1,
+    acZ = null,
+    acL = [];
+  const actors = () => {
+    const now = performance.now();
+    if (now - acT < 120 && acZ === player.zone) return acL;
+    acT = now;
+    acZ = player.zone;
+    return (acL = lifeMode() && byZone[player.zone] && day() ? byZone[player.zone].filter(lives).flatMap((L) => L.people.filter((p) => !dead(p))) : []);
+  };
   const actorAt = (x, y) => actors().find((p) => p.x === x && p.y === y);
   // começa cada um num ponto livre do lote
   for (const L of LOTES.lots)
@@ -202,7 +268,7 @@
   };
   const wkBase = walkable;
   walkable = function (z, x, y) {
-    if (z === "vila" && actorAt(x, y)) return false;
+    if (z === player.zone && byZone[z] && actorAt(x, y)) return false;
     return wkBase(z, x, y);
   };
   if (typeof characterAt === "function") {
@@ -243,7 +309,7 @@
     targetAt = function (x, y) {
       const r = tg2(x, y);
       if (typeof r === "string" && r.startsWith("Placa:")) {
-        const L = LOTES.lots.find((q) => q.b.plan[x + "," + y] === "placa");
+        const L = (byZone[player.zone] || []).find((q) => q.b.plan[x + "," + y] === "placa");
         if (L && owned(L)) return "Placa: o seu lote";
         if (L && !lives(L)) return `Placa: VENDE-SE · ${{ L: 3500, M: 1200, S: 400 }[L.size]} ouro (bata na porta)`;
       }
@@ -257,7 +323,7 @@
     const r = ndBase.apply(this, arguments);
     const named = (player.dis && player.dis.named) || [];
     for (let i = before; i < named.length; i++) {
-      const alive = LOTES.lots.filter(lives).flatMap((L) => L.people.filter((p) => !dead(p)));
+      const alive = (byZone.vila || []).filter(lives).flatMap((L) => L.people.filter((p) => !dead(p)));
       if (!alive.length) break;
       const p = alive[Math.floor(Math.random() * alive.length)];
       player.lotDead = player.lotDead || {};
@@ -282,6 +348,7 @@
           ctx.fill();
           const walking = Math.abs(p.rx - p.x) + Math.abs(p.ry - p.y) > 0.05;
           drawSprite(wizardRects(p.robe, p.hat || null, p.hair, null, p.dir, walking ? walkFrame(true, t) : 0), X, Y, 2, p.dir === "left");
+          drawSprite(classOutfitRects(p, p.dir), X, Y, 2, p.dir === "left");
           if (p.work) {
             const sw = Math.sin(t * 6) * 4;
             ctx.fillStyle = "#6b4423";

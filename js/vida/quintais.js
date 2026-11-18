@@ -15,9 +15,11 @@
 
 (() => {
   const SOLID = new Set(["porao", "lenha", "banco", "latrina", "colmeias", "galpao", "galinheiro", "poco", "forno", "pombal", "lago", "pomar", "placa", "chiqueiro"]);
+  const ZL = {};
+  const zoneLots = (z) => ZL[z] || (ZL[z] = typeof LOTES === "undefined" ? [] : LOTES.lots.filter((L) => L.zid === z));
   const lotAt = (x, y) => {
-    if (player.zone !== "vila" || typeof LOTES === "undefined") return null;
-    for (const L of LOTES.lots) {
+    if (typeof LOTES === "undefined") return null;
+    for (const L of zoneLots(player.zone)) {
       const k = L.b.plan[x + "," + y];
       if (k) return { L, k };
     }
@@ -59,7 +61,7 @@
   };
   const wkBase = walkable;
   walkable = function (z, x, y) {
-    if (z === "vila" && typeof LOTES !== "undefined") for (const L of LOTES.lots) if (SOLID.has(L.b.plan[x + "," + y])) return false;
+    if (typeof LOTES !== "undefined") for (const L of zoneLots(z)) if (SOLID.has(L.b.plan[x + "," + y])) return false;
     return wkBase(z, x, y);
   };
   function cellar(L) {

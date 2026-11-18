@@ -40,6 +40,7 @@
     jade: { k: [["Porto Lanterna", "Governador Wen"], ["Cidade Imperial", "Imperatriz Lian-Shu"], ["Vale das Cerejeiras", "Princesa Mei-Lin"], ["Monte da Garça", "Mestre Shun"], ["Lago do Dragão", "General Tao"]], robes: ["#c94a3a", "#2a8a6a", "#1a3a5a", "#e8d8c0"], hats: ["#d9c08a", null], hair: ["#1a1a1a", "#1a1410"], w: [["chuva", 35], ["neblina", 25], ["sol", 40]], clima: "Chuva fina e neblina nas montanhas. As cerejeiras perfumam tudo.", names: ["Lian", "Mei", "Shen", "Yun", "Hua", "Jin"] },
     gigantes: { k: [["Enseada dos Ermitões", "Ninguém (só estátuas)"], ["Ombro do Gigante", "Ermitão Pedrão"], ["Vale da Mão", "Ermitã Lasca"], ["Olho de Pedra", "Vigia Musgo"], ["Pé Adormecido", "Ninguém sabe"]], robes: ["#8a8474", "#6a6a5a", "#5a4a3a"], hats: [null, "#6a6a5a"], hair: ["#d9d9d9", "#8a8a8a"], w: [["nublado", 50], ["tempestade", 30], ["neblina", 20]], clima: "Vento forte que uiva entre as estátuas. Tempestades chegam sem avisar.", names: ["Pedrão", "Musgo", "Lasca", "Rocha", "Cascalho", "Líquen"] },
   };
+  window.PAIS_X = X;
   const pk2 = (a) => a[Math.floor(Math.random() * a.length)];
   const lo = (t) => (t && !/^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]{2}/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
   const ACCENT = {
