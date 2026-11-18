@@ -1,6 +1,7 @@
 /**
  * ECOS DO ARCANO — modo-dev.js
- * Versão dev, para testar rápido. Abra dev.html (ou index.html?dev).
+ * Versão dev, para testar rápido. Como um código de trapaça: segure CTRL e
+ * digite E, C, O (ou abra dev.html / index.html?dev).
  * Aparece um botão DEV no canto e a tecla F9 abre o painel:
  *  - Liberar tudo: nível 20, todas as runas e magias, ouro e itens.
  *  - Pular para qualquer etapa da história (as anteriores ficam feitas) e ir até ela.
@@ -13,7 +14,7 @@
 
 "use strict";
 
-const DEV = (() => {
+let DEV = (() => {
   try {
     if (/[?&#]dev\b/.test(location.search + location.hash)) localStorage.setItem("ecosDev", "1");
     if (/[?&#]nodev\b/.test(location.search + location.hash)) localStorage.removeItem("ecosDev");
@@ -306,7 +307,7 @@ function closeDevPanel() {
   const el = byId("devpanel");
   if (el) el.style.display = "none";
 }
-if (DEV) {
+function setupDev() {
   const st = document.createElement("style");
   st.textContent = `#devbtn{position:fixed;left:8px;bottom:8px;z-index:9999;background:#c0392b;color:#fff;font:700 12px monospace;border:2px solid #fff;border-radius:6px;padding:4px 8px;opacity:.85}
   #devpanel{position:absolute;right:8px;top:8px;width:min(460px,94vw);max-height:92vh;overflow:auto;z-index:9998;padding:10px 14px;font-size:13px}
@@ -359,4 +360,33 @@ if (DEV) {
       return startBattle(z.guard, null);
     return iaBase(x, y);
   };
+}
+if (DEV) setupDev();
+
+/* ----- código secreto: segure Ctrl e digite E, C, O ----- */
+{
+  let typed = "";
+  addEventListener(
+    "keydown",
+    (e) => {
+      if (!e.ctrlKey || e.altKey || e.metaKey) return void (typed = "");
+      const k = (e.key || "").toLowerCase();
+      if (!/^[a-z]$/.test(k)) return;
+      typed = (typed + k).slice(-3);
+      if ("eco".startsWith(typed.slice(-Math.min(typed.length, 3))) || typed.endsWith("e") || typed.endsWith("ec")) e.preventDefault(); // Ctrl+E/C/O não abrem nada do navegador
+      if (typed !== "eco") return;
+      typed = "";
+      e.preventDefault();
+      if (DEV) return toast && toast("Os truques já estão ligados. F9 abre o painel.", 2400);
+      DEV = true;
+      try {
+        localStorage.setItem("ecosDev", "1");
+      } catch (err) {}
+      setupDev();
+      if (player && player.name) devUnlockAll(true);
+      playSound && playSound(1047, 0.2, "triangle");
+      toast && toast("Truques liberados! F9 ou o botão TESTES abre o painel.", 3200);
+    },
+    true,
+  );
 }
