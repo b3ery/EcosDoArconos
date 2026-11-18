@@ -341,9 +341,26 @@
       if (it.label) T(it.label, it.x + 26, it.y + it.h / 2 + 4, "#3a2414", it.sz || 9, "left");
       return;
     }
-    R(it.x, it.y, it.w, it.h, it.c || "#c9a050");
-    g.strokeStyle = "rgba(0,0,0,.4)";
-    g.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+    if (it.v != null && /^\d+$/.test(it.label || "")) {
+      // moeda de verdade: um montinho com borda, brilho e o valor cunhado
+      const cx = it.x + it.w / 2,
+        cy = it.y + it.h / 2;
+      const base = it.c || "#f2c14e";
+      for (let k = 2; k >= 0; k--) E(cx, cy + k * 3, 15, 8, shade(base, -0.25 - k * 0.05));
+      E(cx, cy - 2, 15, 9, base);
+      g.strokeStyle = shade(base, -0.35);
+      g.lineWidth = 1;
+      g.beginPath();
+      g.ellipse(cx, cy - 2, 11, 6, 0, 0, 7);
+      g.stroke();
+      T(it.label, cx, cy + 2, shade(base, -0.55), it.sz || 10);
+      return;
+    }
+    // etiqueta com bisel (luz em cima, sombra embaixo)
+    R(it.x, it.y, it.w, it.h, shade(it.c || "#c9a050", -0.45));
+    R(it.x + 1, it.y + 1, it.w - 2, it.h - 2, it.c || "#c9a050");
+    R(it.x + 1, it.y + 1, it.w - 2, 2, shade(it.c || "#c9a050", 0.3));
+    R(it.x + 1, it.y + it.h - 3, it.w - 2, 2, shade(it.c || "#c9a050", -0.2));
     if (it.label) T(it.label, it.x + it.w / 2, it.y + it.h / 2 + 4, it.tc || "#1a1028", it.sz || 10);
   };
 
@@ -1199,9 +1216,42 @@
       draw(g) {
         R(0, 0, W, H, "#3a2e22");
         R(0, 186, W, 54, "#6b4423");
-        E(285, 90, 60, 40, "#e8b896");
-        T("mão do cliente", 285, 30, "#ffe08a", 10);
-        S.given.forEach((v, i) => C(255 + (i % 5) * 14, 80 + Math.floor(i / 5) * 14, 6, v >= 10 ? "#f2c14e" : "#c9c9d0"));
+        // a loja lá atrás: parede de tábua com prateleiras cheias
+        planks(64, 186, "#7a5230", "#6b4423", "#4a2e17");
+        for (const [yy, ics] of [[98, ["bread", "cheese", "honey", "wine"]], [142, ["bag", "crate", "soap", "herb"]]]) {
+          rr(14, yy, 150, 4, "#8a5a2e");
+          rr(14, yy + 4, 150, 2, "#3a2414");
+          ics.forEach((k, i) => icon(k, 30 + i * 38, yy - 8, 2));
+        }
+        // o cliente atrás do balcão: túnica, braço esticado e a mão aberta esperando o troco
+        const skin = "#e8b896";
+        g.save();
+        g.beginPath();
+        g.rect(0, 0, W, 186);
+        g.clip();
+        E(300, 200, 60, 46, "#4a6a9a");
+        E(300, 150, 28, 30, "#4a6a9a");
+        g.restore();
+        R(286, 112, 28, 20, "#e8b896");
+        E(300, 104, 20, 20, skin);
+        E(300, 92, 22, 12, "#5a3a22"); // cabelo
+        R(292, 104, 3, 3, "#2a1a10");
+        R(305, 104, 3, 3, "#2a1a10");
+        R(296, 114, 8, 2, "#b0705a");
+        g.strokeStyle = "#3a5a8a";
+        g.lineWidth = 16;
+        g.lineCap = "round";
+        g.beginPath();
+        g.moveTo(286, 150);
+        g.quadraticCurveTo(250, 150, 236, 116);
+        g.stroke();
+        g.lineCap = "butt";
+        E(236, 104, 26, 13, skin); // palma
+        for (let k = 0; k < 4; k++) E(214 + k * 12, 92 - (k === 0 || k === 3 ? 0 : 3), 5, 9, skin); // dedos
+        E(262, 104, 6, 9, skin); // polegar
+        R(220, 106, 30, 2, "#c9906a");
+        T("a mão do cliente", 236, 66, "#ffe08a", 10);
+        S.given.forEach((v, i) => C(224 + (i % 4) * 9, 100 - Math.floor(i / 4) * 5, 5, v >= 10 ? "#f2c14e" : "#c9c9d0"));
         S.items.forEach(drawItem);
         S.msg = `Na mão: ${S.given.reduce((s, v) => s + v, 0)}`;
       },
