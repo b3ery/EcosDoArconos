@@ -790,15 +790,54 @@
     draw(g, S, dt) {
       R(0, 0, W, H, "#241a1a");
       S.T = Math.max(0, S.T - dt * 0.12);
-      // fole
+      // a forja de pedra com o carvão em brasa atrás
+      const glow = clamp(S.T, 0.2, 1);
+      const FX = 200;
+      R(FX, 74, 110, 66, "#4a3a3a");
+      for (let r = 0; r < 6; r++) for (let k = 0; k < 5; k++) R(FX + 2 + k * 22 + (r % 2) * 10, 76 + r * 10, 20, 8, (r + k) % 3 ? "#5a4646" : "#3e3030");
+      R(FX + 10, 60, 90, 16, "#3a2e2e"); // coifa
+      R(FX + 8, 116, 94, 16, "#1a0e0e");
+      for (let i = 0; i < 14; i++) E(FX + 16 + i * 6, 122 + Math.sin(S.t * 6 + i) * 1.5, 4, 3, i % 3 ? `rgb(255,${100 + glow * 80},40)` : "#ffe08a");
+      light(FX + 55, 122, 130, "rgba(255,140,40,A)", 0.25 + glow * 0.3);
+      // fole de couro: as tábuas abrem e fecham com o seu movimento
       const fy = S.down && S.start && S.start.x < 120 ? clamp(S.p.y, 90, 200) : 150;
-      R(30, 100, 70, 100, "#5a3a22");
-      R(40, fy - 20, 50, 40, "#8a5a3a");
-      R(55, fy - 50, 20, 30, "#3a2414");
-      T("FOLE", 65, 225, "#ffe08a", 10);
-      // bigorna e ferro
-      R(170, 170, 160, 26, "#4a4a52");
-      R(200, 196, 100, 30, "#3a3a42");
+      const open = clamp((fy - 90) / 110, 0, 1);
+      R(18, 196, 92, 10, "#3a2414");
+      g.fillStyle = "#8a5a32";
+      g.beginPath();
+      g.moveTo(26, 150 - 30 * open);
+      g.lineTo(96, 140);
+      g.lineTo(96, 160);
+      g.lineTo(26, 150 + 30 * open);
+      g.fill();
+      for (let k = 0; k < 4; k++) R(34 + k * 14, 150 - 26 * open + k * 4, 3, 52 * open - k * 8 + 6, "#5a3a1e"); // dobras do couro
+      R(20, 146 - 32 * open, 82, 6, "#6b4423");
+      R(20, 150 + 28 * open, 82, 6, "#6b4423");
+      R(96, 146, 30, 6, "#4a4a52"); // bico
+      R(0, 140 - 32 * open, 26, 8, "#a8784a"); // cabo
+      T("FOLE", 60, 225, "#ffe08a", 10);
+      // bigorna de ferro em cima do toco
+      R(214, 200, 70, 40, "#6b4423");
+      R(214, 200, 70, 4, "#8a5a2e");
+      g.fillStyle = "#3a3a44";
+      g.beginPath();
+      g.moveTo(176, 168);
+      g.lineTo(330, 168);
+      g.lineTo(318, 182);
+      g.lineTo(286, 186);
+      g.lineTo(276, 200);
+      g.lineTo(222, 200);
+      g.lineTo(212, 186);
+      g.lineTo(196, 182);
+      g.closePath();
+      g.fill();
+      R(176, 168, 154, 4, "#7a7a88");
+      g.fillStyle = "#3a3a44";
+      g.beginPath();
+      g.moveTo(330, 168);
+      g.lineTo(352, 172);
+      g.lineTo(330, 178);
+      g.fill(); // o chifre da bigorna
       const col = S.T < 0.4 ? "#6a6a72" : S.T < 0.55 ? "#a84a2a" : S.T < 0.88 ? "#ff8a2a" : "#fff2c0";
       const bend = S.shape * 4;
       g.fillStyle = col;
@@ -814,7 +853,20 @@
       R(130, 200 - 0.88 * 130, 14, (0.88 - 0.55) * 130, "rgba(255,138,42,.35)");
       R(130, 200 - clamp(S.T, 0, 1) * 130, 14, 3, "#fff");
       // martelo
-      if (S.fx > 0) (S.fx -= dt), T("💥", 250, 150, "#fff", 22);
+      if (S.fx > 0) {
+        S.fx -= dt;
+        for (let i = 0; i < 10; i++) R(250 + Math.cos(i * 0.63) * (30 - S.fx * 120), 160 + Math.sin(i * 0.63) * (18 - S.fx * 70) - 6, 3, 3, i % 2 ? "#ffe08a" : "#ff8a2a"); // faíscas
+      }
+      // o martelo seguindo o dedo
+      if (S.p.x > 140) {
+        g.save();
+        g.translate(S.p.x, S.p.y);
+        g.rotate(S.down ? 0.5 : -0.3);
+        R(-3, 0, 6, 46, "#8a5a2e");
+        R(-14, -12, 28, 14, "#5a5a66");
+        R(-14, -12, 28, 3, "#9a9aa8");
+        g.restore();
+      }
       T("●".repeat(S.shape) + "○".repeat(Math.max(0, 5 - S.shape)), 250, 60, "#ffb060", 16);
       S.msg = S.msg2 || "";
       if (S.msg2 && Math.random() < 0.01) S.msg2 = "";
@@ -1143,15 +1195,78 @@
       },
       draw(g) {
         R(0, 0, W, H, "#5a7a3a");
-        R(0, 190, W, 50, "#8a6a3a");
-        E(185, 135, 95, 42, "#a86a3a");
-        R(255, 70, 30, 70, "#a86a3a");
-        E(285, 72, 26, 16, "#a86a3a");
-        C(292, 68, 3, "#1a1028");
-        for (const lx of [110, 140, 225, 255]) R(lx, 165, 12, 45, "#8a5a2e");
-        R(250, 60, 10, 40, "#3a2414");
+        // a baia: chão de palha, feno no canto e a janela de luz
+        R(0, 196, W, 44, "#c9a050");
+        for (let i = 0; i < 40; i++) R((i * 37) % W, 198 + ((i * 13) % 40), 8, 1, i % 2 ? "#e8c860" : "#a8843a");
+        E(30, 196, 40, 20, "#d9b050");
+        E(46, 186, 28, 16, "#e8c860");
+        const coat = "#a86a3a",
+          dark = "#7a4a26";
+        // rabo e pernas de trás
+        g.strokeStyle = "#3a2414";
+        g.lineWidth = 9;
+        g.lineCap = "round";
+        g.beginPath();
+        g.moveTo(96, 120);
+        g.quadraticCurveTo(70, 150 + Math.sin(S.t * 3) * 6, 80, 190);
+        g.stroke();
+        g.lineCap = "butt";
+        for (const [lx, c] of [[118, dark], [238, dark], [140, coat], [262, coat]]) {
+          R(lx, 160, 14, 34, c);
+          R(lx - 1, 194, 16, 7, "#2a1a10"); // casco
+          R(lx + 2, 186, 10, 3, "#e8e0d0");
+        }
+        // corpo, peito e pescoço
+        E(185, 135, 95, 42, coat);
+        g.fillStyle = coat;
+        g.beginPath();
+        g.moveTo(240, 120);
+        g.lineTo(262, 66);
+        g.lineTo(292, 70);
+        g.lineTo(282, 140);
+        g.fill();
+        // cabeça: testa larga em cima do pescoço, afinando até o focinho embaixo
+        g.fillStyle = coat;
+        g.beginPath();
+        g.moveTo(260, 70);
+        g.lineTo(284, 56);
+        g.lineTo(326, 92);
+        g.lineTo(322, 108);
+        g.lineTo(306, 110);
+        g.lineTo(282, 90);
+        g.closePath();
+        g.fill();
+        E(318, 100, 11, 10, "#8a5a32"); // focinho
+        R(320, 98, 3, 3, "#2a1a10"); // narina
+        R(300, 110, 18, 2, dark); // boca
+        // orelhas presas na testa
+        for (const [ex, ey] of [[268, 62], [278, 56]]) {
+          g.fillStyle = dark;
+          g.beginPath();
+          g.moveTo(ex - 5, ey + 4);
+          g.lineTo(ex, ey - 14);
+          g.lineTo(ex + 5, ey + 4);
+          g.fill();
+        }
+        C(290, 74, 3, "#1a1028");
+        R(289, 73, 1, 1, "#ffffff");
+        // crina: uma faixa escura descendo pelo pescoço, com mechas
+        g.fillStyle = "#3a2414";
+        g.beginPath();
+        g.moveTo(258, 64);
+        g.lineTo(270, 60);
+        g.lineTo(250, 126);
+        g.lineTo(238, 124);
+        g.closePath();
+        g.fill();
+        for (let k = 0; k < 6; k++) R(244 + k * 3 - 6, 72 + k * 9, 6, 3, "#3a2414");
         for (const c of S.cells) if (c.on) R(c.x, c.y, 4, 4, "#4a3a22");
-        if (S.down) R(S.p.x - 14, S.p.y - 6, 28, 12, "#c9925a");
+        if (S.down || S.p.x > 0) {
+          // a escova: madeira com cerdas
+          R(S.p.x - 15, S.p.y - 8, 30, 10, "#8a5a2e");
+          R(S.p.x - 15, S.p.y - 8, 30, 3, "#a8784a");
+          for (let k = 0; k < 9; k++) R(S.p.x - 14 + k * 3, S.p.y + 2, 2, 5, "#e8d8a8");
+        }
         S.msg = `${Math.round(cleaned(S) * 100)}% limpo`;
       },
       auto: (S) => (cleaned(S) > 0.97 ? 1 : null),
@@ -1288,13 +1403,26 @@
       },
       draw(g, S, dt) {
         R(0, 0, W, H, "#3a2420");
+        // o braço do alaúde visto de perto: madeira com veios e trastes de metal
         R(0, 60, W, 150, "#8a5a2e");
-        ys.forEach((y, i) => R(0, y - 1, W, 2 + i * 0.5, "#e8e4dc"));
+        for (let i = 0; i < 14; i++) R(0, 64 + i * 10.5, W, 1, i % 2 ? "#7a4a24" : "#9a6a3a");
+        for (let x = 110; x < W; x += 52) (R(x, 60, 3, 150, "#c9c0b0"), R(x, 60, 1, 150, "#ffffff"));
+        for (const x of [136, 240]) C(x, 135, 4, "#f2eee4"); // marcações de madrepérola
+        R(0, 58, W, 4, "#4a2e17");
+        R(0, 208, W, 4, "#4a2e17");
+        ys.forEach((y, i) => (R(0, y - 1, W, 2 + i * 0.5, "#e8e4dc"), R(0, y + 1 + i * 0.5, W, 1, "rgba(0,0,0,.35)")));
+        // a linha de tocar, dourada e brilhando
+        R(66, 60, 8, 150, "rgba(255,224,138,.25)");
         R(68, 60, 4, 150, "#ffe08a");
         for (const n of S.notes) {
           n.x -= dt * 110;
           if (!n.hit && !n.miss && n.x < 40) n.miss = true;
-          if (!n.hit && n.x > -20) C(n.x, ys[n.s], 9, n.miss ? "#6a4a4a" : ["#e05050", "#f2c14e", "#7ad36b", "#5fa0ff"][n.s]);
+          if (!n.hit && n.x > -20) {
+            const col = n.miss ? "#6a4a4a" : ["#e05050", "#f2c14e", "#7ad36b", "#5fa0ff"][n.s];
+            C(n.x, ys[n.s], 9, col);
+            R(n.x + 7, ys[n.s] - 22, 2, 22, shade(col, -0.3)); // haste da nota
+            R(n.x + 7, ys[n.s] - 22, 7, 3, shade(col, -0.3));
+          }
         }
         S.msg = `${S.hits} acertos`;
       },
@@ -1321,13 +1449,20 @@
       },
       draw(g) {
         R(0, 0, W, H, "#1a2a3a");
-        R(20, 60, 320, 170, "#2a1a3a");
+        // bandeja de veludo com almofadinhas
+        R(18, 58, 324, 174, "#c9a040");
+        R(20, 60, 320, 170, "#4a1a3a");
+        for (let i = 0; i < 6; i++) E(60 + (i % 3) * 120, 105 + Math.floor(i / 3) * 80 + 10, 30, 14, "#5a2448");
         for (const q of S.gems) {
           g.save();
           g.translate(q.x, q.y);
           g.rotate(Math.PI / 4);
+          R(-17, -17, 34, 34, shade(q.c, -0.45));
           R(-16, -16, 32, 32, q.c);
-          R(-16, -16, 10, 10, "rgba(255,255,255,.35)");
+          R(-16, -16, 16, 16, shade(q.c, 0.25)); // faceta de cima, pega a luz
+          R(0, 0, 16, 16, shade(q.c, -0.2));
+          R(-6, -6, 12, 12, shade(q.c, 0.1));
+          R(-14, -14, 5, 5, "#ffffff");
           g.restore();
           if (q.mark) (g.strokeStyle = "#ffe08a"), (g.lineWidth = 2), g.strokeRect(q.x - 26, q.y - 26, 52, 52);
         }
@@ -1573,14 +1708,45 @@
       },
       draw(g, S, dt) {
         R(0, 0, W, H, "#2a2028");
-        E(180, 140, 100, 80, "#6a6a72");
-        E(180, 140, 80, 62, "#7a7a82");
-        for (let k = 0; k < 7; k++) C(130 + k * 16, 120 + ((k * 37) % 50), 5, "#c77dff");
+        // vigas da galeria e trilho no chão
+        for (const vx of [14, 326]) (R(vx, 0, 20, 240, "#5a3a1e"), R(vx, 0, 6, 240, "#7a5230"));
+        R(0, 0, W, 16, "#5a3a1e");
+        R(0, 212, W, 4, "#6a6a72");
+        R(0, 226, W, 4, "#6a6a72");
+        for (let x = 0; x < W; x += 24) R(x, 210, 10, 22, "#4a2e17");
+        // a rocha: pedaços facetados, mais claros em cima
+        const facets = [[180, 140, 104, 82, "#4a4450"], [168, 128, 86, 64, "#5e5866"], [196, 150, 70, 46, "#544e5c"], [150, 116, 46, 30, "#7a7482"], [214, 112, 36, 24, "#6e6878"]];
+        for (const [x, y, rx, ry, c] of facets) E(x, y, rx, ry, c);
+        // veios de ametista
+        for (let k = 0; k < 7; k++) {
+          const gx = 130 + k * 16,
+            gy = 120 + ((k * 37) % 50);
+          g.fillStyle = "#7a3ab0";
+          g.beginPath();
+          g.moveTo(gx, gy - 8);
+          g.lineTo(gx + 6, gy);
+          g.lineTo(gx, gy + 6);
+          g.lineTo(gx - 6, gy);
+          g.fill();
+          R(gx - 1, gy - 5, 2, 4, "#e0b0ff");
+        }
         for (const c of S.cracks) (g.strokeStyle = "#1a1018"), (g.lineWidth = 3), g.beginPath(), g.moveTo(c.x - 10, c.y - 8), g.lineTo(c.x, c.y), g.lineTo(c.x + 8, c.y + 10), g.stroke();
         S.sp.life -= dt;
         if (S.sp.life <= 0) (S.sp = spot()), S.miss++;
         C(S.sp.x, S.sp.y, 8 + Math.sin(S.t * 14) * 2, `rgba(255,224,138,${S.sp.life / 1.4})`);
-        if (S.p.x > 0) (R(S.p.x - 12, S.p.y - 12, 24, 5, "#a8a8b0"), R(S.p.x - 2, S.p.y - 10, 4, 22, "#8a5a2e"));
+        if (S.p.x > 0) {
+          // picareta: cabo de madeira e as duas pontas de ferro curvadas
+          R(S.p.x - 2, S.p.y - 10, 4, 30, "#8a5a2e");
+          g.strokeStyle = "#9a9aa8";
+          g.lineWidth = 4;
+          g.beginPath();
+          g.moveTo(S.p.x - 18, S.p.y - 2);
+          g.quadraticCurveTo(S.p.x, S.p.y - 18, S.p.x + 18, S.p.y - 2);
+          g.stroke();
+        }
+        light(60, 40, 170, "rgba(255,190,90,A)", 0.3); // a lamparina pendurada
+        R(56, 16, 2, 16, "#2a2a2a");
+        R(50, 32, 14, 12, "#ffd06a");
         S.msg = `${S.hits}/${need}`;
       },
       auto: (S) => (S.hits >= need ? clamp(1 - S.miss * 0.08, 0.3, 1) : null),
