@@ -401,8 +401,9 @@ function drawCemSign() {
     if (!box || box.querySelector("#optWorld")) return;
     const seg = (k, on) => `<div class="seg"><button data-wopt="${k}" data-v="0" class="${settings[k] ? "" : "on"}">Ligado</button><button data-wopt="${k}" data-v="1" class="${settings[k] ? "on" : ""}">Desligado</button></div>`;
     const html = `<h3 id="optWorld">Acontecimentos da vila</h3>
-      <div class="opt"><span>Golpe de Estado automático dos Iluministas</span>${seg("noCoup")}</div>
-      <div class="opt"><span>Ataques de monstros à vila</span>${seg("noRaid")}</div>`;
+      <div class="opt"><span>Ataques de monstros à vila (Modo História)</span>${seg("noRaid")}</div>
+      <div class="opt"><span>Golpe de Estado automático dos Iluministas (Simulador)</span>${seg("noCoup")}</div>
+      <div class="opt"><span>Sangue (corpos, mortes e brigas)</span>${seg("noBlood")}</div>`;
     const help = [...box.querySelectorAll("h3")].find((h) => /Ajuda/.test(h.textContent));
     if (help) help.insertAdjacentHTML("beforebegin", html);
     else box.insertAdjacentHTML("beforeend", html);
@@ -410,7 +411,9 @@ function drawCemSign() {
       b.onclick = () => {
         settings[b.dataset.wopt] = b.dataset.v === "1";
         saveSettings();
-        toast(b.dataset.wopt === "noCoup" ? (settings.noCoup ? "Os Iluministas não vão mais dar golpe sozinhos." : "Golpe automático ligado de novo.") : settings.noRaid ? "Sem ataques de monstros à vila." : "Ataques de monstros ligados de novo.", 2600);
+        const k = b.dataset.wopt,
+          off = settings[k];
+        toast({ noCoup: off ? "Os Iluministas não vão mais dar golpe sozinhos." : "Golpe automático ligado de novo.", noRaid: off ? "Sem ataques de monstros à vila." : "Ataques de monstros ligados de novo.", noBlood: off ? "Sangue desligado." : "Sangue ligado de novo." }[k], 2600);
         renderOptions();
       };
     });

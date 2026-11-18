@@ -488,6 +488,7 @@ function drawFx(fx, W, H, t, cx, cy) {
   const G = H * 0.62;
   switch (fx) {
     case "sangue":
+      if (settings.noBlood) break;
       ctx.fillStyle = `rgba(150,10,20,${Math.min(0.8, t / 2)})`;
       ctx.beginPath();
       ctx.ellipse(cx + 4, cy + 10, 30 + Math.min(26, t * 9), 10 + Math.min(7, t * 2), 0, 0, 7);
@@ -689,7 +690,7 @@ function drawDeathScene() {
       if (D.knife || d.id === "veneno") {
         rect(kx + 2, ky + 54, 8, 8, "#3a2414");
         rect(kx + 1, ky + 30, 6, 26, d.id === "veneno" ? "#3a7a3a" : "#dfe6ee");
-        if (D.knife) rect(kx + 1, ky + 44, 6, 12, "#a01a24");
+        if (D.knife && !settings.noBlood) rect(kx + 1, ky + 44, 6, 12, "#a01a24");
       }
       if (D.spear) rect(kx - 8, ky - 40, 5, 160, "#6a4a2a"), rect(kx - 12, ky - 52, 13, 16, "#cfd6e0");
       ctx.font = '600 13px "Pixelify Sans", sans-serif';

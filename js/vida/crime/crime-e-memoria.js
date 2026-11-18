@@ -228,7 +228,7 @@ function drawBody(id, d, t) {
     Y = d.pos.y * TILE;
   const age = Math.min(1.3, (player.day * 1440 + player.clock - (d.bodyT || 0)) / 30 + 0.75);
   // Poça de sangue que vai crescendo.
-  if (d.how !== "veneno") {
+  if (d.how !== "veneno" && !settings.noBlood) {
     ctx.fillStyle = "rgba(120,10,14,.88)";
     ctx.beginPath();
     ctx.ellipse(X + 16, Y + 24, 18 * age + 4, 8 * age + 3, 0.12, 0, 7);
@@ -247,7 +247,7 @@ function drawBody(id, d, t) {
       [30, 10],
     ])
       ctx.fillRect(X + a + 4, Y + 18 + b, 3, 2);
-  } else {
+  } else if (d.how === "veneno") {
     ctx.fillStyle = "rgba(90,160,60,.5)";
     ctx.beginPath();
     ctx.ellipse(X + 10, Y + 24, 6, 3, 0, 0, 7);
@@ -322,7 +322,7 @@ function bodyMenu(id) {
       d.bodyGone = true;
       d.reported = true;
       const killedByYou = !d.byOther;
-      if (killedByYou && Math.random() < 0.35) return say([["Guarda Tomé", "Achou o corpo, é? Engraçado... tem sangue na sua roupa."]], () => murderFound(id));
+      if (killedByYou && Math.random() < 0.35) return say([["Guarda Tomé", settings.noBlood ? "Achou o corpo, é? Engraçado... você está tremendo." : "Achou o corpo, é? Engraçado... tem sangue na sua roupa."]], () => murderFound(id));
       repAdd(2);
       if (killedByYou) d.cleared = true;
       vilaNews(`Encontraram o corpo de ${n}! A guarda investiga.`);
@@ -331,7 +331,7 @@ function bodyMenu(id) {
     },
   });
   opts.push({ t: "Sair dali", fn: null });
-  choice(`Corpo de ${n}`, d.how === "veneno" ? "Lábios roxos, olhos abertos. Cheiro de amêndoas." : "Muito sangue no chão. Melhor não ficar muito tempo aqui.", opts);
+  choice(`Corpo de ${n}`, d.how === "veneno" ? "Lábios roxos, olhos abertos. Cheiro de amêndoas." : settings.noBlood ? "Não se mexe mais. Melhor não ficar muito tempo aqui." : "Muito sangue no chão. Melhor não ficar muito tempo aqui.", opts);
 }
 /* Quem passa perto de um corpo grita e chama a guarda. */
 let bodyAcc = 0;
