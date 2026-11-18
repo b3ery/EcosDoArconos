@@ -101,7 +101,7 @@
     for (let x = cx - 2; x <= cx + 1; x++) out.push([x, I.st === "castle" ? 4 : 5, "balcao"]);
     return out;
   }
-  const regular = (p) => !p.guard && !p.kid && !p.child && !p.order && !p.cid && !p.bard && !p.aa;
+  const regular = (p) => !p.guard && !p.kid && !p.child && !p.order && !p.cid && !p.bard && !p.aa && !p.gossip;
 
   /* ===================== PERSONAGENS EXTRAS ===================== */
   const giBase = genInterior;
