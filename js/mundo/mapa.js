@@ -411,18 +411,40 @@ function poolRim(X, Y, x, y) {
 function water(th, X, Y, t, h) {
   ctx.fillStyle = th.water;
   ctx.fillRect(X, Y, TILE, TILE);
-  ctx.fillStyle = shade(th.water, 0.25);
-  for (let i = 0; i < 3; i++) {
-    const ox = (t * 14 + h * 40 + i * 13) % (TILE - 7);
-    ctx.fillRect(X + ox, Y + 6 + i * 10, 7, 2);
+  const x = X / TILE,
+    y = Y / TILE;
+  const wt = (a, b) => {
+    const c = tileAt(player.zone, a, b);
+    return c === "~" || c === "=" || c === "F" || c === "#" || c === null;
+  };
+  // rio estreito corre (as linhas de correnteza descem/andam no sentido da água);
+  // água larga (lago, mar) só balança
+  const narrowX = !wt(x - 2, y) || !wt(x + 2, y) || !wt(x - 1, y) || !wt(x + 1, y);
+  const narrowY = !wt(x, y - 2) || !wt(x, y + 2) || !wt(x, y - 1) || !wt(x, y + 1);
+  const flowV = narrowX && !narrowY,
+    flowH = narrowY && !narrowX;
+  const isPort = ZONES[player.zone] && ZONES[player.zone].theme === "porto";
+  if (flowV || flowH) {
+    // fundo mais escuro no meio do canal
+    const mid = flowV ? (!wt(x - 1, y) || !wt(x + 1, y) ? 0 : 1) : !wt(x, y - 1) || !wt(x, y + 1) ? 0 : 1;
+    if (mid) ((ctx.fillStyle = "rgba(10,40,90,.18)"), ctx.fillRect(X, Y, TILE, TILE));
+    for (let i = 0; i < 3; i++) {
+      const p = (t * 38 + h * 97 + i * 11) % (TILE + 10);
+      const q = 4 + ((h * 53 + i * 9) % 24);
+      ctx.fillStyle = i === 0 ? "rgba(255,255,255,.42)" : shade(th.water, 0.3);
+      if (flowV) ctx.fillRect(X + q, Y + p - 10, 2, 8);
+      else ctx.fillRect(X + p - 10, Y + q, 8, 2);
+    }
+    // brilho que desce com a água
+    if (((t * 2 + h * 7) | 0) % 5 === 0) ((ctx.fillStyle = "rgba(255,255,255,.7)"), ctx.fillRect(X + 8 + h * 14, Y + ((t * 40 + h * 30) % 30), 2, 2));
+  } else {
+    ctx.fillStyle = shade(th.water, 0.25);
+    for (let i = 0; i < 3; i++) {
+      const ox = (t * 14 + h * 40 + i * 13) % (TILE - 7);
+      ctx.fillRect(X + ox, Y + 6 + i * 10, 7, 2);
+    }
   }
   {
-    const x = X / TILE,
-      y = Y / TILE,
-      wt = (a, b) => {
-        const c = tileAt(player.zone, a, b);
-        return c === "~" || c === "=" || c === "F" || c === "#" || c === null;
-      };
     const sc = shade(th.water, 0.45),
       dk = shade(th.water, -0.25);
     if (!wt(x, y - 1)) {
@@ -458,7 +480,7 @@ function water(th, X, Y, t, h) {
     return;
   }
   // nenúfar só em rio e lago: no mar salgado não nasce
-  if (h > 0.82 && !(ZONES[player.zone] && ZONES[player.zone].theme === "porto")) {
+  if (h > 0.82 && !isPort && !flowV && !flowH) {
     ctx.fillStyle = "#3d8a3a";
     ctx.beginPath();
     ctx.arc(X + 12 + h * 8, Y + 16, 6, 0.4, Math.PI * 2 - 0.2);
