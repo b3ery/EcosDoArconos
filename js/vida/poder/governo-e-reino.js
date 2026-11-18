@@ -496,3 +496,60 @@
     return L ? pk(L) : null;
   };
 })();
+
+/* ===================== O PATRÃO =====================
+   O patrão quer lucro. Fora da democracia e do comunismo ele desconta do
+   salário por qualquer coisa, segura você em hora extra sem pagar e embolsa
+   o que o seu trabalho rendeu. Na democracia a lei protege (e hora extra é
+   paga); no comunismo não tem patrão: a oficina é do povo e o ganho é
+   dividido. Dá para reclamar ou chamar greve, com riscos diferentes em cada
+   regime. */
+(() => {
+  if (typeof endJob !== "function") return;
+  const ejBase = endJob;
+  endJob = function (reason) {
+    const j = player.job;
+    const earned = j && j.earned ? j.earned : 0;
+    const id = j && j.id;
+    const r = ejBase.apply(this, arguments);
+    if (!lifeMode() || !id || id === "guarda" || earned <= 0 || reason === "quit") return r;
+    const reg = typeof workRegime === "function" ? workRegime() : "monarquia";
+    const boss = "Patrão";
+    setTimeout(() => {
+      if (reg === "comunismo") return toast(`Oficina do Povo: o que você produziu (${earned * 2} ouro) foi dividido entre todos. Ninguém lucra em cima de ninguém.`, 4500);
+      if (reg === "democracia") {
+        if (Math.random() < 0.25) ((player.gold += Math.round(earned * 0.2)), toast(`Hora extra paga, como manda a lei: +${Math.round(earned * 0.2)} ouro.`, 3800));
+        return;
+      }
+      const roll = Math.random();
+      const lucro = Math.round(earned * (reg === "ditadura" ? 3 : 2));
+      if (roll < 0.35) {
+        const cut = Math.max(1, Math.round(earned * (reg === "ditadura" ? 0.3 : 0.15)));
+        player.gold = Math.max(0, player.gold - cut);
+        const why = pk(["uma caneca que quebrou", "você chegou atrasado(a)", "conversar no serviço", "desgaste das ferramentas", "a sopa do almoço"]);
+        choice(boss, `"Descontei ${cut} de ouro: ${why}." Seu trabalho rendeu ${lucro} de ouro pra ele hoje, e você ficou com ${earned - cut}.`, [
+          { t: "Engolir e ir embora", fn: null },
+          { t: "Reclamar com o patrão", icon: "chat", fn: () => (Math.random() < 0.35 ? ((player.gold += cut), say([[boss, "Tá bom, tá bom. Toma o seu ouro. Mas não se acostume."]])) : ((player.warns = player.warns || {}), (player.warns[id] = (player.warns[id] || 0) + 1), say([[boss, "Reclamando? Tem fila de gente querendo o seu lugar. Advertência!"]]))) },
+          {
+            t: "Chamar os colegas para uma greve",
+            icon: "flag",
+            fn: () => {
+              if (reg === "ditadura") return ((player.hp = Math.max(1, player.hp - 15)), (player.fired = player.fired || {}), (player.fired[id] = player.day + 5), say([["Guarda do Regime", "Greve é crime! *empurrões e porretes* Você está proibid" + genderWord("o", "a", "e") + " de trabalhar lá por 5 dias."]]));
+              if (Math.random() < 0.45) {
+                if (typeof ilumAdd === "function") ilumAdd(3);
+                player.gold += cut * 2;
+                return say([["", "Os colegas cruzam os braços. A oficina para."], [boss, "...Está bem! Sem descontos por um mês. Voltem ao trabalho!"]]);
+              }
+              (player.fired = player.fired || {}), (player.fired[id] = player.day + 3);
+              say([["", "Ninguém te acompanha: todos têm medo de perder o emprego."], [boss, "Rua! Por três dias você não pisa aqui."]]);
+            },
+          },
+        ]);
+      } else if (roll < 0.6) {
+        if (typeof passTime === "function") passTime(1, `${boss}: "Antes de ir, varre a oficina e arruma o estoque." Uma hora a mais... sem pagar.`);
+        if (typeof addNeed === "function") addNeed("energy", -8);
+      } else toast(`O seu turno rendeu ${lucro} de ouro para o patrão. Você levou ${earned}.`, 4000);
+    }, 2600);
+    return r;
+  };
+})();

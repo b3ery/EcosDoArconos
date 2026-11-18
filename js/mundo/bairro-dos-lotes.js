@@ -134,7 +134,7 @@ const LOTES = { lots: [] };
         if (front.length) plan[front[0][0] + "," + front[0][1]] = "placa";
         b.plan = plan;
         LOTES.lots.push({ b, fam, x0: lx0, x1: lx1, top, road: band.road, size: k, bairro: band.bairro });
-        x += T.span + (T.small ? 0 : 1);
+        x += T.span + 1; // um respiro entre uma casa e outra
       }
     });
   }

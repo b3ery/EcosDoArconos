@@ -31,7 +31,7 @@
   const HAIRS = ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a", "#d9d9d9", "#5a3a22"];
   const surname = (L) => L.fam.replace(/^Família |^Mansão d(os|as|e) |^Mansão /, "");
   // cada bairro com o seu tipo de casa (depois que casas-e-realeza já classificou)
-  for (const L of LOTES.lots) L.b.style = L.size === "S" ? "casebre" : L.size === "M" ? "casa" : "casa2";
+  for (const L of LOTES.lots) L.b.style = L.size === "M" ? "casa" : L.size === "L" ? "casa2" : "casa";
   // ao entrar num bairro, a placa do nome aparece
   let lastB = null;
   const upB = update;
@@ -62,8 +62,11 @@
         }
         // varais atravessando o beco, de um telhado ao outro
         for (const [x, y] of LOTES.lines || []) {
-          const X = x * TILE,
-            Y = y * TILE - 60;
+          const X = x * TILE + 4,
+            Y = y * TILE - 6,
+            G = y * TILE + 28;
+          // dois postes firmes no chão segurando a corda
+          for (const px of [X - 2, X + 58]) ((ctx.fillStyle = "rgba(0,0,0,.22)"), ctx.fillRect(px - 2, G - 2, 8, 3), (ctx.fillStyle = "#5a3a1e"), ctx.fillRect(px, Y - 2, 4, G - Y + 2), (ctx.fillStyle = "#7a4f2a"), ctx.fillRect(px, Y - 2, 1, G - Y));
           ctx.strokeStyle = "#c9b080";
           ctx.lineWidth = 1;
           ctx.beginPath();
@@ -108,7 +111,11 @@
       L.people.push({ id: L.b.id + "p" + i, nm: `${FIRST[g][Math.floor(hs(L.x0, i + 11) * 12)]} ${surname(L)}`, g, job: JOBS[Math.floor(hs(L.x0 + i, 13) * 12)], mood: MOOD[Math.floor(hs(L.x0 + i, 17) * 6)], robe: ROBES[Math.floor(hs(L.x0 + i, 19) * 8)], hair: HAIRS[Math.floor(hs(L.x0 + i, 23) * 6)], L });
     }
     if (L.size === "L") L.people.push({ id: L.b.id + "cr", nm: "Criado Lourenço", g: "m", job: "criado", mood: "tímido", robe: "#2a2a3a", hair: "#3a2414", L }, { id: L.b.id + "ja", nm: "Jardineiro Abel", g: "m", job: "jardineiro", mood: "simpático", robe: "#4a6a3a", hair: "#d9d9d9", L, hat: "#c9a050" });
-    if (L.size === "S") L.up = { id: L.b.id + "up", nm: `${FIRST.f[Math.floor(hs(L.x0, 29) * 12)]}, a vizinha de cima`, g: "f", job: JOBS[Math.floor(hs(L.x0, 31) * 12)], mood: "fofoqueiro", L };
+    if (L.size === "S") {
+      const sn = ["Quaresma", "Pereira", "Sardinha", "Moleiro", "Rosário", "Bento", "Lagoa", "Freitas"][Math.floor(hs(L.x0, 37) * 8)];
+      L.upFam = "Família " + sn;
+      L.up = { id: L.b.id + "up", nm: `${FIRST.f[Math.floor(hs(L.x0, 29) * 12)]} ${sn}`, g: "f", job: JOBS[Math.floor(hs(L.x0, 31) * 12)], mood: "fofoqueiro", L };
+    }
     // onde dá para andar no lote: grama, gramado e o caminho da frente
     L.walk = Object.entries(L.b.plan)
       .filter(([, k]) => k === "grama" || k === "gramado" || k === "lama")
@@ -203,9 +210,17 @@
   bldAction = function (b) {
     const L = b && lifeMode() && lotOfB(b);
     if (!L || !lives(L)) return baBase.apply(this, arguments);
-    const living = L.people.filter((p) => !dead(p));
     if (!day()) return say([["", `Toc, toc... Ninguém responde. A ${L.fam} já está dormindo.`]]);
-    if (L.up && Math.random() < 0.5) return say([[L.up.nm, "*abre a janela da sacada* Tá procurando quem? Lá embaixo saíram. Eu fico aqui em cima, o aluguel é mais barato."]]);
+    if (L.up)
+      return choice("Casinha de dois andares", `Embaixo mora a ${L.fam}. Em cima, pela escada de fora, mora a ${L.upFam}.`, [
+        { t: `Bater embaixo (${L.fam})`, icon: "door", fn: () => knockDown(L) },
+        { t: `Subir a escada e bater em cima (${L.upFam})`, icon: "door", fn: () => say([[L.up.nm, pk(["*abre a porta de cima* Pois não? Cuidado com o degrau quebrado!", "Aqui em cima é pequeno, mas o aluguel é mais barato e a vista do beco é... bom, é o beco.", "Você é da família de baixo? Diz pra eles pararem de cozinhar repolho!"])], ...(typeof workerTalk === "function" ? [[L.up.nm, workerTalk(true)]] : [])]) },
+        { t: "Ir embora", fn: null },
+      ]);
+    return knockDown(L);
+  };
+  function knockDown(L) {
+    const living = L.people.filter((p) => !dead(p));
     const host = living[0];
     if (!host) return say([["", "A casa está em silêncio. A família partiu."]]);
     choice(L.fam, `${host.nm} abre a porta. Moram aqui: ${living.map((p) => p.nm.split(" ")[0] + " (" + p.job + ")").join(", ")}.`, [
@@ -214,7 +229,7 @@
       { t: "Pedir um copo d'água", icon: "water", fn: () => ((player.water = Math.min(100, (player.water || 0) + 30)), say([[host.nm, pk(["Claro, entra! Água fresquinha do poço.", "Toma. Mas o copo eu quero de volta, hein."])]])) },
       { t: "Ir embora", fn: null },
     ]);
-  };
+  }
   // placa: vende-se nos lotes vazios
   if (typeof targetAt === "function") {
     const tg2 = targetAt;

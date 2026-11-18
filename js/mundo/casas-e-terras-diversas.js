@@ -66,8 +66,72 @@
     else base = VILA_TYPES[h % VILA_TYPES.length];
     return Object.assign({}, TYPES[base], extra, { chim: h % 5 === 0 ? 2 : h % 7 === 0 ? 0 : 1, h });
   }
+  /* casebre de pobre, dois andares (uma família em cima, outra embaixo) */
+  function poorHouse(b, t) {
+    const X = b.x * TILE,
+      Y = b.y * TILE,
+      W = b.w * TILE,
+      H = b.h * TILE,
+      h = hash(b.x, b.y);
+    const R = (x, y, w, hh, c) => ((ctx.fillStyle = c), ctx.fillRect(Math.round(x), Math.round(y), w, hh));
+    const night = nightAlpha() > 0.25;
+    const base = Y + H - 4;
+    R(X + 4, base - 2, W, 8, "rgba(0,0,0,.25)");
+    const wall = ["#a89474", "#9a8a6a", "#b09a78"][h % 3];
+    // térreo e andar de cima de pau a pique encardido, um pouco tortos
+    const g0 = base - 36,
+      u0 = g0 - 34,
+      lean = h % 2 ? 2 : -2;
+    R(X, g0, W, 36, wall);
+    R(X + lean, u0, W, 34, wall);
+    for (let i = 0; i < 9; i++) R(X + 4 + ((i * 23 + h) % (W - 10)), g0 + 4 + ((i * 11) % 28), 5, 3, "rgba(80,60,40,.25)"); // manchas
+    R(X + lean, u0 + 10 + (h % 7), 10, 12, "#7a5a32"); // tábua remendando o buraco
+    R(X + lean + 1, u0 + 11 + (h % 7), 8, 1, "#5a3a1e");
+    // vigas grossas e tortas
+    for (const bx of [0, W - 4]) (R(X + bx, g0, 4, 36, "#4a3420"), R(X + bx + lean, u0, 4, 34, "#4a3420"));
+    R(X - 1, g0 - 2, W + 2, 4, "#4a3420");
+    R(X + lean - 1, u0 - 2, W + 2, 3, "#4a3420");
+    R(X, base - 3, W, 3, "#5a4a3a"); // soleira de terra batida
+    // porta de tábua de baixo
+    const dx = X + (b.door[0] - b.x) * TILE;
+    R(dx + 8, base - 26, 16, 23, "#5a3a1e");
+    for (let i = 0; i < 3; i++) R(dx + 9 + i * 5, base - 26, 1, 23, "#3a2414");
+    R(dx + 20, base - 15, 2, 2, "#8a8a8a");
+    // janelinhas de tábua, sem vidro (uma embaixo, duas em cima)
+    const win = (wx, wy) => {
+      R(wx, wy, 10, 9, night ? "#d9a050" : "#2a1a10");
+      R(wx - 3, wy, 3, 9, "#6b4a2a");
+      R(wx + 10, wy, 3, 9, "#6b4a2a");
+    };
+    win(X + (b.door[0] - b.x === 0 ? W - 18 : 6), g0 + 10);
+    win(X + lean + 7, u0 + 10);
+    win(X + lean + W - 18, u0 + 10);
+    // porta de cima, aberta para a escada
+    R(X + lean + W / 2 - 6, u0 + 8, 12, 24, "#4a2e17");
+    // palha rala e remendada
+    const top = u0 - 30;
+    ctx.fillStyle = ["#a8884a", "#9a7a40", "#b0904e"][h % 3];
+    fillPolygon(X - 6 + lean, u0 + 4, X + W + 6 + lean, u0 + 4, X + W / 2 + lean, top);
+    ctx.fillStyle = "rgba(70,50,20,.35)";
+    for (let yy = top + 8; yy < u0 + 2; yy += 6) {
+      const hw = ((W / 2 + 6) * (yy - top)) / (u0 + 4 - top);
+      ctx.fillRect(X + W / 2 + lean - hw, yy, hw * 2, 1);
+    }
+    R(X + W / 2 + lean - 8 + (h % 9), top + 14, 8, 6, "#6a5a3a"); // remendo de palha velha
+    for (let i = 0; i < 6; i++) R(X - 4 + lean + i * 18, u0 + 3, 2, 4, "#8a6a30"); // palha caindo da beira
+    // fumaça de fogo de chão saindo pelo telhado (sem chaminé)
+    if (h % 2) R(X + W / 2 + lean - 1, top - 4 - ((t * 10) % 10), 4, 4, "rgba(180,180,180,.35)");
+    // escada de tábua crua até a porta de cima, do lado de fora
+    const sx = X + W + 1;
+    for (let k = 0; k < 6; k++) R(sx + 12 - k * 2, base - 6 - k * 9, 8, 3, "#8a6a42");
+    R(sx + 18, u0 + 30, 2, base - u0 - 30, "#5a3a1e");
+    R(sx + 6, u0 + 30, 2, base - u0 - 30, "#5a3a1e");
+    // balde e trapos na porta
+    if (h % 3 === 0) (R(dx - 6, base - 9, 7, 7, "#6a6a6a"), R(dx - 6, base - 9, 7, 2, "#8a8a8a"));
+  }
   const dbBase = drawBuilding;
   drawBuilding = function (b, t) {
+    if (b.flats) return poorHouse(b, t);
     const famous = b.name && !/Casa para alugar|Casa à venda|Mansão/.test(b.name);
     const mine = typeof isMyHomeBld === "function" && isMyHomeBld(b);
     const BIG = ["castle", "fortaleza", "palacio", "templo", "celeiro", "moinho", "farol", "mina"];
@@ -75,7 +139,9 @@
     const can = (COMMON.has(b.style) && !famous && !mine) || (country() && !BIG.includes(b.style));
     if (!can) return dbBase.apply(this, arguments);
     const S0 = BUILDING_STYLES[b.style];
-    const V = variantFor(b);
+    let V = variantFor(b);
+    // casinha de dois andares: nunca de toras nem de teto plano
+    if (b.flats && (V.logs || V.flat)) V = Object.assign({}, V, TYPES.palha, { logs: false, flat: false });
     BUILDING_STYLES[b.style] = Object.assign({}, S0, V);
     try {
       dbBase.apply(this, arguments);
@@ -298,7 +364,7 @@
     if (c !== "." || !Z || !Z.town || Z.town.indoor) return r;
     const L = bldAt(Z, x - 1, y),
       Rb = bldAt(Z, x + 1, y);
-    if (!L || !Rb || L === Rb || !COMMON.has(L.style) || !COMMON.has(Rb.style) || L.y + L.h !== Rb.y + Rb.h) return r;
+    if (!L || !Rb || L === Rb || L.lot || Rb.lot || !COMMON.has(L.style) || !COMMON.has(Rb.style) || L.y + L.h !== Rb.y + Rb.h) return r;
     const top = Math.max(L.y, Rb.y),
       bot = L.y + L.h;
     if (y < top || y >= bot) return r;
