@@ -1977,8 +1977,138 @@
     S.hop = 0.3;
     playSound(400, 0.04, "triangle");
   }
+  /* ----- Festa das Mil Lanternas (Solmar) ----- */
+  function nightSea(S) {
+    const sky = g.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, "#0e1030");
+    sky.addColorStop(0.7, "#2a2050");
+    sky.addColorStop(1, "#3a2a50");
+    g.fillStyle = sky;
+    g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 30; i++) R((i * 97) % W, (i * 41) % 120, 1, 1, "rgba(255,255,255,.7)");
+    C(300, 40, 14, "#f2eee0");
+    C(305, 36, 12, "#0e1030");
+    // outras lanternas subindo ao longe
+    for (let i = 0; i < 24; i++) {
+      const x = (i * 53 + S.t * 4) % W,
+        y = 150 - ((S.t * (6 + (i % 5)) + i * 37) % 150);
+      R(x, y, 3, 4, "#ffb04a");
+      R(x, y, 3, 1, "#ffe08a");
+    }
+    R(0, 170, W, 70, "#1a2a4a");
+    for (let i = 0; i < 12; i++) R((i * 37 + S.t * 10) % W, 180 + (i % 4) * 14, 18, 1, "rgba(255,190,90,.35)");
+  }
+  function skyLantern() {
+    return {
+      title: "Lanterna do céu",
+      sub: "Segure no pavio para aquecer o ar. Quando a lanterna encher e brilhar, arraste para CIMA e solte. Segurar demais queima o papel!",
+      time: 25,
+      state: () => ({ heat: 0, fly: null, burnt: false }),
+      down(S, p) {
+        S.onWick = Math.abs(p.x - 180) < 40 && p.y > 140;
+      },
+      up(S, p, st) {
+        if (S.fly || S.burnt) return;
+        if (st && st.y - p.y > 40 && S.heat >= 0.7) S.fly = { y: 0, q: S.heat <= 1.3 ? 1 : 0.6 };
+        else if (st && st.y - p.y > 40) S.msg = "Ainda está fria. Aqueça mais!";
+      },
+      draw(g, S, dt) {
+        nightSea(S);
+        if (S.down && S.onWick && !S.fly && !S.burnt) {
+          S.heat += dt * 0.45;
+          if (S.heat > 1.6) ((S.burnt = true), (S.msg = "O papel queimou!"));
+        } else if (!S.fly) S.heat = Math.max(0, S.heat - dt * 0.08);
+        const k = Math.min(1, S.heat);
+        const fy = S.fly ? (S.fly.y += dt * 70) : 0;
+        const cx = 180,
+          by = 170 - fy;
+        // a lanterna de papel: murcha quando fria, cheia e brilhando quando quente
+        const w = 26 + k * 18,
+          h = 30 + k * 26;
+        if (k > 0.3) {
+          const gl = g.createRadialGradient(cx, by - h / 2, 4, cx, by - h / 2, 70);
+          gl.addColorStop(0, `rgba(255,190,90,${0.45 * k})`);
+          gl.addColorStop(1, "rgba(255,190,90,0)");
+          g.fillStyle = gl;
+          g.fillRect(cx - 80, by - h - 60, 160, 160);
+        }
+        g.fillStyle = S.burnt ? "#3a2414" : `rgb(${200 + 55 * k},${120 + 70 * k},${60 + 30 * k})`;
+        g.beginPath();
+        g.moveTo(cx - w / 2 + 4, by);
+        g.lineTo(cx - w / 2, by - h + 8);
+        g.quadraticCurveTo(cx, by - h - 8, cx + w / 2, by - h + 8);
+        g.lineTo(cx + w / 2 - 4, by);
+        g.closePath();
+        g.fill();
+        R(cx - w / 2 + 4, by - 2, w - 8, 3, "#8a5a2e");
+        for (let i = 1; i < 4; i++) R(cx - w / 2 + (w * i) / 4, by - h + 6, 1, h - 6, "rgba(120,60,20,.35)");
+        // pavio
+        R(cx - 3, by + 2, 6, 4, "#5a3a1e");
+        if (S.down && S.onWick && !S.fly) ((g.fillStyle = "#ffe08a"), g.beginPath(), g.arc(cx, by + 1, 3 + Math.random() * 2, 0, 7), g.fill());
+        // mãos segurando (somem quando ela voa)
+        if (!S.fly) (R(cx - w / 2 - 8, by - 8, 8, 6, "#e8b890"), R(cx + w / 2, by - 8, 8, 6, "#e8b890"));
+        // termômetro do ar quente
+        R(20, 60, 10, 100, "#2a1a2a");
+        R(20, 60 + 100 - Math.min(1.6, S.heat) * 62, 10, Math.min(1.6, S.heat) * 62, S.heat > 1.3 ? "#e05a3a" : S.heat >= 0.7 ? "#f2c14e" : "#8a6a42");
+        R(16, 160 - 62, 18, 1, "#fff");
+        R(16, 160 - 81, 18, 1, "#e05a3a");
+        if (!S.fly && !S.burnt) S.msg = S.heat >= 0.7 ? (S.heat > 1.3 ? "Cuidado, está quente demais!" : "Pronta! Arraste para cima e solte.") : "Segure no pavio...";
+        if (S.fly) S.msg = "Faça um pedido...";
+      },
+      auto: (S) => (S.burnt ? 0.1 : S.fly && S.fly.y > 190 ? S.fly.q : null),
+      finish: (S) => (S.fly ? S.fly.q : Math.min(0.4, S.heat * 0.3)),
+    };
+  }
+  function waterLantern() {
+    return {
+      title: "Lanterna na água",
+      sub: "Arraste a lanterninha de flor até a água e solte DEVAGAR. Rápido demais, ela vira!",
+      time: 20,
+      state: () => ({ L: { x: 90, y: 205 }, held: false, done: null, v: 0 }),
+      down(S, p) {
+        S.held = !S.done && Math.hypot(p.x - S.L.x, p.y - S.L.y) < 22;
+      },
+      move(S, p, last) {
+        if (!S.held) return;
+        S.v = last ? Math.hypot(p.x - last.x, p.y - last.y) : 0;
+        S.L.x = clamp(p.x, 10, W - 10);
+        S.L.y = clamp(p.y, 150, 230);
+      },
+      up(S) {
+        if (!S.held) return;
+        S.held = false;
+        if (S.L.y < 188) S.done = { q: S.v < 6 ? 1 : S.v < 12 ? 0.6 : 0.2, t: 0, tip: S.v >= 12 };
+      },
+      draw(g, S, dt) {
+        nightSea(S);
+        R(0, 196, W, 44, "#c9b080");
+        R(0, 196, W, 3, "#e8d8a8");
+        const L = S.L;
+        if (S.done) ((S.done.t += dt), (L.x += dt * 14), (L.y = 186 - Math.min(10, S.done.t * 3) + Math.sin(S.t * 3) * 1.5));
+        // reflexo
+        if (L.y < 196) {
+          const gl = g.createRadialGradient(L.x, L.y + 6, 2, L.x, L.y + 6, 30);
+          gl.addColorStop(0, "rgba(255,190,90,.4)");
+          gl.addColorStop(1, "rgba(255,190,90,0)");
+          g.fillStyle = gl;
+          g.fillRect(L.x - 30, L.y - 24, 60, 60);
+        }
+        g.save();
+        g.translate(L.x, L.y);
+        if (S.done && S.done.tip) g.rotate(Math.min(1.4, S.done.t * 2));
+        E(0, 4, 14, 5, "#3a7a3a");
+        for (let i = 0; i < 6; i++) E(Math.cos(i) * 8, Math.sin(i) * 2, 5, 3, i % 2 ? "#f2a8c8" : "#ffd0e0");
+        R(-2, -10, 4, 10, "#f2eecf");
+        if (!(S.done && S.done.tip && S.done.t > 0.6)) ((g.fillStyle = "#ffb04a"), g.beginPath(), g.arc(0, -12, 2.5 + Math.random(), 0, 7), g.fill());
+        g.restore();
+        S.msg = S.done ? (S.done.tip ? "Ela virou e apagou..." : "Lá vai ela, levando seus males embora.") : S.held ? (S.v > 12 ? "Devagar..." : "Isso, com calma.") : "Pegue a lanterna na areia.";
+      },
+      auto: (S) => (S.done && S.done.t > 2.2 ? S.done.q : null),
+      finish: (S) => (S.done ? S.done.q : 0),
+    };
+  }
   window.festGame = function (kind, cb) {
-    const st = { fogueira: bonfire, maca: appleBob, arco: archery, mastro: () => maypole, sacos: sackRace }[kind];
+    const st = { fogueira: bonfire, maca: appleBob, arco: archery, mastro: () => maypole, sacos: sackRace, lanterna: skyLantern, lanternaAgua: waterLantern }[kind];
     if (!st) return;
     const spec = st();
     if (kind === "sacos") spec.key = 1;
