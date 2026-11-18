@@ -128,13 +128,13 @@
     I.life.t -= dt;
     // fregueses
     if (I.life.t <= 0 && !W) {
-      I.life.t = rnd(1.2, 2.6);
+      I.life.t = rnd(0.5, 1.1);
       const pool = I.people.filter(regular);
       const tav = I.st === "taverna";
-      if (pool.length && Math.random() < (tav ? 0.45 : 0.8)) {
+      if (pool.length) {
         const pe = pick(pool);
         const r = Math.random();
-        if (tav && r < 0.55) {
+        if (tav && r < 0.35) {
           shout(pe.x, pe.y, pick(TAVERN_FUN), 2.4);
           bubble(pe.x, pe.y, pick(["mug", "laugh", "mug", "note"]));
         } else if (r < 0.15 && I.people.length > 1 && !tav) {
@@ -157,7 +157,7 @@
     // dono andando atrás do balcão e fazendo pregão
     I.life.keeperT -= dt;
     if (I.life.keeperT <= 0 && !W && I.kx > 0) {
-      I.life.keeperT = rnd(4, 8);
+      I.life.keeperT = rnd(2, 4.5);
       const cx = (I.kx0 ?? I.kx) + 1;
       I.kx0 = I.kx0 ?? I.kx;
       const nx = Math.max(cx - 2, Math.min(cx + 1, I.kx + pick([-1, 1])));

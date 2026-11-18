@@ -50,7 +50,67 @@
     return p || [fx + dx, fy + dy];
   };
   let DECOR = null;
-  const decor = () => (DECOR = DECOR || { pole: spot(5, 1), fire: spot(-5, 1), pig: null });
+  const BOOTH_OFF = [[-7, -3], [-3, -4], [3, -4], [7, -3], [-7, 4], [-3, 5], [3, 5], [7, 4], [0, 6]];
+  function booths() {
+    const D = decor();
+    const acts = activities().filter((a) => !/Mastro de Maio|fogueira de São João/.test(a.t));
+    if (!D.booths || D.boothKey !== player.day) {
+      D.boothKey = player.day;
+      D.booths = [];
+      // anel em volta da fonte: cada barraca num ângulo, num chão livre
+      const z = ZONES.vila;
+      let sx = 0,
+        sy = 0,
+        n = 0;
+      for (let y = 0; y < z.h; y++) for (let x = 0; x < z.w; x++) if (z.map[y][x] === "F") (sx += x), (sy += y), n++;
+      const cx = n ? sx / n : 29,
+        cy = n ? sy / n : 23;
+      const cand = [];
+      for (let y = Math.floor(cy - 10); y <= cy + 10; y++)
+        for (let x = Math.floor(cx - 12); x <= cx + 12; x++) {
+          const d = Math.hypot((x - cx) * 0.8, y - cy);
+          if (d >= 5 && d <= 8.5 && walkable("vila", x, y) && ".,=".includes(z.map[y][x]) && walkable("vila", x, y + 1)) cand.push([x, y, Math.atan2(y - cy, x - cx)]);
+        }
+      const list = acts.slice(0, 8);
+      const used = [D.pole.slice()];
+      D.booths = [];
+      list.forEach((a, i) => {
+        const ang = -Math.PI + (i + 0.5) * ((Math.PI * 2) / list.length);
+        const best = cand
+          .filter(([x, y]) => used.every(([ux, uy]) => Math.abs(ux - x) + Math.abs(uy - y) >= 3))
+          .sort((p, q) => Math.abs(((p[2] - ang + Math.PI * 3) % (Math.PI * 2)) - Math.PI) - Math.abs(((q[2] - ang + Math.PI * 3) % (Math.PI * 2)) - Math.PI))
+[0];
+        if (best) used.push(best), D.booths.push({ x: best[0], y: best[1], t: a.t, icon: a.icon });
+      });
+    }
+    return D.booths;
+  }
+  const boothAt = (x, y) => (player.zone === "vila" && festivalToday() ? booths().find((b) => b.x === x && b.y === y) : null);
+  function ring() {
+    const z = ZONES.vila;
+    let sx = 0,
+      sy = 0,
+      n = 0;
+    for (let y = 0; y < z.h; y++) for (let x = 0; x < z.w; x++) if (z.map[y][x] === "F") (sx += x), (sy += y), n++;
+    const cx = n ? sx / n : 29,
+      cy = n ? sy / n : 23;
+    const cand = [];
+    for (let y = Math.floor(cy - 10); y <= cy + 10; y++)
+      for (let x = Math.floor(cx - 12); x <= cx + 12; x++) {
+        if (!z.map[y] || !".,=".includes(z.map[y][x])) continue;
+        const d = Math.hypot((x - cx) * 0.8, y - cy);
+        if (d >= 5 && d <= 8.5) cand.push([x, y, Math.atan2(y - cy, x - cx)]);
+      }
+    return cand;
+  }
+  const angDiff = (a, b) => Math.abs(((a - b + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+  const ringSpot = (ang) => {
+    const c = ring()
+      .filter((p, i, all) => angDiff(p[2], ang) < 0.5)
+      .sort((p, q) => q[1] - p[1])[0] || ring().sort((p, q) => angDiff(p[2], ang) - angDiff(q[2], ang))[0];
+    return c ? [c[0], c[1]] : spot(0, 6);
+  };
+  const decor = () => (DECOR = DECOR || { pole: ringSpot(Math.PI / 2), fire: ringSpot(Math.PI / 2), pig: null });
 
   /* ----- as atividades ----- */
   function activities() {
@@ -181,9 +241,9 @@
   festivalMenu = function () {
     const r = fmBase.apply(this, arguments);
     if (game.mode === "choice" && Array.isArray(game.choice) && festivalToday()) {
-      const extra = activities();
+      const extra = [{ t: "Ver as barracas da festa pela praça", icon: "flag", fn: () => toast("As barracas estão em volta da praça: chegue perto de uma e aperte E.", 3000) }];
       const opts = game.choice.filter((o) => !/^Corrida de Sacos|^Tiro ao alvo/.test(o.t));
-      if (!extra.some((o) => /Corrida de sacos/.test(o.t))) extra.push({ t: "Corrida de sacos", icon: "bag", fn: () => (once("sacos") ? festGame("sacos", (q) => (fun(20), q >= 1 ? prize(15, "Você venceu a corrida de sacos!") : toast("Chegou em segundo. O moleiro ganhou de novo.", 2200))) : toast("Uma corrida por festa, senão o saco rasga.", 1600)) });
+
       const i = opts.findIndex((o) => /Sair|Voltar|Fechar/.test(o.t));
       opts.splice(i >= 0 ? i : opts.length, 0, ...extra);
       choice(`${festivalToday().n}`, "Costumes da festa:", opts);
@@ -200,6 +260,8 @@
   targetAt = function (x, y) {
     const P = DECOR && DECOR.pig;
     if (player.zone === "vila" && P && P.x === x && P.y === y) return "Agarrar o porco ensebado!";
+    const bo = boothAt(x, y);
+    if (bo) return bo.t;
     if (player.zone === "vila" && festivalToday() && kind() === "flores" && DECOR && x === DECOR.pole[0] && y === DECOR.pole[1]) return "Mastro de Maio";
     if (player.zone === "vila" && festivalToday() && kind() === "lanternas" && DECOR && x === DECOR.fire[0] && y === DECOR.fire[1]) return "Fogueira de São João";
     return tgBase(x, y);
@@ -213,6 +275,11 @@
       fun(25);
       return prize(20, "Você agarrou o porco ensebado! A praça inteira aplaude.");
     }
+    const bo = boothAt(x, y);
+    if (bo) {
+      const a = activities().find((q) => q.t === bo.t);
+      if (a) return a.fn();
+    }
     if (player.zone === "vila" && festivalToday() && DECOR && kind() === "flores" && x === DECOR.pole[0] && y === DECOR.pole[1]) return activities()[0].fn();
     if (player.zone === "vila" && festivalToday() && DECOR && kind() === "lanternas" && x === DECOR.fire[0] && y === DECOR.fire[1]) return activities()[0].fn();
     return iaBase(x, y);
@@ -221,6 +288,7 @@
   walkable = function (z, x, y) {
     if (z === "vila" && festivalToday() && DECOR) {
       if (DECOR.pig && DECOR.pig.x === x && DECOR.pig.y === y) return false;
+      if (player.zone === "vila" && boothAt(x, y)) return false;
       if (kind() === "flores" && x === DECOR.pole[0] && y === DECOR.pole[1]) return false;
       if (kind() === "lanternas" && x === DECOR.fire[0] && y === DECOR.fire[1]) return false;
     }
@@ -343,6 +411,38 @@
             ctx.fillRect(X + 10, Y + 8, 2, 2);
           },
         });
+    for (const bo of booths())
+      list.push({
+        y: bo.y,
+        draw: () => {
+          const X = bo.x * T,
+            Y = bo.y * T;
+          ctx.fillStyle = "rgba(0,0,0,.25)";
+          ctx.fillRect(X - 4, Y + 28, 40, 4);
+          ctx.fillStyle = "#6b4423";
+          ctx.fillRect(X - 2, Y - 14, 4, 44);
+          ctx.fillRect(X + 30, Y - 14, 4, 44);
+          ctx.fillStyle = "#8a5a2e";
+          ctx.fillRect(X - 4, Y + 12, 40, 16);
+          ctx.fillStyle = "#b07a42";
+          ctx.fillRect(X - 4, Y + 12, 40, 4);
+          for (let i = 0; i < 5; i++) {
+            ctx.fillStyle = cols[i % cols.length];
+            ctx.fillRect(X - 6 + i * 9, Y - 20, 9, 10);
+            ctx.beginPath();
+            ctx.moveTo(X - 6 + i * 9, Y - 10);
+            ctx.lineTo(X - 1.5 + i * 9, Y - 5);
+            ctx.lineTo(X + 3 + i * 9, Y - 10);
+            ctx.fill();
+          }
+          ctx.fillStyle = "#efe2c0";
+          ctx.fillRect(X + 6, Y - 2, 20, 14);
+          ctx.strokeStyle = "#5a3a22";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(X + 6, Y - 2, 20, 14);
+          drawPixelIcon(bo.icon || "star", X + 16, Y + 5, 1.5);
+        },
+      });
     const P = D.pig;
     if (P)
       list.push({

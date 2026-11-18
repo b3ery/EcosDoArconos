@@ -635,6 +635,11 @@ function tavernMenu() {
         fn: drinksMenu,
       },
       {
+        t: "Cardápio da casa (comida quente)",
+        icon: "stew",
+        fn: () => (typeof tavernCardapio === "function" ? tavernCardapio() : openShop("taverna")),
+      },
+      {
         t: "Mural dos Corações (namoro e casamento)",
         icon: "heart",
         fn: heartBoardMenu,

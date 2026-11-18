@@ -95,7 +95,7 @@ const TAVERN_MENU = [
   { n: "Chá de ervas da serra", p: 3, water: 25, energy: 6, txt: "Acalma o estômago e a cabeça." },
   { n: "Suco de maçã gelado", p: 3, water: 30, fun: 3, txt: "Para quem vai trabalhar amanhã cedo." },
 ];
-function tavernMenu() {
+function tavernCardapio() {
   choice(
     "Cardápio da taverna",
     "O Gus te entrega uma tábua de madeira com o cardápio escrito a giz.",
@@ -299,7 +299,7 @@ function propAct(type) {
     case "table":
       if (T)
         return choice("Mesa da taverna", "Os bancos rangem, as canecas batem. O que você faz?", [
-          { t: "Pedir do cardápio", icon: "stew", fn: tavernMenu },
+          { t: "Pedir do cardápio", icon: "stew", fn: tavernCardapio },
           { t: "Jogar dados (aposta)", icon: "coin", fn: diceGame },
           { t: "Vinte-e-um (cartas)", icon: "book", fn: () => blackjack() },
           { t: "Dardos (3 ouro)", icon: "bolt", fn: dartsGame },
