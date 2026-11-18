@@ -7182,3 +7182,132 @@ body.calm .shout {
     min-height: 2.4em;
   }
 }
+
+/* ===== Inventário medieval: baú de couro, madeira e pergaminho =====
+   Só cores, bordas e texturas. Tamanhos e espaçamentos ficam iguais. */
+#inv.inv-new {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(242, 193, 78, 0.1), transparent 55%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px 46px),
+    linear-gradient(#3a2416, #24160c) !important;
+  box-shadow:
+    inset 0 0 0 3px #1a0e06,
+    inset 0 0 40px rgba(0, 0, 0, 0.55),
+    0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+#inv.inv-new .inv-tabs {
+  border-bottom-color: #6b4423;
+}
+#inv.inv-new .inv-tabs button {
+  background: linear-gradient(#4a2e18, #3a2414);
+  color: #d8c4a0;
+  border-color: #6b4423;
+}
+#inv.inv-new .inv-tabs button.on {
+  background: linear-gradient(#f2e4c4, #d9c29a);
+  color: #3a2414;
+  border-color: #c9a050;
+}
+#inv.inv-new .inv-doll {
+  background:
+    radial-gradient(circle at 8px 8px, #c9a050 2px, transparent 3px),
+    radial-gradient(circle at calc(100% - 8px) 8px, #c9a050 2px, transparent 3px),
+    radial-gradient(circle at 8px calc(100% - 8px), #c9a050 2px, transparent 3px),
+    radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), #c9a050 2px, transparent 3px),
+    linear-gradient(#5a3a1e, #3a2414);
+  border-color: #8a5a2e;
+}
+#inv.inv-new .inv-eq {
+  background: radial-gradient(#4a3020, #24160c);
+  border-color: #a8784a;
+  box-shadow:
+    inset 0 0 0 2px #1a0e06,
+    inset 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+#inv.inv-new .inv-eq em {
+  color: #e8d8b0;
+  text-shadow: 1px 1px 0 #1a0e06;
+}
+#inv.inv-new .inv-pv {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 200, 110, 0.35), transparent 60%),
+    linear-gradient(#6a4a2e, #3a2414);
+  border-color: #c9a050;
+}
+#inv.inv-new .inv-pv span {
+  color: #f2d98a;
+  text-shadow: 1px 1px 0 #1a0e06;
+}
+#inv.inv-new .inv-stats div {
+  background: linear-gradient(#efe2c0, #dcc89c);
+  border-color: #8a6a3a;
+  box-shadow: inset 0 -2px 0 rgba(90, 58, 30, 0.25);
+}
+#inv.inv-new .inv-stats span {
+  color: #6b4423;
+}
+#inv.inv-new .inv-stats b {
+  color: #2a1a0c;
+}
+#inv.inv-new .inv-filters button {
+  background: linear-gradient(#4a2e18, #3a2414);
+  color: #d8c4a0;
+  border-color: #6b4423;
+}
+#inv.inv-new .inv-filters button .pxi {
+  background: rgba(255, 230, 180, 0.12);
+}
+#inv.inv-new .inv-filters button em {
+  background: #24160c;
+  color: #e8d8b0;
+}
+#inv.inv-new .inv-filters button.on {
+  background: linear-gradient(#f2e4c4, #d9c29a);
+  color: #3a2414;
+  border-color: #c9a050;
+}
+#inv.inv-new .inv-filters button.on em {
+  background: #8a5a2e;
+  color: #fff3d8;
+}
+#inv.inv-new .inv-grid {
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 22px),
+    linear-gradient(#2e1c0e, #1e1208);
+  border-color: #6b4423;
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+#inv.inv-new .inv-cell {
+  background: linear-gradient(#5a3a1e, #3e2614);
+  border-color: color-mix(in srgb, var(--rc, #8a5a2e) 55%, #6b4423);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 220, 160, 0.12),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+}
+#inv.inv-new .inv-cell.empty {
+  background: linear-gradient(#2a1a0e, #22150a);
+  border-color: #3e2614;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55);
+}
+#inv.inv-new .inv-cell i {
+  background: #c9a050;
+  color: #2a1a0c;
+}
+#inv.inv-new .inv-cell.eqd {
+  box-shadow:
+    inset 0 0 0 2px rgba(242, 193, 78, 0.6),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+}
+#inv.inv-new .inv-detail {
+  background: linear-gradient(#efe2c0, #dcc89c);
+  border-color: #8a6a3a;
+  color: #2a1a0c;
+}
+#inv.inv-new .inv-detail .ds,
+#inv.inv-new .inv-hint {
+  color: #6b4423;
+}
+#inv.inv-new .inv-gold {
+  background: #24160c;
+  border-color: #c9a050;
+}
