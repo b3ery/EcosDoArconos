@@ -36,31 +36,33 @@
     const icon = PIXEL_ICONS[key];
     if (!icon) return null;
     const rows = icon.p;
-    const H = rows.length,
-      Wd = Math.max(...rows.map((r) => r.length));
-    const cell = (x, y) => (y >= 0 && y < H && x >= 0 && x < rows[y].length ? icon.c[rows[y][x]] || null : null);
+    // mesma escala de antes: tela 8x8, desenho uma linha abaixo (como o original)
+    const S = 8,
+      OY = 1;
+    const cell = (x, y) => {
+      const yy = y - OY;
+      return yy >= 0 && yy < rows.length && x >= 0 && x < rows[yy].length ? icon.c[rows[yy][x]] || null : null;
+    };
     const cv = document.createElement("canvas");
-    cv.width = Wd + 2;
-    cv.height = H + 2;
+    cv.width = S;
+    cv.height = S;
     const g = cv.getContext("2d");
-    // contorno
     g.fillStyle = OUTLINE;
-    for (let y = -1; y <= H; y++)
-      for (let x = -1; x <= Wd; x++) {
+    for (let y = 0; y < S; y++)
+      for (let x = 0; x < S; x++) {
         if (cell(x, y)) continue;
-        if (cell(x + 1, y) || cell(x - 1, y) || cell(x, y + 1) || cell(x, y - 1)) g.fillRect(x + 1, y + 1, 1, 1);
+        if (cell(x + 1, y) || cell(x - 1, y) || cell(x, y + 1) || cell(x, y - 1)) g.fillRect(x, y, 1, 1);
       }
-    // cores com luz (alto-esquerda) e sombra (baixo-direita)
-    for (let y = 0; y < H; y++)
-      for (let x = 0; x < Wd; x++) {
+    for (let y = 0; y < S; y++)
+      for (let x = 0; x < S; x++) {
         const c = cell(x, y);
         if (!c) continue;
         const lit = !cell(x, y - 1) || !cell(x - 1, y);
         const dark = !cell(x, y + 1) || !cell(x + 1, y);
         g.fillStyle = lit && !dark ? shade(c, 0.22) : dark && !lit ? shade(c, -0.22) : c;
-        g.fillRect(x + 1, y + 1, 1, 1);
+        g.fillRect(x, y, 1, 1);
       }
-    return { cv, w: Wd + 2, h: H + 2, url: cv.toDataURL() };
+    return { cv, w: S, h: S, url: cv.toDataURL() };
   }
   const get = (key) => (cache[key] !== undefined ? cache[key] : (cache[key] = build(key)));
 
@@ -78,7 +80,8 @@
     if (!I) return dpBase(key, cx, cy, size);
     const sm = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(I.cv, Math.round(cx - (I.w / 2) * size), Math.round(cy - (I.h / 2) * size), I.w * size, I.h * size);
+    const rows = PIXEL_ICONS[key].p.length;
+    ctx.drawImage(I.cv, Math.round(cx - 4 * size), Math.round(cy - (rows / 2 + 1) * size), I.w * size, I.h * size);
     ctx.imageSmoothingEnabled = sm;
   };
   window.refreshIcons = () => Object.keys(cache).forEach((k) => delete cache[k]);

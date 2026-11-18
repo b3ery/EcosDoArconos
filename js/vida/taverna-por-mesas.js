@@ -5,9 +5,8 @@
  *    meio: vinte-e-um.  Alvo de dardos na parede.  Barril do canto:
  *    concurso de bebida.  Canto do menestrel: cantar junto.
  *  - Quadro de boatos e Mural dos Corações na parede; escada para os quartos.
- *  - Dona Cotinha, a fofoqueira, sentada perto do balcão: conta o que falam
- *    de você (3 ouro).
- *  - O Gus, no balcão, só cuida de bebida, comida e da rodada para todos.
+ *  - O Gus, no balcão, cuida de bebida, comida, da rodada para todos e é
+ *    quem conta as fofocas da vila (3 ouro).
  * Modifica (envolve) funções de outros arquivos: genInterior, tavernMenu,
  * targetAt, interactAt, walkable, crewDrawList.
  */
@@ -39,8 +38,6 @@
       mural: pickFree([[9, 2], [10, 2], [11, 2]]),
       escada: pickFree([[w - 2, h - 3], [w - 2, h - 4], [w - 3, h - 2]]) || scan([w - 2, w - 3, w - 4], [h - 3, h - 4, h - 2, h - 5, 7, 8]),
     };
-    const gp = pickFree([[w - 3, 5], [w - 4, 5], [w - 3, 6]]) || scan([w - 3, w - 4, w - 2, w - 5], [5, 6, 7]);
-    if (gp) I.people.push({ x: gp[0], y: gp[1], robe: "#7a5a8a", hair: "#d9d9d9", hat: null, nm: "Dona Cotinha, a fofoqueira", gossip: true });
     ZMAP = null;
     return z;
   };
@@ -58,8 +55,6 @@
     const pr = I.props.find((p) => p[1] === x && p[2] === y);
     if (pr && pr[0] === "barrel" && pr[2] === 3) return "concurso";
     if (pr && pr[0] === "bard") return "cantar";
-    const pe = I.people.find((p) => p.gossip && p.x === x && p.y === y);
-    if (pe) return "fofoca";
     return null;
   }
   const LABEL = {
@@ -71,8 +66,7 @@
     boatos: "Quadro de boatos (5 ouro)",
     dardos: "Alvo de dardos (3 ouro)",
     mural: "Mural dos Corações",
-    escada: "Escada para os quartos (25 ouro)",
-    fofoca: "Ouvir a Dona Cotinha (3 ouro)",
+    escada: "Subir para o andar de cima",
   };
   function rentRoom() {
     if (player.gold < 25) return say([["Gus, o Taverneiro", "Sem ouro, sem cama. Sua casa é de graça, sabia?"]]);
@@ -97,12 +91,7 @@
     boatos: () => rumor(),
     dardos: () => dartsGame(),
     mural: () => heartBoardMenu(),
-    escada: rentRoom,
-    fofoca: () => {
-      if (player.gold < 3) return say([["Dona Cotinha", "Fofoca boa não é de graça, meu bem. Três moedinhas."]]);
-      player.gold -= 3;
-      hearGossip();
-    },
+    escada: () => (typeof tavernUpstairs === "function" ? tavernUpstairs() : rentRoom()),
   };
 
   const tgBase = targetAt;
@@ -131,12 +120,12 @@
   tavernMenu = function () {
     const r = tmBase.apply(this, arguments);
     if (isTav() && game.mode === "choice" && Array.isArray(game.choice)) {
-      const keep = game.choice.filter((o) => /bebidas|Cardápio|rodada|Comprar comida|Sair/i.test(o.t));
+      const keep = game.choice.filter((o) => /bebidas|Cardápio|rodada|Comprar comida|fofoca|Sair/i.test(o.t));
       if (!player.flags.tavMesas) {
         player.flags.tavMesas = true;
         setTimeout(() => toast("Dica: dados, cartas, queda de braço, dardos, boatos e quartos ficam nas mesas, na parede e na escada. É só chegar perto!", 5000), 300);
       }
-      choice("Balcão do Gus", "O Gus enxuga uma caneca. — O que vai ser, freguês?", keep);
+      choice("Balcão do Gus", "O Gus enxuga uma caneca e baixa a voz. — Bebida, comida... ou quer saber o que andam falando por aí?", keep);
     }
     return r;
   };
@@ -177,7 +166,5 @@
       ctx.fillStyle = "#4a2e17";
       ctx.fillRect(X + 28, Y - 4, 3, 32);
     });
-    const g = game.inter.people.find((p) => p.gossip);
-    if (g) list.push({ y: g.y + 0.02, draw: () => drawPixelIcon("chat", g.x * T + 16, g.y * T - 10 - Math.abs(Math.sin(t * 3)) * 3, 2) });
   };
 })();
