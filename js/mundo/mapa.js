@@ -457,7 +457,8 @@ function water(th, X, Y, t, h) {
     ctx.fillRect(X + 4, Y + (1 - h) * 24 + 4, 6, 1);
     return;
   }
-  if (h > 0.82) {
+  // nenúfar só em rio e lago: no mar salgado não nasce
+  if (h > 0.82 && !(ZONES[player.zone] && ZONES[player.zone].theme === "porto")) {
     ctx.fillStyle = "#3d8a3a";
     ctx.beginPath();
     ctx.arc(X + 12 + h * 8, Y + 16, 6, 0.4, Math.PI * 2 - 0.2);
