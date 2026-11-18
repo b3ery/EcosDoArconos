@@ -358,11 +358,13 @@
   });
 
   /* ----- Barbeiro ----- */
+  // want: comprimento pedido (em pixels) a partir da raiz de cada mecha
+  // want: até que altura (y) cortar; m = mecha da franja (em cima do rosto)
   const STYLES = [
-    { n: "reto na altura do queixo", f: () => 62 },
-    { n: "curtinho", f: () => 26 },
-    { n: "repicado em V (mais curto dos lados)", f: (i, N) => 30 + (1 - Math.abs(i - (N - 1) / 2) / ((N - 1) / 2)) * 50 },
-    { n: "franja curta e o resto comprido", f: (i, N) => (Math.abs(i - (N - 1) / 2) < N / 5 ? 22 : 80) },
+    { n: "reto na altura do queixo, franja acima dos olhos", f: (i, N, m) => (m ? 86 : 138) },
+    { n: "curtinho, bem rente", f: (i, N, m, top) => top + 14 },
+    { n: "repicado em V (mais curto dos lados) e franja aparada", f: (i, N, m) => (m ? 86 : 112 + (1 - Math.abs(i - (N - 1) / 2) / ((N - 1) / 2)) * 44) },
+    { n: "franja curtinha e o resto comprido", f: (i, N, m) => (m ? 80 : 160) },
   ];
   function haircut() {
     const st = pick(STYLES);
@@ -374,67 +376,113 @@
       ready: "Pronto!",
       tools: [{ id: "tes", n: "✂ Tesoura" }, ...(beard ? [{ id: "nav", n: "🪒 Navalha" }] : [])],
       state() {
-        const N = 22,
+        const PAL = [
+          ["#e8b896", "#c99272"],
+          ["#c08458", "#9a6440"],
+          ["#8a5a3a", "#6a4028"],
+          ["#f4dccb", "#d8b8a0"],
+        ];
+        const HAIR = [
+          ["#5a3a22", "#3a2414"],
+          ["#1a1a1b", "#0a0a0c"],
+          ["#d9a441", "#a87a28"],
+          ["#8a3a1a", "#5a2410"],
+          ["#d9d9d9", "#a8a8a8"],
+        ];
+        const [skin, skin2] = pick(PAL),
+          [hair, hair2] = pick(HAIR);
+        const N = 21,
           strands = [];
         for (let i = 0; i < N; i++) {
-          const x = 128 + i * 5;
-          const top = 52 + Math.abs(i - (N - 1) / 2) * 1.6;
-          strands.push({ x, top, len: 120 + Math.random() * 10, want: st.f(i, N) });
+          const x = 140 + i * 4;
+          const dx = (x + 2 - 180) / 40;
+          const top = Math.round((100 - Math.sqrt(Math.max(0, 1 - dx * dx)) * 34) / 4) * 4;
+          const mid = Math.abs(x + 2 - 180) < 22;
+          const len = Math.round(((mid ? 108 : 172) - top) / 4) * 4 + Math.floor(Math.random() * 2) * 4;
+          strands.push({ x, top, len, want: Math.max(8, Math.min(len, st.f(i, N, mid, top) - top)) });
         }
-        const cells = beard ? rubCells((x, y) => ((x - 180) / 30) ** 2 + ((y - 128) / 18) ** 2 <= 1 && y > 118, 4) : [];
-        return { strands, cells, snips: [] };
+        const cells = beard ? rubCells((x, y) => ((x - 180) / 26) ** 2 + ((y - 130) / 14) ** 2 <= 1 && y > 122, 4) : [];
+        return { strands, cells, snips: [], skin, skin2, hair, hair2 };
       },
       move(S, p, l) {
         if (!S.down || !l) return;
         if (S.tool === "nav") return rub(S, p, 9);
-        const x1 = Math.min(l.x, p.x) - 3,
-          x2 = Math.max(l.x, p.x) + 3;
+        const x1 = Math.min(l.x, p.x) - 2,
+          x2 = Math.max(l.x, p.x) + 2;
         for (const s of S.strands) {
-          if (s.x < x1 || s.x > x2) continue;
-          const y = l.x === p.x ? p.y : l.y + ((p.y - l.y) * (s.x - l.x)) / (p.x - l.x || 1);
-          const cut = y - s.top;
-          if (cut > 4 && cut < s.len) {
+          if (s.x + 4 < x1 || s.x > x2) continue;
+          const y = l.x === p.x ? p.y : l.y + ((p.y - l.y) * (s.x + 2 - l.x)) / (p.x - l.x || 1);
+          const cut = Math.round((y - s.top) / 4) * 4;
+          if (cut >= 4 && cut < s.len) {
             s.len = cut;
-            S.snips.push({ x: s.x, y, t: 0.6 });
+            S.snips.push({ x: s.x, y, t: 0.7, c: Math.random() < 0.5 ? S.hair : S.hair2 });
             playSound(1800 + Math.random() * 400, 0.015, "square");
           }
         }
       },
       draw(g, S, dt) {
-        R(0, 0, W, H, "#3a2a4a");
-        R(0, 0, W, 40, "#4a3a5a");
-        // capa
-        E(180, 230, 90, 50, "#e8e4dc");
-        // cabeça
-        E(180, 100, 34, 40, "#e8b896");
-        C(167, 100, 2.5, "#1a1028");
-        C(193, 100, 2.5, "#1a1028");
-        R(176, 116, 8, 2, "#a85a4a");
-        // barba
-        for (const c of S.cells) if (c.on) R(c.x, c.y, 3, 3, "#3a2414");
-        // cabelo
-        g.lineWidth = 5;
-        g.lineCap = "round";
-        for (const s of S.strands) {
-          g.strokeStyle = "#5a3a22";
-          g.beginPath();
-          g.moveTo(s.x, s.top);
-          g.lineTo(s.x + Math.sin(S.t * 2 + s.x) * 1.2, s.top + s.len);
-          g.stroke();
+        // salão: parede listrada, espelho, cadeira
+        for (let x = 0; x < W; x += 16) R(x, 0, 16, H, (x / 16) % 2 ? "#4a3a5a" : "#433452");
+        R(0, 196, W, 44, "#6b4423");
+        for (let x = 0; x < W; x += 24) R(x, 196, 2, 44, "#5a3a1e");
+        R(108, 24, 144, 4, "#c9a050");
+        R(108, 24, 4, 120, "#c9a050");
+        R(248, 24, 4, 120, "#c9a050");
+        R(124, 120, 112, 96, "#7a2a2a");
+        R(124, 120, 112, 4, "#9a3a3a");
+        // pescoço e capa listrada
+        R(168, 132, 24, 16, S.skin2);
+        for (let y = 144; y < 240; y += 4) {
+          const half = 30 + (y - 144) * 0.9;
+          for (let x = 180 - half; x < 180 + half; x += 4) R(Math.round(x / 4) * 4, y, 4, 4, Math.floor((x - 180) / 12) % 2 ? "#e8e4dc" : "#c9d8e8");
         }
-        g.lineCap = "butt";
-        // guia
-        g.setLineDash([4, 3]);
+        R(176, 146, 8, 6, "#c9a050");
+        // cabeça em pixel
+        for (let y = 60; y < 140; y += 4)
+          for (let x = 140; x < 220; x += 4) {
+            const ex = (x + 2 - 180) / 32,
+              ey = (y + 2 - 100) / 38;
+            const d = ex * ex + ey * ey;
+            if (d <= 1) R(x, y, 4, 4, d > 0.8 ? S.skin2 : S.skin);
+          }
+        R(144, 96, 4, 12, S.skin2);
+        R(212, 96, 4, 12, S.skin2);
+        // rosto
+        R(164, 96, 8, 8, "#fff");
+        R(188, 96, 8, 8, "#fff");
+        R(168, 96, 4, 8, "#1a1028");
+        R(192, 96, 4, 8, "#1a1028");
+        R(164, 90, 12, 3, S.hair2);
+        R(184, 90, 12, 3, S.hair2);
+        R(178, 104, 4, 8, S.skin2);
+        R(172, 118, 16, 4, "#a85a4a");
+        // barba (some com a navalha)
+        for (const c of S.cells) if (c.on) R(c.x, c.y, 4, 4, (c.x + c.y) % 8 ? S.hair2 : S.hair);
+        // touca do cabelo (raiz)
+        for (const s of S.strands) R(s.x, s.top - 8, 4, 10, S.hair2);
+        // mechas (por cima do rosto: cortar revela o rosto)
+        S.strands.forEach((s, i) => {
+          const sway = Math.round(Math.sin(S.t * 2 + i) * 0.6) * 4 * 0;
+          for (let y = 0; y < s.len; y += 4) R(s.x + sway, s.top + y, 4, 4, (i + (y >> 3)) % 3 ? S.hair : S.hair2);
+          R(s.x, s.top + s.len - 4, 4, 4, S.hair2);
+        });
+        // linha do corte pedido
+        g.setLineDash([4, 4]);
         g.strokeStyle = "#ffe08a";
         g.lineWidth = 2;
         g.beginPath();
-        S.strands.forEach((s, i) => (i ? g.lineTo(s.x, s.top + s.want) : g.moveTo(s.x, s.top + s.want)));
+        S.strands.forEach((s, i) => (i ? g.lineTo(s.x + 2, s.top + s.want) : g.moveTo(s.x + 2, s.top + s.want)));
         g.stroke();
         g.setLineDash([]);
-        for (const sn of S.snips) (sn.t -= dt), sn.t > 0 && R(sn.x - 1, sn.y + (0.6 - sn.t) * 60, 3, 6, "#5a3a22");
+        for (const sn of S.snips) (sn.t -= dt), sn.t > 0 && R(sn.x, sn.y + (0.7 - sn.t) * 80, 4, 8, sn.c);
         S.snips = S.snips.filter((q) => q.t > 0);
-        // ferramenta
-        if (S.p.x > 0) T(S.tool === "nav" ? "🪒" : "✂", S.p.x, S.p.y + 5, "#fff", 18);
+        // ferramenta em pixel
+        if (S.p.x > 0) {
+          const px = Math.round(S.p.x / 2) * 2,
+            py = Math.round(S.p.y / 2) * 2;
+          if (S.tool === "nav") (R(px - 2, py - 10, 4, 12, "#c9a050"), R(px - 6, py - 14, 12, 4, "#e8e8f0"));
+          else (R(px - 8, py - 2, 16, 2, "#e8e8f0"), R(px - 8, py + 2, 16, 2, "#c9c9d0"), R(px + 6, py - 6, 6, 6, "#c94a4a"), R(px + 6, py + 2, 6, 6, "#c94a4a"));
+        }
       },
       finish(S) {
         const err = S.strands.reduce((s, q) => s + Math.abs(q.len - q.want) + (q.len < q.want - 8 ? 8 : 0), 0) / S.strands.length;
@@ -1105,6 +1153,301 @@
     });
   }
 
+  /* ===================== TRABALHOS DE RUA ===================== */
+
+  /** Lenhador: golpes de machado na diagonal, alternando o lado marcado. */
+  function chopTree() {
+    const need = 5;
+    return {
+      title: "Derrubar a árvore",
+      sub: "Golpeie com o machado de FORA para DENTRO do tronco, no lado e na altura da marca. A marca troca de lado a cada golpe.",
+      time: 16,
+      state: () => ({ cuts: 0, side: 1, h: 150, bad: 0, fall: 0 }),
+      up(S, p, s) {
+        if (!s || dist(p, s) < 40) return;
+        const fromSide = s.x > 180 ? 1 : -1;
+        const into = Math.sign(s.x - 180) !== Math.sign(p.x - 180) || Math.abs(p.x - 180) < 20;
+        const hy = (s.y + p.y) / 2;
+        if (fromSide === S.side && into && Math.abs(hy - S.h) < 26) {
+          S.cuts++;
+          S.side *= -1;
+          S.h = 140 + Math.random() * 30;
+          playSound(180, 0.08, "square");
+          game.shake = 0.05;
+        } else S.bad++, playSound(120, 0.05, "square"), (S.msg2 = "Golpe torto!");
+      },
+      draw(g, S, dt) {
+        R(0, 0, W, H, "#8ac8e8");
+        R(0, 190, W, 50, "#5a8a3a");
+        if (S.cuts >= need) S.fall = Math.min(1, S.fall + dt * 1.5);
+        g.save();
+        g.translate(180, 190);
+        g.rotate(S.fall * 1.4);
+        R(-16, -170, 32, 170, "#8a5a2e");
+        for (let k = 0; k < 6; k++) R(-16, -160 + k * 26, 32, 2, "#6a4020");
+        C(0, -170, 50, "#3a7a2a");
+        C(-30, -150, 30, "#4a8a3a");
+        C(30, -150, 30, "#4a8a3a");
+        const notch = Math.min(28, S.cuts * 6);
+        R(-16, -42, notch / 2, 16, "#e8c890");
+        R(16 - notch / 2, -42, notch / 2, 16, "#e8c890");
+        g.restore();
+        if (S.cuts < need) {
+          const mx = S.side > 0 ? 210 : 150;
+          T(S.side > 0 ? "◀" : "▶", mx + S.side * 20, S.h + 5, "#ffe08a", 18);
+          dash(mx, S.h, mx - S.side * 16, S.h);
+        }
+        if (S.down && S.start) dash(S.start.x, S.start.y, S.p.x, S.p.y, "#fff");
+        S.msg = S.cuts >= need ? "MADEIRA!" : S.msg2 || `${S.cuts}/${need}`;
+      },
+      auto: (S) => (S.fall >= 1 ? clamp(1 - S.bad * 0.1, 0.3, 1) : null),
+      finish: (S) => (S.cuts / need) * 0.6,
+    };
+  }
+
+  /** Fazendeiro: foice baixa passando pelo trigo, abaixo da linha. */
+  function harvest() {
+    const N = 16;
+    return {
+      title: "Colher o trigo",
+      sub: "Arraste a foice de lado, BAIXO, entre a linha pontilhada e o chão. Alto demais estraga as espigas; no chão, a foice enrosca.",
+      time: 12,
+      state: () => ({ st: Array.from({ length: N }, (_, i) => ({ x: 40 + i * 18, cut: 0 })), bad: 0 }),
+      move(S, p, l) {
+        if (!S.down || !l) return;
+        for (const s of S.st) {
+          if (s.cut || s.x < Math.min(l.x, p.x) - 4 || s.x > Math.max(l.x, p.x) + 4) continue;
+          if (p.y > 150 && p.y < 182) (s.cut = 1), playSound(900 + Math.random() * 200, 0.02, "square");
+          else if (p.y <= 150 && p.y > 80) (s.cut = 2), S.bad++;
+        }
+      },
+      draw(g) {
+        R(0, 0, W, H, "#8ac8e8");
+        R(0, 182, W, 58, "#7a5a2e");
+        for (const s of S.st) {
+          if (s.cut === 1) {
+            R(s.x, 172, 4, 10, "#c9a050");
+            continue;
+          }
+          R(s.x, s.cut === 2 ? 120 : 80, 4, s.cut === 2 ? 62 : 102, "#d9b050");
+          if (!s.cut) E(s.x + 2, 80, 6, 14, "#f2c14e");
+        }
+        dash(20, 150, 340, 150);
+        if (S.p.x > 0) (R(S.p.x - 14, S.p.y - 2, 16, 4, "#c9c9d0"), R(S.p.x, S.p.y - 2, 4, 16, "#8a5a2e"));
+        S.msg = `${S.st.filter((s) => s.cut === 1).length}/${N}`;
+      },
+      auto: (S) => (S.st.every((s) => s.cut) ? clamp(S.st.filter((s) => s.cut === 1).length / N, 0, 1) : null),
+      finish: (S) => S.st.filter((s) => s.cut === 1).length / N,
+    };
+  }
+
+  /** Minerador: picaretadas certeiras nos pontos de rachadura que brilham. */
+  function mineRock() {
+    const need = 6;
+    const spot = () => ({ x: 120 + Math.random() * 120, y: 90 + Math.random() * 90, life: 1.4 });
+    return {
+      title: "Quebrar o minério",
+      sub: "Dê uma picaretada (golpe rápido de cima para baixo) em cima do ponto que brilha, antes que ele apague.",
+      time: 15,
+      state: () => ({ hits: 0, miss: 0, sp: spot(), cracks: [] }),
+      up(S, p, s) {
+        if (!s || p.y - s.y < 25) return;
+        if (dist(p, S.sp) < 22) {
+          S.hits++;
+          S.cracks.push({ x: S.sp.x, y: S.sp.y });
+          playSound(260, 0.08, "square");
+          game.shake = 0.06;
+          S.sp = spot();
+        } else S.miss++, playSound(140, 0.05, "square");
+      },
+      draw(g, S, dt) {
+        R(0, 0, W, H, "#2a2028");
+        E(180, 140, 100, 80, "#6a6a72");
+        E(180, 140, 80, 62, "#7a7a82");
+        for (let k = 0; k < 7; k++) C(130 + k * 16, 120 + ((k * 37) % 50), 5, "#c77dff");
+        for (const c of S.cracks) (g.strokeStyle = "#1a1018"), (g.lineWidth = 3), g.beginPath(), g.moveTo(c.x - 10, c.y - 8), g.lineTo(c.x, c.y), g.lineTo(c.x + 8, c.y + 10), g.stroke();
+        S.sp.life -= dt;
+        if (S.sp.life <= 0) (S.sp = spot()), S.miss++;
+        C(S.sp.x, S.sp.y, 8 + Math.sin(S.t * 14) * 2, `rgba(255,224,138,${S.sp.life / 1.4})`);
+        if (S.p.x > 0) (R(S.p.x - 12, S.p.y - 12, 24, 5, "#a8a8b0"), R(S.p.x - 2, S.p.y - 10, 4, 22, "#8a5a2e"));
+        S.msg = `${S.hits}/${need}`;
+      },
+      auto: (S) => (S.hits >= need ? clamp(1 - S.miss * 0.08, 0.3, 1) : null),
+      finish: (S) => (S.hits / need) * 0.7,
+    };
+  }
+
+  /** Carregador: empilhar as caixas no carrinho sem derrubar. */
+  function stackCrates() {
+    return dragStage({
+      title: "Carregar o carrinho",
+      sub: "Arraste as caixas para cima do carrinho, uma em cima da outra. Mal centralizada, a pilha cai!",
+      time: 20,
+      state: () => ({ items: [0, 1, 2].map((i) => ({ x: 20 + i * 50, y: 190, w: 44, h: 34, c: "#a8784a", label: "📦", i })), stack: [], fell: 0 }),
+      drop(S, it) {
+        const top = S.stack.length ? S.stack[S.stack.length - 1] : { x: 230, w: 80 };
+        const cx = it.x + it.w / 2,
+          tcx = top.x + top.w / 2;
+        const ty = 170 - (S.stack.length + 1) * 34;
+        if (Math.abs(it.y + it.h - (ty + 34)) < 40 && Math.abs(cx - tcx) < 40) {
+          if (Math.abs(cx - tcx) > 18 + (S.stack.length ? 0 : 20)) {
+            S.fell++;
+            playSound(90, 0.2, "sawtooth");
+            S.msg2 = "A caixa caiu! Centralize melhor.";
+            (it.x = 20 + it.i * 50), (it.y = 190);
+            return;
+          }
+          it.x = tcx - it.w / 2;
+          it.y = ty;
+          it.fixed = true;
+          S.stack.push(it);
+          playSound(300, 0.06, "triangle");
+        }
+      },
+      draw(g) {
+        R(0, 0, W, H, "#3a2e22");
+        R(220, 170, 100, 16, "#6b4423");
+        C(240, 192, 10, "#3a2414");
+        C(300, 192, 10, "#3a2414");
+        S.items.forEach(drawItem);
+        S.msg = S.msg2 || `${S.stack.length}/3`;
+      },
+      auto: (S) => (S.stack.length >= 3 ? clamp(1 - S.fell * 0.2, 0.2, 1) : null),
+      finish: (S) => S.stack.length / 4,
+    });
+  }
+
+  /** Feirante: separar o pedido do cliente na cesta. */
+  const STALL_GOODS = ["Maçã", "Pão", "Queijo", "Mel", "Ovos", "Peixe", "Cenoura", "Uva", "Leite"];
+  function basket() {
+    const want = shuffle(STALL_GOODS).slice(0, 3);
+    const all = shuffle([...want, ...shuffle(STALL_GOODS.filter((g) => !want.includes(g))).slice(0, 4)]);
+    return dragStage({
+      title: "Montar a cesta",
+      sub: `O cliente quer: <b>${want.join(", ")}</b>. Arraste só isso para a cesta.`,
+      time: 16,
+      state: () => ({ items: all.map((n, i) => ({ x: 14 + (i % 4) * 84, y: 70 + Math.floor(i / 4) * 40, w: 76, h: 30, label: n, c: "#f2c14e", n })), got: [], wrong: 0 }),
+      drop(S, it) {
+        if (it.y + it.h / 2 > 160 && it.x + it.w / 2 > 200) {
+          S.items = S.items.filter((q) => q !== it);
+          if (want.includes(it.n)) S.got.push(it.n), playSound(700, 0.04, "sine");
+          else S.wrong++, playSound(180, 0.06, "square"), (S.msg = `Ele não pediu ${it.n}!`);
+        }
+      },
+      draw(g) {
+        R(0, 0, W, H, "#5a3a5a");
+        E(270, 200, 66, 30, "#a8784a");
+        E(270, 192, 56, 18, "#6b4423");
+        T("cesta", 270, 238, "#ffe08a", 10);
+        S.items.forEach(drawItem);
+      },
+      auto: (S) => (want.every((n) => S.got.includes(n)) ? clamp(1 - S.wrong * 0.25, 0, 1) : null),
+      finish: (S) => (S.got.length / 3) * 0.6,
+    });
+  }
+
+  /** Acendedor: levar a vara com a chama até o pavio e segurar firme no vento. */
+  function lightLamp() {
+    return {
+      title: "Acender o lampião",
+      sub: "Arraste a ponta da vara (a chama) até o pavio e segure parado em cima dele. O vento balança o lampião!",
+      time: 14,
+      state: () => ({ heat: 0 }),
+      draw(g, S, dt) {
+        R(0, 0, W, H, "#1a1a3a");
+        for (let k = 0; k < 20; k++) C((k * 71) % W, (k * 37) % 120, 1, "#fff");
+        R(176, 120, 8, 120, "#3a3a42");
+        const sway = Math.sin(S.t * 1.7) * 18 + Math.sin(S.t * 3.1) * 6;
+        const lx = 180 + sway,
+          ly = 90;
+        R(lx - 16, ly - 20, 32, 40, "rgba(255,240,180,.15)");
+        g.strokeStyle = "#c9a050";
+        g.lineWidth = 2;
+        g.strokeRect(lx - 16, ly - 20, 32, 40);
+        R(lx - 2, ly + 4, 4, 8, "#e8e4dc");
+        const fx = S.down ? S.p.x : 80,
+          fy = S.down ? S.p.y : 200;
+        g.strokeStyle = "#8a5a2e";
+        g.lineWidth = 4;
+        g.beginPath();
+        g.moveTo(40, 240);
+        g.lineTo(fx, fy);
+        g.stroke();
+        C(fx, fy - 4, 5 + Math.sin(S.t * 20), "#ffb04a");
+        if (S.down && Math.hypot(fx - lx, fy - 4 - (ly + 2)) < 12) S.heat += dt;
+        else S.heat = Math.max(0, S.heat - dt * 0.8);
+        if (S.heat > 0.2) C(lx, ly + 2, 3 + S.heat * 4, `rgba(255,190,80,${Math.min(1, S.heat)})`);
+        R(20, 225, 300 * clamp(S.heat / 1.3, 0, 1), 8, "#ffb04a");
+        S.msg = S.heat > 0 ? "Segura firme..." : "";
+      },
+      auto: (S) => (S.heat >= 1.3 ? clamp(1 - S.t / 14 * 0.4, 0.5, 1) : null),
+      finish: (S) => clamp(S.heat / 1.3, 0, 1) * 0.5,
+    };
+  }
+
+  /* ----- ligando nos trabalhos de rua ----- */
+  const STREET = { lenhador: chopTree, fazendeiro: harvest, minerador: mineRock };
+  if (typeof jobInteract === "function") {
+    const jiBase = jobInteract;
+    jobInteract = function (x, y) {
+      const j = player.job,
+        p = j && PROFESSIONS[j.id];
+      const label = j && jobLabel(x, y);
+      if (p && label && STREET[j.id] && p.tile && label.startsWith(p.verb) && !chain) {
+        run([STREET[j.id]()], (s, max) => {
+          if (s / max < 0.3) return toast("Não deu certo. Tente de novo.", 1500);
+          const k = x + "," + y;
+          j.hits[k] = p.hits;
+          const sf = swingFeedback;
+          swingFeedback = () => 2;
+          try {
+            jiBase(x, y);
+          } finally {
+            swingFeedback = sf;
+          }
+          if (s / max >= 0.8) earn(2, "Trabalho caprichado!");
+        });
+        return true;
+      }
+      if (label === "Carregar as caixas no armazém" && !chain) {
+        run([stackCrates()], (s, max) => {
+          if (s / max < 0.3) return toast("A pilha caiu toda. Tente de novo.", 1500);
+          const z = j.zone;
+          const doors = ZONES[z].town.bld.filter((b) => b.name && b.name !== WAREHOUSES[z]);
+          const b = doors[Math.floor(Math.random() * doors.length)];
+          j.to = { x: b.door[0], y: b.y + b.h - 1, name: b.name };
+          j.step = "levar";
+          j.pickedAt = absMinutes();
+          toast(`Carrinho cheio! Saia e leve até: ${b.name}`, 2600);
+        });
+        return true;
+      }
+      if (j && (j.id === "feirante" || j.id === "stall") && label === "Atender cliente" && !chain) {
+        run([basket()], (s, max) => (s / max < 0.3 ? toast("O cliente desistiu da cesta errada.", 1500) : jiBase(x, y)));
+        return true;
+      }
+      if (j && j.id === "acendedor" && label && label.startsWith(p.verb) && (j.oil ?? 4) > 0 && !chain) {
+        run([lightLamp()], (s, max) => (s / max < 0.3 ? toast("O vento apagou a chama. De novo!", 1500) : jiBase(x, y)));
+        return true;
+      }
+      return jiBase(x, y);
+    };
+  }
+
+  // O carregador pega as caixas DENTRO do armazém (a porta só serve para entrar).
+  if (typeof jobLabel === "function") {
+    const jlBase = jobLabel;
+    jobLabel = function (x, y) {
+      const j = player.job;
+      if (j && j.id === "carregador" && j.step === "pegar") {
+        if (player.zone === "interior" && game.inter && game.inter.b && game.inter.b.name === WAREHOUSES[j.zone] && tileAt("interior", x, y) === "Q") return "Carregar as caixas no armazém";
+        const r = jlBase(x, y);
+        return r === "Pegar caixa" ? null : r;
+      }
+      return jlBase(x, y);
+    };
+  }
+
   /* ===================== QUAL GESTO PARA QUAL OFÍCIO ===================== */
   const isDrink = (m) => m && (m.drunk || m.water) && !m.food;
   const MAP = {
@@ -1134,7 +1477,11 @@
     // estágios com estado novo a cada vez (os fixos são reiniciados pelo state())
     run(mk(info), onDone);
   };
-  window.gestureTest = (id, info) => window.jobGame(id, info, "teste", (s, m) => (window._gres = s + "/" + m));
+  window.gestureTest = (id, info) => {
+    const st = { lenhador: chopTree, fazendeiro: harvest, minerador: mineRock, carregador: stackCrates, feirante: basket, acendedor: lightLamp }[id];
+    if (st) return run([st()], (s, m) => (window._gres = s + "/" + m));
+    window.jobGame(id, info, "teste", (s, m) => (window._gres = s + "/" + m));
+  };
 
   const st = document.createElement("style");
   st.textContent = `#ges{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:30;background:rgba(10,6,18,.7)}
