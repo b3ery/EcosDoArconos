@@ -16,7 +16,7 @@
 (() => {
   const SOLID = new Set(["porao", "lenha", "banco", "latrina", "colmeias", "galpao", "galinheiro", "poco", "forno", "pombal", "lago", "pomar", "placa", "chiqueiro"]);
   const ZL = {};
-  const zoneLots = (z) => ZL[z] || (ZL[z] = typeof LOTES === "undefined" ? [] : LOTES.lots.filter((L) => L.zid === z));
+  const zoneLots = (z) => ZL[z] || (ZL[z] = typeof LOTES === "undefined" ? [] : LOTES.lots.concat(LOTES.yards || []).filter((L) => L.zid === z));
   const lotAt = (x, y) => {
     if (typeof LOTES === "undefined") return null;
     for (const L of zoneLots(player.zone)) {
