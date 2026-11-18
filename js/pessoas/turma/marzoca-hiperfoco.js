@@ -149,3 +149,94 @@
     };
   }
 })();
+
+/* ===================== A PACIÊNCIA DAS ESPOSAS TEM LIMITE =====================
+ * A Malu (esposa do Matheus) e a Julia (esposa do Marcos) podem matar o
+ * Lucas Marzoca de ciúme. Só no Simulador. Se você estiver na vila, ouve a
+ * confusão e pode tentar impedir. Quem mata vai para o calabouço por uns dias.
+ */
+(() => {
+  const WIVES = { malu: "matheus", julia: "marcos" };
+  const busy = () => game.mode !== "world" || game.dialog;
+  function jailedNpc(id) {
+    const J = player.npcJail || {};
+    return J[id] && player.day < J[id];
+  }
+  window.jailedNpc = jailedNpc;
+  const vis = crewVisible;
+  crewVisible = (a) => !(a && jailedNpc(a.id)) && vis(a);
+
+  function killMarzoca(wife) {
+    const n = shortName(wife);
+    deadList().lucas = { day: player.day, how: "ciúme", found: true, natural: false, by: wife };
+    if (player.spouse === "lucas") (player.spouse = null), (player.widowed = player.day);
+    if (player.dating === "lucas") player.dating = null;
+    player.lovers = (player.lovers || []).filter((x) => x !== "lucas");
+    if (game.crewA && game.crewA.lucas) game.crewA.lucas.inside = true;
+    purgeDead();
+    player.npcJail = player.npcJail || {};
+    player.npcJail[wife] = player.day + 5;
+    vilaNews(`TRAGÉDIA: Lucas Marzoca foi morto por ${n}, de ciúme de ${shortName(WIVES[wife])}. "Eu avisei", disse ela, ao ser presa pelo General Marcos.`);
+    saveGame();
+  }
+  function confrontation(wife) {
+    const n = shortName(wife),
+      hus = shortName(WIVES[wife]);
+    const blood = !settings.noBlood;
+    const here = player.zone === "vila" && !busy();
+    const finish = () => {
+      killMarzoca(wife);
+      if (here)
+        say([
+          [n, pk(["Eu AVISEI, Marzoca. Eu avisei mil vezes.", `Mais uma flor pro ${hus}? Mais UMA?`, "Acabou a serenata."])],
+          ["", blood ? `Antes que alguém consiga segurar, ${n} acerta o Marzoca. Ele cai no meio da praça e não levanta mais.` : `Antes que alguém consiga segurar, ${n} acerta o Marzoca. Ele cai no meio da praça e não levanta mais.`],
+          ["General Marcos", wife === "julia" ? "Julia... meu amor... eu vou ter que te prender. É a lei." : `${n}, você está presa. Cinco dias no calabouço.`],
+          ["", `${n} foi levada para o calabouço. A vila está em choque.`],
+        ]);
+    };
+    if (!here) return finish();
+    choice("Gritaria na praça!", `${n} está indo atrás do Lucas Marzoca, furiosa, depois de mais uma cantada no ${hus}.`, [
+      {
+        t: `Tentar acalmar ${n}`,
+        icon: "heart",
+        fn: () => {
+          const ch = 0.35 + friendship(wife) / 200 + ((player.rep ?? 50) - 50) / 300;
+          if (Math.random() < ch) {
+            relAdd(wife, "lucas", 30);
+            addFriendship(wife, 4);
+            vilaNews(`${player.name} segurou ${n} na praça e salvou o Lucas Marzoca de uma tragédia.`);
+            return say([[player.name, `${n}, calma! Ele é bobo, mas não vale a cadeia!`], [n, "...Tá. Mas se ele chegar perto do " + hus + " de novo, ninguém me segura."], ["Lucas Marzoca", "Obrigado! Eu... vou dar um tempo. Uns dois dias."]]);
+          }
+          say([[n, "SAI DA FRENTE!"], ["", `${n} passa por você.`]], finish);
+        },
+      },
+      { t: "Chamar a guarda", icon: "shield", fn: () => (Math.random() < 0.5 ? ((player.npcJail = Object.assign(player.npcJail || {}, { [wife]: player.day + 2 })), say([["General Marcos", `${n}, pra cela. Dois dias pra esfriar a cabeça.`], ["Lucas Marzoca", "Viu? Ela me ama tanto que tem ciúme."]])) : say([["", "A guarda chega tarde demais."]], finish)) },
+      { t: "Assistir de longe", icon: "eye", fn: finish },
+    ]);
+  }
+
+  /** Todo dia: se a raiva da esposa passou do limite, pode acontecer. */
+  const ndBase = npcDaily;
+  npcDaily = function () {
+    ndBase.apply(this, arguments);
+    if (!lifeMode() || isDead("lucas")) return;
+    for (const [wife, hus] of Object.entries(WIVES)) {
+      if (isDead(wife) || jailedNpc(wife)) continue;
+      const stolen = (npcPartner("lucas") === hus || npcSpouse("lucas") === hus) && npcSpouse(wife) !== hus;
+      const r = relOf(wife, "lucas");
+      if (r <= -60 && Math.random() < 0.25) vilaNews(`${shortName(wife)} foi vista afiando uma faca e olhando para o Lucas Marzoca. Alguém avisa ele.`);
+      if ((stolen && Math.random() < 0.5) || (r <= -90 && Math.random() < 0.18)) {
+        setTimeout(() => (isDead("lucas") ? 0 : busy() ? killMarzoca(wife) : confrontation(wife)), 5000);
+        return;
+      }
+    }
+  };
+  // No calabouço, quem matou o Marzoca aparece na cela do canto.
+  const ejBase = enterJail;
+  enterJail = function () {
+    const r = ejBase.apply(this, arguments);
+    const who = Object.keys(player.npcJail || {}).find((id) => jailedNpc(id));
+    if (who && game.jailA && typeof CREW_LOOKS !== "undefined" && CREW_LOOKS[who]) Object.assign(game.jailA.other, { robe: CREW_LOOKS[who].robe, hair: CREW_LOOKS[who].hair, nm: shortName(who) });
+    return r;
+  };
+})();
