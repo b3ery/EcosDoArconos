@@ -23,6 +23,7 @@ LOTES.TYPE = {
   M: { w: 5, h: 4, span: 9, depth: 6, style: "casa" },
   S: { w: 3, h: 4, span: 3, depth: 0, style: "casa", small: true },
 };
+LOTES.GAP = (k) => (k === "S" ? 2 : 3); // espaço livre entre dois terrenos
 LOTES.hs = (a, b) => (((a * 73856093) ^ (b * 19349663)) >>> 0) % 1000 / 1000;
 /** Põe um lote no mapa: casa recuada, cerca, caminho, jardim na frente e quintal nos fundos. */
 LOTES.place = function (E, k, x, road, bairro, reuse) {
@@ -67,9 +68,26 @@ LOTES.place = function (E, k, x, road, bairro, reuse) {
     for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 3, h0 < 0.5 ? "ervas" : "horta");
     if (depth >= 6) for (let xx = ix0 + 1; xx <= ix1 - 1; xx++) put(xx, by - 4, h0 < 0.5 ? "horta" : "flores");
     put(ix1, top, "latrina");
-    put(ix0, top, "galpao");
-    put(ix0 + 1, top, h0 < 0.6 ? "colmeias" : "galinheiro");
-    if (ix1 - ix0 >= 4) put(ix1 - 2, top, h0 < 0.4 ? "chiqueiro" : "galinheiro");
+    // cada família arruma o quintal do seu jeito: 4 jeitos de fundo
+    const v = Math.floor(hs(lx0 * 3 + E.seed, road + 11) * 4);
+    if (v === 0) {
+      put(ix0, top, "galpao");
+      put(ix0 + 1, top, "colmeias");
+      if (ix1 - ix0 >= 4) put(ix1 - 2, top, "chiqueiro");
+    } else if (v === 1) {
+      // pomar: fileira de árvores frutíferas no fundo
+      for (let xx = ix0; xx < ix1; xx += 2) put(xx, top, "pomar");
+    } else if (v === 2) {
+      // criação: galinheiro, chiqueiro e lenha
+      put(ix0, top, "galinheiro");
+      if (ix1 - ix0 >= 3) put(ix0 + 2, top, "chiqueiro");
+      put(ix1 - 1, top, "lenha");
+    } else {
+      // canto de descanso: banco, poço e colmeias
+      put(ix0, top, "colmeias");
+      if (ix1 - ix0 >= 4) put(ix0 + 2, top, "banco");
+      if (ix1 - ix0 >= 5 && !T.big) put(ix1 - 2, top + 1, "poco");
+    }
     if (T.big) {
       put(ix0 + 2, top + 1, "poco");
       put(ix1 - 1, by - 2, "forno");
@@ -98,7 +116,7 @@ const LOTE_NOMES_VALDARIA = {
 
 (function expandLotes() {
   const z = ZONES.vila;
-  const ADD = 60,
+  const ADD = 74,
     oldW = z.w,
     W = oldW + ADD;
   const m = z.map.map((r) => r.split(""));
@@ -116,7 +134,7 @@ const LOTE_NOMES_VALDARIA = {
   for (const y of [26, 44, 60]) fill(oldW - 2, y, W - 2, y + 1, ",");
   m[26][W - 1] = ",";
   m[27][W - 1] = ",";
-  const AV = [X0, X0 + 29, W - 3];
+  const AV = [X0, X0 + 36, W - 3];
   fill(X0, 52, W - 3, 52, ","); // o beco de trás: uma linha só, apertado
   for (const ax of AV) fill(ax, 2, ax + 1, 61, ",");
   // três bairros, um por rua: ricos no alto, classe média no meio, pobres embaixo
@@ -140,7 +158,7 @@ const LOTE_NOMES_VALDARIA = {
         const T = LOTES.TYPE[k];
         if (x + T.span > limit) break;
         LOTES.place(E, k, x, band.road, band.bairro);
-        x += T.span + 1; // um respiro entre uma casa e outra
+        x += T.span + LOTES.GAP(k); // respiro entre um lote e outro
       }
     });
   }

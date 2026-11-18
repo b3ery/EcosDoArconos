@@ -275,7 +275,7 @@
   }
 
   // as formas vão se revezando pela rua: vizinho nunca tem a mesma casa
-  const CYCLE = [2, 3, 5, 0, 6, 4, 1, 5, 2, 3];
+  const CYCLE = [2, 3, 5, 6, 4, 0, 1]; // 7 formas diferentes; dá a volta sem repetir vizinho
   function assignForms(zid) {
     const Z = ZONES[zid];
     if (!Z || !Z.town) return;

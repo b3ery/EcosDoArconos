@@ -42,7 +42,7 @@
       ["poor", ["S", "S", "S", "S", "S", "S", "S", "S"]],
     ];
     const AV = [oldW + 1];
-    for (const [, seg] of SEGS) AV.push(AV[AV.length - 1] + 2 + seg.reduce((a, k) => a + LOTES.TYPE[k].span + 1, 0));
+    for (const [, seg] of SEGS) AV.push(AV[AV.length - 1] + 2 + seg.reduce((a, k) => a + LOTES.TYPE[k].span + LOTES.GAP(k), 0));
     const W = AV[AV.length - 1] + 3;
     for (let y = 0; y < H; y++) {
       const edge = y === 0 || y === H - 1;
@@ -87,7 +87,7 @@
       let x = AV[si] + 2;
       for (const k of seg) {
         LOTES.place(E, k, x, road, KEY[cls]);
-        x += LOTES.TYPE[k].span + 1;
+        x += LOTES.TYPE[k].span + LOTES.GAP(k);
       }
       LOTES.bairros[zid].push({ k: KEY[cls], n: PT[cls][(zi + si) % PT[cls].length], d: D[cls], x0: AV[si], x1: AV[si + 1] - 1, y0: 1, y1: H - 2 });
       // a calçada do outro lado da rua mostra quem mora ali
