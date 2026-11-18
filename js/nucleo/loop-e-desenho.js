@@ -2225,15 +2225,35 @@ function drawAmbience(t, th) {
     }
   }
   if (!night) {
+    // Sombras de nuvem presas ao MAPA: elas passam com o vento por cima da
+    // vila; quem anda é você, não elas. Mais nuvens e mais escuras quando o
+    // céu está nublado ou chovendo.
     game.cloudT = (game.cloudT || 0) + 0.016;
-    ctx.fillStyle = "rgba(20,20,40,.07)";
-    for (let i = 0; i < 3; i++) {
-      const cx = ((i * 420 + game.cloudT * 14) % (viewWidth + 400)) - 200,
-        cy = 80 + i * 140;
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, 140, 50, 0, 0, 7);
-      ctx.ellipse(cx + 90, cy + 20, 90, 40, 0, 0, 7);
-      ctx.fill();
+    const zz = ZONES[player.zone],
+      cam = game.cam;
+    if (zz && cam) {
+      const wW = zz.w * TILE + 900,
+        wH = zz.h * TILE + 600;
+      const wthr = player.weather;
+      const many = wthr === "nublado" || wthr === "chuva" || wthr === "tempestade" ? 14 : wthr === "neblina" ? 4 : 8;
+      const al = wthr === "tempestade" ? 0.16 : wthr === "nublado" || wthr === "chuva" ? 0.11 : 0.07;
+      ctx.fillStyle = `rgba(20,22,44,${al})`;
+      for (let i = 0; i < many; i++) {
+        const sp = 10 + (i % 4) * 4;
+        const wx = ((i * 733 + game.cloudT * sp) % wW) - 450,
+          wy = ((i * 457) % wH) - 300 + Math.sin(game.cloudT * 0.05 + i) * 40;
+        const X = (wx - cam.camX) * cam.Z,
+          Y = (wy - cam.camY) * cam.Z,
+          s = cam.Z * (0.8 + (i % 3) * 0.35);
+        if (X < -400 || Y < -200 || X > viewWidth + 400 || Y > 680) continue;
+        ctx.beginPath();
+        // cada nuvem é um cacho de bolhas de tamanhos diferentes
+        ctx.ellipse(X, Y, 130 * s, 46 * s, 0, 0, 7);
+        ctx.ellipse(X + 85 * s, Y + 16 * s, 88 * s, 36 * s, 0, 0, 7);
+        ctx.ellipse(X - 80 * s, Y + 12 * s, 70 * s, 30 * s, 0, 0, 7);
+        if (i % 2) ctx.ellipse(X + 20 * s, Y - 22 * s, 60 * s, 28 * s, 0, 0, 7);
+        ctx.fill();
+      }
     }
     const bt = (t * 0.06) % 1;
     if (bt < 0.5) {
