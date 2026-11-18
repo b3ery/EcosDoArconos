@@ -81,7 +81,13 @@
       const shore = (set, fill) => {
         if (port) (fill(1, 23, 42, 24, "~"), fill(21, 21, 22, 24, "="));
         else {
-          for (let x = 2; x <= 18; x++) for (const y of [22, 23, 24]) set(x, y, (x + y + n) % 3 ? "g" : "w");
+          // dois talhões inteiros de trigo, cercados, com um caminho de terra no meio
+          fill(2, 22, 9, 24, "g");
+          fill(11, 22, 18, 24, "g");
+          fill(10, 21, 10, 24, ",");
+          fill(2, 21, 9, 21, "f");
+          fill(11, 21, 18, 21, "f");
+          set(5 + (n % 3), 23, "Y");
           for (let x = 25; x <= 41; x += 3) set(x, 22 + (x % 2), "T");
           fill(26, 24, 40, 24, "f");
         }

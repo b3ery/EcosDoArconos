@@ -92,6 +92,7 @@
     }
     const r = dtBase.apply(this, arguments);
     const Z = ZONES[z];
+    if (Z && c === "~") shore(z, x, y, Z);
     if (!Z || c !== "," || !GRASSY.has(Z.theme)) return r;
     if ((typeof inPlazaT === "function" && inPlazaT(z, x, y)) || (typeof inMarket === "function" && inMarket(z, x, y))) return r;
     const th = THEMES[Z.theme];
@@ -141,4 +142,57 @@
     if (nb(1, 0) && nb(0, 1)) ctx.fillRect(X + TILE - 7, Y + TILE - 7, 7, 7);
     return r;
   };
+
+  /* ----- margens orgânicas: rio e lago com forma de verdade ----- */
+  const WET = new Set(["~", "=", "F"]);
+  function landColor(Z, q, wx, wy) {
+    if (q === "," || (typeof ON_PATH !== "undefined" && ON_PATH.includes(q) && Z.town)) return "#a8916a";
+    const th = THEMES[Z.theme];
+    return th && th.g1 ? shades(th)[Math.min(3, Math.floor((noise(wx, wy, 150) * 0.75 + noise(wx, wy, 46) * 0.25) * 4.2))] : "#6c8f4e";
+  }
+  function shore(z, x, y, Z) {
+    const X = x * TILE,
+      Y = y * TILE;
+    const land = (dx, dy) => {
+      const q = tileAt(z, x + dx, y + dy);
+      return q !== null && !WET.has(q) ? q : null;
+    };
+    const sides = [
+      [0, -1],
+      [0, 1],
+      [-1, 0],
+      [1, 0],
+    ];
+    for (const [dx, dy] of sides) {
+      const q = land(dx, dy);
+      if (!q) continue;
+      const horiz = dy !== 0;
+      for (let i = 0; i < TILE; i += 2) {
+        const wx = horiz ? X + i : dx < 0 ? X : X + TILE,
+          wy = horiz ? (dy < 0 ? Y : Y + TILE) : Y + i;
+        // a margem entra e sai da água seguindo um ruído: o rio "serpenteia"
+        const d = Math.round(2 + noise(wx * 1.7, wy * 1.7, 38) * 11);
+        ctx.fillStyle = landColor(Z, q, wx, wy);
+        if (horiz) ctx.fillRect(X + i, dy < 0 ? Y : Y + TILE - d, 2, d);
+        else ctx.fillRect(dx < 0 ? X : X + TILE - d, Y + i, d, 2);
+        // barranco de terra molhada e espuma acompanhando a curva
+        ctx.fillStyle = "rgba(70,52,30,.45)";
+        if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + d : Y + TILE - d - 1, 2, 1);
+        else ctx.fillRect(dx < 0 ? X + d : X + TILE - d - 1, Y + i, 1, 2);
+        ctx.fillStyle = "rgba(225,242,255,.55)";
+        if (horiz) ctx.fillRect(X + i, dy < 0 ? Y + d + 1 : Y + TILE - d - 2, 2, 1);
+        else ctx.fillRect(dx < 0 ? X + d + 1 : X + TILE - d - 2, Y + i, 1, 2);
+      }
+    }
+    // cantos arredondados onde a água faz curva
+    const corner = (cx, cy, qa, qb, sx, sy) => {
+      if (!qa || !qb) return;
+      ctx.fillStyle = landColor(Z, qa, cx, cy);
+      for (let k = 0; k < 10; k++) ctx.fillRect(sx < 0 ? X : X + TILE - (10 - k), sy < 0 ? Y + k : Y + TILE - 1 - k, 10 - k, 1);
+    };
+    corner(X, Y, land(-1, 0), land(0, -1), -1, -1);
+    corner(X + TILE, Y, land(1, 0), land(0, -1), 1, -1);
+    corner(X, Y + TILE, land(-1, 0), land(0, 1), -1, 1);
+    corner(X + TILE, Y + TILE, land(1, 0), land(0, 1), 1, 1);
+  }
 })();
