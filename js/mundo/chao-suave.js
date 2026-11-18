@@ -746,12 +746,51 @@
         R(6, 1, 20, 4, "#8c3b2e");
         R(10 + Math.round(Math.sin(t * 2) * 6), 0, 3, 2, "#e8e8f0");
         break;
-      case "lago":
-        R(0, 0, 32, 32, "#3f86c7");
-        R(0, 0, 32, 3, "#6ab0e0");
-        if ((x + y) % 2 === 0) (R(8, 12, 8, 5, "#3d8a3a"), R(11, 10, 3, 3, "#ff9ac8"));
-        R(4 + ((t * 8 + x * 9) % 20), 22, 4, 2, "#f2a83a"); // peixe
+      case "lago": {
+        // lago redondo de jardim: um só espelho d'água sobre todas as casas
+        // "lago" do lote, com borda de pedra, ninfeias e peixes (cada tile
+        // desenha só o seu pedaço, recortado)
+        R(0, 0, 32, 32, "rgba(140,190,90,.18)");
+        const B = C.b;
+        if (!B._pond) {
+          let x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
+          for (const [kk, v] of Object.entries(B.plan)) if (v === "lago") {
+            const [px, py] = kk.split(",").map(Number);
+            (x0 = Math.min(x0, px)), (y0 = Math.min(y0, py)), (x1 = Math.max(x1, px)), (y1 = Math.max(y1, py));
+          }
+          B._pond = { cx: ((x0 + x1 + 1) / 2) * TILE, cy: ((y0 + y1 + 1) / 2) * TILE, r: (Math.min(x1 - x0 + 1, y1 - y0 + 1) * TILE) / 2 - 1, rx: ((x1 - x0 + 1) * TILE) / 2 - 3 };
+        }
+        const P = B._pond;
+        const rx = Math.min(P.rx, P.r * 1.25),
+          ry = P.r;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(X, Y, 32, 32);
+        ctx.clip();
+        const ell = (dx, dy, a, b2, c) => ((ctx.fillStyle = c), ctx.beginPath(), ctx.ellipse(P.cx + dx, P.cy + dy, a, b2, 0, 0, 7), ctx.fill());
+        ell(2, 4, rx, ry, "rgba(0,0,0,.18)");
+        ell(0, 0, rx, ry, "#8a8478"); // borda de pedra
+        for (let i = 0; i < 18; i++) {
+          const a2 = (i / 18) * Math.PI * 2;
+          ctx.fillStyle = i % 2 ? "#a8a294" : "#6e695e";
+          ctx.fillRect(Math.round(P.cx + Math.cos(a2) * (rx - 3) - 3), Math.round(P.cy + Math.sin(a2) * (ry - 3) - 2), 6, 4);
+        }
+        ell(0, 0, rx - 6, ry - 6, "#2f6fa8");
+        ell(0, -2, rx - 9, ry - 10, "#3f86c7");
+        ell(-rx * 0.3, -ry * 0.35, rx * 0.28, ry * 0.12, "rgba(255,255,255,.22)"); // reflexo
+        // ninfeias e flor
+        for (const [ox, oy] of [[-rx * 0.45, ry * 0.2], [rx * 0.4, -ry * 0.15], [rx * 0.1, ry * 0.45]]) (ell(ox, oy, 6, 4, "#3d8a3a"), ctx.fillStyle = "#2a6a2a", ctx.fillRect(Math.round(P.cx + ox), Math.round(P.cy + oy - 1), 6, 1));
+        ctx.fillStyle = "#ff9ac8";
+        ctx.fillRect(Math.round(P.cx + rx * 0.4 - 1), Math.round(P.cy - ry * 0.15 - 3), 3, 3);
+        // peixes dando voltas
+        for (let i = 0; i < 2; i++) {
+          const a3 = t * (0.5 + i * 0.2) + i * 3;
+          ctx.fillStyle = i ? "#f2f0e8" : "#f2a83a";
+          ctx.fillRect(Math.round(P.cx + Math.cos(a3) * rx * 0.5), Math.round(P.cy + Math.sin(a3) * ry * 0.4), 5, 2);
+        }
+        ctx.restore();
         break;
+      }
       case "pomar":
         shadow(X, Y, 10);
         R(15, 14, 3, 13, "#5a3a1e");

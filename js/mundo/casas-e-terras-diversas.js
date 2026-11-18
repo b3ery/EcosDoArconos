@@ -105,9 +105,10 @@
     };
     win(X + (b.door[0] - b.x === 0 ? W - 18 : 6), g0 + 10);
     win(X + lean + 7, u0 + 10);
-    win(X + lean + W - 18, u0 + 10);
-    // porta de cima, aberta para a escada
-    R(X + lean + W / 2 - 6, u0 + 8, 12, 24, "#4a2e17");
+    win(X + lean + W / 2 - 4, u0 + 10);
+    // porta de cima no canto, onde a escada chega
+    R(X + lean + W - 22, u0 + 8, 14, 24, "#4a2e17");
+    for (let i = 0; i < 2; i++) R(X + lean + W - 18 + i * 5, u0 + 8, 1, 24, "#2e1a0c");
     // palha rala e remendada
     const top = u0 - 30;
     ctx.fillStyle = ["#a8884a", "#9a7a40", "#b0904e"][h % 3];
@@ -120,12 +121,28 @@
     R(X + W / 2 + lean - 8 + (h % 9), top + 14, 8, 6, "#6a5a3a"); // remendo de palha velha
     for (let i = 0; i < 6; i++) R(X - 4 + lean + i * 18, u0 + 3, 2, 4, "#8a6a30"); // palha caindo da beira
     // fumaça de fogo de chão saindo pelo telhado (sem chaminé)
+    b.chimTops = [];
     if (h % 2) R(X + W / 2 + lean - 1, top - 4 - ((t * 10) % 10), 4, 4, "rgba(180,180,180,.35)");
-    // escada de tábua crua até a porta de cima, do lado de fora
-    const sx = X + W + 1;
-    for (let k = 0; k < 6; k++) R(sx + 12 - k * 2, base - 6 - k * 9, 8, 3, "#8a6a42");
-    R(sx + 18, u0 + 30, 2, base - u0 - 30, "#5a3a1e");
-    R(sx + 6, u0 + 30, 2, base - u0 - 30, "#5a3a1e");
+    // escada de tábua crua encostada na parede da frente: sobe do chão, ao
+    // lado da porta de baixo, até o patamar da porta de cima
+    const sx0 = dx + 28,
+      sx1 = X + W - 24,
+      rise = base - 3 - g0;
+    ctx.fillStyle = "#4a3420"; // banzo (a viga torta que segura os degraus)
+    fillPolygon(sx0, base - 2, sx0 + 5, base - 2, sx1 + 3, g0 + 1, sx1 - 2, g0 + 1);
+    const n = 6;
+    for (let k = 0; k < n; k++) {
+      const f = (k + 1) / (n + 1);
+      R(sx0 + (sx1 - sx0) * f - 3, base - 3 - rise * f, 9, 3, "#8a6a42");
+      R(sx0 + (sx1 - sx0) * f - 3, base - 1 - rise * f, 9, 1, "#5a3a1e");
+    }
+    // patamar de tábua na frente da porta de cima, com dois esteios
+    R(sx1 - 4, g0 - 3, X + W + 2 - sx1, 4, "#7a5a32");
+    R(sx1 - 4, g0 + 1, X + W + 2 - sx1, 1, "#4a3420");
+    R(X + W - 2, g0 + 1, 3, base - g0 - 1, "#4a3420");
+    // corrimão de vara
+    R(sx1 - 4, g0 - 13, X + W + 2 - sx1, 2, "#6b4a2a");
+    R(sx1 - 4, g0 - 13, 2, 11, "#6b4a2a");
     // balde e trapos na porta
     if (h % 3 === 0) (R(dx - 6, base - 9, 7, 7, "#6a6a6a"), R(dx - 6, base - 9, 7, 2, "#8a8a8a"));
   }
@@ -259,7 +276,9 @@
     R(tx + tw / 2 - 1, fy - 70, 2, 14, "#3a3a3a");
     R(tx + tw / 2 + 1, fy - 70 + Math.sin(t * 3) * 1, 8, 5, "#c94a3a");
     // chaminés altas de tijolo
+    b.chimTops = [];
     for (const cx of [X + W * 0.18, X + W * 0.82]) {
+      b.chimTops.push([cx + 1, roofTop - 18]);
       R(cx - 5, roofTop - 14, 12, 34, "#8a4a3a");
       for (let r = 0; r < 6; r++) R(cx - 5, roofTop - 14 + r * 6, 12, 1, "#6a3428");
       R(cx - 7, roofTop - 16, 16, 4, "#5a2a20");
@@ -425,6 +444,7 @@
       }
       // chaminé de tijolo alta
       const cx = X + W - 30;
+      b.chimTops = [[cx + 6, top - 30]];
       R(cx, top - 26, 12, 30, "#8a4a3a");
       for (let r = 0; r < 6; r++) R(cx, top - 26 + r * 5, 12, 1, "#6a3428");
       R(cx - 2, top - 28, 16, 4, "#5a2a20");

@@ -2039,11 +2039,13 @@ function updateVilaLife(dt) {
     game.smokeT = 0.35;
     for (const b of z.town.bld) {
       const S = BUILDING_STYLES[b.style];
-      if (!S || !S.chim || Math.abs(b.x - player.x) > 16 || Math.abs(b.y - player.y) > 13) continue;
-      for (let k = 0; k < S.chim; k++)
+      if (Math.abs(b.x - player.x) > 16 || Math.abs(b.y - player.y) > 13) continue;
+      // casas desenhadas à mão dizem onde fica a chaminé (casebre sem chaminé não solta fumaça)
+      const tops = b.chimTops || (S && S.chim ? Array.from({ length: S.chim }, (_, k) => [b.x * TILE + b.w * TILE - 25 - k * 40, b.y * TILE - 22]) : []);
+      for (const [sx, sy] of tops)
         game.smoke.push({
-          x: b.x * TILE + b.w * TILE - 25 - k * 40,
-          y: b.y * TILE - 22,
+          x: sx,
+          y: sy,
           vx: (Math.random() - 0.3) * 8,
           vy: -18 - Math.random() * 8,
           life: 2.4,
