@@ -186,6 +186,11 @@
   update = function (dt) {
     upBase(dt);
     if (!player || game.mode === "title") return;
+    // na cena final do jogo não aparece tutorial (e um cartão aberto some)
+    if (game.ep || game.rollDone || game.mode === "end" || game.mode === "rollcred") {
+      if (cur && game.mode !== "tutc") ((byId("tutc").style.display = "none"), (cur = null));
+      return;
+    }
     if (game.mode === "world" && !game.dialog) {
       worldT += dt;
       if (worldT > 1.2) tutOnce("basico");
