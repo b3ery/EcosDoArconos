@@ -111,7 +111,8 @@
       SCN = chain && SCENES[chain.scene] ? SCENES[chain.scene] : null;
       if (SCN) (g.fillStyle = "#000"), g.fillRect(0, 0, W, H), SCN.bg();
       spec.draw(g, S, dt);
-      if (SCN) (SCN.lt && light(...SCN.lt), vignette());
+      if (SCN && SCN.lt) light(...SCN.lt);
+      finishFrame();
       el.querySelector(".gs-time").textContent = spec.time ? `${Math.max(0, S.left).toFixed(1)}s` : "";
       el.querySelector(".gs-msg").textContent = S.msg || "";
       const a = spec.auto ? spec.auto(S, dt) : null;
@@ -155,8 +156,41 @@
   /* ----- desenho ----- */
   let SCN = null;
   const R = (x, y, w, h, c) => (SCN && x === 0 && y === 0 && w === W && h === H ? 0 : ((g.fillStyle = c), g.fillRect(x, y, w, h)));
-  const C = (x, y, r, c) => ((g.fillStyle = c), g.beginPath(), g.arc(x, y, r, 0, 7), g.fill());
-  const E = (x, y, rx, ry, c) => ((g.fillStyle = c), g.beginPath(), g.ellipse(x, y, Math.max(1, rx), Math.max(1, ry), 0, 0, 7), g.fill());
+  /* Formas com volume, como pixel art: contorno no tom escuro da própria
+     cor, sombra embaixo à direita e brilho em cima à esquerda (a luz vem
+     sempre de cima à esquerda). Só para cores sólidas e formas grandes. */
+  const HEX = /^#[0-9a-f]{6}$/i;
+  const blob = (x, y, rx, ry, c) => {
+    rx = Math.max(1, rx);
+    ry = Math.max(1, ry);
+    const path = () => (g.beginPath(), g.ellipse(x, y, rx, ry, 0, 0, 7));
+    if (!HEX.test(c) || rx < 4 || ry < 3) return ((g.fillStyle = c), path(), g.fill());
+    g.fillStyle = shade(c, -0.5);
+    g.beginPath();
+    g.ellipse(x, y, rx + 1.5, ry + 1.5, 0, 0, 7);
+    g.fill();
+    g.fillStyle = c;
+    path();
+    g.fill();
+    g.save();
+    path();
+    g.clip();
+    g.fillStyle = shade(c, -0.2);
+    g.beginPath();
+    g.ellipse(x + rx * 0.35, y + ry * 0.45, rx, ry, 0, 0, 7);
+    g.fill();
+    g.fillStyle = c;
+    g.beginPath();
+    g.ellipse(x - rx * 0.08, y - ry * 0.1, rx * 0.86, ry * 0.8, 0, 0, 7);
+    g.fill();
+    g.fillStyle = shade(c, 0.3);
+    g.beginPath();
+    g.ellipse(x - rx * 0.4, y - ry * 0.45, rx * 0.3, ry * 0.2, -0.4, 0, 7);
+    g.fill();
+    g.restore();
+  };
+  const C = (x, y, r, c) => blob(x, y, r, r, c);
+  const E = (x, y, rx, ry, c) => blob(x, y, rx, ry, c);
   const T = (s, x, y, c = "#fff", sz = 11, al = "center") => ((g.fillStyle = c), (g.font = `bold ${sz}px monospace`), (g.textAlign = al), g.fillText(s, x, y));
   const dash = (x1, y1, x2, y2, c = "#ffe08a") => (g.setLineDash([5, 4]), (g.strokeStyle = c), (g.lineWidth = 2), g.beginPath(), g.moveTo(x1, y1), g.lineTo(x2, y2), g.stroke(), g.setLineDash([]));
   const table = (c = "#6b4423") => (SCN ? 0 : (R(0, 0, W, H, "#2a1e30"), R(0, 60, W, H - 60, c), R(0, 60, W, 4, "#8a5a2e")));
@@ -375,12 +409,107 @@
     g.fillStyle = gr;
     g.fillRect(0, 0, W, H);
   }
+  // textura de pixel (pontilhado) e luz de cima à esquerda em toda cena
+  let grain = null;
+  function finishFrame() {
+    if (!grain) {
+      const c = document.createElement("canvas");
+      c.width = 64;
+      c.height = 64;
+      const q = c.getContext("2d");
+      for (let y = 0; y < 64; y += 2)
+        for (let x = 0; x < 64; x += 2) {
+          const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+          const v = n - Math.floor(n);
+          if (v > 0.82) ((q.fillStyle = "rgba(255,255,255,.07)"), q.fillRect(x, y, 2, 2));
+          else if (v < 0.18) ((q.fillStyle = "rgba(0,0,0,.08)"), q.fillRect(x, y, 2, 2));
+        }
+      grain = g.createPattern(c, "repeat");
+    }
+    g.fillStyle = grain;
+    g.fillRect(0, 0, W, H);
+    const gr = g.createLinearGradient(0, 0, W, H);
+    gr.addColorStop(0, "rgba(255,236,190,.16)");
+    gr.addColorStop(0.55, "rgba(255,236,190,0)");
+    gr.addColorStop(1, "rgba(30,10,40,.18)");
+    g.fillStyle = gr;
+    g.fillRect(0, 0, W, H);
+    vignette();
+  }
   function vignette() {
     const gr = g.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);
     gr.addColorStop(0, "rgba(0,0,0,0)");
     gr.addColorStop(1, "rgba(10,5,15,.55)");
     g.fillStyle = gr;
     g.fillRect(0, 0, W, H);
+  }
+  /* ----- paisagem de verdade para os ofícios ao ar livre ----- */
+  const hn = (i) => {
+    const v = Math.sin(i * 91.7) * 43758.5453;
+    return v - Math.floor(v);
+  };
+  function landscape(top, bot, ground, gy = 186) {
+    sky(top, bot);
+    // sol e nuvens
+    const sg = g.createRadialGradient(300, 34, 4, 300, 34, 46);
+    sg.addColorStop(0, "rgba(255,250,210,.95)");
+    sg.addColorStop(0.3, "rgba(255,240,180,.5)");
+    sg.addColorStop(1, "rgba(255,240,180,0)");
+    g.fillStyle = sg;
+    g.fillRect(250, 0, 100, 90);
+    for (const [cx, cy, k] of [[70, 34, 1], [180, 22, 0.8], [250, 60, 0.6]]) for (let i = 0; i < 5; i++) E(cx + (i - 2) * 11 * k, cy - (i % 2) * 5 * k, 13 * k, 8 * k, i % 2 ? "#ffffff" : "#eef6fb");
+    // morros ao longe (mais azulados quanto mais longe)
+    for (const [yy, col, amp, fr] of [[gy - 62, "#9ab8a8", 10, 0.018], [gy - 40, "#7aa07a", 14, 0.025], [gy - 18, "#5a8a4a", 8, 0.04]]) {
+      g.fillStyle = col;
+      g.beginPath();
+      g.moveTo(0, gy);
+      for (let x = 0; x <= W; x += 6) g.lineTo(x, yy + Math.sin(x * fr + yy) * amp + Math.sin(x * fr * 2.7) * amp * 0.3);
+      g.lineTo(W, gy);
+      g.fill();
+    }
+    // fileira de árvores pequenas no horizonte
+    for (let i = 0; i < 14; i++) {
+      const x = i * 27 + hn(i) * 14,
+        y = gy - 14 - hn(i + 3) * 8;
+      rr(x - 1, y, 2, 10, "#4a3a2a");
+      E(x, y - 2, 7, 6, ["#4a7a3a", "#3a6a32", "#5a8a42"][i % 3]);
+    }
+    // chão com tufos de capim e florzinhas
+    rr(0, gy, W, H - gy, ground);
+    rr(0, gy, W, 2, shade(ground, 0.18));
+    for (let i = 0; i < 60; i++) {
+      const x = hn(i * 7) * W,
+        y = gy + 4 + hn(i * 13) * (H - gy - 8);
+      rr(x, y, 1, 4, shade(ground, -0.25));
+      rr(x + 2, y + 1, 1, 3, shade(ground, 0.2));
+      if (i % 9 === 0) rr(x + 1, y - 1, 2, 2, ["#f2eee4", "#f2c14e", "#e86a8a"][i % 3]);
+    }
+  }
+  function leafyTree(x, base, h, r, cols = ["#3a6a2a", "#4a8a3a", "#5a9a42"]) {
+    // tronco que afina, com raízes e casca
+    g.fillStyle = "#5a3a1e";
+    g.beginPath();
+    g.moveTo(x - r * 0.32 - 6, base);
+    g.lineTo(x - r * 0.18, base - h);
+    g.lineTo(x + r * 0.18, base - h);
+    g.lineTo(x + r * 0.32 + 6, base);
+    g.fill();
+    g.fillStyle = "#7a5230";
+    g.fillRect(x - r * 0.18, base - h, r * 0.14, h);
+    for (let k = 0; k < h; k += 9) rr(x - r * 0.1 + ((k * 7) % 9) - 4, base - h + k, 2, 6, "#3a2414");
+    // copa: um cacho de folhagens, do escuro (atrás) para o claro (na frente)
+    const blobs = [[0, -1.05, 1], [-0.7, -0.75, 0.75], [0.7, -0.78, 0.72], [-0.4, -1.4, 0.7], [0.45, -1.35, 0.68], [-0.95, -0.45, 0.55], [0.95, -0.48, 0.52], [0, -0.55, 0.7]];
+    blobs.forEach(([dx, dy, k], i) => E(x + dx * r, base - h + dy * r * 0.6, r * 0.62 * k + 6, r * 0.5 * k + 5, cols[Math.min(2, Math.floor((i / blobs.length) * 3))]));
+    for (let i = 0; i < 26; i++) rr(x + (hn(i + x) - 0.5) * r * 1.8, base - h - r * 0.9 + hn(i * 3 + x) * r * 1.1, 2, 2, i % 2 ? shade(cols[2], 0.25) : shade(cols[0], -0.2));
+  }
+  function wheatEar(x, top, len, col = "#e8b84a") {
+    for (let k = 0; k < 7; k++) {
+      const yy = top + k * (len / 7);
+      E(x - 2.2, yy, 2.4, 3.2, k % 2 ? col : shade(col, -0.12));
+      E(x + 2.2, yy + 1.5, 2.4, 3.2, k % 2 ? shade(col, -0.12) : col);
+      rr(x - 5, yy - 3, 1, 4, shade(col, 0.15)); // barbas da espiga
+      rr(x + 5, yy - 2, 1, 4, shade(col, 0.15));
+    }
   }
   const SCENES = {
     padeiro: { bg: () => (bricks(0, 64, "#c97a4a", "#b86a3a", "#8a4a2a"), windowAt(24, 10), shelf(90, 6, 120, ["bread", "cake", "wheat", "pie"]), counter(64, "#d9b07a", "#a8784a")), lt: [300, 30, 200, "rgba(255,180,90,A)"] },
@@ -401,8 +530,8 @@
     joalheiro: { bg: () => (plaster(0, 64, "#2a3a5a", "#24324e"), shelf(40, 6, 280, ["gem", "ring", "amulet", "gem"])), lt: [180, 130, 220, "rgba(200,230,255,A)"] },
     bibliotecario: { bg: () => (planks(0, 240, "#3a2a1e", "#34261a", "#20160e")), lt: [180, 0, 260, "rgba(255,220,160,A)"] },
     professor: { bg: () => (plaster(0, 240, "#d8c8a8", "#c8b898"), windowAt(10, 70, 24, 60)), lt: [20, 100, 220, "rgba(255,240,200,A)"] },
-    lenhador: { bg: () => (sky("#8ac8e8", "#d8eef8"), [40, 120, 300].forEach((x) => (rr(x - 4, 90, 8, 100, "#5a3a22"), g.fillStyle = "#3a6a2a", g.beginPath(), g.arc(x, 90, 34, 0, 7), g.fill())), rr(0, 186, W, 54, "#5a8a3a")), lt: [300, 0, 300, "rgba(255,250,200,A)"] },
-    fazendeiro: { bg: () => (sky("#8ac8e8", "#f8e8b8"), rr(0, 120, W, 20, "#8aa84a"), rr(0, 140, W, 42, "#c9a050")), lt: [320, 0, 320, "rgba(255,240,180,A)"] },
+    lenhador: { bg: () => (landscape("#7ab8e0", "#d8eef8", "#5a8a3a", 190), leafyTree(44, 196, 70, 40, ["#3a5a32", "#4a6a3a", "#5a7a42"]), leafyTree(316, 198, 80, 44, ["#3a5a32", "#4a6a3a", "#5a7a42"])), lt: [300, 0, 300, "rgba(255,250,200,A)"] },
+    fazendeiro: { bg: () => (landscape("#7ab8e0", "#f8e8b8", "#8a6a3a", 150), (() => { for (let y = 152; y < 190; y += 6) rr(0, y, W, 3, y % 12 ? "#c9a050" : "#b8903e"); })()), lt: [320, 0, 320, "rgba(255,240,180,A)"] },
     minerador: { bg: () => (rr(0, 0, W, H, "#1a1418"), bricks(0, 240, "#3a3038", "#342a32", "#241c22")), lt: [40, 40, 160, "rgba(255,190,90,A)"] },
     feirante: { bg: () => (sky("#9fd0f0", "#e8f0f8"), (() => { for (let x = 0; x < W; x += 30) rr(x, 0, 30, 26, (x / 30) % 2 ? "#c94a4a" : "#f2eee4"); for (let x = 0; x < W; x += 30) (g.fillStyle = (x / 30) % 2 ? "#c94a4a" : "#f2eee4"), g.beginPath(), g.arc(x + 15, 26, 15, 0, Math.PI), g.fill(); })(), counter(150, "#a8784a", "#7a5a2e")), lt: [180, 0, 280, "rgba(255,240,200,A)"] },
     acendedor: { bg: () => (sky("#141434", "#2a2a5a"), [30, 250].forEach((x) => (rr(x, 120, 90, 120, "#3a3048"), rr(x + 10, 140, 14, 14, "#ffd66b"), rr(x + 60, 140, 14, 14, "#ffd66b"), (g.fillStyle = "#4a2a3a"), g.beginPath(), g.moveTo(x - 6, 120), g.lineTo(x + 45, 90), g.lineTo(x + 96, 120), g.fill()))), lt: [180, 90, 140, "rgba(255,200,110,A)"] },
@@ -1308,11 +1437,13 @@
         g.save();
         g.translate(180, 190);
         g.rotate(S.fall * 1.4);
-        R(-16, -170, 32, 170, "#8a5a2e");
-        for (let k = 0; k < 6; k++) R(-16, -160 + k * 26, 32, 2, "#6a4020");
-        C(0, -170, 50, "#3a7a2a");
-        C(-30, -150, 30, "#4a8a3a");
-        C(30, -150, 30, "#4a8a3a");
+        // tronco grosso com casca, e a copa cheia
+        R(-16, -150, 32, 150, "#7a5230");
+        R(-16, -150, 8, 150, "#9a6a3e");
+        R(10, -150, 6, 150, "#5a3a1e");
+        for (let k = 0; k < 14; k++) R(-12 + ((k * 11) % 22), -146 + k * 10, 2, 7, "#4a2e17");
+        R(-22, -6, 44, 6, "#5a3a1e");
+        leafyTree(0, -120, 10, 62);
         const notch = Math.min(28, S.cuts * 6);
         R(-16, -42, notch / 2, 16, "#e8c890");
         R(16 - notch / 2, -42, notch / 2, 16, "#e8c890");
@@ -1354,8 +1485,13 @@
             R(s.x, 172, 4, 10, "#c9a050");
             continue;
           }
-          R(s.x, s.cut === 2 ? 120 : 80, 4, s.cut === 2 ? 62 : 102, "#d9b050");
-          if (!s.cut) E(s.x + 2, 80, 6, 14, "#f2c14e");
+          R(s.x + 1, s.cut === 2 ? 120 : 92, 2, s.cut === 2 ? 62 : 90, "#c9a040");
+          R(s.x + 1, s.cut === 2 ? 120 : 92, 1, s.cut === 2 ? 62 : 90, "#e8c860");
+          if (!s.cut) {
+            R(s.x - 4, 132 + (s.x % 3) * 4, 6, 2, "#b8a040"); // folha
+            R(s.x + 3, 146 - (s.x % 4) * 3, 6, 2, "#b8a040");
+            wheatEar(s.x + 2, 64 + Math.sin(S.t * 2 + s.x * 0.1) * 2, 28);
+          }
         }
         dash(20, 150, 340, 150);
         if (S.p.x > 0) (R(S.p.x - 14, S.p.y - 2, 16, 4, "#c9c9d0"), R(S.p.x, S.p.y - 2, 4, 16, "#8a5a2e"));
