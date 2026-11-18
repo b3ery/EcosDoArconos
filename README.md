@@ -27,6 +27,10 @@
 
 ### 🎮 [Jogar agora no navegador](https://b3ery.github.io/EcosDoArconos/)
 
+<br>
+
+<img src="assets/screenshots/titulo.png" width="860" alt="Tela inicial do Ecos do Arcano"/>
+
 </div>
 
 <br>
@@ -89,7 +93,7 @@
 
 ## 📑 Índice
 
-[Sobre](#-sobre-o-projeto) · [Como jogar](#-como-jogar) · [Modo História](#%EF%B8%8F-modo-hist%C3%B3ria) · [Simulador de Vida](#-simulador-de-vida) · [Personagens](#-personagens) · [Chefes e runas](#-chefes-e-runas) · [O mundo](#%EF%B8%8F-o-mundo) · [Opções](#%EF%B8%8F-op%C3%A7%C3%B5es) · [Capturas](#-capturas-de-tela) · [Para quem desenvolve](#%EF%B8%8F-para-quem-desenvolve)
+[Sobre](#-sobre-o-projeto) · [Capturas](#-capturas-de-tela) · [Como jogar](#-como-jogar) · [Modo História](#%EF%B8%8F-modo-hist%C3%B3ria) · [Simulador de Vida](#-simulador-de-vida) · [Personagens](#-personagens) · [Chefes e runas](#-chefes-e-runas) · [O mundo](#%EF%B8%8F-o-mundo) · [Opções](#%EF%B8%8F-op%C3%A7%C3%B5es) · [Para quem desenvolve](#%EF%B8%8F-para-quem-desenvolve)
 
 <br>
 
@@ -104,6 +108,38 @@ O jogo tem **dois modos**:
 | ⚔️ Modo História | 🏡 Simulador de Vida |
 |:---|:---|
 | Aventura com magia, Guardiões, covis, quebra-cabeças e um final que muda com as suas escolhas. | Uma vida inteira em Cinzaluz, sem magia: trabalho, amor, família, política e crime. |
+
+<br>
+
+---
+
+## 📸 Capturas de Tela
+
+<div align="center">
+
+### ⚔️ Na aventura
+
+| | |
+|:---:|:---:|
+| <img src="assets/screenshots/vila.png" width="420"/><br><sub>A praça de Cinzaluz</sub> | <img src="assets/screenshots/dons.png" width="420"/><br><sub>Escolha o seu dom: um pedaço de uma das seis runas</sub> |
+| <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha contra o Ent Silenciado</sub> | <img src="assets/screenshots/covil.png" width="420"/><br><sub>O Covil do Ent e os Ecos Perdidos</sub> |
+
+### 🏡 Na vida em Cinzaluz
+
+| | |
+|:---:|:---:|
+| <img src="assets/screenshots/capela.png" width="420"/><br><sub>A Capela Branca e o cemitério do Alto do Descanso</sub> | <img src="assets/screenshots/comunismo.png" width="420"/><br><sub>Luca eleito: bandeiras vermelhas no castelo</sub> |
+| <img src="assets/screenshots/coracoes.png" width="420"/><br><sub>Corações, o "Tinder" da vila</sub> | <img src="assets/screenshots/match.png" width="420"/><br><sub>Deu match!</sub> |
+| <img src="assets/screenshots/calendario.png" width="420"/><br><sub>Calendário com festas, eleição, exposições e casamentos</sub> | <img src="assets/screenshots/jornal.png" width="420"/><br><sub>O Eco de Cinzaluz, o jornal do dia</sub> |
+
+### 🎒 Criador e bolsa
+
+| | |
+|:---:|:---:|
+| <img src="assets/screenshots/criador.png" width="420"/><br><sub>Crie o seu personagem</sub> | <img src="assets/screenshots/bolsa.png" width="420"/><br><sub>A bolsa, com a barra de itens no pé</sub> |
+| <img src="assets/screenshots/barra.png" width="420" /><br><sub>Barra de itens embaixo da tela, como no Minecraft</sub> | |
+
+</div>
 
 <br>
 
@@ -295,42 +331,6 @@ Cada Guardião guarda uma das seis runas: 🔥 Chama, 💧 Água, 🌪️ Ar, �
 
 ---
 
-## 📸 Capturas de Tela
-
-<details>
-<summary><b>Ver as capturas</b></summary>
-
-<br>
-
-<div align="center">
-
-| | |
-|:---:|:---:|
-| <img src="assets/screenshots/creditos_finais.png" width="420"/><br><sub>Créditos finais com a sua jornada e conquistas</sub> | <img src="assets/screenshots/creditos.png" width="420"/><br><sub>Tela de créditos com a equipe</sub> |
-| <img src="assets/screenshots/dupla.png" width="420"/><br><sub>Batalha em dupla: o Guardião muda de forma</sub> | <img src="assets/screenshots/cripta.png" width="420"/><br><sub>Cripta dos Ecos: espelhos e luz</sub> |
-| <img src="assets/screenshots/flashback.png" width="420"/><br><sub>Flashback de Odelia e Vesper crianças</sub> | <img src="assets/screenshots/coroacao.png" width="420"/><br><sub>Coroação depois do golpe</sub> |
-| <img src="assets/screenshots/morte.png" width="420"/><br><sub>Velório com lápide e epitáfio</sub> | <img src="assets/screenshots/arvore.png" width="420"/><br><sub>Árvore da família</sub> |
-| <img src="assets/screenshots/incendio.png" width="420"/><br><sub>Incêndio no Armazém Geral</sub> | <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> |
-| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial: Jogar, Opções e Créditos</sub> | <img src="assets/screenshots/modos.png" width="420"/><br><sub>Depois de Jogar: continuar ou escolher o modo</sub> |
-| <img src="assets/screenshots/origem.png" width="420"/><br><sub>Origem na criação: do plebeu à realeza</sub> | <img src="assets/screenshots/alareal.png" width="420"/><br><sub>Ala Real do castelo, com empregados</sub> |
-| <img src="assets/screenshots/palacio.png" width="420"/><br><sub>Palácio das Marés, numa ilha no Porto</sub> | <img src="assets/screenshots/fortaleza.png" width="420"/><br><sub>Fortaleza de Pedravale</sub> |
-| <img src="assets/screenshots/jornal.png" width="420"/><br><sub>O Eco de Cinzaluz, o jornal do dia</sub> | <img src="assets/screenshots/inverno.png" width="420"/><br><sub>Inverno: neve nos telhados e nas árvores</sub> |
-| <img src="assets/screenshots/calabouco.png" width="420"/><br><sub>O calabouço e o Professor L</sub> | <img src="assets/screenshots/corpo.png" width="420"/><br><sub>Crimes têm consequência</sub> |
-| <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> | <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> |
-| <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado)</sub> |
-| <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
-| <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> | <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> |
-| <img src="assets/screenshots/conversa.png" width="420"/><br><sub>Os moradores conversam entre si</sub> | <img src="assets/screenshots/jeito.png" width="420"/><br><sub>Personalidade e orientação no criador</sub> |
-| <img src="assets/screenshots/casa.png" width="420"/><br><sub>Casa pintada com os móveis novos</sub> | <img src="assets/screenshots/pintar.png" width="420"/><br><sub>Decorar: Móveis, Pintar e Reformar</sub> |
-
-</div>
-
-</details>
-
-<br>
-
----
-
 ## 🛠️ Para quem desenvolve
 
 HTML5, CSS3 e JavaScript puro, sem dependências. Tudo é desenhado pixel a pixel no `<canvas>` e a música é criada na hora com o Web Audio API.
@@ -347,7 +347,6 @@ EcosDoArconos/
 │   ├── historia/     história, covis, batalha, saga
 │   └── vida/         Simulador: moradores, poder, realeza, crime, família
 ├── assets/           retratos e capturas usados neste README
-├── audio/voz/        falas gravadas do Narrador (opcional)
 ├── tests/smoke.js    teste automático (npm test)
 └── tools/            check.js (npm run check) e build.js (um arquivo só)
 ```
@@ -355,7 +354,6 @@ EcosDoArconos/
 - `npm run check` confere a sintaxe e se todo arquivo está no `index.html`; `npm test` abre o jogo e passa pelas telas dos dois modos.
 - Cada arquivo trata de um assunto e explica no cabeçalho o que faz e quais funções de outros arquivos ele modifica. A ordem de carregamento fica no `index.html`.
 - **Versão dev:** abra `dev.html` (ou `index.html?dev`) e aperte **F9** para pular etapas, liberar tudo e testar.
-- **Dublagem:** grave as falas do Narrador como `audio/voz/CÓDIGO.mp3` (os códigos estão no roteiro) e o jogo toca sozinho.
 
 <br>
 

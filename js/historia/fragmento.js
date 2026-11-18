@@ -13,7 +13,6 @@
  *     brilham; as de Guardiões possuídos ficam com cinzas no ar.
  *  6. Luta final: na última parte do Silenciador, o fragmento resiste.
  *  7. Epílogo que lembra a sua jornada.
- *  8. Dublagem: as falas novas do Narrador entram no roteiro.
  * Modifica (envolve) funções de outros arquivos: applyStoryAdjustments,
  * buildVoiceScript, crewDrawList, enterZone, GUARD_PRE, INTRO,
  * possessGuardian, rewardGuardian, silencerMeeting, startEpilogue,
@@ -351,55 +350,3 @@ function epilogueRecap() {
   };
 })();
 
-/* ===================== 8. DUBLAGEM ===================== */
-if (typeof VOICE_SECTIONS !== "undefined") {
-  VOICE_SECTIONS.FRA = {
-    n: "O Fragmento",
-    quando: "No jogo com dom: quando o fragmento acorda no treino, nas três revelações sobre Vesper e no despertar do dom.",
-    dir: "Íntimo e misterioso, como quem conta um segredo de família. Na terceira revelação, mais emoção.",
-  };
-  VOICE_SECTIONS.FAR = {
-    n: "O Farol e a Fênix",
-    quando: "Covil do Topo do Farol e depois de libertar a Fênix.",
-    dir: "Aventura com calor: o vento lá fora, o fogo lá dentro.",
-  };
-  VOICE_SECTIONS.JOR = {
-    n: "Epílogo da sua jornada",
-    quando: "No epílogo, conforme o que você fez com cada Guardião e com o seu dom. Cada jogador ouve só algumas.",
-    dir: "Tom de conto contado anos depois. Nas falas de vilão, mais seco e triste.",
-  };
-  const vbBase = buildVoiceScript;
-  buildVoiceScript = function () {
-    const S = vbBase();
-    const add = (sec, id, text, nota = "") => S.push({ id: `${sec}-${id}`, sec, text, match: text, cue: null, nota });
-    let k = 1;
-    add("FRA", two(k++), FRAG_WAKE[0][1], "Depois do treino com o Kael");
-    for (const id of DOM_IDS) {
-      const d = DONS[id];
-      FRAG_REVEAL.forEach((R, i) =>
-        R.lines(d)
-          .filter((l) => !l[0])
-          .forEach((l) => {
-            if (!S.some((e) => e.text === l[1])) add("FRA", two(k++), l[1], `Revelação ${i + 1}${/Runa|\bo |\ba /.test(l[1]) && l[1].includes(d.nome) ? " · " + d.nome : ""}`);
-          }),
-      );
-    }
-    add("FRA", two(k++), "O fragmento dentro de você responde. Por um instante, a máscara do Silenciador treme.", "Encontro com o Silenciador, depois da 3ª revelação");
-    let f = 1;
-    add("FAR", two(f++), "As quatro lamparinas brilham juntas. O vento recua, e a porta do topo do farol se abre.", "Desafio das lamparinas resolvido");
-    add("FAR", two(f++), "As chamas da Fênix diminuem até virarem uma luz calma e dourada.", "Depois de vencer a Fênix");
-    add("FAR", two(f++), "A Fênix abre as asas e o topo do farol vira uma fogueira!", "Antes da luta");
-    let j = 1;
-    for (const type of ["ent", "fenixf", "serpente", "grifo", "basilisco", "leviata"]) {
-      add("JOR", two(j++), FATE_LINES[type].hero, `${ENEMIES[type].nome}: libertado`);
-      add("JOR", two(j++), FATE_LINES[type].vilao, `${ENEMIES[type].nome}: possuído`);
-    }
-    for (const id of DOM_IDS) {
-      add("JOR", two(j++), FRAG_EPI.hero(DONS[id]), `${DONS[id].nome}: herói`);
-      add("JOR", two(j++), FRAG_EPI.vilao(DONS[id]), `${DONS[id].nome}: vilão`);
-    }
-    add("JOR", two(j++), FRAG_EPI.frag, "Se viu as três revelações");
-    return S;
-  };
-  if (typeof indexVoices === "function") indexVoices();
-}

@@ -2,7 +2,6 @@
  * ECOS DO ARCANO — pos-jogo.js (modo História)
  *  1. Créditos com "fotos" dos momentos da sua jornada.
  *  2. Livro de Lendas: toda a lore que você descobriu, para reler.
- *  4. Vozes dos personagens: Odelia e Vesper entram no roteiro de dublagem.
  *  5. Viagem rápida pelos altares já visitados.
  *  6. Montaria do Grifo: depois de libertá-lo, ele te leva voando.
  *  7. O clima muda o caminho: lagos congelam na neve; pontes alagam na tempestade.
@@ -367,41 +366,6 @@ function openLegends() {
   el.style.display = "block";
   game.mode = "legends";
   byId("lgclose").onclick = () => ((el.style.display = "none"), (game.mode = "world"));
-}
-
-/* ===================== 4. VOZES DOS PERSONAGENS ===================== */
-if (typeof VOICE_SECTIONS !== "undefined") {
-  VOICE_SECTIONS.ODE = { n: "Arquimaga Odelia", quando: "Falas da Odelia que não mudam com o seu nome ou elemento.", dir: "Voz de mulher sábia e cansada, com carinho de irmã mais velha. Às vezes firme, às vezes chorosa." };
-  VOICE_SECTIONS.VES = { n: "Vesper", quando: "Sonhos, ecos e o fim da história.", dir: "Voz de homem jovem e cansado, como quem carrega um peso há trezentos anos. Nos sonhos, quase sussurrado." };
-  const vb = buildVoiceScript;
-  buildVoiceScript = function () {
-    const S = vb();
-    const add = (sec, list, who) => {
-      let i = 1;
-      for (const t of list) if (t && !t.includes("${") && !S.some((e) => e.text === t)) S.push({ id: `${sec}-${two(i++)}`, sec, text: t, match: t, cue: null, nota: "", who });
-    };
-    const said = (arr, who) => arr.filter((l) => l[0] && l[0].startsWith(who)).map((l) => l[1]);
-    const ode = [...said(EPILOGUE, "Arquimaga Odelia"), "Vesper... quebrou uma runa? Ele nunca faria isso. A não ser que... a não ser que fosse para salvá-la.", "Ele sempre foi assim. Estragava uma coisa pequena para proteger uma grande.", "Um berço em Cinzaluz. Trezentos anos e eu nunca procurei no lugar mais óbvio.", "Ele escondia as coisas importantes nas mãos das crianças. Dizia que ninguém desconfia de quem ainda não sabe falar.", "Então ainda existe um pedaço bom dele. E está em você.", "Aprendiz... obrigada por carregar o meu irmão até aqui. Agora leve ele para casa."];
-    const ves = [...VESPER_DREAMS.flatMap((D) => D.lines.filter((l) => l[0] === "Vesper").map((l) => l[1])), ...said(EPILOGUE, "Vesper"), ...said(ECO_END, "Vesper"), "Se você achou isto... então deu certo. Obrigado, pequeno."];
-    add("ODE", ode, "Odelia");
-    add("VES", ves, "Vesper");
-    return S;
-  };
-  if (typeof indexVoices === "function") indexVoices();
-  // A caixa de diálogo toca a voz do personagem também (não só a do Narrador).
-  const rd = renderDialogLine;
-  renderDialogLine = function () {
-    const r = rd.apply(this, arguments);
-    const d = game.dialog;
-    if (!d) return r;
-    const [who, text] = d.lines[d.i] || [];
-    const e = voiceForText(text);
-    if (e && e.who && who && d._voiced !== d.i) {
-      d._voiced = d.i;
-      playVoice(e);
-    }
-    return r;
-  };
 }
 
 /* ===================== 10 e 11. DALTÔNICO E BATERIA ===================== */
