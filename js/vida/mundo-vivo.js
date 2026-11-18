@@ -314,7 +314,7 @@ function petCareMenu(q) {
     drawBase(list, t);
     if (player.zone === "alareal" || player.zone === "quintal")
       for (const q of homePets()) list.push({ y: q.y, draw: () => drawPet(q.p, q.x * TILE + 7 + Math.sin(t * 0.7 + q.i) * 4, q.y * TILE + 14, Math.sin(t * 0.35 + q.i) < 0, t, false) });
-    if (ZONES[player.zone] && ZONES[player.zone].town && game.cam) {
+    if (ZONES[player.zone] && ZONES[player.zone].town && !ZONES[player.zone].town.indoor && player.zone !== "interior" && game.cam) {
       list.push({ y: -2, draw: () => drawSeasonGround(t) });
       list.push({ y: 998, draw: () => drawLocalFestival(t) });
     }
