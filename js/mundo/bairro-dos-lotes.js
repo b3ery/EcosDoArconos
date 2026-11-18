@@ -71,9 +71,10 @@ LOTES.place = function (E, k, x, road, bairro) {
       put(ix0 + 2, top + 1, "poco");
       put(ix1 - 1, by - 2, "forno");
       put(ix0 + 4, top, "pombal");
-      for (let xx = ix0 + 5; xx <= ix0 + 7; xx++) (put(xx, top + 1, "lago"), put(xx, top + 2, "lago"));
-      put(ix1 - 1, top + 2, "pomar");
-      put(ix1 - 2, top + 2, "pomar");
+      // lago no meio, com grama em volta; as macieiras ficam no canto, longe da água
+      for (let xx = ix0 + 4; xx <= ix0 + 6; xx++) (put(xx, top + 1, "lago"), put(xx, top + 2, "lago"));
+      put(ix1, top + 1, "pomar");
+      put(ix1, top + 2, "pomar");
     }
     for (const [xx, y] of cells) if (!plan[xx + "," + y]) plan[xx + "," + y] = "grama";
   }
