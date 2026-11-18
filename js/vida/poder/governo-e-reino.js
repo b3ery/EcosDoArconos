@@ -33,10 +33,13 @@
     ["edu", "Educação", "book"],
     ["saude", "Saúde", "potion"],
     ["social", "Bem-estar social", "heart"],
+    ["agua", "Poços e água limpa", "water"],
   ];
   const COST = [0, 25, 60]; // ouro por dia: nada, normal, alto
   const R = () => {
-    player.realm = player.realm || { limp: 60, seg: 60, edu: 60, saude: 60, social: 60, bud: { limp: 1, seg: 1, edu: 1, saude: 1, social: 1 }, trade: {}, hol: [] };
+    player.realm = player.realm || { limp: 60, seg: 60, edu: 60, saude: 60, social: 60, agua: 60, bud: { limp: 1, seg: 1, edu: 1, saude: 1, social: 1, agua: 1 }, trade: {}, hol: [] };
+    // reinos de saves antigos ganham os poços
+    if (player.realm.agua == null) ((player.realm.agua = 60), (player.realm.bud.agua = 1));
     return player.realm;
   };
   const ruling = () => lifeMode() && ((typeof isMonarch === "function" && isMonarch()) || (typeof rulesK === "function" && rulesK("aurelia")) || (player.council && player.council.chief === "player"));

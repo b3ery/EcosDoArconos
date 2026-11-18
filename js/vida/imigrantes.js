@@ -35,7 +35,7 @@
   const S = () => (player.imm = player.imm || { list: [], border: "controladas", fest: 0 });
   const avg = () => {
     const r = player.realm;
-    return r ? (r.limp + r.seg + r.edu + r.saude + r.social) / 5 : 60;
+    return r ? (r.limp + r.seg + r.edu + r.saude + r.social + (r.agua ?? 60)) / 6 : 60;
   };
   window.immigrantCount = () => (player.imm ? player.imm.list.length : 0);
 

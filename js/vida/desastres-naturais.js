@@ -332,9 +332,9 @@
   // quem governa cai. Investindo de novo, o povo volta aos poucos.
   const avg = () => {
     const r = realm();
-    return r ? (r.limp + r.seg + r.edu + r.saude + r.social) / 5 : 60;
+    return r ? (r.limp + r.seg + r.edu + r.saude + r.social + (r.agua ?? 60)) / 6 : 60;
   };
-  const people = () => Math.max(0.05, Math.min(1, (avg() - 10) / 45));
+  const people = () => Math.max(0.05, Math.min(1, (avg() - 10) / 45) - ((player.dis && player.dis.deaths) || 0) * 0.02);
   const hashB = (b) => ((b.x * 928371 + b.y * 1237) >>> 0) % 100;
   const empty = (b) => player.zone === "vila" && !b.name && hashB(b) >= people() * 100 + 10;
   const nd2 = onNewDay;
@@ -343,7 +343,22 @@
     if (!lifeMode() || !realm()) return r;
     const S = D();
     const a = avg();
-    S.low = a < 15 ? (S.low || 0) + 1 : 0;
+    const ag = realm().agua ?? 60;
+    S.low = a < 15 || ag < 10 ? (S.low || 0) + 1 : 0;
+    // sem água limpa o povo morre
+    if (ag < 20 && !S.extinct) {
+      const dead = 1 + Math.floor((20 - ag) / 5) + (Math.random() < 0.5 ? 1 : 0);
+      S.deaths = (S.deaths || 0) + dead;
+      realm().saude = Math.max(0, realm().saude - 4);
+      news(`A água podre dos poços matou ${dead} morador(es) de Cinzaluz. ${S.deaths} mortos desde que os poços foram abandonados.`);
+      setTimeout(() => toast(`Morreram ${dead} moradores bebendo água contaminada. O governo precisa limpar os poços!`, 5500), 4200);
+    }
+    if (ag >= 40) S.deaths = 0;
+    // a vila morta pela sede ameaça quem ficou
+    if (S.extinct && ag < 10 && player.zone === "vila" && Math.random() < 0.3 && typeof lifeEnds === "function") {
+      player.deathCause = "água contaminada";
+      setTimeout(() => say([["", "Não há mais água limpa em Cinzaluz. A febre da água podre chega até você..."]], () => lifeEnds()), 6000);
+    }
     if (a < 35 && !S.warned35) ((S.warned35 = true), setTimeout(() => toast("Famílias estão indo embora de Cinzaluz. Casas fechadas com tábuas. O governo precisa investir!", 6000), 5000), news("Êxodo! Famílias abandonam Cinzaluz: sem limpeza, sem guarda, sem escola."));
     if (a >= 45) S.warned35 = false;
     if (S.low >= 5 && !S.extinct) {
@@ -365,7 +380,7 @@
                 if (typeof syncRulers === "function") syncRulers();
               }
               // a coroa nova manda reerguer devagar
-              for (const k of ["limp", "seg", "edu", "saude", "social"]) realm()[k] = Math.max(realm()[k], 22);
+              for (const k of ["limp", "seg", "edu", "saude", "social", "agua"]) realm()[k] = Math.max(realm()[k] ?? 0, 22);
             },
           ),
         5000,
@@ -466,13 +481,19 @@
   }
 
   /* ----- água suja: sem limpeza, o rio e a fonte apodrecem ----- */
-  const dirty = () => lifeMode() && realm() && realm().limp < 40 && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
+  // A água limpa vem dos POÇOS, e quem cuida deles é o governo. O rio nunca
+  // é seguro para beber; com a vila suja, piora.
+  const wellsBad = () => lifeMode() && realm() && (realm().agua ?? 60) < 40 && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
+  const dirty = () => lifeMode() && realm() && (realm().limp < 40 || (realm().agua ?? 60) < 40) && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
   const iaW = interactAt;
   interactAt = function (x, y) {
     const c = typeof tileAt === "function" ? tileAt(player.zone, x, y) : null;
     const r = iaW.apply(this, arguments);
-    if (dirty() && (c === "~" || c === "W" || c === "F") && !(fire && fire.z === player.zone) && Math.random() < (realm().limp < 20 ? 0.6 : 0.35) && typeof getSick === "function" && !player.sick)
-      setTimeout(() => (toast("A água estava suja... seu estômago revira.", 3000), getSick(pk(["intox", "disenteria"]))), 900);
+    if (!lifeMode() || (fire && fire.z === player.zone) || player.sick || typeof getSick !== "function") return r;
+    let risk = 0;
+    if (c === "~") risk = 0.2 + (realm() && realm().limp < 40 ? 0.3 : 0);
+    if ((c === "W" || c === "F") && wellsBad()) risk = (realm().agua ?? 60) < 20 ? 0.7 : 0.4;
+    if (risk && Math.random() < risk) setTimeout(() => (toast(c === "~" ? "Água de rio não é de beber... seu estômago revira." : "O poço está contaminado! Seu estômago revira.", 3200), getSick(pk(["intox", "disenteria"]))), 900);
     return r;
   };
   const cdW = crewDrawList;
@@ -483,7 +504,7 @@
       cam = game.cam,
       T = TILE;
     if (!cam) return;
-    const k = Math.min(1, (40 - realm().limp) / 30);
+    const k = Math.min(1, (40 - Math.min(realm().limp, realm().agua ?? 60)) / 30);
     list.push({
       y: -1.6,
       draw: () => {
@@ -494,7 +515,7 @@
         for (let y = y0; y <= y1; y++)
           for (let x = x0; x <= x1; x++) {
             const c = z.map[y][x];
-            if (c !== "~" && c !== "F" && c !== "W") continue;
+            if (c === "~" ? !(realm().limp < 40) : c === "F" || c === "W" ? !wellsBad() : true) continue;
             // água turva, espuma e lixo boiando
             ctx.fillStyle = `rgba(90,96,50,${0.35 + 0.35 * k})`;
             ctx.fillRect(x * T, y * T, T, T);
