@@ -2934,10 +2934,13 @@ function drawWorld(t) {
         player.look.aura,
         false,
       );
-      ctx.fillStyle = glow;
-      ctx.globalAlpha = 0.35 + 0.25 * Math.sin(t * 5);
-      circle(player.rx * TILE + (player.dir === "left" ? 5 : 27), player.ry * TILE + bob + 7, 5);
-      ctx.globalAlpha = 1;
+      // brilho da ponta do cajado (sem cajado, no Simulador, não tem brilho)
+      if (glow) {
+        ctx.fillStyle = glow;
+        ctx.globalAlpha = 0.35 + 0.25 * Math.sin(t * 5);
+        circle(player.rx * TILE + (player.dir === "left" ? 5 : 27), player.ry * TILE + bob + 7, 5);
+        ctx.globalAlpha = 1;
+      }
     },
   });
   if (game.ep && player.zone === "vila") {
