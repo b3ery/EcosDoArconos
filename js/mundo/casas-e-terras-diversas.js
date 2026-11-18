@@ -120,42 +120,136 @@
     if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 4 + k * 6, Y - 8 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
     // musgo e telhas trocadas
     if (h % 3 === 0 && !V.flat) for (let k = 0; k < 5; k++) R(X + 14 + ((h >> k) % Math.max(1, W - 30)), Y + 6 + k * 6, 4, 2, k % 2 ? "#5a7a3a" : V.r2);
-    // sobrado: um andar inteiro a mais, avançando sobre a rua, e o telhado em cima
+    // SOBRADO (referência: casas medievais de cidade): térreo de pedra, 1 ou 2
+    // andares de enxaimel avançando sobre a rua, telhado alto com água-furtada,
+    // chaminé de tijolo, escada de madeira por fora com sacada e barris.
     if (h % 3 !== 2 && !V.flat && !V.logs) {
-      const ex = 34; // altura do andar de cima
-      const fy = Y + roofH - 6 - ex; // topo do andar novo
-      R(X - 4, fy, W + 8, ex, V.wall);
-      R(X - 4, fy, W + 8, 3, V.beam);
-      R(X - 4, fy + ex - 3, W + 8, 3, V.beam);
-      for (let k = 0; k <= b.w; k++) R(Math.min(X + W + 1, X - 4 + k * TILE), fy, 3, ex, V.beam);
-      if (!V.stone && !V.brick) for (let k = 0; k < b.w; k++) ((ctx.strokeStyle = V.beam), (ctx.lineWidth = 2), ctx.beginPath(), ctx.moveTo(X - 1 + k * TILE, fy + 3), ctx.lineTo(X + 13 + k * TILE, fy + ex - 3), ctx.stroke());
-      if (V.brick) for (let r = 0; r < ex / 6; r++) for (let k = 0; k < W / 12; k++) R(X - 4 + (r % 2) * 6 + k * 12, fy + 3 + r * 6, 11, 1, "rgba(60,20,10,.35)");
-      for (let k = 0; k < b.w; k++) {
-        const wx = X + k * TILE + 11;
-        R(wx - 1, fy + 8, 12, 16, "#4a2e17");
-        R(wx, fy + 9, 10, 14, nightAlpha() > 0.25 ? "#ffd98a" : "#5a7aa0");
-        R(wx + 4, fy + 9, 2, 14, "#4a2e17");
-        R(wx, fy + 15, 10, 1, "#4a2e17");
-        R(wx - 2, fy + 24, 14, 2, V.beam);
+      const floors = h % 2 ? 2 : 1;
+      const ex = 34;
+      const night = nightAlpha() > 0.25;
+      // térreo de pedra (parede de baixo inteira)
+      const gTop = wallTop + 4,
+        gH = wallH - 8;
+      R(X, gTop, W, gH, "#9a9284");
+      for (let r = 0; r < gH / 7; r++)
+        for (let k = 0; k < W / 10 + 1; k++) {
+          const sx = X + (r % 2) * 5 + k * 10;
+          if (sx >= X + W) continue;
+          R(sx, gTop + r * 7, Math.min(9, X + W - sx), 6, ((k + r) * 7 + h) % 3 ? "#a8a090" : "#8a8274");
+          R(sx, gTop + r * 7 + 5, Math.min(9, X + W - sx), 1, "#6a6458");
+        }
+      for (let k = 0; k <= b.w; k++) R(Math.min(X + W - 4, X + k * TILE - 2), gTop, 4, gH, "#5a3a1e");
+      R(X, gTop, W, 3, "#5a3a1e");
+      // porta em arco de madeira e janelinhas do térreo, por cima da pedra
+      for (const dxx of b.door) {
+        const dx = X + (dxx - b.x) * TILE;
+        R(dx + 4, Y + Hh - 34, 24, 30, "#6a6458");
+        ctx.fillStyle = "#3a2414";
+        ctx.beginPath();
+        ctx.arc(dx + 16, Y + Hh - 24, 10, Math.PI, 0);
+        ctx.fill();
+        R(dx + 6, Y + Hh - 24, 20, 20, "#3a2414");
+        R(dx + 8, Y + Hh - 24, 16, 20, "#7a4f2a");
+        R(dx + 8, Y + Hh - 16, 16, 1, "#3a3a3a");
+        R(dx + 15, Y + Hh - 24, 2, 20, "#4a2e17");
+        R(dx + 19, Y + Hh - 14, 2, 2, "#f2c14e");
       }
-      R(X - 4, fy + ex, W + 8, 3, "rgba(0,0,0,.3)"); // sombra do balanço
-      for (const bx of [X - 3, X + W - 1]) R(bx, fy + ex, 3, 7, V.beam);
-      // telhado de novo, mais alto
-      const rh = roofH;
+      for (let k = 0; k < b.w; k++) {
+        if (b.door.includes(b.x + k)) continue;
+        const wx = X + k * TILE + 11;
+        R(wx - 1, gTop + 8, 12, 12, "#4a2e17");
+        R(wx, gTop + 9, 10, 10, night ? "#ffcf6a" : "#4b6f9a");
+        R(wx + 4, gTop + 9, 2, 10, "#4a2e17");
+      }
+      // andares de madeira
+      let fy = wallTop;
+      for (let f = 0; f < floors; f++) {
+        fy -= ex;
+        const o = 4 + f * 2; // cada andar avança mais um pouco
+        R(X - o, fy, W + o * 2, ex, V.stone || V.brick ? "#ece2c8" : V.wall);
+        R(X - o, fy, W + o * 2, 3, V.beam);
+        R(X - o, fy + ex - 3, W + o * 2, 3, V.beam);
+        for (let k = 0; k <= b.w; k++) R(Math.min(X + W + o - 3, X - o + k * TILE), fy, 3, ex, V.beam);
+        // mãos-francesas em X entre as janelas
+        ctx.strokeStyle = V.beam;
+        ctx.lineWidth = 2;
+        for (let k = 0; k < b.w; k += 2) {
+          const x0 = X - o + k * TILE + 3;
+          ctx.beginPath();
+          ctx.moveTo(x0, fy + 3);
+          ctx.lineTo(x0 + 8, fy + ex - 3);
+          ctx.moveTo(x0 + 8, fy + 3);
+          ctx.lineTo(x0, fy + ex - 3);
+          ctx.stroke();
+        }
+        // janelas de vitral em losango, com luz à noite
+        for (let k = 0; k < b.w; k++) {
+          const wx = X - o + k * TILE + 15;
+          R(wx - 1, fy + 7, 14, 18, "#4a2e17");
+          R(wx, fy + 8, 12, 16, night ? "#ffcf6a" : "#5a7aa0");
+          R(wx + 5, fy + 8, 2, 16, "#4a2e17");
+          R(wx, fy + 15, 12, 1, "#4a2e17");
+          R(wx + 1, fy + 9, 3, 2, night ? "#fff0b0" : "#8ab0d0");
+          R(wx - 2, fy + 24, 16, 2, V.beam);
+        }
+        R(X - o, fy + ex, W + o * 2, 3, "rgba(0,0,0,.3)");
+        for (const bx of [X - o + 1, X + W + o - 4]) R(bx, fy + ex, 3, 7, V.beam);
+      }
+      // telhado alto e íngreme
+      const rh = roofH + 12;
       const top = fy - rh + 6;
       ctx.fillStyle = V.roof;
-      if (V.thatch) fillPolygon(X - 8, fy + 2, X + W + 8, fy + 2, X + W / 2, top - 18);
-      else fillPolygon(X - 6, fy + 2, X + W + 6, fy + 2, X + W - 14, top - 10, X + 14, top - 10);
+      if (V.thatch) fillPolygon(X - 10, fy + 2, X + W + 10, fy + 2, X + W / 2, top - 24);
+      else fillPolygon(X - 8, fy + 2, X + W + 8, fy + 2, X + W - 10, top - 16, X + 10, top - 16);
       ctx.fillStyle = V.r2;
-      for (let r = 0; r < (rh + 10) / 7; r++) {
-        const yy = top - 8 + r * 7;
-        if (yy > fy) break;
-        const inset = V.thatch ? Math.max(0, W / 2 - ((yy - top + 18) / (rh + 20)) * (W / 2 + 8)) : 14 - (r * 20) / ((rh + 10) / 7);
-        ctx.fillRect(X + inset - 4, yy, W - 2 * inset + 8, 2);
+      for (let yy = top - 12; yy < fy; yy += 6) {
+        const p = (yy - (top - 16)) / (fy + 2 - (top - 16));
+        const inset = V.thatch ? (1 - p) * (W / 2 + 10) : 10 - 18 * p;
+        ctx.fillRect(X + inset - 6, yy, W - 2 * inset + 12, 2);
       }
-      R(X - 6, fy - 1, W + 12, 3, "rgba(0,0,0,.25)");
-      if (V.chim) for (let k = 0; k < V.chim; k++) (R(X + W - 30 - k * 40, top - 20, 10, 24, "#6b6258"), R(X + W - 32 - k * 40, top - 22, 14, 4, "#4a453e"));
-      if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 4 + k * 6, top - 8 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
+      R(X - 8, fy - 1, W + 16, 3, "rgba(0,0,0,.28)");
+      // água-furtada no telhado
+      if (W >= 96) {
+        const dx = X + Math.round(W * (h % 5 > 2 ? 0.3 : 0.6)) - 10;
+        const dy = fy - Math.round(rh * 0.55);
+        R(dx, dy, 20, 18, V.stone || V.brick ? "#ece2c8" : V.wall);
+        R(dx + 5, dy + 4, 10, 10, night ? "#ffcf6a" : "#5a7aa0");
+        R(dx + 9, dy + 4, 2, 10, "#4a2e17");
+        ctx.fillStyle = V.roof;
+        fillPolygon(dx - 3, dy + 2, dx + 10, dy - 10, dx + 23, dy + 2);
+      }
+      // chaminé de tijolo alta
+      const cx = X + W - 30;
+      R(cx, top - 26, 12, 30, "#8a4a3a");
+      for (let r = 0; r < 6; r++) R(cx, top - 26 + r * 5, 12, 1, "#6a3428");
+      R(cx - 2, top - 28, 16, 4, "#5a2a20");
+      if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 6 + k * 6, top - 14 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
+      // escada de madeira por fora, com sacada no primeiro andar
+      if (h % 4 < 2 && b.w >= 3) {
+        const right = h % 2 === 0;
+        const sx0 = right ? X + W - 4 : X + 4;
+        const dir = right ? 1 : -1;
+        const sy = wallTop - 4;
+        // sacada
+        R(right ? X + W - 34 : X - 6, sy - 2, 40, 4, "#6b4423");
+        for (let k = 0; k < 6; k++) R((right ? X + W - 32 : X - 4) + k * 7, sy - 12, 2, 10, "#7a4f2a");
+        R(right ? X + W - 34 : X - 6, sy - 13, 40, 2, "#7a4f2a");
+        // degraus descendo até o chão
+        const gy = Y + Hh - 8;
+        const steps = Math.floor((gy - sy) / 6);
+        for (let k = 0; k < steps; k++) R(sx0 + dir * (k * 4) - (right ? 0 : 10), sy + k * 6, 10, 3, k % 2 ? "#8a5e32" : "#a8784a");
+        ctx.strokeStyle = "#5a3a1e";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sx0 + (right ? 10 : -10), sy - 8);
+        ctx.lineTo(sx0 + dir * steps * 4 + (right ? 10 : -10), gy - 6);
+        ctx.stroke();
+      }
+      // barris junto da porta
+      if (h % 5 < 3) {
+        const bx = b.door[0] - b.x < b.w / 2 ? X + W - 26 : X + 2;
+        for (const [ox, oy] of [[0, 0], [11, 0], [5, -9]]) (R(bx + ox, Y + Hh - 22 + oy, 10, 12, "#7a4f2a"), R(bx + ox, Y + Hh - 19 + oy, 10, 1, "#4a3a2a"), R(bx + ox, Y + Hh - 13 + oy, 10, 1, "#4a3a2a"), R(bx + ox + 1, Y + Hh - 22 + oy, 2, 12, "#9a6a3a"));
+      }
     }
     // janelas: venezianas ou floreiras
     if (Hh - roofH > 30)
