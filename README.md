@@ -29,7 +29,7 @@
 
 <br>
 
-<img src="assets/screenshots/titulo.png" width="860" alt="Tela inicial do Ecos do Arcano"/>
+<img src="assets/screenshots/seisvozes.png" width="860" alt="As Seis Vozes, no Ecos do Arcano"/>
 
 </div>
 
@@ -121,23 +121,23 @@ O jogo tem **dois modos**:
 
 | | |
 |:---:|:---:|
-| <img src="assets/screenshots/vila.png" width="420"/><br><sub>A praça de Cinzaluz</sub> | <img src="assets/screenshots/dons.png" width="420"/><br><sub>Escolha o seu dom: um pedaço de uma das seis runas</sub> |
-| <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha contra o Ent Silenciado</sub> | <img src="assets/screenshots/covil.png" width="420"/><br><sub>O Covil do Ent e os Ecos Perdidos</sub> |
+| <img src="assets/screenshots/historia.png" width="420"/><br><sub>A praça de Cinzaluz no Modo História</sub> | <img src="assets/screenshots/dons.png" width="420"/><br><sub>Escolha o seu dom: um pedaço de uma das seis runas</sub> |
+| <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha contra a Fênix do Farol, à noite</sub> | <img src="assets/screenshots/seisvozes.png" width="420"/><br><sub>As Seis Vozes: o momento em que as runas se reúnem</sub> |
 
 ### 🏡 Na vida em Cinzaluz
 
 | | |
 |:---:|:---:|
+| <img src="assets/screenshots/vila.png" width="420"/><br><sub>Fim de tarde na praça, com a turma</sub> | <img src="assets/screenshots/taverna.png" width="420"/><br><sub>A Taverna Javali Dourado cheia: cardápio, dados, dardos e dança</sub> |
 | <img src="assets/screenshots/capela.png" width="420"/><br><sub>A Capela Branca e o cemitério do Alto do Descanso</sub> | <img src="assets/screenshots/comunismo.png" width="420"/><br><sub>Luca eleito: bandeiras vermelhas no castelo</sub> |
-| <img src="assets/screenshots/coracoes.png" width="420"/><br><sub>Corações, o "Tinder" da vila</sub> | <img src="assets/screenshots/match.png" width="420"/><br><sub>Deu match!</sub> |
-| <img src="assets/screenshots/calendario.png" width="420"/><br><sub>Calendário com festas, eleição, exposições e casamentos</sub> | <img src="assets/screenshots/jornal.png" width="420"/><br><sub>O Eco de Cinzaluz, o jornal do dia</sub> |
+| <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar e o Mestre do Cais</sub> | <img src="assets/screenshots/gatos.png" width="420"/><br><sub>A Andressa passeando com os gatinhos</sub> |
+| <img src="assets/screenshots/coracoes.png" width="420"/><br><sub>Corações, o "Tinder" da vila</sub> | <img src="assets/screenshots/abrigo.png" width="420"/><br><sub>O Abrigo dos Bichos</sub> |
 
-### 🎒 Criador e bolsa
+### 🎒 Criador e barra de itens
 
 | | |
 |:---:|:---:|
-| <img src="assets/screenshots/criador.png" width="420"/><br><sub>Crie o seu personagem</sub> | <img src="assets/screenshots/bolsa.png" width="420"/><br><sub>A bolsa, com a barra de itens no pé</sub> |
-| <img src="assets/screenshots/barra.png" width="420" /><br><sub>Barra de itens embaixo da tela, como no Minecraft</sub> | |
+| <img src="assets/screenshots/criador.png" width="420"/><br><sub>Crie o seu personagem</sub> | <img src="assets/screenshots/barra.png" width="420"/><br><sub>Barra de itens embaixo da tela, como no Minecraft</sub> |
 
 </div>
 
@@ -288,7 +288,7 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 | | Chefe | Onde |
 |:---:|:---|:---|
 | <img src="assets/personagens/boss_ent.png" width="60"/> | **Ent Silenciado** | 🌲 Bosque Murmurante |
-| | **Fênix do Farol** | ⚓ Farol de Brisamar (à noite) |
+| <img src="assets/personagens/boss_fenix.png" width="60"/> | **Fênix do Farol** | ⚓ Farol de Brisamar (à noite) |
 | <img src="assets/personagens/boss_serpente.png" width="60"/> | **Serpente de Névoa** | 🌫️ Pântano das Brumas |
 | <img src="assets/personagens/boss_grifo.png" width="60"/> | **Grifo de Pedra** | 🏔️ Picos Uivantes |
 | <img src="assets/personagens/boss_basilisco.png" width="60"/> | **Basilisco de Cristal** | ⛏️ Mina de Cristal |
