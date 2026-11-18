@@ -324,6 +324,7 @@ EcosDoArconos/
 │   ├── historia/     história, covis, batalha, saga
 │   └── vida/         Simulador: moradores, poder, realeza, crime, família
 ├── assets/           retratos e a imagem de capa deste README
+├── docs/             documentação técnica e apresentação
 ├── tests/smoke.js    teste automático (npm test)
 └── tools/            check.js (npm run check) e build.js (um arquivo só)
 ```
@@ -331,6 +332,7 @@ EcosDoArconos/
 - `npm run check` confere a sintaxe e se todo arquivo está no `index.html`; `npm test` abre o jogo e passa pelas telas dos dois modos.
 - Cada arquivo trata de um assunto e explica no cabeçalho o que faz e quais funções de outros arquivos ele modifica. A ordem de carregamento fica no `index.html`.
 - **Truques para testar e apresentar:** no computador, segure **Ctrl** e digite **E C O**; no celular, toque 5 vezes no título do **Menu do jogo**. Aparece o painel **TESTES** (ou **F9**): ir a qualquer lugar, mudar hora e clima, abrir minigames, pular etapas da história. Também dá para abrir `dev.html`.
+- **Documentação técnica** (como o código é montado, padrões e índice de todos os arquivos): [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md).
 - **Apresentação:** [`docs/apresentacao-ecos-do-arcano.pptx`](docs/apresentacao-ecos-do-arcano.pptx).
 
 <br>
