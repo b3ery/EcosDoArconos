@@ -120,16 +120,18 @@ O jogo tem **dois modos**:
 ```
 Setas / WASD     Mover                     I    Bolsa (inventário)
 E / Espaço       Interagir e avançar       1–9  Barra de itens (embaixo da tela)
-M  /  Tab        Mapa da região / do mundo Q    Missões
-Esc            Menu                      G    Grimório
+M                Mapa da região / do mundo Q    Missões
+Tab              Menu do jogo (Esc: opções) G    Grimório
 F                Tela cheia (também no Menu) Z  Zoom
 C                Montar no cavalo          R    Decorar a casa
 J                Jornada (História) · Jornal (Simulador)
 Y                Menu de Ações (Simulador) L    Calendário
 
 Batalha:  1–6 magias · Enter lança · D defende · H habilidades · I itens
-Celular:  joystick na metade esquerda · botões A e B · toque e segure numa pessoa
+Celular:  joystick na metade esquerda · botões A e B · ☰ abre o Menu do jogo · toque e segure numa pessoa
 ```
+
+> **Menu do jogo:** mochila, mapa, missões, jornal, corações, calendário, casa, cavalo e opções ficam todos num painel só, com ícones e nomes.
 
 > Funciona no computador e no celular (melhor deitado). Na primeira luta, o **Instrutor Kael** ensina tudo passo a passo.
 
@@ -285,7 +287,10 @@ Cada Guardião guarda uma das seis runas: 🔥 Chama, 💧 Água, 🌪️ Ar, �
 | ⛏️ **Pedravale** | Forja anã, Mina de Cristal e a Fortaleza |
 | 🌲 **Bosque** · 🌫️ **Pântano** · 🏔️ **Picos** | Os Guardiões, a Cripta dos Ecos e a Velha Juta |
 | 📚 **Academia Arcana** · 🗼 **Torre do Silêncio** | Tomos de feitiços e o Silenciador |
-| 🌳 **Floresta Grande** (Simulador) | Lobos, javalis, ursos e caça |
+| 🌍 **Além-mar** | 10 países com 5 reinos cada, de navio: roupas, clima, sotaque e leis de cada terra |
+| 🌳 **Florestas** | 3 matas por cidade (rio, mata fechada e vale do lago), com os bichos, frutas e plantas da terra. Caçar demais acaba com eles. Tem cachoeira, montanha nevada e vulcão |
+
+**Cidades em lotes, como no The Sims:** bairros de ricos, classe média e pobres; cada casa com jardim na frente e quintal cercado nos fundos (porta dos fundos na sua casa), e cada loja com o seu lote.
 
 <br>
 
@@ -325,7 +330,8 @@ EcosDoArconos/
 
 - `npm run check` confere a sintaxe e se todo arquivo está no `index.html`; `npm test` abre o jogo e passa pelas telas dos dois modos.
 - Cada arquivo trata de um assunto e explica no cabeçalho o que faz e quais funções de outros arquivos ele modifica. A ordem de carregamento fica no `index.html`.
-- **Versão dev:** abra `dev.html` (ou `index.html?dev`) e aperte **F9** para pular etapas, liberar tudo e testar.
+- **Truques para testar e apresentar:** no computador, segure **Ctrl** e digite **E C O**; no celular, toque 5 vezes no título do **Menu do jogo**. Aparece o painel **TESTES** (ou **F9**): ir a qualquer lugar, mudar hora e clima, abrir minigames, pular etapas da história. Também dá para abrir `dev.html`.
+- **Apresentação:** [`docs/apresentacao-ecos-do-arcano.pptx`](docs/apresentacao-ecos-do-arcano.pptx).
 
 <br>
 
