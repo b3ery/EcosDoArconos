@@ -527,7 +527,7 @@ drawMinimap = function (big, t) {
 
 const CREW_BDAY = { lucas: 5, matheus: 9, marcos: 13, andressa: 17, mylena: 21, juliaO: 25 };
 function yearDay() {
-  return ((player.day - 1) % 28) + 1;
+  return ((player.day - 1) % (typeof YEAR_DAYS !== "undefined" ? YEAR_DAYS : 30)) + 1;
 }
 function birthdayToday() {
   return Object.keys(CREW_BDAY).find((id) => CREW_BDAY[id] === yearDay()) || null;
