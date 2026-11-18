@@ -297,13 +297,32 @@
         ry = volcano ? 8 : 6 + R() * 3;
       for (let y = 2; y < H - 2; y++)
         for (let x = 2; x < W - 2; x++) {
-          const d = Math.sqrt(((x - mx) / rx) ** 2 + ((y - my) / ry) ** 2) + (hsh(x * 3, y * 7) - 0.5) * 0.25;
+          // silhueta orgânica: o raio ondula devagar em volta (lobos e vales), sem ruído de tile a tile
+          const ang = Math.atan2(y - my, x - mx);
+          const wob = 1 + Math.sin(ang * 3 + ph) * 0.12 + Math.sin(ang * 5 + ph * 2) * 0.07;
+          const d = Math.sqrt(((x - mx) / rx) ** 2 + ((y - my) / ry) ** 2) / wob;
           if (d < 1) {
             cliff.add(x + "," + y);
             height.set(x + "," + y, 1 - d);
             if (volcano && d < 0.22) lava.add(x + "," + y);
           }
         }
+    }
+    // alisa a altura (dois passes) para os degraus formarem anéis contínuos
+    for (let pass = 0; pass < 2; pass++) {
+      const nx = new Map();
+      for (const [k, v] of height) {
+        const [x, y] = k.split(",").map(Number);
+        let sum = 0,
+          n = 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const q = height.get(x + dx + "," + (y + dy));
+          sum += q == null ? 0 : q;
+          n++;
+        }
+        nx.set(k, Math.max(0.01, (v + sum / n) / 2));
+      }
+      for (const [k, v] of nx) height.set(k, v);
     }
     if (fall) {
       for (let y = 1; y < fall.bottom; y++) for (let x = fall.x - 3; x <= fall.x + 3; x++) water.add(x + "," + y);
@@ -735,20 +754,7 @@
       return;
     }
     if (hh != null) {
-      // a montanha: pedra mais escura embaixo, mais clara em cima, neve no alto (no vulcão, basalto e cinza)
-      const vol = DEF[z].volcano;
-      const snow = !vol && (hh > 0.55 || (DEF[z].biome.key === "gelo" && hh > 0.3));
-      const base = vol ? (hh > 0.6 ? "#4a3a38" : "#3a3030") : hh > 0.7 ? "#9a948a" : hh > 0.4 ? "#7e786e" : "#5e5a52";
-      R(0, 0, 32, 32, base);
-      for (let i = 0; i < 5; i++) R((i * 13 + x * 5) % 26, (i * 7 + y * 3) % 26, 8, 5, i % 2 ? shade(base, 0.15) : shade(base, -0.18));
-      // sombra do lado de baixo e brilho do lado de cima
-      if (!DEF[z].height.has(x + "," + (y + 1))) R(0, 26, 32, 6, shade(base, -0.35));
-      if (!DEF[z].height.has(x + "," + (y - 1))) R(0, 0, 32, 3, shade(base, 0.25));
-      if (snow) {
-        R(0, 0, 32, 32, "rgba(240,246,252,.82)");
-        for (let i = 0; i < 3; i++) R((i * 11 + x * 3) % 24, (i * 9 + y * 5) % 24 + 4, 7, 3, "#c9d6e2");
-      }
-      if (vol && hh > 0.62) R(0, 0, 32, 32, `rgba(255,110,40,${0.12 + 0.08 * Math.sin(t * 2 + x)})`);
+      mountainTile(z, x, y, hh, X, Y, R, t);
       return;
     }
     if (DEF[z].cliff.has(x + "," + y)) {
@@ -772,6 +778,73 @@
     const p = DEF[z].props.get(x + "," + y);
     if (!p) return;
     if (p.startsWith("planta:")) plant(p.slice(7), R, x, y, t);
+  };
+  /* MONTANHA em degraus (referência: tiles de rocha top-down de pixel art):
+     cada nível de altura é um platô; onde o nível cai, aparece a FACE do
+     paredão (o lado de baixo, mais escuro, com fendas verticais); a luz vem
+     de cima à esquerda (borda clara em cima/esquerda, escura embaixo/direita);
+     os cantos de fora são arredondados e o paredão joga sombra no chão.
+     Nada de sombra uniforme em volta ("pillow shading"). */
+  const LV = (z, x, y) => {
+    const h = DEF[z].height.get(x + "," + y);
+    return h == null ? -1 : Math.min(3, Math.floor(h * 4.2));
+  };
+  function mountainTile(z, x, y, hh, X, Y, R, t) {
+    const D0 = DEF[z];
+    const vol = D0.volcano,
+      ice = D0.biome.key === "gelo";
+    const lv = LV(z, x, y);
+    const PAL = vol
+      ? [["#3a3030", "#2a2222", "#4a3e3c"], ["#443836", "#2e2524", "#56484a"], ["#4e403e", "#352a28", "#625250"], ["#5a4644", "#3e302e", "#6e5a58"]]
+      : [["#6e6a60", "#4e4a42", "#8a857a"], ["#7e786e", "#5a564e", "#9a948a"], ["#8e887e", "#66625a", "#aaa49a"], ["#a09a90", "#76726a", "#bcb6ac"]];
+    const snow = !vol && (lv >= 3 || (ice && lv >= 2));
+    let [top, dark, lite] = PAL[lv];
+    if (snow) [top, dark, lite] = ["#e8eef4", "#9aa8b8", "#ffffff"];
+    const below = LV(z, x, y + 1),
+      above = LV(z, x, y - 1),
+      left = LV(z, x - 1, y),
+      right = LV(z, x + 1, y);
+    // o topo do platô, com textura de pedra que segue a luz
+    R(0, 0, 32, 32, top);
+    for (let i = 0; i < 4; i++) {
+      const px = (i * 11 + x * 7) % 24,
+        py = (i * 7 + y * 5) % 20;
+      R(px, py, 7, 4, dark);
+      R(px, py, 7, 1, lite); // a pedrinha pega luz em cima
+    }
+    if (snow) for (let i = 0; i < 3; i++) R((i * 9 + x * 5) % 26, (i * 11 + y * 3) % 24 + 2, 6, 2, "#c9d4e0");
+    // bordas: luz em cima/esquerda, sombra embaixo/direita (só onde o nível muda)
+    if (above < lv) R(0, 0, 32, 2, lite);
+    if (left < lv) R(0, 0, 2, 32, lite);
+    if (right < lv) R(30, 0, 2, 32, dark);
+    // face do paredão: onde embaixo o nível é menor, os 12px de baixo viram o paredão
+    if (below < lv) {
+      const face = vol ? "#2a2020" : snow ? "#7a8898" : PAL[Math.max(0, lv - 1)][1];
+      R(0, 20, 32, 12, face);
+      R(0, 20, 32, 2, lite); // a quina pega luz
+      for (let k = 3 + ((x * 5) % 6); k < 32; k += 8) R(k, 23, 1, 8, shade(face, -0.3)); // fendas
+      R(0, 30, 32, 2, shade(face, -0.35));
+      if (vol && lv >= 2) R(((x * 7) % 20) + 4, 24, 2, 7, `rgba(255,120,40,${0.5 + 0.3 * Math.sin(t * 3 + x)})`); // veio de lava
+    }
+    // cantos de fora arredondados: o canto que não tem vizinho do mesmo nível vira chão/nível de baixo
+    const lower = (l) => (l < 0 ? null : PAL[l][0]);
+    const corner = (cx, cy, l) => {
+      const col = lower(l);
+      if (col === null) return ctx.clearRect ? 0 : 0;
+      R(cx, cy, 4, 4, col);
+    };
+    if (above < lv && left < lv) (R(0, 0, 4, 2, lower(Math.max(above, left)) || "rgba(0,0,0,0)"), R(0, 0, 2, 4, lower(Math.max(above, left)) || "rgba(0,0,0,0)"));
+    if (above < lv && right < lv) (R(28, 0, 4, 2, lower(Math.max(above, right)) || "rgba(0,0,0,0)"), R(30, 0, 2, 4, lower(Math.max(above, right)) || "rgba(0,0,0,0)"));
+  }
+  // o chão logo abaixo da montanha recebe a sombra do paredão
+  const dtShadow = drawTile;
+  drawTile = function (z, x, y, c, t) {
+    dtShadow.apply(this, arguments);
+    if (!isMata(z) || !DEF[z] || DEF[z].height.has(x + "," + y) || !DEF[z].height.has(x + "," + (y - 1))) return;
+    ctx.fillStyle = "rgba(20,16,24,.32)";
+    ctx.fillRect(x * TILE, y * TILE, TILE, 8);
+    ctx.fillStyle = "rgba(20,16,24,.14)";
+    ctx.fillRect(x * TILE, y * TILE + 8, TILE, 6);
   };
   function plant(k, R, x, y, t) {
     const sw = Math.round(Math.sin(t * 1.5 + x) * 1);
