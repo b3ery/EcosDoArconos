@@ -108,7 +108,10 @@
       S.t += dt;
       if (spec.time) S.left -= dt;
       g.clearRect(0, 0, W, H);
+      SCN = chain && SCENES[chain.scene] ? SCENES[chain.scene] : null;
+      if (SCN) (g.fillStyle = "#000"), g.fillRect(0, 0, W, H), SCN.bg();
       spec.draw(g, S, dt);
+      if (SCN) (SCN.lt && light(...SCN.lt), vignette());
       el.querySelector(".gs-time").textContent = spec.time ? `${Math.max(0, S.left).toFixed(1)}s` : "";
       el.querySelector(".gs-msg").textContent = S.msg || "";
       const a = spec.auto ? spec.auto(S, dt) : null;
@@ -141,20 +144,22 @@
     if (game.mode === "ges") game.mode = "world";
     toast("Você desistiu.", 1200);
   }
-  function run(stages, onDone) {
-    chain = { stages: stages.slice(1), scores: [], onDone };
+  function run(stages, onDone, scene) {
+    chain = { stages: stages.slice(1), scores: [], onDone, scene };
     stage(stages[0]);
   }
+  const runS = (scene, st, cb) => run(st, cb, scene);
   KEY_HANDLERS.ges = (k) => k === "escape" && quit();
   if (typeof BEFORE_DIALOG !== "undefined") BEFORE_DIALOG.add("ges");
 
   /* ----- desenho ----- */
-  const R = (x, y, w, h, c) => ((g.fillStyle = c), g.fillRect(x, y, w, h));
+  let SCN = null;
+  const R = (x, y, w, h, c) => (SCN && x === 0 && y === 0 && w === W && h === H ? 0 : ((g.fillStyle = c), g.fillRect(x, y, w, h)));
   const C = (x, y, r, c) => ((g.fillStyle = c), g.beginPath(), g.arc(x, y, r, 0, 7), g.fill());
   const E = (x, y, rx, ry, c) => ((g.fillStyle = c), g.beginPath(), g.ellipse(x, y, Math.max(1, rx), Math.max(1, ry), 0, 0, 7), g.fill());
   const T = (s, x, y, c = "#fff", sz = 11, al = "center") => ((g.fillStyle = c), (g.font = `bold ${sz}px monospace`), (g.textAlign = al), g.fillText(s, x, y));
   const dash = (x1, y1, x2, y2, c = "#ffe08a") => (g.setLineDash([5, 4]), (g.strokeStyle = c), (g.lineWidth = 2), g.beginPath(), g.moveTo(x1, y1), g.lineTo(x2, y2), g.stroke(), g.setLineDash([]));
-  const table = (c = "#6b4423") => (R(0, 0, W, H, "#2a1e30"), R(0, 60, W, H - 60, c), R(0, 60, W, 4, "#8a5a2e"));
+  const table = (c = "#6b4423") => (SCN ? 0 : (R(0, 0, W, H, "#2a1e30"), R(0, 60, W, H - 60, c), R(0, 60, W, 4, "#8a5a2e")));
 
   /* ===================== TIPOS DE GESTO ===================== */
 
@@ -279,11 +284,131 @@
     );
   }
   const drawItem = (it) => {
+    if (it.crate) {
+      R(it.x, it.y, it.w, it.h, "#8a5a2e");
+      R(it.x + 3, it.y + 3, it.w - 6, it.h - 6, "#b07a42");
+      for (let k = 1; k < 3; k++) R(it.x + 3, it.y + (it.h * k) / 3, it.w - 6, 2, "#8a5a2e");
+      g.strokeStyle = "#6b4423";
+      g.lineWidth = 3;
+      g.beginPath();
+      g.moveTo(it.x + 4, it.y + 4);
+      g.lineTo(it.x + it.w - 4, it.y + it.h - 4);
+      g.stroke();
+      R(it.x, it.y, 4, 4, "#4a4a52");
+      R(it.x + it.w - 4, it.y, 4, 4, "#4a4a52");
+      R(it.x, it.y + it.h - 4, 4, 4, "#4a4a52");
+      R(it.x + it.w - 4, it.y + it.h - 4, 4, 4, "#4a4a52");
+      return;
+    }
+    if (it.icon) {
+      R(it.x, it.y, it.w, it.h, "#5a3a22");
+      R(it.x + 2, it.y + 2, it.w - 4, it.h - 4, "#efe2c0");
+      icon(it.icon, it.x + 14, it.y + it.h / 2, 2);
+      if (it.label) T(it.label, it.x + 26, it.y + it.h / 2 + 4, "#3a2414", it.sz || 9, "left");
+      return;
+    }
     R(it.x, it.y, it.w, it.h, it.c || "#c9a050");
     g.strokeStyle = "rgba(0,0,0,.4)";
     g.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
     if (it.label) T(it.label, it.x + it.w / 2, it.y + it.h / 2 + 4, it.tc || "#1a1028", it.sz || 10);
   };
+
+  /* ===================== CENÁRIOS EM PIXEL ART =====================
+   * Cada ofício tem a sua bancada vista de perto, com paleta quente e luz
+   * (janela, fogo, vela) como última camada, no estilo do resto do jogo. */
+  const PX = 4;
+  const rr = (x, y, w, h, c) => ((g.fillStyle = c), g.fillRect(Math.round(x / 2) * 2, Math.round(y / 2) * 2, Math.round(w / 2) * 2, Math.round(h / 2) * 2));
+  function icon(key, x, y, size = 3) {
+    const old = ctx;
+    ctx = g;
+    try {
+      drawPixelIcon(key, x, y, size);
+    } finally {
+      ctx = old;
+    }
+  }
+  function planks(y0, y1, a, b, seam) {
+    for (let y = y0; y < y1; y += 12) {
+      rr(0, y, W, 12, (y / 12) % 2 ? a : b);
+      rr(0, y + 11, W, 1, seam);
+      for (let x = ((y / 12) % 2) * 40; x < W; x += 80) rr(x, y, 1, 12, seam);
+    }
+  }
+  function bricks(y0, y1, a, b, mortar) {
+    rr(0, y0, W, y1 - y0, mortar);
+    for (let y = y0, r = 0; y < y1; y += 10, r++)
+      for (let x = -(r % 2) * 12; x < W; x += 24) rr(x + 1, y + 1, 22, 8, (x + y) % 48 ? a : b);
+  }
+  function plaster(y0, y1, a, b) {
+    rr(0, y0, W, y1 - y0, a);
+    for (let i = 0; i < 40; i++) rr((i * 97) % W, y0 + ((i * 53) % (y1 - y0)), 6, 2, b);
+  }
+  function windowAt(x, y, w = 44, h = 36, sky = "#9fd0f0") {
+    rr(x - 4, y - 4, w + 8, h + 8, "#5a3a22");
+    rr(x, y, w, h, sky);
+    rr(x, y + h - 10, w, 10, "#cfe8f8");
+    rr(x + w / 2 - 1, y, 2, h, "#5a3a22");
+    rr(x, y + h / 2 - 1, w, 2, "#5a3a22");
+  }
+  function shelf(x, y, w, icons) {
+    rr(x, y + 18, w, 4, "#6b4423");
+    rr(x, y + 22, w, 2, "#3a2414");
+    icons.forEach((k, i) => icon(k, x + 12 + i * ((w - 16) / Math.max(1, icons.length - 1 || 1)), y + 10, 2));
+  }
+  function counter(y, top = "#8a5a2e", front = "#6b4423") {
+    rr(0, y, W, 6, top);
+    rr(0, y + 6, W, H - y - 6, front);
+    for (let x = 0; x < W; x += 60) rr(x, y + 6, 2, H - y - 6, "#4a2e17");
+    rr(0, y + 6, W, 2, "rgba(0,0,0,.25)");
+  }
+  function sky(top, bot) {
+    const gr = g.createLinearGradient(0, 0, 0, H);
+    gr.addColorStop(0, top);
+    gr.addColorStop(1, bot);
+    g.fillStyle = gr;
+    g.fillRect(0, 0, W, H);
+  }
+  function light(x, y, r, col, a = 0.35) {
+    const gr = g.createRadialGradient(x, y, 4, x, y, r);
+    gr.addColorStop(0, col.replace("A", a));
+    gr.addColorStop(1, col.replace("A", 0));
+    g.fillStyle = gr;
+    g.fillRect(0, 0, W, H);
+  }
+  function vignette() {
+    const gr = g.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);
+    gr.addColorStop(0, "rgba(0,0,0,0)");
+    gr.addColorStop(1, "rgba(10,5,15,.55)");
+    g.fillStyle = gr;
+    g.fillRect(0, 0, W, H);
+  }
+  const SCENES = {
+    padeiro: { bg: () => (bricks(0, 64, "#c97a4a", "#b86a3a", "#8a4a2a"), windowAt(24, 10), shelf(90, 6, 120, ["bread", "cake", "wheat", "pie"]), counter(64, "#d9b07a", "#a8784a")), lt: [300, 30, 200, "rgba(255,180,90,A)"] },
+    ferreiro: { bg: () => (bricks(0, 64, "#4a3a3a", "#3a2e2e", "#2a1e1e"), shelf(150, 8, 160, ["sword", "axe", "hammer", "pick"]), counter(64, "#4a4a52", "#2a2a32")), lt: [250, 160, 220, "rgba(255,120,40,A)"] },
+    cozinheiro: { bg: () => (plaster(0, 64, "#d8c8a8", "#c8b898"), windowAt(280, 10), shelf(30, 6, 160, ["stew", "cheese", "meat", "herb", "honey"]), counter(64, "#c9a878", "#8a6a3a")), lt: [300, 20, 220, "rgba(255,230,170,A)"] },
+    taverneiro: { bg: () => (planks(0, 64, "#6b4423", "#5a3a1e", "#3a2414"), shelf(20, 6, 140, ["mug", "wine", "mug", "wine"]), shelf(200, 6, 140, ["cheese", "bread", "pie"]), counter(64, "#8a5a2e", "#5a3a1e")), lt: [180, 0, 260, "rgba(255,190,100,A)"] },
+    costureiro: { bg: () => (plaster(0, 64, "#e8d8e8", "#d8c8d8"), windowAt(20, 10), shelf(90, 6, 220, ["shirt", "robe", "hat", "feather"]), counter(64, "#a8784a", "#7a5a2e")), lt: [40, 20, 220, "rgba(255,240,200,A)"] },
+    escriba: { bg: () => (planks(0, 64, "#4a3020", "#3e281a", "#2a1a10"), shelf(20, 6, 320, ["book", "scroll", "book", "feather", "scroll", "book"]), counter(64, "#6b4423", "#4a2e17"), icon("sun", 330, 90, 2)), lt: [330, 80, 200, "rgba(255,200,110,A)"] },
+    pintor: { bg: () => (plaster(0, 64, "#f2eee4", "#e2ded4"), windowAt(270, 10), shelf(20, 6, 200, ["flower", "staff", "gem"]), counter(64, "#c9a878", "#a8784a")), lt: [290, 20, 240, "rgba(255,245,220,A)"] },
+    moleiro: { bg: () => (planks(0, 240, "#a8784a", "#9a6a3e", "#6b4423"), shelf(20, 6, 120, ["wheat", "wheat", "bread"])), lt: [180, 40, 240, "rgba(255,230,170,A)"] },
+    acougueiro: { bg: () => (plaster(0, 64, "#e8e4dc", "#d8d4cc"), shelf(40, 6, 280, ["meat", "meat", "cheese", "meat"]), counter(64, "#c9a878", "#8a6a3a")), lt: [180, 0, 240, "rgba(255,240,220,A)"] },
+    peixeiro: { bg: () => (plaster(0, 64, "#cfe0e8", "#bfd0d8"), shelf(40, 6, 280, ["fish", "fish", "water", "fish"]), counter(64, "#8ab0c0", "#5a8090")), lt: [180, 0, 240, "rgba(220,240,255,A)"] },
+    boticario: { bg: () => (planks(0, 240, "#3a4a32", "#34422c", "#22301c"), shelf(20, 6, 320, ["potion", "herb", "potionB", "herb", "potion", "flower"])), lt: [60, 40, 220, "rgba(180,255,170,A)"] },
+    cavalarico: { bg: () => (planks(0, 240, "#8a6a3a", "#7a5a2e", "#5a3a1e"), shelf(220, 6, 120, ["horse", "wheat", "water"])), lt: [180, 0, 260, "rgba(255,230,170,A)"] },
+    balconista: { bg: () => (planks(0, 64, "#6b4423", "#5a3a1e", "#3a2414"), shelf(20, 6, 320, ["bag", "crate", "honey", "bread", "soap", "bag"]), counter(186, "#8a5a2e", "#6b4423")), lt: [180, 0, 240, "rgba(255,210,140,A)"] },
+    carregador: { bg: () => (bricks(0, 130, "#8a6a4a", "#7a5a3e", "#4a3424"), shelf(20, 20, 140, ["crate", "bag", "crate"]), shelf(200, 20, 140, ["bag", "crate", "bag"]), shelf(20, 70, 320, ["crate", "crate", "bag", "crate", "bag"]), planks(130, 240, "#a8784a", "#9a6a3e", "#6b4423")), lt: [180, 0, 260, "rgba(255,220,160,A)"] },
+    bardo: { bg: () => (planks(0, 240, "#5a3a1e", "#4e321a", "#2a1a10"), icon("note", 40, 30, 3), icon("note", 320, 40, 3)), lt: [70, 130, 160, "rgba(255,200,110,A)"] },
+    joalheiro: { bg: () => (plaster(0, 64, "#2a3a5a", "#24324e"), shelf(40, 6, 280, ["gem", "ring", "amulet", "gem"])), lt: [180, 130, 220, "rgba(200,230,255,A)"] },
+    bibliotecario: { bg: () => (planks(0, 240, "#3a2a1e", "#34261a", "#20160e")), lt: [180, 0, 260, "rgba(255,220,160,A)"] },
+    professor: { bg: () => (plaster(0, 240, "#d8c8a8", "#c8b898"), windowAt(10, 70, 24, 60)), lt: [20, 100, 220, "rgba(255,240,200,A)"] },
+    lenhador: { bg: () => (sky("#8ac8e8", "#d8eef8"), [40, 120, 300].forEach((x) => (rr(x - 4, 90, 8, 100, "#5a3a22"), g.fillStyle = "#3a6a2a", g.beginPath(), g.arc(x, 90, 34, 0, 7), g.fill())), rr(0, 186, W, 54, "#5a8a3a")), lt: [300, 0, 300, "rgba(255,250,200,A)"] },
+    fazendeiro: { bg: () => (sky("#8ac8e8", "#f8e8b8"), rr(0, 120, W, 20, "#8aa84a"), rr(0, 140, W, 42, "#c9a050")), lt: [320, 0, 320, "rgba(255,240,180,A)"] },
+    minerador: { bg: () => (rr(0, 0, W, H, "#1a1418"), bricks(0, 240, "#3a3038", "#342a32", "#241c22")), lt: [40, 40, 160, "rgba(255,190,90,A)"] },
+    feirante: { bg: () => (sky("#9fd0f0", "#e8f0f8"), (() => { for (let x = 0; x < W; x += 30) rr(x, 0, 30, 26, (x / 30) % 2 ? "#c94a4a" : "#f2eee4"); for (let x = 0; x < W; x += 30) (g.fillStyle = (x / 30) % 2 ? "#c94a4a" : "#f2eee4"), g.beginPath(), g.arc(x + 15, 26, 15, 0, Math.PI), g.fill(); })(), counter(150, "#a8784a", "#7a5a2e")), lt: [180, 0, 280, "rgba(255,240,200,A)"] },
+    acendedor: { bg: () => (sky("#141434", "#2a2a5a"), [30, 250].forEach((x) => (rr(x, 120, 90, 120, "#3a3048"), rr(x + 10, 140, 14, 14, "#ffd66b"), rr(x + 60, 140, 14, 14, "#ffd66b"), (g.fillStyle = "#4a2a3a"), g.beginPath(), g.moveTo(x - 6, 120), g.lineTo(x + 45, 90), g.lineTo(x + 96, 120), g.fill()))), lt: [180, 90, 140, "rgba(255,200,110,A)"] },
+  };
+  SCENES.feirante2 = SCENES.feirante;
+  SCENES.stall = SCENES.feirante;
 
   /* ===================== OS OFÍCIOS ===================== */
 
@@ -777,7 +902,7 @@
       title: "Separar as ervas",
       sub: `A receita pede: <b>${need.join(", ")}</b>. Arraste só essas para o pilão.`,
       time: 18,
-      state: () => ({ items: all.map((h, i) => ({ x: 14 + (i % 4) * 82, y: 70 + Math.floor(i / 4) * 40, w: 76, h: 30, label: h, c: "#7ad36b", h0: h })), got: [], wrong: 0 }),
+      state: () => ({ items: all.map((h, i) => ({ x: 14 + (i % 4) * 82, y: 70 + Math.floor(i / 4) * 40, w: 76, h: 30, label: h, icon: "herb", h0: h })), got: [], wrong: 0 }),
       drop(S, it) {
         if (it.x + it.w / 2 > 200 && it.y + it.h / 2 > 150) {
           S.items = S.items.filter((q) => q !== it);
@@ -1283,7 +1408,7 @@
       title: "Carregar o carrinho",
       sub: "Arraste as caixas para cima do carrinho, uma em cima da outra. Mal centralizada, a pilha cai!",
       time: 20,
-      state: () => ({ items: [0, 1, 2].map((i) => ({ x: 20 + i * 50, y: 190, w: 44, h: 34, c: "#a8784a", label: "📦", i })), stack: [], fell: 0 }),
+      state: () => ({ items: [0, 1, 2].map((i) => ({ x: 20 + i * 50, y: 190, w: 44, h: 34, crate: true, i })), stack: [], fell: 0 }),
       drop(S, it) {
         const top = S.stack.length ? S.stack[S.stack.length - 1] : { x: 230, w: 80 };
         const cx = it.x + it.w / 2,
@@ -1306,9 +1431,19 @@
       },
       draw(g) {
         R(0, 0, W, H, "#3a2e22");
-        R(220, 170, 100, 16, "#6b4423");
-        C(240, 192, 10, "#3a2414");
-        C(300, 192, 10, "#3a2414");
+        // carroça de madeira
+        R(214, 166, 112, 18, "#8a5a2e");
+        R(214, 166, 112, 4, "#b07a42");
+        for (let x = 222; x < 326; x += 20) R(x, 170, 2, 14, "#6b4423");
+        R(326, 160, 28, 4, "#6b4423");
+        for (const wx of [238, 302]) {
+          C(wx, 192, 13, "#4a2e17");
+          C(wx, 192, 10, "#8a5a2e");
+          C(wx, 192, 3, "#4a4a52");
+          g.strokeStyle = "#4a2e17";
+          g.lineWidth = 2;
+          for (let a = 0; a < 6; a++) g.beginPath(), g.moveTo(wx, 192), g.lineTo(wx + Math.cos(a) * 10, 192 + Math.sin(a) * 10), g.stroke();
+        }
         S.items.forEach(drawItem);
         S.msg = S.msg2 || `${S.stack.length}/3`;
       },
@@ -1318,7 +1453,8 @@
   }
 
   /** Feirante: separar o pedido do cliente na cesta. */
-  const STALL_GOODS = ["Maçã", "Pão", "Queijo", "Mel", "Ovos", "Peixe", "Cenoura", "Uva", "Leite"];
+  const STALL_GOODS = ["Maçã", "Pão", "Queijo", "Mel", "Vinho", "Peixe", "Trigo", "Torta", "Carne"];
+  const GOOD_ICON = { Maçã: "apple", Pão: "bread", Queijo: "cheese", Mel: "honey", Vinho: "wine", Peixe: "fish", Trigo: "wheat", Torta: "pie", Carne: "meat" };
   function basket() {
     const want = shuffle(STALL_GOODS).slice(0, 3);
     const all = shuffle([...want, ...shuffle(STALL_GOODS.filter((g) => !want.includes(g))).slice(0, 4)]);
@@ -1326,7 +1462,7 @@
       title: "Montar a cesta",
       sub: `O cliente quer: <b>${want.join(", ")}</b>. Arraste só isso para a cesta.`,
       time: 16,
-      state: () => ({ items: all.map((n, i) => ({ x: 14 + (i % 4) * 84, y: 70 + Math.floor(i / 4) * 40, w: 76, h: 30, label: n, c: "#f2c14e", n })), got: [], wrong: 0 }),
+      state: () => ({ items: all.map((n, i) => ({ x: 14 + (i % 4) * 84, y: 40 + Math.floor(i / 4) * 40, w: 78, h: 30, label: n, icon: GOOD_ICON[n] || "bag", n })), got: [], wrong: 0 }),
       drop(S, it) {
         if (it.y + it.h / 2 > 160 && it.x + it.w / 2 > 200) {
           S.items = S.items.filter((q) => q !== it);
@@ -1394,7 +1530,7 @@
         p = j && PROFESSIONS[j.id];
       const label = j && jobLabel(x, y);
       if (p && label && STREET[j.id] && p.tile && label.startsWith(p.verb) && !chain) {
-        run([STREET[j.id]()], (s, max) => {
+        runS(j.id, [STREET[j.id]()], (s, max) => {
           if (s / max < 0.3) return toast("Não deu certo. Tente de novo.", 1500);
           const k = x + "," + y;
           j.hits[k] = p.hits;
@@ -1410,7 +1546,7 @@
         return true;
       }
       if (label === "Carregar as caixas no armazém" && !chain) {
-        run([stackCrates()], (s, max) => {
+        runS("carregador", [stackCrates()], (s, max) => {
           if (s / max < 0.3) return toast("A pilha caiu toda. Tente de novo.", 1500);
           const z = j.zone;
           const doors = ZONES[z].town.bld.filter((b) => b.name && b.name !== WAREHOUSES[z]);
@@ -1423,11 +1559,11 @@
         return true;
       }
       if (j && (j.id === "feirante" || j.id === "stall") && label === "Atender cliente" && !chain) {
-        run([basket()], (s, max) => (s / max < 0.3 ? toast("O cliente desistiu da cesta errada.", 1500) : jiBase(x, y)));
+        runS("feirante", [basket()], (s, max) => (s / max < 0.3 ? toast("O cliente desistiu da cesta errada.", 1500) : jiBase(x, y)));
         return true;
       }
       if (j && j.id === "acendedor" && label && label.startsWith(p.verb) && (j.oil ?? 4) > 0 && !chain) {
-        run([lightLamp()], (s, max) => (s / max < 0.3 ? toast("O vento apagou a chama. De novo!", 1500) : jiBase(x, y)));
+        runS("acendedor", [lightLamp()], (s, max) => (s / max < 0.3 ? toast("O vento apagou a chama. De novo!", 1500) : jiBase(x, y)));
         return true;
       }
       return jiBase(x, y);
@@ -1556,17 +1692,17 @@
     const mk = MAP[id];
     if (!mk) return oldJobGame(id, info, title, onDone);
     // estágios com estado novo a cada vez (os fixos são reiniciados pelo state())
-    run(mk(info), onDone);
+    run(mk(info), onDone, id);
   };
   window.gestureTest = (id, info) => {
     const st = { lenhador: chopTree, fazendeiro: harvest, minerador: mineRock, carregador: stackCrates, feirante: basket, acendedor: lightLamp }[id];
-    if (st) return run([st()], (s, m) => (window._gres = s + "/" + m));
+    if (st) return run([st()], (s, m) => (window._gres = s + "/" + m), id);
     window.jobGame(id, info, "teste", (s, m) => (window._gres = s + "/" + m));
   };
 
   const st = document.createElement("style");
   st.textContent = `#ges{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:30;background:rgba(10,6,18,.7)}
-  #ges .gs-card{width:min(96%,40em);max-height:96%;background:linear-gradient(#2e2246,#1c1530);border:3px solid #c9a03a;border-radius:14px;padding:.7em .9em;color:#fff;display:flex;flex-direction:column;gap:.4em;user-select:none;-webkit-user-select:none}
+  #ges .gs-card{width:min(96%,40em,calc(58vh * 1.5 + 1.8em));max-height:96%;background:linear-gradient(#2e2246,#1c1530);border:3px solid #c9a03a;border-radius:14px;padding:.7em .9em;color:#fff;display:flex;flex-direction:column;gap:.4em;user-select:none;-webkit-user-select:none}
   #ges h3{margin:0;text-align:center;font-family:"Pixelify Sans",sans-serif;color:#ffe08a}
   #ges .gs-sub{margin:0;font-size:.85em;color:#d8c8f0;text-align:center}#ges .gs-sub b{color:#ffe08a}
   #ges canvas{position:static!important;width:100%;height:auto!important;max-height:58vh;object-fit:contain;image-rendering:pixelated;border-radius:8px;touch-action:none;cursor:crosshair;background:#000}
