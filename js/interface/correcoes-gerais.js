@@ -131,3 +131,69 @@ const ANDRESSA_CATS = [
     return ipBase.apply(this, arguments);
   };
 }
+
+/* ----- setas da loja: também respondem ao toque em celulares sem "pointer" ----- */
+if (typeof fixShopNav === "function") {
+  const fsBase = fixShopNav;
+  fixShopNav = function () {
+    fsBase.apply(this, arguments);
+    const root = byId("shop");
+    if (!root) return;
+    root.querySelectorAll("[data-nav],[data-cnav]").forEach((b) => {
+      const d = +(b.dataset.nav || b.dataset.cnav);
+      const go = () => !b.disabled && (b.dataset.cnav ? cosSlide(d) : shopSlide(d));
+      let last = 0;
+      const fire = (e) => {
+        if (performance.now() - last < 250) return;
+        last = performance.now();
+        e.preventDefault();
+        e.stopPropagation();
+        go();
+      };
+      b.onpointerdown = fire;
+      b.addEventListener("touchstart", fire, { passive: false });
+    });
+  };
+}
+
+/* ----- celular: a área do joystick não rouba o toque dos botões ----- */
+(() => {
+  const zone = byId("joyzone");
+  if (!zone) return;
+  const uiUnder = (x, y) => {
+    for (const el of document.elementsFromPoint(x, y)) {
+      if (el === zone || el.id === "cv" || el.id === "joy" || (el.closest && el.closest("#joy"))) continue;
+      const hit = el.closest && el.closest("button, a, input, select, [data-hb], [data-act], .ui[onclick], #hotbar, .lifeb");
+      if (hit && getComputedStyle(hit).visibility !== "hidden") return hit;
+    }
+    return null;
+  };
+  let pending = null;
+  zone.addEventListener(
+    "pointerdown",
+    (e) => {
+      const hit = uiUnder(e.clientX, e.clientY);
+      if (!hit) return;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      pending = { hit, id: e.pointerId, x: e.clientX, y: e.clientY };
+    },
+    true,
+  );
+  zone.addEventListener(
+    "pointerup",
+    (e) => {
+      if (!pending || pending.id !== e.pointerId) return;
+      const { hit, x, y } = pending;
+      pending = null;
+      e.stopImmediatePropagation();
+      if (Math.hypot(e.clientX - x, e.clientY - y) > 20) return;
+      const btn = hit.matches("#hotbar") ? document.elementsFromPoint(x, y).find((el) => el.closest && el.closest("[data-hb]")) : hit;
+      const target = btn && btn.closest ? btn.closest("button, a, [data-hb]") || btn : hit;
+      target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: x, clientY: y }));
+      target.click();
+    },
+    true,
+  );
+  zone.addEventListener("pointercancel", () => (pending = null), true);
+})();
