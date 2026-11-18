@@ -42,7 +42,7 @@ const LOTES = { lots: [] };
   fill(X0, 52, W - 3, 52, ","); // o beco de trás: uma linha só, apertado
   for (const ax of AV) fill(ax, 2, ax + 1, 61, ",");
   const TYPE = {
-    L: { w: 8, h: 5, span: 13, depth: 7, style: "casa2", big: true },
+    L: { w: 8, h: 5, span: 12, depth: 7, style: "casa2", big: true },
     M: { w: 5, h: 4, span: 9, depth: 6, style: "casa" },
     S: { w: 3, h: 4, span: 3, depth: 0, style: "casa", small: true },
   };

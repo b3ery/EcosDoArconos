@@ -129,9 +129,148 @@
     // balde e trapos na porta
     if (h % 3 === 0) (R(dx - 6, base - 9, 7, 7, "#6a6a6a"), R(dx - 6, base - 9, 7, 2, "#8a8a8a"));
   }
+  /* mansão de burguês (casa de mercador rico): térreo de pedra com portão em
+     arco e brasão, dois andares nobres com sacada e janela saliente, frontão
+     escalonado bem alto na frente, torreão redondo num canto, telhado
+     íngreme com águas-furtadas, chaminés altas e cata-vento. As cores seguem
+     o estilo de cada terra. */
+  function grandMansion(b, V, t) {
+    const X = b.x * TILE,
+      Y = b.y * TILE,
+      W = b.w * TILE,
+      H = b.h * TILE,
+      h = hash(b.x, b.y);
+    const R = (x, y, w, hh, c) => ((ctx.fillStyle = c), ctx.fillRect(Math.round(x), Math.round(y), w, hh));
+    const night = nightAlpha() > 0.25;
+    const base = Y + H - 4;
+    const stone = V.flat ? "#e8dcc0" : "#a8a090",
+      stoneD = V.flat ? "#c9b890" : "#8a8274";
+    const wall = V.stone || V.brick ? "#ece2c8" : V.wall,
+      beam = V.beam || "#4a2e17";
+    R(X + 6, base - 2, W, 10, "rgba(0,0,0,.3)");
+    // térreo de pedra lavrada
+    const g0 = base - 42;
+    R(X, g0, W, 42, stone);
+    for (let r = 0; r < 6; r++) for (let k = 0; k < W / 14 + 1; k++) R(X + (r % 2) * 7 + k * 14, g0 + r * 7, Math.min(13, X + W - (X + (r % 2) * 7 + k * 14)), 6, (k + r + h) % 3 ? stone : stoneD);
+    R(X, g0, W, 3, "#6a6458");
+    // portão em arco no meio, com brasão em cima
+    const dx = X + (b.door[0] - b.x) * TILE + 16;
+    R(dx - 15, base - 34, 30, 34, "#6a6458");
+    ctx.fillStyle = "#6a6458";
+    ctx.beginPath();
+    ctx.arc(dx, base - 34, 15, Math.PI, 0);
+    ctx.fill();
+    ctx.fillStyle = "#3a2414";
+    ctx.beginPath();
+    ctx.arc(dx, base - 32, 11, Math.PI, 0);
+    ctx.fill();
+    R(dx - 11, base - 32, 22, 30, "#3a2414");
+    R(dx - 9, base - 30, 8, 28, "#6b4423");
+    R(dx + 1, base - 30, 8, 28, "#6b4423");
+    for (const yy of [-24, -12]) R(dx - 9, base + yy, 18, 2, "#2a2a2a");
+    R(dx - 5, base - 60, 10, 12, ["#3a5aa8", "#a83a3a", "#3a7a4a", "#c9a040"][h % 4]);
+    R(dx - 5, base - 60, 10, 2, "#c9a040");
+    R(dx - 1, base - 57, 2, 6, "#f2c14e");
+    // janelas do térreo com grade de ferro
+    for (let k = 0; k < b.w; k++) {
+      const wx = X + k * TILE + 10;
+      if (Math.abs(wx + 6 - dx) < 24) continue;
+      R(wx - 1, g0 + 12, 14, 16, "#4a4440");
+      R(wx, g0 + 13, 12, 14, night ? "#ffcf6a" : "#3a4a6a");
+      for (let i = 1; i < 4; i++) R(wx + i * 3, g0 + 13, 1, 14, "#2a2a2a");
+    }
+    // dois andares nobres
+    let fy = g0;
+    for (let f = 0; f < 2; f++) {
+      fy -= 36;
+      const o = 5 + f * 2;
+      R(X - o, fy, W + o * 2, 36, wall);
+      R(X - o, fy, W + o * 2, 3, beam);
+      R(X - o, fy + 33, W + o * 2, 3, beam);
+      if (!V.flat) for (let k = 0; k <= b.w; k++) R(Math.min(X + W + o - 3, X - o + k * TILE), fy, 3, 36, beam);
+      for (let k = 0; k < b.w; k++) {
+        const wx = X - o + k * TILE + 9;
+        R(wx - 1, fy + 6, 16, 22, "#4a2e17");
+        R(wx, fy + 7, 14, 20, night ? "#ffd98a" : "#5a7aa0");
+        R(wx + 6, fy + 7, 2, 20, "#4a2e17");
+        R(wx, fy + 16, 14, 1, "#4a2e17");
+        R(wx - 2, fy + 27, 18, 2, "#c9b890");
+      }
+      R(X - o, fy + 36, W + o * 2, 3, "rgba(0,0,0,.3)");
+    }
+    // sacada de pedra no primeiro andar nobre
+    R(dx - 30, g0 - 6, 60, 6, "#c9c0b0");
+    for (let i = 0; i < 9; i++) R(dx - 28 + i * 7, g0 - 16, 3, 10, "#d8d0c0");
+    R(dx - 30, g0 - 18, 60, 3, "#c9c0b0");
+    // janela saliente (oriel) no andar de cima
+    const ox = X + W * (h % 2 ? 0.25 : 0.72);
+    R(ox - 14, fy + 4, 28, 30, wall);
+    R(ox - 14, fy + 4, 28, 3, beam);
+    R(ox - 10, fy + 9, 20, 18, night ? "#ffd98a" : "#5a7aa0");
+    R(ox - 1, fy + 9, 2, 18, "#4a2e17");
+    ctx.fillStyle = beam;
+    fillPolygon(ox - 14, fy + 34, ox + 14, fy + 34, ox, fy + 46);
+    // telhado íngreme
+    const roofTop = fy - 64;
+    ctx.fillStyle = V.roof;
+    if (V.flat) R(X - 8, fy - 10, W + 16, 12, V.roof);
+    else fillPolygon(X - 10, fy + 2, X + W + 10, fy + 2, X + W - 16, roofTop, X + 16, roofTop);
+    ctx.fillStyle = V.r2;
+    if (!V.flat) for (let yy = roofTop + 4; yy < fy; yy += 6) ctx.fillRect(X - 6 + ((yy - roofTop) / 66) * -4 + 12 * (1 - (yy - roofTop) / 66), yy, W + 12 - 24 * (1 - (yy - roofTop) / 66), 2);
+    // frontão escalonado na frente, mais alto que o telhado
+    const gw = Math.min(W * 0.46, 120),
+      gx = dx - gw / 2;
+    const steps = 5;
+    for (let i = 0; i < steps; i++) {
+      const sw = gw - i * (gw / steps),
+        sy = fy - 16 - i * 16;
+      R(dx - sw / 2, sy, sw, 18, V.brick ? "#a8503a" : wall);
+      R(dx - sw / 2, sy, sw, 2, "#c9b890");
+      R(dx - sw / 2 - 2, sy - 2, 6, 4, "#c9b890");
+      R(dx + sw / 2 - 4, sy - 2, 6, 4, "#c9b890");
+    }
+    R(dx - 6, fy - 46, 12, 16, night ? "#ffd98a" : "#5a7aa0");
+    R(dx - 1, fy - 46, 2, 16, "#4a2e17");
+    ctx.fillStyle = "#4a2e17";
+    ctx.beginPath();
+    ctx.arc(dx, fy - 46, 6, Math.PI, 0);
+    ctx.fill();
+    R(dx - 1, fy - 16 - steps * 16 - 10, 2, 12, "#3a3a3a");
+    R(dx + 1, fy - 16 - steps * 16 - 10, 10, 6, ["#c94a3a", "#3a5aa8", "#f2c14e"][h % 3]);
+    // águas-furtadas
+    for (const fx of [X + 22, X + W - 42]) {
+      if (Math.abs(fx + 10 - dx) < gw / 2 + 8) continue;
+      R(fx, fy - 30, 20, 18, wall);
+      R(fx + 5, fy - 26, 10, 10, night ? "#ffd98a" : "#5a7aa0");
+      ctx.fillStyle = V.roof;
+      fillPolygon(fx - 3, fy - 28, fx + 10, fy - 40, fx + 23, fy - 28);
+    }
+    // torreão redondo num canto, com telhado cônico
+    const tx = h % 2 ? X - 14 : X + W - 18,
+      tw = 32;
+    R(tx, fy - 6, tw, base - fy + 2, stone);
+    for (let r = 0; r < (base - fy) / 8; r++) R(tx, fy - 2 + r * 8, tw, 1, stoneD);
+    R(tx + 4, fy - 6, 4, base - fy, "rgba(255,255,255,.12)");
+    for (const wy of [fy + 14, fy + 50, g0 + 14]) (R(tx + 11, wy, 10, 14, "#3a3a3a"), R(tx + 12, wy + 1, 8, 12, night ? "#ffcf6a" : "#3a4a6a"));
+    ctx.fillStyle = V.roof;
+    fillPolygon(tx - 4, fy - 6, tx + tw / 2, fy - 58, tx + tw + 4, fy - 6);
+    ctx.fillStyle = V.r2;
+    fillPolygon(tx - 4, fy - 6, tx + tw / 2, fy - 58, tx + tw / 2, fy - 6);
+    R(tx + tw / 2 - 1, fy - 70, 2, 14, "#3a3a3a");
+    R(tx + tw / 2 + 1, fy - 70 + Math.sin(t * 3) * 1, 8, 5, "#c94a3a");
+    // chaminés altas de tijolo
+    for (const cx of [X + W * 0.18, X + W * 0.82]) {
+      R(cx - 5, roofTop - 14, 12, 34, "#8a4a3a");
+      for (let r = 0; r < 6; r++) R(cx - 5, roofTop - 14 + r * 6, 12, 1, "#6a3428");
+      R(cx - 7, roofTop - 16, 16, 4, "#5a2a20");
+    }
+    // lampiões de ferro ao lado do portão
+    for (const lx of [dx - 24, dx + 20]) (R(lx, base - 36, 4, 10, "#2a2a2a"), R(lx - 1, base - 40, 6, 5, night ? "#ffd06a" : "#c9b98a"));
+  }
   const dbBase = drawBuilding;
   drawBuilding = function (b, t) {
     if (b.flats) return poorHouse(b, t);
+    if (b.big || b.style === "mansao") return grandMansion(b, variantFor(b), t);
     const famous = b.name && !/Casa para alugar|Casa à venda|Mansão/.test(b.name);
     const mine = typeof isMyHomeBld === "function" && isMyHomeBld(b);
     const BIG = ["castle", "fortaleza", "palacio", "templo", "celeiro", "moinho", "farol", "mina"];

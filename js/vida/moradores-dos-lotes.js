@@ -30,6 +30,13 @@
   const ROBES = ["#7a5a3a", "#5a6a8a", "#8a3a3a", "#4a6a3a", "#a8784a", "#6a4a7a", "#c9a050", "#3a5a6a"];
   const HAIRS = ["#3a2414", "#d9a441", "#1a1a1a", "#8a3a1a", "#d9d9d9", "#5a3a22"];
   const surname = (L) => L.fam.replace(/^Família |^Mansão d(os|as|e) |^Mansão /, "");
+  // mansões de burguês em todos os reinos: as maiores casas sem dono famoso
+  for (const [zid, Z] of Object.entries(ZONES)) {
+    if (zid === "vila" || !Z.town || Z.town.indoor || !Z.town.bld) continue;
+    const cand = Z.town.bld.filter((b) => !b.flats && (!b.name || /^Casa|Mansão/.test(b.name)) && b.w >= 5 && b.h >= 3 && !["castle", "fortaleza", "palacio", "templo", "celeiro", "moinho", "farol", "mina"].includes(b.style));
+    cand.sort((a, b) => b.w * b.h - a.w * a.h);
+    for (const b of cand.slice(0, zid.startsWith("pais-") ? 1 : 2)) b.big = true;
+  }
   // cada bairro com o seu tipo de casa (depois que casas-e-realeza já classificou)
   for (const L of LOTES.lots) L.b.style = L.size === "M" ? "casa" : L.size === "L" ? "casa2" : "casa";
   // ao entrar num bairro, a placa do nome aparece
