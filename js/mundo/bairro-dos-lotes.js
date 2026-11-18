@@ -39,17 +39,27 @@ const LOTES = { lots: [] };
   m[26][W - 1] = ",";
   m[27][W - 1] = ",";
   const AV = [X0, X0 + 29, W - 3];
+  fill(X0, 52, W - 3, 52, ","); // o beco de trás: uma linha só, apertado
   for (const ax of AV) fill(ax, 2, ax + 1, 61, ",");
   const TYPE = {
     L: { w: 8, h: 5, span: 13, depth: 7, style: "casa2", big: true },
     M: { w: 5, h: 4, span: 9, depth: 6, style: "casa" },
-    S: { w: 3, h: 4, span: 4, depth: 0, style: "casa", small: true },
+    S: { w: 3, h: 4, span: 3, depth: 0, style: "casa", small: true },
   };
+  // três bairros, um por rua: ricos no alto, classe média no meio, pobres embaixo
   const BANDS = [
-    { road: 26, segs: [["L", "M", "S", "S"], ["M", "S", "S", "M"]] },
-    { road: 44, segs: [["S", "S", "S", "M", "M"], ["L", "M", "S"]] },
-    { road: 60, segs: [["M", "L", "S", "S"], ["S", "S", "M", "L"]] },
+    { road: 26, bairro: "nobres", segs: [["L", "L"], ["L", "L"]] },
+    { road: 44, bairro: "oficios", segs: [["M", "M", "M"], ["M", "M", "M"]] },
+    { road: 52, bairro: "remendos", alley: true, segs: [["S", "S", "S", "S", "S", "S", "S", "S"], ["S", "S", "S", "S", "S", "S", "S", "S"]] },
+    { road: 60, bairro: "remendos", segs: [["S", "S", "S", "S", "S", "S", "S", "S"], ["S", "S", "S", "S", "S", "S", "S", "S"]] },
   ];
+  LOTES.bairros = {
+    nobres: { n: "Alto dos Nobres", d: "o bairro dos ricos", y0: 2, y1: 27 },
+    oficios: { n: "Rua dos Ofícios", d: "o bairro da classe média", y0: 28, y1: 45 },
+    remendos: { n: "Beco dos Remendos", d: "o bairro dos pobres", y0: 46, y1: 61 },
+    x0: X0,
+    x1: W - 2,
+  };
   const NAMES = ["Mansão dos Valmor", "Mansão Rosacruz", "Mansão dos Albuquerque", "Mansão Pedralva", "Mansão dos Trovador"];
   const FAM = ["Família Ferreira", "Família Moleiro", "Família Pastora", "Família Tecelã", "Família Lenhador", "Família Vinhal", "Família Ribeiro", "Família Oleira", "Família Carvalho", "Família Bento", "Família Rosário", "Família Sardinha"];
   let id = 0,
@@ -65,7 +75,7 @@ const LOTES = { lots: [] };
         if (x + T.span > limit) break;
         const lx0 = x,
           lx1 = x + T.span - 1;
-        const by = band.road - 3 - T.h + 1; // recuo de 2 linhas de jardim na frente
+        const by = band.road - (T.small ? 2 : 3) - T.h + 1; // ricos e médios: 2 linhas de jardim; pobres: só a soleira
         const bx = lx0 + Math.floor((T.span - T.w) / 2);
         const b = { id: "lt" + id++, style: T.style, x: bx, y: by, w: T.w, h: T.h, door: [bx + Math.floor(T.w / 2)], lot: true };
         if (T.big) ((b.big = true), (b.name = NAMES[nm++ % NAMES.length]));
@@ -120,14 +130,28 @@ const LOTES = { lots: [] };
         const front = [];
         for (let y = b.y + b.h; y < band.road - (T.small ? 0 : 1); y++)
           for (let xx = lx0 + (T.small ? 0 : 1); xx <= lx1 - (T.small ? 0 : 1); xx++) if (xx !== b.door[0]) front.push([xx, y]);
-        for (const [xx, y] of front) plan[xx + "," + y] = (xx + y) % 3 === 0 ? "flores" : "gramado";
+        for (const [xx, y] of front) plan[xx + "," + y] = T.small ? ((xx * 3 + y) % 4 === 0 ? "caixotes" : "lama") : (xx + y) % 3 === 0 ? "flores" : "gramado";
         if (front.length) plan[front[0][0] + "," + front[0][1]] = "placa";
         b.plan = plan;
-        LOTES.lots.push({ b, fam, x0: lx0, x1: lx1, top, road: band.road, size: k });
+        LOTES.lots.push({ b, fam, x0: lx0, x1: lx1, top, road: band.road, size: k, bairro: band.bairro });
         x += T.span + (T.small ? 0 : 1);
       }
     });
   }
+  // a cara de cada rua
+  for (let x = X0 + 3; x < W - 4; x += 4) {
+    if (AV.some((a) => x >= a - 1 && x <= a + 2)) continue;
+    if (m[24][x] === "f" || m[24][x] === ".") 0;
+    set(x, 28, x % 8 === 0 ? "l" : "T"); // Alto dos Nobres: alameda de árvores e lampiões do outro lado da rua
+    if (x % 12 === 3) (set(x, 46, "b"), set(x + 1, 46, "b")); // Rua dos Ofícios: bancos na calçada
+  }
+  // Beco dos Remendos: poço comunitário e poças de lama no meio do beco
+  set(AV[1] - 2, 62, "W");
+  set(AV[2] - 4, 62, "W");
+  LOTES.lines = [];
+  for (let x = X0 + 5; x < W - 4; x += 7) LOTES.lines.push([x, 53]);
+  LOTES.mud = [];
+  for (let x = X0 + 4; x < W - 4; x += 5) LOTES.mud.push([x, 60 + (x % 2)]);
   z.map = m.map((r) => r.join(""));
   z.w = W;
   z.open.e = [W - 1, 26];
