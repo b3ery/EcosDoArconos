@@ -58,23 +58,44 @@
   const bridge = new Set();
   for (let y = 1; y < H - 1; y++) for (let x = 48; x <= 57; x++) if (m0[y][x] === "=") (bridge.add(y), bridge.add(y - 1), bridge.add(y + 1), bridge.add(y - 2), bridge.add(y + 2));
   const SOFT = ".,wTu";
-  for (const amp of [1.7, 1.1, 0.6]) {
+  // curva SUAVE: o deslocamento do canal muda no máximo 1 tile a cada 2 linhas
+  // (nada de saltos); se uma linha não cabe, ela fica onde está e as vizinhas
+  // se ajustam aos poucos até ela.
+  const fitsAt = (m, y, a, w) => {
+    if (a < 49 || a + w - 1 > 56) return false;
+    for (let x = a; x < a + w; x++) if (!(SOFT.includes(m[y][x]) || m[y][x] === "~")) return false;
+    return true;
+  };
+  for (const amp of [2, 1.4, 1]) {
     const m = m0.map((r) => r.slice());
+    const want = {};
+    for (const y of rows) want[y] = bridge.has(y) ? 0 : Math.round(amp * Math.sin(y / 6.5) + amp * 0.4 * Math.sin(y / 3.4 + 1.3));
+    // passa de cima para baixo e de baixo para cima limitando o passo
+    const off = {};
+    let prev = 0,
+      hold = 0;
     for (const y of rows) {
-      if (bridge.has(y)) continue;
-      const o = Math.round(amp * Math.sin(y / 4.6) + amp * 0.45 * Math.sin(y / 2.3 + 1.3));
-      const w = 2 + (Math.sin(y / 3.1 + 0.7) > 0.35 ? 1 : 0);
-      const a = 52 + o,
-        b = a + w - 1;
-      // o canal novo inteiro precisa caber no chão livre; senão a linha fica como era
-      let fits = a >= 49 && b <= 56;
-      for (let x = a; x <= b && fits; x++) if (!(SOFT.includes(m[y][x]) || m[y][x] === "~")) fits = false;
-      if (!fits) continue;
-      // a margem velha vira grama; o canal novo vira água
-      for (const x of [52, 53]) if (x < a || x > b) m[y][x] = ".";
-      for (let x = a; x <= b; x++) m[y][x] = "~";
+      let o = want[y];
+      if (o > prev && hold >= 1) o = prev + 1;
+      else if (o < prev && hold >= 1) o = prev - 1;
+      else o = prev;
+      if (!fitsAt(m, y, 52 + o, 2) || bridge.has(y)) o = bridge.has(y) ? 0 : fitsAt(m, y, 52 + prev, 2) ? prev : 0;
+      hold = o === prev ? hold + 1 : 0;
+      off[y] = prev = o;
     }
-    // o rio não pode ficar cortado: cada linha precisa encostar na de cima
+    for (const y of rows.slice().reverse()) {
+      const nb = off[y + 1];
+      if (nb != null && Math.abs(off[y] - nb) > 1) off[y] = nb + Math.sign(off[y] - nb);
+      if (!fitsAt(m, y, 52 + off[y], 2)) off[y] = 0;
+    }
+    for (const y of rows) {
+      const o = off[y];
+      // fica um tile mais largo onde dá (o rio "respira")
+      const wide = Math.sin(y / 4.1 + 0.7) > 0.4 && fitsAt(m, y, 52 + o, 3);
+      const w = wide ? 3 : 2;
+      for (const x of [52, 53]) if (x < 52 + o || x > 52 + o + w - 1) m[y][x] = ".";
+      for (let x = 52 + o; x < 52 + o + w; x++) m[y][x] = "~";
+    }
     let cont = true;
     for (const y of rows) {
       if (!rows.includes(y - 1)) continue;
@@ -97,6 +118,112 @@
     const c = tileAt(z, x, y);
     return c === "~";
   };
+  /* RIO DE VERDADE: a margem não segue os quadradinhos. Em cada linha o jogo
+     sabe onde ficam as duas margens e, entre uma linha e a outra, a margem é
+     interpolada suave (curva em S); fora dela vai o chão, dentro a água.
+     A água fica mais escura no meio (fundo) e clara e esverdeada no raso,
+     com areia molhada e espuma na beira e a correnteza descendo. */
+  const RIV = {};
+  for (let y = 1; y < Z.h - 1; y++) {
+    const row = Z.map[y];
+    let l = -1,
+      r = -1;
+    for (let x = 47; x <= 58; x++)
+      if (row[x] === "~") {
+        if (l < 0) l = x;
+        r = x;
+      }
+    if (l >= 0 && r - l <= 5) {
+      // respiro: se tem construção (ou cerca) colada no rio, a água recua e
+      // sobra uma faixa de margem de grama entre o rio e a parede
+      const solid = (c) => "HDf".includes(c || "");
+      const near = (dir) => {
+        const x1 = dir < 0 ? l - 1 : r + 1,
+          x2 = dir < 0 ? l - 2 : r + 2;
+        const rows = [Z.map[y - 1] || "", row, Z.map[y + 1] || ""];
+        if (rows.some((q) => solid(q[x1]))) return 12;
+        if (rows.some((q) => solid(q[x2]))) return 6;
+        return 0;
+      };
+      const iL = near(-1),
+        iR = near(1);
+      // não deixa o rio ficar fino demais
+      const maxIn = (r - l + 1) * TILE - 40;
+      const k = iL + iR > maxIn ? maxIn / (iL + iR) : 1;
+      RIV[y] = [l * TILE + iL * k, (r + 1) * TILE - iR * k, iL ? "." : row[l - 1], iR ? "." : row[r + 1], iL, iR];
+    }
+  }
+  const smooth = (u) => u * u * (3 - 2 * u);
+  const bankAt = (y, py) => {
+    const me = RIV[y];
+    const ny = py < TILE / 2 ? y - 1 : y + 1;
+    const nb = RIV[ny] || me;
+    const u = smooth(Math.abs(py - TILE / 2) / (TILE / 2)) * 0.5;
+    return [me[0] + (nb[0] - me[0]) * u, me[1] + (nb[1] - me[1]) * u];
+  };
+  const lerp3 = (a, b, f) => a.map((v, i) => Math.round(v + (b[i] - v) * f));
+  const SHALLOW = [128, 176, 170],
+    MIDW = [58, 126, 182],
+    DEEPW = [30, 76, 134];
+  function riverTile(z, x, y, c, t) {
+    const me = RIV[y];
+    if (!me || c === "=" || c === "H" || c === "D") return false;
+    const X = x * TILE,
+      Y = y * TILE;
+    // este tile encosta no rio (dentro ou logo ao lado)?
+    if (X + TILE < me[0] - TILE || X > me[1] + TILE) return false;
+    const land = c === "~" ? (X < (me[0] + me[1]) / 2 ? me[2] : me[3]) || "," : c;
+    // 1) o chão do tile por baixo de tudo
+    dtBase.call(this, z, x, y, c === "~" ? (",.".includes(land) ? land : ",") : c, t);
+    // 1b) a margem de grama do respiro (entre a parede e a água)
+    if (c === "~")
+      for (let py = 0; py < TILE; py += 2) {
+        const [L, R] = bankAt(y, py + 1);
+        if (me[4] && L > X) ((ctx.fillStyle = (py >> 2) % 2 ? "#5a8a3e" : "#6a9a46"), ctx.fillRect(X, Y + py, Math.min(TILE, L - X), 3));
+        if (me[5] && R < X + TILE) ((ctx.fillStyle = (py >> 2) % 2 ? "#5a8a3e" : "#6a9a46"), ctx.fillRect(Math.max(X, R), Y + py, X + TILE - Math.max(X, R), 3));
+      }
+    if (c === "~" && (me[4] || me[5]) && (x + y) % 3 === 0) {
+      const bx = me[4] ? Math.max(X, me[0] - 10) : Math.min(X + TILE - 6, me[1] + 2);
+      for (let i = 0; i < 3; i++) ((ctx.fillStyle = i % 2 ? "#3d7432" : "#4a8a3a"), ctx.fillRect(bx + i * 3, Y + 8 + (i % 2) * 4, 2, 14));
+    }
+    // 2) a água, faixa por faixa de 2px de altura, entre as margens interpoladas
+    for (let py = 0; py < TILE; py += 2) {
+      const [L, R] = bankAt(y, py + 1);
+      const a0 = Math.max(X, Math.round(L / 2) * 2),
+        b0 = Math.min(X + TILE, Math.round(R / 2) * 2);
+      if (b0 <= a0) continue;
+      // uma faixa só por linha, com degradê do raso ao fundo (sem emendas)
+      const gr = ctx.createLinearGradient(L, 0, R, 0);
+      gr.addColorStop(0, "rgb(128,176,170)");
+      gr.addColorStop(0.22, "rgb(58,126,182)");
+      gr.addColorStop(0.5, "rgb(30,76,134)");
+      gr.addColorStop(0.78, "rgb(58,126,182)");
+      gr.addColorStop(1, "rgb(128,176,170)");
+      ctx.fillStyle = gr;
+      ctx.fillRect(a0, Y + py, b0 - a0, py === TILE - 2 ? 2 : 3); // 1px de sobra tapa a emenda entre as faixas
+      // beira: areia molhada, espuma e sombra da margem
+      for (const [ex, dir] of [[L, 1], [R, -1]]) {
+        if (ex < X - 1 || ex > X + TILE + 1) continue;
+        ctx.fillStyle = "rgba(190,164,112,.85)";
+        ctx.fillRect(dir > 0 ? ex - 3 : ex, Y + py, 3, 2);
+        ctx.fillStyle = ((py + y * 7 + ((t * 10) | 0)) % 12) < 6 ? "rgba(255,255,255,.7)" : "rgba(220,240,250,.35)";
+        ctx.fillRect(dir > 0 ? ex : ex - 2, Y + py, 2, 2);
+        ctx.fillStyle = "rgba(20,50,40,.22)";
+        ctx.fillRect(dir > 0 ? ex + 2 : ex - 5, Y + py, 3, 2);
+      }
+    }
+    // 3) correnteza: risquinhos descendo no meio do rio, e um brilho de sol
+    for (let i = 0; i < 3; i++) {
+      const [L, R] = bankAt(y, 16);
+      const lane = L + 6 + ((x * 7 + i * 11) % Math.max(4, R - L - 12));
+      if (lane < X || lane >= X + TILE) continue;
+      const p = (t * 34 + i * 13 + x * 17) % (TILE + 12);
+      ctx.fillStyle = i === 0 ? "rgba(255,255,255,.45)" : "rgba(200,232,248,.35)";
+      ctx.fillRect(lane, Y + p - 12, 2, 7);
+    }
+    if (c === "~" && ((t * 1.5 + x * 3 + y * 7) | 0) % 9 === 0) ((ctx.fillStyle = "rgba(255,255,255,.8)"), ctx.fillRect(X + 10 + ((x * 5) % 12), Y + ((t * 30) % 28), 3, 2));
+    return true;
+  }
   const dtBase = drawTile;
   drawTile = function (z, x, y, c, t) {
     const zone = ZONES[z];
@@ -132,7 +259,9 @@
       ctx.fillRect(X + 21 + k * 3, Y + 7 + k * 8, 1, 3);
       return;
     }
-    dtBase.apply(this, arguments);
+    if (z === "vila" && riverTile.call(this, z, x, y, c, t)) {
+      if (c === "~") return;
+    } else dtBase.apply(this, arguments);
     if (c !== "." || !zone || zone.theme === "porto" || !(zone.town || zone.theme === "vila")) return;
     const l = isW(z, x - 1, y),
       r = isW(z, x + 1, y),
