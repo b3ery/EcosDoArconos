@@ -87,62 +87,101 @@
 
 ---
 
-## 🌌 Sobre o Projeto
+## 📑 Índice
 
-> **Ecos do Arcano** é um **RPG em pixel art** que roda direto no navegador, no computador e no celular. Há trezentos anos, o mago Vesper aprisionou as runas para "proteger" a magia e o mundo mergulhou no **Grande Silêncio**. Você é um aprendiz que ainda ouve o eco das runas: combine elementos, liberte os Guardiões, descubra o segredo dos irmãos e devolva a Canção Arcana ao mundo. ✦💜
+[Sobre](#-sobre-o-projeto) · [Como jogar](#-como-jogar) · [Modo História](#%EF%B8%8F-modo-hist%C3%B3ria) · [Simulador de Vida](#-simulador-de-vida) · [Personagens](#-personagens) · [Chefes e runas](#-chefes-e-runas) · [O mundo](#%EF%B8%8F-o-mundo) · [Opções](#%EF%B8%8F-op%C3%A7%C3%B5es) · [Capturas](#-capturas-de-tela) · [Para quem desenvolve](#%EF%B8%8F-para-quem-desenvolve)
 
 <br>
 
-<div align="center">
+---
+
+## 🌌 Sobre o Projeto
+
+> **Ecos do Arcano** é um **RPG em pixel art** que roda direto no navegador, no computador e no celular. Há trezentos anos, o mago Vesper aprisionou as seis runas para "proteger" a magia e o mundo mergulhou no **Grande Silêncio**. Você é um aprendiz que ainda carrega um eco de uma delas: liberte os Guardiões, descubra o segredo dos irmãos Vesper e Odelia e devolva a Canção Arcana ao mundo. ✦💜
+
+O jogo tem **dois modos**:
+
+| ⚔️ Modo História | 🏡 Simulador de Vida |
+|:---|:---|
+| Aventura com magia, Guardiões, covis, quebra-cabeças e um final que muda com as suas escolhas. | Uma vida inteira em Cinzaluz, sem magia: trabalho, amor, família, política e crime. |
+
+<br>
+
+---
+
+## 🚀 Como Jogar
+
+**🌐 Online:** [b3ery.github.io/EcosDoArconos](https://b3ery.github.io/EcosDoArconos/) · **💻 No computador:** baixe o repositório e abra o `index.html` no navegador.
+
+```
+Setas / WASD     Mover                     I    Bolsa (inventário)
+E / Espaço       Interagir e avançar       1–9  Barra de itens (embaixo da tela)
+M  /  Tab        Mapa da região / do mundo Q    Missões
+O  /  Esc        Opções                    G    Grimório
+F                Tela cheia                Z    Zoom
+C                Montar no cavalo          R    Decorar a casa
+J                Jornada (História) · Jornal (Simulador)
+Y                Menu de Ações (Simulador) L    Calendário
+
+Batalha:  1–6 magias · Enter lança · D defende · H habilidades · I itens
+Celular:  joystick na metade esquerda · botões A e B · toque e segure numa pessoa
+```
+
+> Funciona no computador e no celular (melhor deitado). Na primeira luta, o **Instrutor Kael** ensina tudo passo a passo.
+
+<br>
+
+---
+
+## ⚔️ Modo História
+
+**Como começa:** você escolhe um **dom** (Lava, Gelo, Raio, Metal, Cristal ou Veneno), que é um pedaço de uma das runas ecoando em você. Enquanto as runas estão presas, o dom é a sua única magia.
 
 ```mermaid
 flowchart LR
   A["🏘️ Cinzaluz"] --> B["🌲 Bosque<br/>Ent"]
-  B --> C["🌫️ Pântano<br/>Serpente"]
-  C --> D["🏔️ Picos<br/>Grifo"]
-  D --> E["⛏️ Mina<br/>Basilisco"]
-  D --> F["⚓ Porto<br/>Leviatã"]
-  E --> G["🗼 Torre<br/>Silenciador"]
-  F --> G
-  G --> H["✦ Epílogo"]
+  B --> C["⚓ Farol<br/>Fênix"]
+  C --> D["🌫️ Pântano<br/>Serpente"]
+  D --> E["🏔️ Picos<br/>Grifo"]
+  E --> F["⛏️ Mina<br/>Basilisco"]
+  F --> G["⚓ Porto<br/>Leviatã"]
+  G --> H["🗼 Torre<br/>Silenciador"]
+  H --> I["✦ Epílogo"]
 ```
 
-</div>
+- **Covis dos Guardiões:** cada um tem 5 câmaras de desafio (labirinto escuro, alavancas, placas de luz, guardas e arena), e fica mais difícil a cada runa libertada.
+- **Quebra-cabeças e exploração:** 5 pedestais (mosaico, selo, canos, balança e cofre), 15 lugares escondidos e as Provas da Torre.
+- **Gente pelo caminho:** encontros nas estradas com escolha de herói ou de vilão. A Odelia, se morrer, vira um fantasma que te segue.
+- **Escolhas que pesam:** caminho do herói ou do vilão, o destino do Kael e do diário de Vesper, finais diferentes e **Novo Jogo+**.
+- **Batalha:** fraquezas, clima, combos secretos, Guardiões com duas fases e, no fim, **Unir todos os poderes** com quem você ajudou.
+- **Missões sem luta (opcionais):** o Ladrão de Tortas, a Canção do Bardo, os Enigmas da Biblioteca e outras. Procure a estrela em cima da cabeça.
+- **Dificuldade:** Fácil, Normal e Difícil.
 
 <br>
 
 ---
 
-## 📸 Capturas de Tela
-
-<div align="center">
+## 🏡 Simulador de Vida
 
 | | |
-|:---:|:---:|
-| <img src="assets/screenshots/creditos_finais.png" width="420"/><br><sub>Créditos finais com a sua jornada e conquistas</sub> | <img src="assets/screenshots/creditos.png" width="420"/><br><sub>Tela de créditos com a equipe</sub> |
-| <img src="assets/screenshots/dupla.png" width="420"/><br><sub>Batalha em dupla: o Guardião muda de forma</sub> | <img src="assets/screenshots/cripta.png" width="420"/><br><sub>Cripta dos Ecos: espelhos e luz</sub> |
-| <img src="assets/screenshots/flashback.png" width="420"/><br><sub>Flashback de Odelia e Vesper crianças</sub> | <img src="assets/screenshots/coroacao.png" width="420"/><br><sub>Coroação depois do golpe</sub> |
-| <img src="assets/screenshots/morte.png" width="420"/><br><sub>Velório com lápide e epitáfio</sub> | <img src="assets/screenshots/arvore.png" width="420"/><br><sub>Árvore da família</sub> |
-| <img src="assets/screenshots/incendio.png" width="420"/><br><sub>Incêndio no Armazém Geral</sub> | <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> |
-| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial: Jogar, Opções e Créditos</sub> | <img src="assets/screenshots/modos.png" width="420"/><br><sub>Depois de Jogar: continuar ou escolher o modo</sub> |
-| <img src="assets/screenshots/origem.png" width="420"/><br><sub>Origem na criação: do plebeu à realeza</sub> | <img src="assets/screenshots/alareal.png" width="420"/><br><sub>Ala Real do castelo, com empregados</sub> |
-| <img src="assets/screenshots/palacio.png" width="420"/><br><sub>Palácio das Marés, numa ilha no Porto</sub> | <img src="assets/screenshots/fortaleza.png" width="420"/><br><sub>Fortaleza de Pedravale</sub> |
-| <img src="assets/screenshots/jornal.png" width="420"/><br><sub>O Eco de Cinzaluz, o jornal do dia</sub> | <img src="assets/screenshots/inverno.png" width="420"/><br><sub>Inverno: neve nos telhados e nas árvores</sub> |
-| <img src="assets/screenshots/calabouco.png" width="420"/><br><sub>O calabouço e o Professor L</sub> | <img src="assets/screenshots/corpo.png" width="420"/><br><sub>Crimes têm consequência</sub> |
-| <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> | <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> |
-| <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado)</sub> |
-| <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
-| <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> | <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> |
-| <img src="assets/screenshots/conversa.png" width="420"/><br><sub>Os moradores conversam entre si</sub> | <img src="assets/screenshots/jeito.png" width="420"/><br><sub>Personalidade e orientação no criador</sub> |
-| <img src="assets/screenshots/casa.png" width="420"/><br><sub>Casa pintada com os móveis novos</sub> | <img src="assets/screenshots/pintar.png" width="420"/><br><sub>Decorar: Móveis, Pintar e Reformar</sub> |
-
-</div>
+|:---|:---|
+| **Começo** | Plebeu, artesão, comerciante, nobre ou realeza. Escolha a casa, pinte, mobilie e faça um segundo andar. |
+| **Trabalho** | 32 carreiras com promoção (do padeiro ao sineiro), mina, trigo e pão, impostos ou sonegação. |
+| **Amor** | Namore qualquer pessoa, **Corações** (o "Tinder" da vila, com match e encontros), casamento, filhos e herança. |
+| **Gente viva** | Moradores com personalidade, que namoram, brigam, casam e morrem de velhice. 14 moradores marcantes com manias e segredos. |
+| **A turma** | Exposição dos poemas do Pedro Poeta, Aviário da Princesa Julia, Noites de Arte da Mylena e o General Marcos lendo as sentenças da forca. |
+| **Poder** | Golpe de Estado, Corte Real, conquista de reinos. Depois do golpe dos Iluministas há eleição: se Luca ou Marzocca vencer, vira **comunismo** (com bandeiras vermelhas no castelo). |
+| **Crime** | Roubar, matar, fofoca, calabouço com o Professor L e pena de morte. |
+| **Vida e morte** | Ano de 15 dias, 30 jeitos de morrer com cena e velório, **convites** de casamento e velório, **Capela Branca e Cemitério**. |
+| **Na tela** | Botões de **Jornal**, **Corações** e **Calendário**, e o **Menu de Ações** (Y) com tudo num lugar só. |
 
 <br>
 
 ---
 
-## 🍻 A Turma de Cinzaluz: os Alcoólatras Anônimos
+## 👥 Personagens
+
+### 🍻 A Turma de Cinzaluz: os Alcoólatras Anônimos
 
 Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa, trabalho e rotina** na vila.
 
@@ -167,16 +206,10 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 </div>
 
-- **Rotina:** de dia cada um está no seu trabalho (Biblioteca, Ateliê, Clínica, Castelo, Sítio); à noite a turma vai para a Taverna. As casas ficam no **Bairro das Flores**.
-- **Reunião dos A.A.:** a cada 7 dias, das 19h às 23h, na **Taverna Javali Dourado**. Pague uma rodada, leia a ata ou desafie o Marcos na queda de braço.
-- **Encontros:** na fonte da praça em dia de festival, e café de Mylena, Andressa e Júlia no Ateliê à tarde.
-- **Na história:** quem for amigo da turma ganha ajuda na batalha final, e cada um tem uma **missão pessoal**.
+<details>
+<summary><b>🧙 Personagens principais</b></summary>
 
 <br>
-
----
-
-## 🧙 Personagens Principais
 
 <div align="center">
 
@@ -189,13 +222,12 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 </div>
 
-> Cada morador tem tom de pele, penteado e roupa próprios. Só quem ainda guarda magia, a **Arquimaga Odelia** e a **Professora Selene**, usa chapéu pontudo e cajado brilhante.
+</details>
+
+<details>
+<summary><b>👑 Família Real</b></summary>
 
 <br>
-
----
-
-## 👑 Família Real
 
 <div align="center">
 
@@ -205,61 +237,33 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 </div>
 
-> A cada 5 dias a família real faz uma **passeata** pela vila. Os outros reinos têm seus governantes: o **Príncipe-Almirante Tarso** (Marés) e o **Rei-Anão Durgan** (Pedravale).
+> A cada 5 dias a família real faz uma passeata pela vila. Os outros reinos têm o **Príncipe-Almirante Tarso** (Marés) e o **Rei-Anão Durgan** (Pedravale).
+
+</details>
 
 <br>
 
 ---
 
-## 👹 Chefes
+## 👹 Chefes e runas
 
 <div align="center">
 
-| | Chefe | Onde | Nível |
-|:---:|:---|:---|:---:|
-| <img src="assets/personagens/boss_ent.png" width="70"/> | **Ent Silenciado**<br><sub>Guardião</sub> | 🌲 Bosque Murmurante | **Nv 4+** |
-| <img src="assets/personagens/boss_serpente.png" width="70"/> | **Serpente de Névoa**<br><sub>Guardião</sub> | 🌫️ Pântano das Brumas | **Nv 6+** |
-| <img src="assets/personagens/boss_grifo.png" width="70"/> | **Grifo de Pedra**<br><sub>Guardião</sub> | 🏔️ Picos Uivantes | **Nv 8+** |
-| <img src="assets/personagens/boss_basilisco.png" width="70"/> | **Basilisco de Cristal**<br><sub>Guardião</sub> | ⛏️ Mina de Cristal (Pedravale) | **Nv 9+** |
-| <img src="assets/personagens/boss_leviata.png" width="70"/> | **Leviatã do Cais**<br><sub>Guardião</sub> | ⚓ Píer do Porto Brisamar | **Nv 10+** |
-| <img src="assets/personagens/boss_vitral.png" width="70"/> | **Espírito do Vitral**<br><sub>Chefe secreto</sub> | ⛪ Templo da Luz (opcional) | **Nv 8+** |
-| <img src="assets/personagens/boss_diretor.png" width="70"/> | **Diretor Espectral**<br><sub>Chefe da masmorra</sub> | 📚 Academia Arcana | **Nv 10+** |
-| <img src="assets/personagens/boss_silenciador.png" width="70"/> | **O Silenciador**<br><sub>Chefe final</sub> | 🗼 Torre do Silêncio | **Nv 12+** |
+| | Chefe | Onde |
+|:---:|:---|:---|
+| <img src="assets/personagens/boss_ent.png" width="60"/> | **Ent Silenciado** | 🌲 Bosque Murmurante |
+| | **Fênix do Farol** | ⚓ Farol de Brisamar (à noite) |
+| <img src="assets/personagens/boss_serpente.png" width="60"/> | **Serpente de Névoa** | 🌫️ Pântano das Brumas |
+| <img src="assets/personagens/boss_grifo.png" width="60"/> | **Grifo de Pedra** | 🏔️ Picos Uivantes |
+| <img src="assets/personagens/boss_basilisco.png" width="60"/> | **Basilisco de Cristal** | ⛏️ Mina de Cristal |
+| <img src="assets/personagens/boss_leviata.png" width="60"/> | **Leviatã do Cais** | ⚓ Porto Brisamar |
+| <img src="assets/personagens/boss_vitral.png" width="60"/> | **Espírito do Vitral** (secreto) | ⛪ Templo da Luz |
+| <img src="assets/personagens/boss_diretor.png" width="60"/> | **Diretor Espectral** | 📚 Academia Arcana |
+| <img src="assets/personagens/boss_silenciador.png" width="60"/> | **O Silenciador** (final) | 🗼 Torre do Silêncio |
 
 </div>
 
-> Na metade da vida, cada Guardião **muda de forma e de fraqueza**. Também há os **Ecos Corrompidos** (Lobo Alfa, Hidra, Roc, Quimera e Colosso) e, dependendo das suas escolhas, o **Kael Silenciado**.
-
-<br>
-
----
-
-## 📜 A História — O Segredo dos Irmãos
-
-| Ato | O que acontece |
-|:---:|:---|
-| **I** | O aprendiz desperta em **Cinzaluz** ouvindo o eco de uma runa. A Arquimaga **Odelia** o guia. |
-| **II** | Os **Guardiões** (Ent, Serpente e Grifo) guardam as runas aprisionadas. Cada um libertado devolve um elemento. |
-| **II·a** | **O Farol que Lembra** (Porto Brisamar): o Capitão Bento conta que a névoa veio do mar. Aceso à noite, o farol mostra Odelia e Vesper crianças, há trezentos anos. |
-| **II·b** | **A Forja do Irmão** (Pedravale): a Anciã Berta revela o molde do cajado que Vesper encomendou aos anões. Um Fragmento Arcano da mina reabre o molde e mostra a inscrição dele. |
-| **II·c** | **Os Guardiões perdidos**: o **Basilisco de Cristal** dorme no fundo da Mina de Cristal e o **Leviatã do Cais** na ponta do píer do Porto. Cada um guarda uma das runas que faltam. |
-| **III** | Páginas do **diário de Vesper**, decifradas pelo **Professor Bruno Honda**, revelam quem ele era antes de se perder no Silêncio. |
-| **IV** | Na **Torre do Silêncio**, um eco do passado mostra a última discussão dos irmãos. |
-| **V** | No confronto final, o aprendiz lê as palavras do próprio Vesper e o liberta. **Epílogo:** os irmãos se reencontram. |
-
-> Depois do final, dá para **continuar jogando** e completar as missões secundárias.
-
-<br>
-
----
-
-## 🔮 Magia — Runas
-
-| 🔥 Chama | 💧 Maré | 🌪️ Vento | ⛰️ Terra | ☀️ Luz | 🌙 Sombra |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| Dano e queimadura | Cura e congelamento | Golpes múltiplos | Escudos | Cura e cegueira | Roubo de vida |
-
-**27 feitiços** de 1 ou 2 runas e **8 combos secretos**. A runa de afinidade dá +25% de dano; acertar a fraqueza dá quase o dobro; cada feitiço sobe de nível com o uso, e acertos enchem a **Canção Arcana**, o golpe supremo.
+Cada Guardião guarda uma das seis runas: 🔥 Chama, 💧 Água, 🌪️ Ar, ⛰️ Terra, ☀️ Luz e 🌙 Sombra. **27 feitiços** de 1 ou 2 runas e **8 combos secretos**. Acertar a fraqueza dá quase o dobro de dano, e cada feitiço sobe de nível com o uso.
 
 <br>
 
@@ -269,141 +273,89 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 | Lugar | O que tem |
 |:---|:---|
-| 🏘️ **Cinzaluz** | Praça com fonte, mercado, 20+ comércios com interior, castelo, templo, escola, taverna, calabouço e o Bairro das Flores |
-| ⚓ **Porto Brisamar** | Farol, cais, Palácio das Marés numa ilha |
-| ⛏️ **Pedravale** | Forja anã, Mina de Cristal, Fortaleza de Pedravale |
-| 🌲 **Bosque Murmurante** | Elfos, rios, o Ent e a **Cripta dos Ecos** |
-| 🌫️ **Pântano das Brumas** · 🏔️ **Picos Uivantes** | Serpente, Grifo e a Velha Juta |
-| 📚 **Academia Arcana** · 🗼 **Torre do Silêncio** | Tomos de feitiços, Diretor Espectral e o Silenciador |
+| 🏘️ **Cinzaluz** | Praça, mercado, 20+ lojas com interior, castelo, templo, taverna, calabouço, Bairro das Flores e o Alto do Descanso (Capela Branca e Cemitério) |
+| ⚓ **Porto Brisamar** | Farol, cais e o Palácio das Marés numa ilha |
+| ⛏️ **Pedravale** | Forja anã, Mina de Cristal e a Fortaleza |
+| 🌲 **Bosque** · 🌫️ **Pântano** · 🏔️ **Picos** | Os Guardiões, a Cripta dos Ecos e a Velha Juta |
+| 📚 **Academia Arcana** · 🗼 **Torre do Silêncio** | Tomos de feitiços e o Silenciador |
 | 🌳 **Floresta Grande** (Simulador) | Lobos, javalis, ursos e caça |
 
 <br>
 
 ---
 
-## ⚔️ Modo História
+## ⚙️ Opções
 
-- **O Silêncio ataca Cinzaluz:** em duas invasões você só salva um lado, e quem fica para trás perde a voz até o próximo Guardião acordar.
-- **✦ Unir todos os poderes:** na luta final, quando a máscara racha, os Guardiões libertados (até seis, com a Fênix), o Kael, a Odelia, a turma e quem você ajudou na estrada atacam juntos. Quanto mais gente você ajudou, mais forte o golpe.
-- **7 missões sem luta (opcionais, fora da história principal):** investigar o Ladrão de Tortas, repetir a Canção do Bardo (jogo da memória), os Enigmas da Biblioteca, as Entregas da Rosa contra o relógio, as Ervas da Maíra em três regiões, a Carta rasgada da Dona Flor e ajudar a Lia a se declarar. Procure a estrela em cima da cabeça.
-- **Para zerar, é preciso fazer tudo:** as missões sem luta, os quebra-cabeças, a exploração e a gente da estrada são etapas da história, espalhadas pelos capítulos. Cada Guardião está preso por um selo, e o quebra-cabeça da região é a chave. A sala do Silenciador só abre no fim de tudo.
-- **Exploração:** 15 lugares escondidos (3 por região). Alguns você acha só de chegar perto; outros estão atrás de vinhas (Chama), pedras rachadas (Terra), água funda (Maré) ou névoa presa (Vento). Cada um conta um pedaço da história dos irmãos e dá recompensa (até vida e mana máximas).
-- **Covis dos Guardiões:** cada Guardião vive no fundo de uma caverna com um desafio próprio antes da sala dele: Sementes da Memória (Ent), labirinto na névoa (Serpente), Corredor dos Ventos (Grifo), blocos de cristal nas placas (Basilisco) e a maré que sobe e desce (Leviatã). O quebra-cabeça do pedestal da região é a chave da entrada.
-- **Cenas da runa:** libertar o Guardião (herói) quebra as correntes de silêncio e a runa desperta com a cor dela; arrancar a runa à força (vilão) traz tentáculos de silêncio, o Guardião virando pó e a runa rachada.
-- **Provas da Torre (capítulo final):** na Antessala do Silêncio, três provas no mapa, no estilo da Cripta: tocar os Sinos do Silêncio na ordem da inscrição, girar espelhos para um feixe de luz de verdade chegar ao cristal e acender as dezesseis lajes pisando em cada uma só uma vez. Elas abrem o caminho até o Silenciador.
-- **5 quebra-cabeças nos pedestais:** Mosaico de Vesper (peças deslizantes, Vila), Selo das Runas (acender tudo, Pântano), Canais do Porto (girar canos), Balança dos Anões (Pedravale) e Cofre de Vesper (código de runas, Bosque). Cada um esconde um pedaço da história.
-- **Cada Guardião luta de um jeito:** o Ent se cura pelas raízes, a Serpente some na névoa, o Grifo voa, o Basilisco te petrifica se você repetir a magia e o Leviatã manda uma onda gigante que só se aguenta defendendo.
-- **Gente pelo caminho:** 8 encontros nas estradas (um mercador assaltado, uma criança perdida, um Eco com a voz da Odelia...), cada um com uma escolha de herói ou de vilão.
-- **Sonhos com Vesper:** ao dormir, ele fala com você. No último sonho, a sua promessa pesa na luta final. A turma também comenta cada Guardião libertado.
-- **Jornada (J):** uma tela com tudo o que você salvou, escolheu e deixou para trás.
-- **Capítulos com título** (Prólogo, I a IV e Final) e uma luta final mais justa: cada derrota para o Silenciador deixa a próxima um pouco mais fácil.
-- **Combos secretos:** duas magias seguidas na ordem certa (Maré → Chama = Vapor Escaldante...). São 8 para descobrir.
-- **Guardiões com duas fases:** na metade da vida eles mudam de forma e de fraqueza. Seu melhor amigo da turma luta ao seu lado.
-- **Flashbacks dos irmãos:** cada página do diário de Vesper abre uma lembrança, e as suas escolhas enfraquecem o Silenciador.
-- **Escolhas que pesam:** o destino do Kael e o do diário com o Professor Honda.
-- **Missões pessoais da turma**, **Cripta dos Ecos** (tochas, espelhos e porta elemental), **12 segredos escondidos** e os capítulos do **Pântano** e da **Torre**.
-- **Caminho do vilão** do começo ao fim, **finais diferentes** (herói, vilão, monarca, exilado...), epílogo jogável e **Novo Jogo+**.
-- **Dificuldade:** Fácil, Normal e Difícil (no Difícil, os inimigos se adaptam à runa que você mais usa).
-- Mais: Ecos Corrompidos, Academia Arcana, farol e mina, Porto Brisamar e Pedravale, clima que muda o poder das runas, mascotes, casamento.
+- **Acessibilidade:** tamanho da letra, tremores e flashes, cenas que esperam o seu toque.
+- **Acontecimentos:** desligar os ataques de monstros (História), o golpe automático (Simulador) e o **sangue**.
+- **Conteúdo:** **Modo +18** opcional, com confirmação de idade (palavrões, noite casual sem cenas explícitas, trisal).
+- **Jogo salvo:** baixar ou copiar para levar a outro aparelho.
 
 <br>
 
 ---
 
-## 🗺️ Mapa, seta e música
+## 📸 Capturas de Tela
 
-- **Seta azul das entregas:** trabalhos do quadro e pedidos prontos para entregar ganham uma seta própria com o nome de quem espera (a dourada continua na história).
-- **Mapa clicável (M):** clique ou toque em qualquer coisa para ver o que é, e em "Ir até lá" para andar sozinho. No mapa do mundo (Tab), clique numa região para ver Guardião, baús, quebra-cabeças e lugares escondidos.
-- **Lamento de Cinzaluz:** tema triste em Sol# maior que começa no vi grau (Mi#m, o mesmo som de Fá menor) e passeia pelos acordes tristes do campo harmônico (ii, iii, IV e vii°). Toca nos sonhos, lembranças, cartões de capítulo, na Torre e na vila ainda sem canção.
+<details>
+<summary><b>Ver as capturas</b></summary>
 
-## 🎙️ Dublagem
+<br>
 
-- **Narrador dublado:** 116 falas com código (AB-01, CAP-01, GUA-ENT...). Grave cada uma como `audio/voz/CÓDIGO.mp3` e o jogo toca sozinho na hora da fala; a música abaixa enquanto ele fala. Opções → Dublagem liga, desliga e ajusta o volume.
+<div align="center">
 
-## 🛠️ Versão dev
+| | |
+|:---:|:---:|
+| <img src="assets/screenshots/creditos_finais.png" width="420"/><br><sub>Créditos finais com a sua jornada e conquistas</sub> | <img src="assets/screenshots/creditos.png" width="420"/><br><sub>Tela de créditos com a equipe</sub> |
+| <img src="assets/screenshots/dupla.png" width="420"/><br><sub>Batalha em dupla: o Guardião muda de forma</sub> | <img src="assets/screenshots/cripta.png" width="420"/><br><sub>Cripta dos Ecos: espelhos e luz</sub> |
+| <img src="assets/screenshots/flashback.png" width="420"/><br><sub>Flashback de Odelia e Vesper crianças</sub> | <img src="assets/screenshots/coroacao.png" width="420"/><br><sub>Coroação depois do golpe</sub> |
+| <img src="assets/screenshots/morte.png" width="420"/><br><sub>Velório com lápide e epitáfio</sub> | <img src="assets/screenshots/arvore.png" width="420"/><br><sub>Árvore da família</sub> |
+| <img src="assets/screenshots/incendio.png" width="420"/><br><sub>Incêndio no Armazém Geral</sub> | <img src="assets/screenshots/protesto.png" width="420"/><br><sub>Protesto dos Iluministas: tomates na Rainha</sub> |
+| <img src="assets/screenshots/titulo.png" width="420"/><br><sub>Tela inicial: Jogar, Opções e Créditos</sub> | <img src="assets/screenshots/modos.png" width="420"/><br><sub>Depois de Jogar: continuar ou escolher o modo</sub> |
+| <img src="assets/screenshots/origem.png" width="420"/><br><sub>Origem na criação: do plebeu à realeza</sub> | <img src="assets/screenshots/alareal.png" width="420"/><br><sub>Ala Real do castelo, com empregados</sub> |
+| <img src="assets/screenshots/palacio.png" width="420"/><br><sub>Palácio das Marés, numa ilha no Porto</sub> | <img src="assets/screenshots/fortaleza.png" width="420"/><br><sub>Fortaleza de Pedravale</sub> |
+| <img src="assets/screenshots/jornal.png" width="420"/><br><sub>O Eco de Cinzaluz, o jornal do dia</sub> | <img src="assets/screenshots/inverno.png" width="420"/><br><sub>Inverno: neve nos telhados e nas árvores</sub> |
+| <img src="assets/screenshots/calabouco.png" width="420"/><br><sub>O calabouço e o Professor L</sub> | <img src="assets/screenshots/corpo.png" width="420"/><br><sub>Crimes têm consequência</sub> |
+| <img src="assets/screenshots/vila.png" width="420"/><br><sub>Praça de Cinzaluz</sub> | <img src="assets/screenshots/batalha.png" width="420"/><br><sub>Batalha no Bosque Murmurante</sub> |
+| <img src="assets/screenshots/casamento.png" width="420"/><br><sub>Cerimônia de casamento</sub> | <img src="assets/screenshots/celular.png" width="420"/><br><sub>No celular (deitado)</sub> |
+| <img src="assets/screenshots/porto.png" width="420"/><br><sub>Porto Brisamar</sub> | <img src="assets/screenshots/pedravale.png" width="420"/><br><sub>Pedravale</sub> |
+| <img src="assets/screenshots/marzoca.png" width="420"/><br><sub>Lucas Marzocca fugindo de mais um marido com faca</sub> | <img src="assets/screenshots/fachada.png" width="420"/><br><sub>Fachada pintada e segundo andar com floreira</sub> |
+| <img src="assets/screenshots/conversa.png" width="420"/><br><sub>Os moradores conversam entre si</sub> | <img src="assets/screenshots/jeito.png" width="420"/><br><sub>Personalidade e orientação no criador</sub> |
+| <img src="assets/screenshots/casa.png" width="420"/><br><sub>Casa pintada com os móveis novos</sub> | <img src="assets/screenshots/pintar.png" width="420"/><br><sub>Decorar: Móveis, Pintar e Reformar</sub> |
 
-Abra `dev.html` (ou `index.html?dev`). O botão **DEV** e a tecla **F9** abrem o painel: liberar tudo (nível 20, runas, magias, ouro e itens), pular para qualquer etapa da história com as anteriores feitas, ir para qualquer região, invencível, vencer a luta, resolver quebra-cabeças e as provas da Torre, revelar mapas e ver as cenas. "Sair da versão dev" volta ao jogo normal.
+</div>
 
-## 🏡 Simulador de Vida
-
-- **Metas de vida** (casar, 3 filhos, fortuna, 70 anos, 3 gerações, governar...), **notícias que mudam a vila** (seca e colheita mexem nos preços, a guerra convoca moradores) e **famílias rivais**: Os Brasa, os Maré-Alta e os Pedregal. Tudo no menu Ações (Y).
-
-Sem magia: uma vida inteira em Cinzaluz, com fome, sede, energia, higiene e diversão.
-
-- **Comece como quiser:** plebeu, artesão, comerciante, burguês, nobre ou realeza (com a Ala Real e empregados). Escolha a casa, pinte, mobilie e faça um segundo andar.
-- **Trabalho:** 20 carreiras com promoção, profissões jogáveis, mina, trigo e pão, impostos (ou sonegação).
-- **Gente que vive de verdade:** cada morador tem personalidade e orientação. Eles conversam, fazem amizade e inimizade, namoram, casam, traem, se separam, têm filhos e brigam na rua (você pode separar, torcer ou apostar). Têm sonhos que se realizam.
-- **Amor e família:** namore qualquer pessoa, case, tenha filhos que herdam o jeito dos pais. O ano dura **15 dias**: aniversário com festa. Testamento, árvore da família e herança.
-- **Poder:** dê um **golpe de estado** (com aliados ou sozinh@), governe com a Corte Real (General, Tesoureiro, Espião), atenda os pedidos do povo, case por política e conquiste Marés e Pedravale. Os **Iluministas** protestam, tentam o próprio golpe e podem criar o **Conselho do Povo**, com eleições.
-- **Crime e castigo:** roubar, matar (o corpo fica no chão), fofoca que se espalha, calabouço com o Professor L e pena de morte.
-- **30 jeitos de morrer**, cada um com a sua cena e velório, e o **Diário da Vida** para compartilhar. A família continua com o herdeiro.
-- **Vila viva:** jornal do dia, estações, festivais, incêndio, enchente, circo, rival pessoal, o Pedro Max ciumento, desafios e conquistas de dinastia.
-- **Menu de Ações** (tecla **Y**): tudo num lugar só. Objetivos do dia e um guia para começar.
-- **Democracia:** depois do golpe dos Iluministas há eleição para Presidente. Se Luca ou Marzocca vencer, Cinzaluz vira comunista (bandeiras vermelhas no castelo, Fundo do Povo, ração de pão).
-- **Convites** de casamento e de velório, **Capela Branca e Cemitério** no Alto do Descanso (sul da vila) e moradores que morrem de velhice.
-- **Corações:** o "Tinder" da vila, com cartões, match e encontros. Botões de **Jornal**, **Corações** e **Calendário** na tela.
-- **A turma tem papel na vila:** Andressa expõe os poemas do Pedro Poeta, a Princesa Julia cuida dos bichos de rua e do Aviário, a Mylena faz Noites de Arte e o General Marcos lê as sentenças da forca.
-- **32 carreiras, roupas novas e 14 moradores marcantes** (Dona Cotinha, Zeca Trovão, Bibi Pimenta...) com manias e segredos.
-- **Opções:** desligar sangue, ataques de monstros (História), golpe automático (Simulador) e o **Modo +18** opcional (palavrões, noite casual sem cenas explícitas, trisal).
+</details>
 
 <br>
 
 ---
 
-## 🚀 Como Jogar
-
-**🌐 Online:** [b3ery.github.io/EcosDoArconos](https://b3ery.github.io/EcosDoArconos/) · **💻 Local:** clone o repositório e abra o `index.html` no navegador.
-
-**Controles:**
-```
-Setas / WASD     Mover
-E / Espaço       Interagir e avançar diálogos
-I                Inventário
-Q                Missões
-G                Grimório
-M / N            Mapa / minimapa
-C                Montar no cavalo
-R                Decorar a casa
-Z                Zoom
-F                Tela cheia
-O / Esc          Opções
-Y                Menu de Ações (jornal, golpe, família, testamento...)
-V                Golpe de estado / governar
-B                Livro das Mortes
-J                Jornal · X Crime · K Reinos · L Calendário
-
-Batalha:  1–6 runas · Enter lança · D defende · H habilidades · I itens
-Celular:  joystick na metade esquerda da tela · botões A e B · ☰ → Ações
-```
-
-> Funciona no computador e no celular (deitado). No celular: joystick na metade esquerda, botões A e B, ☰ → Ações e toque e segure numa pessoa para interagir. ✨
-
-<br>
-
----
-
-## 🗂️ Estrutura do Projeto
+## 🛠️ Para quem desenvolve
 
 HTML5, CSS3 e JavaScript puro, sem dependências. Tudo é desenhado pixel a pixel no `<canvas>` e a música é criada na hora com o Web Audio API.
 
 ```
 EcosDoArconos/
-├── index.html        a página e a ORDEM dos scripts (em blocos comentados)
+├── index.html        a página e a ORDEM dos scripts
 ├── css/style.css     o visual de todas as telas
 ├── js/
 │   ├── nucleo/       dados, estado, sons, sprites, laço principal, teclado
-│   ├── mundo/        mapas, geração do mundo, reinos, casas, castelos, floresta, clima
-│   ├── pessoas/      família, diálogos, vila · interacoes/ · turma/
-│   ├── interface/    telas, menus, opções, criador, celular, cenas · itens/
-│   ├── historia/     vilão, missões · batalha/ · saga/ (flashbacks, cripta, segredos...)
-│   └── vida/         Simulador · moradores/ · poder/ · realeza/ · crime/ · familia/
+│   ├── mundo/        mapas, vila, reinos, casas, castelos, floresta, clima
+│   ├── pessoas/      diálogos, família, turma, moradores
+│   ├── interface/    telas, menus, opções, criador, celular, bolsa
+│   ├── historia/     história, covis, batalha, saga
+│   └── vida/         Simulador: moradores, poder, realeza, crime, família
+├── assets/           retratos e capturas usados neste README
+├── audio/voz/        falas gravadas do Narrador (opcional)
 ├── tests/smoke.js    teste automático (npm test)
 └── tools/            check.js (npm run check) e build.js (um arquivo só)
 ```
 
-- `npm run check` confere a sintaxe; `npm test` abre o jogo num navegador e passa pelas telas dos dois modos.
-- Um arquivo por assunto, com nome que diz o que faz. O cabeçalho de cada um explica o que ele faz e quais funções de outros arquivos ele modifica.
-- A ordem de carregamento fica só no `index.html`: um arquivo pode modificar funções dos anteriores. O `npm run check` avisa se algum arquivo ficou fora da lista.
+- `npm run check` confere a sintaxe e se todo arquivo está no `index.html`; `npm test` abre o jogo e passa pelas telas dos dois modos.
+- Cada arquivo trata de um assunto e explica no cabeçalho o que faz e quais funções de outros arquivos ele modifica. A ordem de carregamento fica no `index.html`.
+- **Versão dev:** abra `dev.html` (ou `index.html?dev`) e aperte **F9** para pular etapas, liberar tudo e testar.
+- **Dublagem:** grave as falas do Narrador como `audio/voz/CÓDIGO.mp3` (os códigos estão no roteiro) e o jogo toca sozinho.
 
 <br>
 
