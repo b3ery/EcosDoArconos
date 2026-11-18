@@ -7,7 +7,7 @@
  *  - se Luca ou Marzocca vencer, Cinzaluz segue o comunismo 100%: bandeiras
  *    vermelhas no castelo, o ouro acima de 120 vai para o Fundo do Povo,
  *    salário igual e ração de pão para todo mundo, decretos do Presidente;
- *  - a cada 15 dias há nova eleição (dá para votar o comunismo para fora).
+ *  - a cada ano (30 dias) há nova eleição (dá para votar o comunismo para fora).
  * Modifica (envolve) funções de outros arquivos: ilumCoupResolve, electionTick,
  * syncRulers, onNewDay, drawBuilding, campaignMenu.
  */

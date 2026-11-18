@@ -88,7 +88,7 @@ for (const c of MARCANTES) {
   if (naBase)
     npcAge = function (id) {
       const c = MM_BY_ID[id];
-      return c ? c.age + Math.floor(Math.max(0, (player.day || 1) - 1) / 15) : naBase.apply(this, arguments);
+      return c ? c.age + Math.floor(Math.max(0, (player.day || 1) - 1) / YEAR_DAYS) : naBase.apply(this, arguments);
     };
 }
 

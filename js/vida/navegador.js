@@ -8,7 +8,7 @@
  *    recolhem as velas; no celular, os botões da tela). O vento muda e
  *    empurra ou freia. O mapa começa coberto de névoa e vai se revelando.
  *  - O tempo corre: cada poucos segundos é um dia. Atravessar o Mar Aberto
- *    inteiro leva cerca de um ano do jogo (15 dias). A tripulação come e bebe
+ *    inteiro leva cerca de um ano do jogo (30 dias). A tripulação come e bebe
  *    todo dia; sem comida ou água, os marujos adoecem e morrem.
  *  - Tempestades andam pelo mar: o casco apanha, raios caem, e com as velas
  *    içadas o estrago é maior (dica: recolha as velas!). Casco a zero: o
@@ -27,7 +27,7 @@
   const MW = 4400,
     MH = 2400,
     CELL = 50;
-  const DAY_S = 6.5; // segundos de navegação por dia
+  const DAY_S = 2.4; // segundos de navegação por dia
   const HOME = { x: 300, y: 1200 };
   const GOODS = {
     trigo: ["Trigo de Aurélia", 6],
@@ -166,7 +166,7 @@
       sh = s.ship;
     const opts = [];
     if (!sh) {
-      for (const [k, d] of Object.entries(SHIPS)) opts.push({ t: `Comprar ${d.n} (${d.price} ouro) · casco ${d.hull}, carga ${d.cargo}, ${d.crew} marujos, ${d.cannons} canhões`, icon: "anchor", fn: () => buyShip(k) });
+      for (const [k, d] of Object.entries(SHIPS)) opts.push({ t: `Comprar o seu próprio ${d.n} (${d.price} ouro) · casco ${d.hull}, carga ${d.cargo}, ${d.crew} marujos, ${d.cannons} canhões`, icon: "anchor", fn: () => buyShip(k) });
       opts.push({ t: "Alugar uma chalupa para uma viagem (80 ouro)", icon: "scroll", fn: () => buyShip("chalupa", true) });
     } else {
       opts.push({ t: `Zarpar no ${sh.name} (casco ${Math.round(sh.hull)}/${sh.max}, ${sh.crew} marujos)`, icon: "flag", fn: () => setSail() });
@@ -175,6 +175,7 @@
       if (sh.hull < sh.max) opts.push({ t: `Consertar o casco (${Math.ceil((sh.max - sh.hull) * 2)} ouro)`, icon: "hammer", fn: () => spend(Math.ceil((sh.max - sh.hull) * 2)) && ((sh.hull = sh.max), capitania()) });
       opts.push({ t: `Carregar mercadorias para exportar (${cargoUsed(sh)}/${sh.cap})`, icon: "crate", fn: homeMarket });
     }
+    if (typeof passageMenu === "function") opts.unshift({ t: "Comprar passagem num navio mercante (barato: viaja de passageiro)", icon: "scroll", fn: () => passageMenu() });
     const found = s.found.length;
     choice("Capitania do Porto", `${found}/9 países descobertos no Mar Aberto.${Object.keys(s.col).length ? ` Colônias: ${Object.keys(s.col).length}.` : ""}${Object.keys(s.routes).length ? ` Rotas de exportação: ${Object.keys(s.routes).length}.` : ""} Dica: a travessia toda leva quase um ano. Leve barris!`, opts.concat([{ t: "Sair", fn: null }]));
   }
@@ -291,6 +292,7 @@
   }
   /** Desembarcar: a viagem fica parada no mar, esperando você voltar a bordo. */
   function disembark(c) {
+    if (!V) return;
     cancelAnimationFrame(raf);
     S().voyage = { x: V.x, y: V.y, h: V.h, days: V.days, home: V.home, at: c.id };
     S().fog = Array.from(V.fog).join("");
@@ -315,6 +317,7 @@
   window.seaDisembark = (id) => disembark(C9.find((c) => c.id === id));
   window.seaReembark = reembark;
   window.SEA_COUNTRIES = C9;
+  window.SEA_HOME = HOME;
   function endVoyage(msg) {
     cancelAnimationFrame(raf);
     const s = S();

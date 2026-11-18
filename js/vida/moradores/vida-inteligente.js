@@ -1,6 +1,6 @@
 /**
  * ECOS DO ARCANO — vida-inteligente.js
- *  - O ano dura 15 dias: o aniversário é a cada 15 dias, com festa.
+ *  - O ano dura 30 dias: o aniversário é a cada 30 dias, com festa.
  *  - Moradores com cérebro: cada par tem uma relação que muda a cada conversa
  *    (pelo jeito de cada um). Eles fazem amizade e inimizade, flertam, namoram,
  *    noivam, casam, traem, se separam, têm filhos e saem na porrada na rua.
@@ -13,7 +13,7 @@
 
 /* ===================== O ANO DE 15 DIAS ===================== */
 
-const YEAR_DAYS = 15;
+const YEAR_DAYS = 30;
 /** Migra o jogo salvo (antes cada dia era um ano). */
 function yearMigrate() {
   if (!player || player.yr15) return;
@@ -74,12 +74,12 @@ function birthdayParty() {
   playSound(660, 0.15, "triangle");
   say(lines);
 }
-/* Aniversários da turma cabem no ano de 15 dias. */
+/* Aniversários da turma cabem no ano de 30 dias. */
 Object.assign(CREW_BDAY, { lucas: 3, matheus: 5, marcos: 7, andressa: 9, mylena: 11, juliaO: 13 });
 yearDay = function () {
   return ((player.day - 1) % YEAR_DAYS) + 1;
 };
-/* Os filhos só anunciam a nova fase uma vez (agora cada idade dura 15 dias). */
+/* Os filhos só anunciam a nova fase uma vez (agora cada idade dura 30 dias). */
 growKids = function () {
   for (const k of player.kids || []) {
     const age = kidAge(k),

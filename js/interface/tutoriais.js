@@ -45,7 +45,7 @@
       mode: "vida",
       pages: [
         "O relógio fica no canto de cima. Os botões ao lado <b>pausam</b> e <b>aceleram</b> o tempo.",
-        "Lojas e trabalhos têm horário. À noite a vila dorme. O ano tem 15 dias e você envelhece a cada ano.",
+        "Lojas e trabalhos têm horário. À noite a vila dorme. O ano tem 30 dias e você envelhece a cada ano.",
       ],
     },
     trabalho: {

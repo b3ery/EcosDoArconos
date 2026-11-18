@@ -4,7 +4,7 @@
  * Inspirada nas festas de lanternas de verdade: na lua cheia, o povo solta
  * lanternas de papel no céu (dizem que elas levam embora os males de quem
  * solta) e põe lanterninhas de flor na água, para agradecer ao mar.
- *  - Acontece a cada 5 dias, das 18h até de madrugada. O jornal e os
+ *  - Acontece a cada 5 dias, só à NOITE (das 19h30 até de madrugada). O jornal e os
  *    mensageiros avisam alguns dias antes (a viagem até lá leva dias!).
  *  - Na areia, a Vendedora de Lanternas vende lanterna do céu (5 ouro) e
  *    lanterna de flor (3 ouro).
@@ -23,7 +23,7 @@
 (() => {
   const ZID = "solmar";
   const fest = () => player && player.day % 5 === 0;
-  const night = () => fest() && (currentHour() >= 18 || currentHour() < 3);
+  const night = () => fest() && (currentHour() >= 19.5 || currentHour() < 3);
   window.lanternFestToday = fest;
   window.lanternFestNight = night;
   const inv = () => (player.lant = player.lant || { ceu: 0, agua: 0, wish: null });
@@ -66,13 +66,13 @@
       const opts = [
         { t: "Lanterna do céu (5 ouro)", icon: "sun", fn: () => spend(5) && (I.ceu++, toast("Uma lanterna de papel de arroz, dobradinha. Abra no píer!", 3000)) },
         { t: "Lanterna de flor para a água (3 ouro)", icon: "flower", fn: () => spend(3) && (I.agua++, toast("Uma lanterninha de folha com uma vela. Ponha na beira d'água!", 3000)) },
-        { t: "Perguntar sobre a festa", icon: "chat", fn: () => say([["Vendedora Iara", fest() ? "É hoje, meu bem! Quando escurecer, todo mundo solta a sua lá no píer largo. Dizem que ela leva embora o que pesa no peito." : `A Noite das Mil Lanternas é na lua cheia, a cada 5 dias. Faltam ${5 - (player.day % 5)} dia(s).`]]) },
+        { t: "Perguntar sobre a festa", icon: "chat", fn: () => say([["Vendedora Iara", fest() ? "É hoje, meu bem! Quando a noite fechar, lá pelas sete e meia, todo mundo solta a sua lá no píer largo. Dizem que ela leva embora o que pesa no peito." : `A Noite das Mil Lanternas é na lua cheia, a cada 5 dias. Faltam ${5 - (player.day % 5)} dia(s).`]]) },
         { t: "Até logo", fn: null },
       ];
       return choice("Vendedora de Lanternas", "Uma banca cheia de lanternas de papel e flores de folha.", opts);
     }
     if (k === "soltar") {
-      if (!night()) return say([["", fest() ? "Ainda está claro. A festa começa quando o sol se põe (18h)." : "Nenhuma lanterna hoje. A festa é na lua cheia, a cada 5 dias."]]);
+      if (!night()) return say([["", fest() ? "Ainda está claro. A festa começa quando a noite fecha (19h30). Volte quando escurecer!" : "Nenhuma lanterna hoje. A festa é na lua cheia, a cada 5 dias."]]);
       if (!I.ceu) return say([["", "Você não tem lanterna. A Vendedora de Lanternas fica na areia, perto do píer."]]);
       I.ceu--;
       return festGame("lanterna", (q) =>
@@ -255,7 +255,7 @@
       },
     });
     // varais de lanternas na praça, presos em postes de madeira
-    if (fest() || night())
+    if (night())
       list.push({
         y: 9.5,
         draw: () => {
@@ -290,6 +290,9 @@
     if (player.zone !== ZID || !night() || !game.cam || game.mode === "map") return r;
     const { camX, camY, Z } = game.cam;
     const T = TILE;
+    // noite fechada: céu escuro de verdade para as lanternas brilharem
+    ctx.fillStyle = "rgba(6,8,30,.5)";
+    ctx.fillRect(0, 0, viewWidth, 480);
     ctx.save();
     const sx = (wx) => (wx - camX) * Z,
       sy = (wy) => (wy - camY) * Z;
@@ -331,7 +334,7 @@
       if (!lifeMode()) return r;
       const left = (5 - (player.day % 5)) % 5;
       if (player.zone !== ZID && left > 0 && left <= 3) setTimeout(() => toast(`Mensageiro: a Noite das Mil Lanternas em Solmar é daqui a ${left} dia(s). A viagem de carruagem leva ${typeof travelDays === "function" ? travelDays(player.zone, ZID) : 3}.`, 5200), 3500);
-      if (player.zone === ZID && left === 0) setTimeout(() => toast("Hoje é a Noite das Mil Lanternas! Compre sua lanterna na areia e espere o sol se pôr.", 5200), 3500);
+      if (player.zone === ZID && left === 0) setTimeout(() => toast("Hoje é a Noite das Mil Lanternas! Compre sua lanterna na areia de dia e volte ao píer quando a noite fechar (19h30).", 5200), 3500);
       return r;
     };
   }

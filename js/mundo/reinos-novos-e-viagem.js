@@ -144,7 +144,11 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
   const TOWNS = ["vila", "porto", "serra", "solmar", "rosalva"];
   // dias de carruagem entre as cidades (a cavalo é um dia a menos, mínimo 1)
   const DAYS = { "vila-porto": 2, "vila-serra": 2, "vila-solmar": 3, "vila-rosalva": 3, "porto-solmar": 2, "porto-serra": 3, "porto-rosalva": 4, "serra-rosalva": 2, "serra-solmar": 4, "solmar-rosalva": 3 };
-  const daysBetween = (a, b) => DAYS[[a, b].join("-")] || DAYS[[b, a].join("-")] || 3;
+  const daysBetween = (a, b) => {
+    // dentro de um país além-mar: 1 a 3 dias entre os reinos
+    if (a.startsWith("pais-") && b.startsWith("pais-")) return 1 + (Math.abs((+(a.split("-")[2] || 1)) - (+(b.split("-")[2] || 1))) % 3);
+    return DAYS[[a, b].join("-")] || DAYS[[b, a].join("-")] || 3;
+  };
   const isTown = (z) => TOWNS.includes(z);
   window.travelDays = daysBetween;
 

@@ -5,7 +5,7 @@
  *  - Os Iluministas também tentam o golpe por conta própria. A força deles
  *    cresce com protestos, impostos altos e governante impopular. Você pode
  *    defender a coroa, se juntar a eles ou ficar em casa.
- *  - Se eles vencem: Conselho do Povo, com eleição a cada 15 dias. Eleit@,
+ *  - Se eles vencem: Conselho do Povo, com eleição a cada ano (30 dias). Eleit@,
  *    você pode até convocar um plebiscito e restaurar a monarquia.
  *  - Quem governa pode manter a monarquia: conceder um conselho consultivo,
  *    prender os líderes, dar banquetes. E um nobre rival trama nas sombras.
@@ -302,7 +302,7 @@ function ilumCoupResolve(won, how) {
   if (how)
     say([
       ["", wasMine ? "Os portões caem. A multidão invade o salão do trono... e tira a coroa da sua cabeça com todo o cuidado." : "A multidão invade o castelo. Ninguém se machuca, mas a coroa vai parar numa almofada no meio da praça."],
-      ["Luca", "A PARTIR DE HOJE, QUEM MANDA É O POVO! Eleição a cada 15 dias!"],
+      ["Luca", "A PARTIR DE HOJE, QUEM MANDA É O POVO! Eleição todo ano!"],
       ["Lucas Marzocca", "E a primeira lei do Conselho: taverna aberta até mais tarde!"],
       ["", how === "juntar" ? "Você ganhou uma cadeira no Conselho. Na próxima eleição, pode se candidatar a Chefe do Conselho." : "Se quiser a coroa de volta, ainda dá para conspirar (tecla V) ou vencer a eleição e convocar um plebiscito."],
     ]);
