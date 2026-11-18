@@ -92,26 +92,57 @@
   lot(B.c1, 9, 15, 20, 25, "home");
   lot(B.hLucas, 17, 23, 20, 25, "home");
 
-  // Rua dos Artesãos, no sul, para o Salão e a Marcenaria (campo livre a leste da avenida x 83-84)
+  /* ----- quarteirão do templo (x 17..50, linhas 28..45) ----- */
+  const T = ["templo", "hosp", "forja", "clinica", "c10", "atelie", "alfaiate", "c7", "c4", "c5", "c6", "c8", "c9"].map(bld);
+  const moveNpc = (from, to) => {
+    const k = from[0] + "," + from[1];
+    if (!Z.npcs || !Z.npcs[k]) return;
+    Z.npcs[to[0] + "," + to[1]] = Z.npcs[k];
+    delete Z.npcs[k];
+    for (const f of Z.feats || []) if (f[0] === from[0] && f[1] === from[1]) ((f[0] = to[0]), (f[1] = to[1]));
+    for (const n of Z.npcList || []) if (n && n[0] === from[0] && n[1] === from[1]) ((n[0] = to[0]), (n[1] = to[1]));
+    if (m[from[1]][from[0]] === "N") m[from[1]][from[0]] = ",";
+    m[to[1]][to[0]] = "N";
+  };
+  if (T.every(Boolean) && T[0].x === 18 && T[0].y === 30) {
+    for (const b of T) for (const dx of b.door) delete Z.town.doors[dx + "," + (b.y + b.h - 1)];
+    const npcAt = (x, y) => Z.npcs && Z.npcs[x + "," + y];
+    for (let y = 28; y <= 45; y++)
+      for (let x = 17; x <= 50; x++) {
+        if (npcAt(x, y)) continue;
+        if (m[y][x] === "~" || m[y][x] === "=") continue;
+        m[y][x] = y === 37 || y === 45 ? (m[y][x] === "W" ? "W" : ",") : ".";
+      }
+    const [templo, hosp, forja, clinica, escola, atelie, alfaiate, botic, acougue] = T;
+    lot(templo, 17, 24, 28, 36, "shop");
+    lot(hosp, 26, 32, 28, 36, "shop");
+    lot(forja, 34, 40, 28, 36, "shop");
+    lot(clinica, 42, 49, 28, 36, "shop");
+    [escola, atelie, alfaiate, botic, acougue].forEach((b, i) => lot(b, 17 + i * 7, 22 + i * 7, 38, 44, "shop"));
+    // a curandeira e o ferreiro esperam na rua, na frente da porta deles
+    moveNpc([28, 34], [hosp.door[0] + 1, 37]);
+    moveNpc([38, 34], [forja.door[0] + 1, 37]);
+  }
+
+  /* ----- Rua dos Artesãos, no sul: Salão, Marcenaria e os comércios que não couberam ----- */
   const RX0 = 101,
-    RY = 73;
+    RY = 73,
+    RX1 = 165;
   const freeArea = () => {
-    for (let y = 62; y <= RY + 1; y++) for (let x = RX0; x <= RX0 + 26; x++) if (!m[y] || m[y][x] !== ".") return false;
+    for (let y = 63; y <= RY + 1; y++) for (let x = RX0; x <= RX1; x++) if (!m[y] || m[y][x] !== ".") return false;
     return true;
   };
-  if (W > 130 && freeArea()) {
-    // a rua sai da avenida (x 83-84) e passa pelo campo até os dois lotes
-    for (let y = RY; y <= RY + 1; y++) for (let x = 85; x <= RX0 + 26; x++) if (m[y][x] === ".") m[y][x] = ",";
-    lot(B.c2, RX0 + 1, RX0 + 10, 64, 72, "shop");
-    lot(B.c3, RX0 + 13, RX0 + 22, 64, 72, "shop");
-    set(RX0 + 12, 71, "l");
-    set(RX0 + 24, 71, "T");
+  if (W > RX1 + 3 && freeArea()) {
+    // a rua sai da avenida (x 83-84) e passa pelo campo até os lotes
+    for (let y = RY; y <= RY + 1; y++) for (let x = 85; x <= RX1; x++) if (m[y][x] === ".") m[y][x] = ",";
+    const shops = [B.c2, B.c3].concat(["c5", "c6", "c8", "c9"].map(bld).filter((b) => b && !b.lot));
+    shops.forEach((b, i) => {
+      const x0 = RX0 + 1 + i * 11;
+      lot(b, x0, x0 + 9, 64, 72, "shop");
+      if (i % 2) set(x0 + 10, 72, "l");
+    });
     if (typeof LOTES !== "undefined" && LOTES.bairros && LOTES.bairros.vila)
-      LOTES.bairros.vila.push({ k: "artesaos", n: "Rua dos Artesãos", d: "o salão e a marcenaria", x0: RX0, x1: RX0 + 26, y0: 63, y1: RY + 1 });
-  } else {
-    // sem espaço no sul: ficam onde dá na fileira de baixo (não deve acontecer)
-    console.warn("centro-planejado: Rua dos Artesãos sem espaço");
-  }
-  // o caminho até a casa continua o mesmo ponto na rua
+      LOTES.bairros.vila.push({ k: "artesaos", n: "Rua dos Artesãos", d: "o comércio do sul", x0: RX0, x1: RX1, y0: 63, y1: RY + 1 });
+  } else console.warn("centro-planejado: Rua dos Artesãos sem espaço");
   Z.map = m.map((r) => r.join(""));
 })();
