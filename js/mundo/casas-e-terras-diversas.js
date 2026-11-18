@@ -68,7 +68,7 @@
   }
   const dbBase = drawBuilding;
   drawBuilding = function (b, t) {
-    const famous = b.name && !/Casa para alugar|Casa à venda/.test(b.name);
+    const famous = b.name && !/Casa para alugar|Casa à venda|Mansão/.test(b.name);
     const mine = typeof isMyHomeBld === "function" && isMyHomeBld(b);
     const BIG = ["castle", "fortaleza", "palacio", "templo", "celeiro", "moinho", "farol", "mina"];
     // no exterior, todo prédio comum segue o estilo da terra (lojas também)
@@ -123,8 +123,8 @@
     // SOBRADO (referência: casas medievais de cidade): térreo de pedra, 1 ou 2
     // andares de enxaimel avançando sobre a rua, telhado alto com água-furtada,
     // chaminé de tijolo, escada de madeira por fora com sacada e barris.
-    if (h % 3 !== 2 && !V.flat && !V.logs) {
-      const floors = h % 2 ? 2 : 1;
+    if ((h % 3 !== 2 || b.big || b.flats) && !V.flat && !V.logs) {
+      const floors = b.big ? 2 : b.flats ? 1 : h % 2 ? 2 : 1;
       const ex = 34;
       const night = nightAlpha() > 0.25;
       // térreo de pedra (parede de baixo inteira)
@@ -225,7 +225,7 @@
       R(cx - 2, top - 28, 16, 4, "#5a2a20");
       if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 6 + k * 6, top - 14 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
       // escada de madeira por fora, com sacada no primeiro andar
-      if (h % 4 < 2 && b.w >= 3) {
+      if ((h % 4 < 2 || b.flats) && b.w >= 3) {
         const right = h % 2 === 0;
         const sx0 = right ? X + W - 4 : X + 4;
         const dir = right ? 1 : -1;
@@ -234,16 +234,28 @@
         R(right ? X + W - 34 : X - 6, sy - 2, 40, 4, "#6b4423");
         for (let k = 0; k < 6; k++) R((right ? X + W - 32 : X - 4) + k * 7, sy - 12, 2, 10, "#7a4f2a");
         R(right ? X + W - 34 : X - 6, sy - 13, 40, 2, "#7a4f2a");
-        // degraus descendo até o chão
-        const gy = Y + Hh - 8;
-        const steps = Math.floor((gy - sy) / 6);
-        for (let k = 0; k < steps; k++) R(sx0 + dir * (k * 4) - (right ? 0 : 10), sy + k * 6, 10, 3, k % 2 ? "#8a5e32" : "#a8784a");
-        ctx.strokeStyle = "#5a3a1e";
-        ctx.lineWidth = 2;
+        // escada de madeira encostada na fachada, do chão até a sacada
+        const gy = Y + Hh - 6;
+        const steps = Math.max(4, Math.floor((gy - sy) / 7));
+        const run = steps * 5;
+        const bx0 = right ? X + W + 2 : X - 2 - run; // começa no chão, longe da parede
+        for (let k = 0; k < steps; k++) {
+          const tx = right ? bx0 + run - (k + 1) * 5 : bx0 + k * 5,
+            ty = gy - (k + 1) * 7;
+          R(tx, ty + 6, 5, gy - ty - 6, "#5a3a1e"); // viga cheia por baixo de cada degrau
+          R(tx - 1, ty, 7, 3, "#a8784a"); // degrau
+          R(tx - 1, ty + 3, 7, 1, "#6b4423");
+          if (k % 2 === 0) R(tx + 2, ty - 9, 2, 9, "#7a4f2a"); // balaústre
+        }
+        // corrimão inclinado e pilar de apoio
+        ctx.strokeStyle = "#8a5e32";
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(sx0 + (right ? 10 : -10), sy - 8);
-        ctx.lineTo(sx0 + dir * steps * 4 + (right ? 10 : -10), gy - 6);
+        ctx.moveTo(right ? bx0 + run + 1 : bx0 - 1, gy - 9);
+        ctx.lineTo(right ? bx0 + 1 : bx0 + run - 1, gy - steps * 7 - 9);
         ctx.stroke();
+        R(right ? bx0 - 2 : bx0 + run - 2, gy - steps * 7, 4, steps * 7, "#4a2e17");
+        R(right ? bx0 + run - 2 : bx0, gy - 12, 4, 12, "#4a2e17");
       }
       // barris junto da porta
       if (h % 5 < 3) {

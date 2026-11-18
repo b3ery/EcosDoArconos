@@ -462,12 +462,12 @@
     const M = new Map();
     const free = (x, y) => Z.map[y] && Z.map[y][x] === "." && !M.has(x + "," + y);
     for (const b of Z.town.bld) {
-      if (!HOMES.has(b.style) || (b.name && !/^Casa|Sítio|Fazenda/.test(b.name))) continue;
+      if (!HOMES.has(b.style) || b.small || (b.name && !/^Casa|Sítio|Fazenda|Mansão/.test(b.name))) continue;
       const hb = hsh(b.x * 7, b.y * 3 + z.length);
       const back = hb < 0.5 ? "porco" : hb < 0.75 ? "pomar" : "galinhas";
       const garden = hsh(b.x, b.y) < 0.5 ? "horta" : "milho";
       let rows = 0;
-      for (let dy = 1; dy <= 4; dy++) {
+      for (let dy = 1; dy <= (b.depth || 4); dy++) {
         const y = b.y - dy;
         let ok = true;
         for (let x = b.x; x < b.x + b.w; x++) if (!free(x, y)) ok = false;
