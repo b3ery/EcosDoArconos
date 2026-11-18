@@ -76,7 +76,7 @@
       nm: 0,
       fm: 0,
       seed: zi * 17,
-      maxDepth: road - 9,
+      maxDepth: road - 11,
       NAMES: [0, 1].map((i) => `Mansão ${X ? "de " : "dos "}${nm(i + zi)}`),
       FAM: Array.from({ length: 12 }, (_, i) => "Família " + (X ? X.names[(i + zi) % X.names.length] + (i >= X.names.length ? "-" + FAMS[(i + zi) % FAMS.length] : "") : FAMS[(i + zi * 5) % FAMS.length])),
     };

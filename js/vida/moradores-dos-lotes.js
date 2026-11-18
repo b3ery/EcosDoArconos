@@ -205,13 +205,14 @@
     if (now - acT < 120 && acZ === player.zone) return acL;
     acT = now;
     acZ = player.zone;
-    return (acL = lifeMode() && byZone[player.zone] && day() ? byZone[player.zone].filter(lives).flatMap((L) => L.people.filter((p) => !dead(p))) : []);
+    return (acL = lifeMode() && byZone[player.zone] && day() ? byZone[player.zone].filter(lives).flatMap((L) => L.people.filter((p) => !dead(p) && p.x >= 0)) : []);
   };
   const actorAt = (x, y) => actors().find((p) => p.x === x && p.y === y);
   // começa cada um num ponto livre do lote
   for (const L of LOTES.lots)
     L.people.forEach((p, i) => {
-      const c = L.walk[(i * 5 + 3) % Math.max(1, L.walk.length)] || [L.b.door[0], L.b.y + L.b.h];
+      // sem chão livre no lote (casinha do beco), o morador fica em casa: nunca parado na porta
+      const c = L.walk[(i * 5 + 3) % Math.max(1, L.walk.length)] || [-99, -99];
       [p.x, p.y] = c;
       p.rx = p.x;
       p.ry = p.y;

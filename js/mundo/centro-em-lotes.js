@@ -30,7 +30,7 @@
     const put = (x, y, k) => (plan[x + "," + y] = k);
     for (let x = 1; x <= 7; x++) set(x, 10, "f");
     for (let y = 11; y <= 14; y++) (set(1, y, "f"), set(7, y, "f"));
-    set(7, 13, "."); // portãozinho do lado
+    set(7, 14, "."); // portãozinho do lado, junto da casa
     for (let y = 11; y <= 14; y++) for (let x = 2; x <= 6; x++) (set(x, y, "."), put(x, y, "grama"));
     put(3, 14, "porao");
     put(6, 14, "lenha");

@@ -32,7 +32,7 @@ LOTES.place = function (E, k, x, road, bairro, reuse) {
   const depth = Math.min(T.depth, E.maxDepth == null ? 99 : E.maxDepth);
   const lx0 = x,
     lx1 = x + T.span - 1;
-  const by = road - (T.small ? 2 : 3) - T.h + 1; // ricos e médios: 2 linhas de jardim; pobres: só a soleira
+  const by = road - (T.small ? 2 : 4) - T.h + 1; // ricos e médios: 3 linhas de jardim (respiro da rua); pobres: só a soleira
   const bx = lx0 + Math.floor((T.span - T.w) / 2);
   // reuse: uma casa que já existia (da turma, do centro) muda para o lote, com o mesmo nome e os mesmos moradores
   const b = reuse

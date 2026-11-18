@@ -40,7 +40,10 @@
   const hidesOf = (zid) => {
     if (hideCache[zid]) return hideCache[zid];
     const z = ZONES[zid];
-    return (hideCache[zid] = z ? CAND.filter(([x, y]) => ".,".includes(z.map[y][x])).slice(0, 5) : []);
+    // esconderijo nunca em portão, junto de cerca ou dentro de lote
+    const fenceNear = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => (z.map[y + dy] || "")[x + dx] === "f");
+    const inPlan = (x, y) => z.town && z.town.bld.some((b) => b.plan && b.plan[x + "," + y]);
+    return (hideCache[zid] = z ? CAND.filter(([x, y]) => ".,".includes(z.map[y][x]) && !fenceNear(x, y) && !inPlan(x, y)).slice(0, 5) : []);
   };
   const HIDES_ = () => hidesOf(player.zone);
   const S = () => (player.overseas = player.overseas || { done: {} });

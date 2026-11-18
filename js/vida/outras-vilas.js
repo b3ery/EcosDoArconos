@@ -50,10 +50,13 @@ const crierPos = {};
 function crierSpot(z) {
   if (crierPos[z]) return crierPos[z];
   const a = ZONES[z].town.arrive;
-  for (const [dx, dy] of [[2, -1], [3, -1], [2, 1], [3, 1], [1, -2], [4, 0]]) {
+  // o arauto fica na rua, nunca num portão de quintal nem encostado em cerca
+  const m = ZONES[z].map;
+  const nearFence = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => (m[y + dy] || "")[x + dx] === "f");
+  for (const [dx, dy] of [[2, -1], [3, -1], [2, 1], [3, 1], [1, -2], [4, 0], [5, 0], [-2, 0], [-3, 0], [0, 2]]) {
     const x = a[0] + dx,
       y = a[1] + dy;
-    if (walkable(z, x, y)) return (crierPos[z] = [x, y]);
+    if (walkable(z, x, y) && !nearFence(x, y)) return (crierPos[z] = [x, y]);
   }
   return (crierPos[z] = [a[0] + 2, a[1]]);
 }

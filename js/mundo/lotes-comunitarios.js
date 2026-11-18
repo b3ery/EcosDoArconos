@@ -17,6 +17,7 @@
 
 (() => {
   const COM = (window.COMMUNITY_LOTS = {});
+  const OWNER = {}; // de qual prédio é cada pedaço de pátio
   const PASS = new Set(".,PEL=gwubxhnkqAozYVZtRp".split(""));
   const SKIP = new Set(["casa", "casa2", "home", "casebre", "sobrado", "mansao", "terreno"]);
   const YARD_SOLID = new Set(["porao", "lenha", "banco", "latrina", "colmeias", "galpao", "galinheiro", "poco", "forno", "pombal", "lago", "pomar", "placa", "chiqueiro"]);
@@ -64,6 +65,7 @@
     const m = Z.map.map((r) => r.split(""));
     const W = Z.w;
     const M = (COM[zid] = new Map());
+    const O = (OWNER[zid] = new Map());
     const block = solidPlans(Z);
     const G = goals(Z);
     const R0 = reach(Z, m, block);
@@ -73,9 +75,20 @@
     };
     const used = new Set();
     for (const b of Z.town.bld) if (b.plan) for (const k of Object.keys(b.plan)) used.add(k);
-    const free = (x, y) => m[y] && m[y][x] === "." && !used.has(x + "," + y) && !M.has(x + "," + y);
+    // não encosta em quintal nem em cerca de ninguém (para nunca tapar um portão)
+    const near = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => used.has(x + dx + "," + (y + dy)) || (m[y + dy] && m[y + dy][x + dx] === "f"));
+    let cur = null;
+    // nem encosta na parede de outro prédio (senão fecha o corredor entre os dois)
+    const otherWall = (x, y) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => {
+      const nx = x + dx,
+        ny = y + dy;
+      if (!"HD".includes((m[ny] || "")[nx])) return false;
+      return !(cur && nx >= cur.x && nx < cur.x + cur.w && ny >= cur.y && ny < cur.y + cur.h);
+    });
+    const free = (x, y) => m[y] && m[y][x] === "." && !near(x, y) && !otherWall(x, y) && !M.has(x + "," + y);
     for (const b of Z.town.bld) {
       if (SKIP.has(b.style) || b.plan || b.lot) continue;
+      cur = b;
       // fundos e lados: sebe
       const hedge = [];
       for (let x = b.x - 1; x <= b.x + b.w; x++) if (free(x, b.y - 1)) hedge.push([x, b.y - 1]);
@@ -90,6 +103,18 @@
         const y = b.y + b.h;
         if (b.door.some((dx) => Math.abs(dx - x) <= 1)) continue;
         if (free(x, y)) M.set(x + "," + y, (x + y) % 2 ? "canteiro" : "grama");
+      }
+      // no chão calçado (centro, praça, mercado): o lote é um pátio de pedra
+      // com meio-fio marcando o limite; dá para pisar e não fecha rua nenhuma
+      const paved = (x, y) => m[y] && m[y][x] === "," && !M.has(x + "," + y) && !used.has(x + "," + y);
+      const ring = [];
+      for (let x = b.x - 1; x <= b.x + b.w; x++) ring.push([x, b.y - 1], [x, b.y + b.h]);
+      for (let y = b.y; y < b.y + b.h; y++) ring.push([b.x - 1, y], [b.x + b.w, y]);
+      for (const [x, y] of ring) if (paved(x, y)) (M.set(x + "," + y, "patio"), O.set(x + "," + y, b));
+      // floreira nos dois cantos da frente, quando o canto é calçada
+      for (const x of [b.x - 1, b.x + b.w]) {
+        const y = b.y + b.h;
+        if (M.get(x + "," + y) === "patio" && !b.door.some((dx) => Math.abs(dx - x) <= 1)) M.set(x + "," + y, "floreira");
       }
     }
   }
@@ -172,6 +197,31 @@
       R(5, 15, 22, 10, "#5a3a22");
       for (let i = 0; i < 5; i++) (R(7 + i * 4, 13, 2, 6, "#3a6a2a"), R(6 + i * 4, 10 + (i % 2) * 2, 4, 4, ["#e86a8a", "#f2c14e", "#f6f2ea", "#b48aff", "#ff9a4a"][(i + x) % 5]));
     } else if (k === "grama") R(0, 0, 32, 32, "rgba(140,190,90,.16)");
+    else if (k === "patio" || k === "floreira") {
+      // pátio do lote: lajotas mais claras e meio-fio de pedra na beira do terreno
+      const me = OWNER[z] && OWNER[z].get(x + "," + y);
+      const own = (dx, dy) => {
+        const nx = x + dx,
+          ny = y + dy;
+        const q = at(z, nx, ny);
+        if (q === "patio" || q === "floreira") return OWNER[z].get(nx + "," + ny) === me;
+        return !!me && nx >= me.x && nx < me.x + me.w && ny >= me.y && ny < me.y + me.h;
+      };
+      R(0, 0, 32, 32, "rgba(240,228,200,.32)");
+      for (let r = 0; r < 4; r++) for (let q = 0; q < 2; q++) R(q * 16 + (r % 2) * 8, r * 8, 15, 7, (r + q + x + y) % 3 ? "rgba(255,248,230,.14)" : "rgba(120,100,70,.12)");
+      const curb = "#8a8274",
+        hi = "#c9c2b2";
+      if (!own(0, -1)) (R(0, 0, 32, 3, curb), R(0, 0, 32, 1, hi));
+      if (!own(0, 1)) (R(0, 29, 32, 3, curb), R(0, 29, 32, 1, hi));
+      if (!own(-1, 0)) (R(0, 0, 3, 32, curb), R(0, 0, 1, 32, hi));
+      if (!own(1, 0)) (R(29, 0, 3, 32, curb), R(31, 0, 1, 32, hi));
+      if (k === "floreira") {
+        R(5, 12, 22, 16, "#6e6960");
+        R(6, 13, 20, 6, "#4a3020");
+        for (let i = 0; i < 4; i++) (R(8 + i * 5, 9, 2, 6, "#3a6a2a"), R(7 + i * 5, 6 + (i % 2) * 2, 4, 4, ["#e86a8a", "#f2c14e", "#b48aff", "#f6f2ea"][(i + x + y) % 4]));
+        R(5, 12, 22, 2, "#9a9488");
+      }
+    }
   };
   const wkBase = walkable;
   walkable = function (z, x, y) {
