@@ -377,16 +377,20 @@ if (DEV) setupDev();
       if (typed !== "eco") return;
       typed = "";
       e.preventDefault();
-      if (DEV) return toast && toast("Os truques já estão ligados. F9 abre o painel.", 2400);
-      DEV = true;
-      try {
-        localStorage.setItem("ecosDev", "1");
-      } catch (err) {}
-      setupDev();
-      if (player && player.name) devUnlockAll(true);
-      playSound && playSound(1047, 0.2, "triangle");
-      toast && toast("Truques liberados! F9 ou o botão TESTES abre o painel.", 3200);
+      enableCheats();
     },
     true,
   );
+}
+/** Liga os truques (Ctrl + E C O no teclado; no celular, 5 toques no título do Menu do jogo). */
+function enableCheats() {
+  if (DEV) return toast && toast("Os truques já estão ligados. F9 ou TESTES abre o painel.", 2400);
+  DEV = true;
+  try {
+    localStorage.setItem("ecosDev", "1");
+  } catch (err) {}
+  setupDev();
+  if (player && player.name) devUnlockAll(true);
+  playSound && playSound(1047, 0.2, "triangle");
+  toast && toast("Truques liberados! O painel TESTES está no Menu do jogo (ou F9).", 3200);
 }
