@@ -111,7 +111,8 @@
     for (const b of Z.town.bld) {
       // casas com quintal próprio (plan) ou já em lote planejado ficam como estão;
       // as outras casas do centro também ganham o seu lote
-      if (b.style === "terreno" || b.plan || b.lot) continue;
+      // castelo, palácio, fortaleza e farol têm muralha/rocha própria: não ganham cerca de lote
+      if (b.style === "terreno" || b.plan || b.lot || ["castle", "palacio", "fortaleza", "farol"].includes(b.style)) continue;
       cur = b;
       // fundos e lados: sebe
       const hedge = [];

@@ -32,18 +32,24 @@ function placeSeat(zone, b) {
   tw.bld.push(b);
 }
 (function buildSeats() {
+  // as cidades foram esticadas para caber os lotes: as colunas antigas viram as novas
+  const SX = (zid, x) => (ZONES[zid] && ZONES[zid].stretchX ? ZONES[zid].stretchX(x) : x);
   // Porto: ilha no mar, ligada à ponte que já existe no meio do cais (x 31-32).
   const P = ZONES.porto;
   if (P && P.town && !P.town.bld.some((b) => b.style === "palacio")) {
-    for (let y = 25; y <= 30; y++) for (let x = 22; x <= 41; x++) setZoneTile("porto", x, y, y === 25 || y === 30 || x === 22 || x === 41 ? "," : ".");
+    // a ponte do meio do cais: a ilha fica centrada nela
+    const bx = SX("porto", 31);
+    const i0 = bx - 9,
+      i1 = bx + 10;
+    for (let y = 25; y <= 30; y++) for (let x = i0; x <= i1; x++) setZoneTile("porto", x, y, y === 25 || y === 30 || x === i0 || x === i1 ? "," : ".");
     for (const [x, y] of [
-      [23, 29],
-      [40, 29],
-      [23, 26],
-      [40, 26],
+      [i0 + 1, 29],
+      [i1 - 1, 29],
+      [i0 + 1, 26],
+      [i1 - 1, 26],
     ])
       setZoneTile("porto", x, y, "T");
-    placeSeat("porto", { x: 27, y: 26, w: 9, h: 3, door: [31], name: "Palácio das Marés", style: "palacio" });
+    placeSeat("porto", { x: bx - 4, y: 26, w: 9, h: 3, door: [bx], name: "Palácio das Marés", style: "palacio" });
     // A ilha foi construída em cima do mar: os barcos que ficaram na areia vão para a água mais perto.
     const water = (x, y) => P.map[y] && P.map[y][Math.round(x)] === "~";
     P.town.boats = P.town.boats.map(([bx, by]) => {
@@ -57,8 +63,9 @@ function placeSeat(zone, b) {
   // Serra: terreno livre no canto de baixo à direita.
   const S = ZONES.serra;
   if (S && S.town && !S.town.bld.some((b) => b.style === "fortaleza")) {
-    for (let y = 31; y <= 37; y++) for (let x = 50; x <= 60; x++) if (S.map[y][x] !== "#") setZoneTile("serra", x, y, y === 36 || y === 37 ? "," : ".");
-    placeSeat("serra", { x: 51, y: 32, w: 9, h: 4, door: [55], name: "Fortaleza de Pedravale", style: "fortaleza" });
+    const fx = SX("serra", 51);
+    for (let y = 31; y <= 37; y++) for (let x = fx - 1; x <= fx + 9; x++) if (S.map[y][x] !== "#") setZoneTile("serra", x, y, y === 36 || y === 37 ? "," : ".");
+    placeSeat("serra", { x: fx, y: 32, w: 9, h: 4, door: [fx + 4], name: "Fortaleza de Pedravale", style: "fortaleza" });
   }
 })();
 

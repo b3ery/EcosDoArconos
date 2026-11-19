@@ -1390,6 +1390,75 @@ ZONES.vila.town = {
   ],
   boats: [],
 };
+/**
+ * Afasta as casas coladas de uma cidade nova: entre duas casas da mesma
+ * fileira com menos de 4 tiles de folga entram colunas novas (copiando o chão
+ * do lado: rua continua rua, rio continua rio). Tudo o que está à direita anda
+ * junto: prédios, portas, barracas, moradores, chegada e barcos.
+ */
+function stretchTown(m, w, h, spec, doors) {
+  const GAP = 4;
+  const B = spec.bld;
+  const ins = {};
+  const spans = (X) => B.some((b) => b.x < X && X <= b.x + b.w - 1);
+  for (const a of B)
+    for (const c of B) {
+      if (a === c || c.x < a.x + a.w) continue;
+      if (!(a.y < c.y + c.h && c.y < a.y + a.h)) continue;
+      const gap = c.x - (a.x + a.w);
+      if (gap >= GAP) continue;
+      // entra no meio do vão (sem cortar nenhum outro prédio)
+      let X = c.x;
+      while (X > a.x + a.w && spans(X)) X--;
+      if (spans(X)) continue;
+      ins[X] = Math.max(ins[X] || 0, GAP - gap);
+    }
+  const cols = Object.keys(ins).map(Number).sort((p, q) => p - q);
+  if (!cols.length) return { m, w };
+  const NX = (x) => x + cols.reduce((s, X) => s + (X <= x ? ins[X] : 0), 0);
+  const TER = ".,=~#gfTwW";
+  const out = m.map((row, y) => {
+    const r = [];
+    for (let x = 0; x < w; x++) {
+      if (ins[x]) {
+        const L = row[x - 1],
+          R = row[x];
+        const c = y === 0 || y === h - 1 ? "#" : TER.includes(L) && L !== "W" ? L : TER.includes(R) && R !== "W" ? R : ".";
+        for (let k = 0; k < ins[x]; k++) r.push(c);
+      }
+      r.push(row[x]);
+    }
+    return r;
+  });
+  const W2 = out[0].length;
+  for (const b of B) {
+    const nx = NX(b.x);
+    const dx = nx - b.x;
+    b.x = nx;
+    b.door = b.door.map((d) => d + dx);
+  }
+  for (const k of Object.keys(doors)) delete doors[k];
+  for (const b of B) for (const d of b.door) doors[d + "," + (b.y + b.h - 1)] = b;
+  const rekey = (o) => {
+    if (!o) return o;
+    const n = {};
+    for (const [k, v] of Object.entries(o)) {
+      const [x, y] = k.split(",").map(Number);
+      n[NX(x) + "," + y] = v;
+    }
+    return n;
+  };
+  const st = rekey(spec.stalls);
+  for (const k of Object.keys(spec.stalls)) delete spec.stalls[k];
+  Object.assign(spec.stalls, st);
+  const np = rekey(spec.npcs);
+  for (const k of Object.keys(spec.npcs)) delete spec.npcs[k];
+  Object.assign(spec.npcs, np);
+  if (spec.arrive) spec.arrive = [NX(spec.arrive[0]), spec.arrive[1]];
+  for (const bt of spec.boats || []) bt[0] = NX(Math.floor(bt[0])) + (bt[0] % 1);
+  spec._stretch = NX;
+  return { m: out, w: W2 };
+}
 function buildTown(id, spec) {
   const w = spec.w,
     h = spec.h;
@@ -1422,7 +1491,13 @@ function buildTown(id, spec) {
     const [x, y] = k.split(",").map(Number);
     m[y][x] = "N";
   }
-  const z = finalize(id, ZONE_DEFS[id], m, w, h, {}, spec.npcs, null);
+  // casas da mesma fileira precisam de folga para o lote (lado + cerca + beco): 4 tiles
+  const S = stretchTown(m, w, h, spec, doors);
+  if (S.m !== m) {
+    m.length = 0;
+    S.m.forEach((r) => m.push(r));
+  }
+  const z = finalize(id, ZONE_DEFS[id], m, S.w, h, {}, spec.npcs, null);
   z.town = {
     bld: spec.bld,
     doors,
@@ -1432,6 +1507,7 @@ function buildTown(id, spec) {
     horses: [],
     boats: spec.boats || [],
   };
+  z.stretchX = spec._stretch || ((x) => x);
   return z;
 }
 ZONE_DEFS.porto = {

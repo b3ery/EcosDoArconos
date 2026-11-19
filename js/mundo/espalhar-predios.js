@@ -38,6 +38,9 @@
     return seen;
   }
   const close = (a, c) => c.x - 2 < a.x + a.w && a.x - 2 < c.x + c.w && c.y - 2 < a.y + a.h && a.y - 2 < c.y + c.h;
+  // vizinhos da mesma fileira: 3 tiles de folga (lado do lote de cada um + o beco)
+  const GX = 3;
+  const tightX = (a, c) => a.y < c.y + c.h && c.y < a.y + a.h && ((c.x >= a.x + a.w && c.x - (a.x + a.w) < GX) || (a.x >= c.x + c.w && a.x - (c.x + c.w) < GX));
   const free = (b) => !b.plan && !b.lot && !STAY.has(b.style);
   function spread(zid) {
     const Z = ZONES[zid];
@@ -75,8 +78,8 @@
           ny = o.y + dy;
         for (const q of B) {
           if (q === o || group.includes(q)) continue;
-          const hit = q.x - 2 < nx + o.w && nx - 2 < q.x + q.w && q.y - 2 < ny + o.h && ny - 2 < q.y + q.h;
-          const wasHit = q.x - 2 < o.x + o.w && o.x - 2 < q.x + q.w && q.y - 2 < o.y + o.h && o.y - 2 < q.y + q.h;
+          const hit = q.x - GX < nx + o.w && nx - GX < q.x + q.w && q.y - 2 < ny + o.h && ny - 2 < q.y + q.h;
+          const wasHit = q.x - GX < o.x + o.w && o.x - GX < q.x + q.w && q.y - 2 < o.y + o.h && o.y - 2 < q.y + q.h;
           if (hit && !wasHit && !want(q)) return false;
         }
         return true;
@@ -122,12 +125,12 @@
     for (let pass = 0; pass < 4; pass++)
       for (const a of B)
         for (const c of B) {
-          if (a === c || !close(a, c)) continue;
+          if (a === c || (!close(a, c) && !tightX(a, c))) continue;
           const vo = a.y < c.y + c.h && c.y < a.y + a.h;
           const ho = a.x < c.x + c.w && c.x < a.x + a.w;
           let tries = [];
           if (vo && c.x >= a.x + a.w) {
-            const need = 2 - (c.x - (a.x + a.w));
+            const need = GX - (c.x - (a.x + a.w));
             tries = [[c, need, 0], [a, -need, 0]];
           } else if (ho && c.y >= a.y + a.h) {
             const need = 2 - (c.y - (a.y + a.h));
