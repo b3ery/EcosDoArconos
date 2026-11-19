@@ -109,11 +109,7 @@
         for (let y = top - 1; y < b.y + 1; y++)
           for (const x of [x0, x1]) {
             if (y >= b.y) continue;
-            if (y === b.y - 1 && (gateL ? x === x0 : x === x1)) {
-              m2[y][x] = ".";
-              continue;
-            }
-            m2[y][x] = "f";
+            m2[y][x] = "f"; // lote todo cercado (sem portãozinho do lado)
           }
         if (top - 1 > 0) for (let x = x0; x <= x1; x++) if (".,Tw".includes(m2[top - 1][x]) || m2[top - 1][x] === "f") m2[top - 1][x] = "f";
         put(ix0 + (gateL ? 1 : 0), b.y - 1, "porao");
@@ -133,23 +129,15 @@
           const m3 = m2.map((r) => r.slice());
           const fy = b.y + b.h;
           const can = (x, y) => m3[y] && ".,Tw".includes(m3[y][x]) && !(x === b.door[0] && y === fy);
-          // do lado do portãozinho do quintal fica a passagem até o canto da frente (portão de canto)
-          const gx = gateL ? x0 : x1;
-          const side = (x, y) => x === gx && (m3[y][x] === "." || m3[y][x] === ",");
-          const closeAll = (keepSide) => {
-            for (let y = b.y; y <= fy; y++) for (const x of [x0, x1]) if (can(x, y) && !(keepSide && x === gx)) m3[y][x] = "f";
-            for (let x = x0; x <= x1; x++) if (x !== b.door[0] && can(x, fy) && !(keepSide && x === gx)) m3[fy][x] = "f";
-          };
-          const keepSide = side(gx, b.y);
-          closeAll(keepSide);
+          for (let y = b.y; y <= fy; y++) for (const x of [x0, x1]) if (can(x, y)) m3[y][x] = "f";
+          for (let x = x0; x <= x1; x++) if (x !== b.door[0] && can(x, fy)) m3[fy][x] = "f";
           // pedaço de cerca sozinho (sem vizinho de cerca) não fica: vira chão de novo
           for (let x = x0; x <= x1; x++)
             if (m3[fy][x] === "f" && m2[fy][x] !== "f" && m3[fy][x - 1] !== "f" && m3[fy][x + 1] !== "f" && m3[fy - 1][x] !== "f") m3[fy][x] = m2[fy][x];
           if (m3[fy] && m3[fy][b.door[0]] === ".") m3[fy][b.door[0]] = ",";
           const D3 = dist(m3, W, H, start, blk);
           // o quintal continua com entrada (pelo portãozinho do lado)
-          const yardIn = cells.some(([x, y]) => D3[y * W + x] >= 0);
-          if (ok(D3) && yardIn) {
+          if (ok(D3)) {
             b._closed = [];
             for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m3[y][x] !== m2[y][x]) b._closed.push([x, y, m2[y][x]]);
             for (let y = 0; y < H; y++) m2[y] = m3[y];
@@ -177,21 +165,6 @@
         n++;
         done = true;
       }
-    }
-    // conferência final: se a cerca de um vizinho fechou o portãozinho de alguém,
-    // aquela frente volta a ficar aberta (o quintal nunca fica sem entrada)
-    for (let pass = 0; pass < 3; pass++) {
-      const D = dist(m, W, H, start, block);
-      let fixed = false;
-      for (const b of Z.town.bld) {
-        if (!b._closed || !b.plan) continue;
-        const cells = Object.keys(b.plan).map((k) => k.split(",").map(Number)).filter(([x, y]) => y < b.y);
-        if (!cells.length || cells.some(([x, y]) => D[y * W + x] >= 0)) continue;
-        for (const [x, y, c] of b._closed) m[y][x] = c;
-        b._closed = null;
-        fixed = true;
-      }
-      if (!fixed) break;
     }
     Z.map = m.map((r) => r.join(""));
   }

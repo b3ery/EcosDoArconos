@@ -365,14 +365,6 @@
     for (const o of Object.values(Z.open || {})) if (o && typeof o[0] === "number") goals.push(o);
     let R = bfs();
     const want = goals.filter(([x, y]) => R[y * W + x]);
-    // e todo quintal que tinha entrada continua tendo (um pedaço alcançável de cada um)
-    for (const b of Z.town.bld)
-      if (b.plan) {
-        const c = Object.keys(b.plan)
-          .map((k) => k.split(",").map(Number))
-          .find(([x, y]) => y < b.y && R[y * W + x]);
-        if (c) want.push(c);
-      }
     for (const b of Z.town.bld) {
       const fr = [];
       for (let x = b.x - 1; x <= b.x + b.w; x++) {
@@ -390,19 +382,13 @@
       if (!ok) for (const k of fr) F.delete(k);
       else R = R2;
     }
-    // quintal que ficou sem entrada por causa das sebes daqui: a frente dele volta a ficar aberta
-    let changed = false;
-    for (const b of Z.town.bld) {
-      if (!b._closed || !b.plan) continue;
-      const cells = Object.keys(b.plan).map((k) => k.split(",").map(Number)).filter(([x, y]) => y < b.y);
-      if (!cells.length || cells.some(([x, y]) => R[y * W + x])) continue;
-      const m = Z.map.map((r) => r.split(""));
-      for (const [x, y, c] of b._closed) m[y][x] = c;
-      Z.map = m.map((r) => r.join(""));
-      b._closed = null;
-      changed = true;
-      R = bfs();
-    }
+    // A. frente que não pode fechar (é a rua): sai do lote, e a cerca fecha rente à fachada
+    for (const b of Z.town.bld)
+      for (let x = b.x - 1; x <= b.x + b.w; x++) {
+        const k = x + "," + (b.y + b.h);
+        const v = M.get(k);
+        if ((v === "patio" || v === "floreira") && OWNER[zid].get(k) === b && !F.has(k)) (M.delete(k), OWNER[zid].delete(k));
+      }
   }
   for (const z of zones) closeFronts(z);
   // CAMINHOS: da porta (e de cada portão) sai um caminho de pedra até a rua mais perto,
@@ -474,7 +460,8 @@
   window.PATHS_LAID = zones.reduce((s, z) => s + layPaths(z), 0);
   // as saídas para as florestas são criadas depois deste arquivo: confere na primeira vez que alguém anda na cidade
   const exitsDone = new Set();
-  window.openYardGates = () => zones.reduce((s, z) => s + openGates(z), 0);
+  // lote todo cercado: não abre buraco na cerca (o único portão é o da porta)
+  window.openYardGates = () => 0;
 
   // desenho: sebe aparada (liga com a vizinha) e canteiro de flores
   const at = (z, x, y) => COM[z] && COM[z].get(x + "," + y);
@@ -550,7 +537,9 @@
     };
     if (k === "caminho") {
       // portão aberto: só os dois mourões
-      if (!own(0, 1)) (R(1, 18, 5, 14, "#6b4423"), R(26, 18, 5, 14, "#6b4423"), R(1, 18, 5, 2, "#8a5e32"), R(26, 18, 5, 2, "#8a5e32"));
+      // mourões do portão só quando a cerca da frente passa dos dois lados
+      const Fz = FRONT[z];
+      if (!own(0, 1) && Fz && (Fz.has(x - 1 + "," + y) || Fz.has(x + 1 + "," + y))) (R(1, 18, 5, 14, "#6b4423"), R(26, 18, 5, 14, "#6b4423"), R(1, 18, 5, 2, "#8a5e32"), R(26, 18, 5, 2, "#8a5e32"));
       return;
     }
     const post = "#6b4423",
