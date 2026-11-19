@@ -23,6 +23,90 @@
       animals.push({ k, pen: p, x, y, rx: x, ry: y, t: Math.random() * 3, dir: i % 2 ? 1 : -1, done: -1 });
     }),
   );
+  /* O mapa de Cinzaluz mudou depois (casas afastadas, ruas ligadas): o cercado
+     de verdade é achado pela CERCA no mapa, e os bichos só andam por dentro dele. */
+  let pensFixed = false;
+  function fixPens() {
+    pensFixed = true;
+    const Z = ZONES.vila;
+    if (!Z || !Z.map) return;
+    const T = (x, y) => (Z.map[y] || "")[x];
+    for (const P of LESTE.pens) {
+      // a cerca mais perto do cercado antigo: o maior grupo de "f" ligados ali perto
+      const X0 = P.x0 - 14,
+        X1 = P.x1 + 14,
+        Y0 = P.y0 - 10,
+        Y1 = P.y1 + 10;
+      const seen = new Set();
+      let best = null;
+      for (let y = Y0; y <= Y1; y++)
+        for (let x = X0; x <= X1; x++) {
+          if (T(x, y) !== "f" || seen.has(x + "," + y)) continue;
+          const q = [[x, y]],
+            comp = [];
+          seen.add(x + "," + y);
+          while (q.length) {
+            const [a, b] = q.pop();
+            comp.push([a, b]);
+            for (let dy = -1; dy <= 1; dy++)
+              for (let dx = -1; dx <= 1; dx++) {
+                const k = a + dx + "," + (b + dy);
+                if (seen.has(k) || T(a + dx, b + dy) !== "f" || a + dx < X0 - 6 || a + dx > X1 + 6) continue;
+                seen.add(k);
+                q.push([a + dx, b + dy]);
+              }
+          }
+          // tem que ser a cerca EM VOLTA do cercado antigo (o centro dele fica dentro)
+          const cx = (P.x0 + P.x1) / 2,
+            cy = (P.y0 + P.y1) / 2;
+          const xs0 = comp.map((p) => p[0]),
+            ys0 = comp.map((p) => p[1]);
+          const inside = cx > Math.min(...xs0) && cx < Math.max(...xs0) && cy > Math.min(...ys0) && cy < Math.max(...ys0);
+          if (inside && (!best || comp.length > best.length)) best = comp;
+        }
+      if (!best || best.length < 10) continue;
+      const xs = best.map((p) => p[0]),
+        ys = best.map((p) => p[1]);
+      const bx0 = Math.min(...xs),
+        bx1 = Math.max(...xs),
+        by0 = Math.min(...ys),
+        by1 = Math.max(...ys);
+      // por dentro: um bloco de folga da cerca (para o bicho não ficar em cima dela)
+      P.x0 = bx0 + 1;
+      P.x1 = bx1 - 1;
+      P.y0 = by0 + 1;
+      P.y1 = by1 - 1;
+      // o chão de dentro é pasto: a terra da rua só entra um bloco pela porteira
+      const rows = Z.map.map((r) => r.split(""));
+      for (let y = P.y0; y <= P.y1; y++)
+        for (let x = P.x0; x <= P.x1; x++) {
+          if (rows[y][x] !== ",") continue;
+          const gate = (rows[y - 1] && rows[y - 1][x] === "," && y === P.y0) || (rows[y + 1] && rows[y + 1][x] === "," && y === P.y1) || (x === P.x0 && rows[y][x - 1] === ",") || (x === P.x1 && rows[y][x + 1] === ",");
+          if (!gate) rows[y][x] = ".";
+        }
+      Z.map = rows.map((r) => r.join(""));
+      if (game.mm) delete game.mm.vila;
+      P.ok = new Set();
+      for (let y = P.y0; y <= P.y1; y++) for (let x = P.x0; x <= P.x1; x++) if (".gw,T".includes(T(x, y)) && T(x, y) !== "f") P.ok.add(x + "," + y);
+    }
+    // cada bicho volta para dentro do seu cercado
+    const used = new Set();
+    for (const a of animals) {
+      const P = a.pen;
+      if (!P.ok || P.ok.has(a.x + "," + a.y)) {
+        used.add(a.x + "," + a.y);
+        continue;
+      }
+      const free = [...P.ok].filter((k) => !used.has(k));
+      const k = free[Math.floor(Math.random() * free.length)];
+      if (!k) continue;
+      [a.x, a.y] = k.split(",").map(Number);
+      a.rx = a.x;
+      a.ry = a.y;
+      used.add(k);
+    }
+  }
+  window.fixVilaPens = () => pensFixed || fixPens();
   const animalAt = (x, y) => player.zone === "vila" && animals.find((a) => a.x === x && a.y === y);
   const NAME = { vaca: "vaca", ovelha: "ovelha", porco: "porco", galinha: "galinha" };
   const WORK = { vaca: "Ordenhar a vaca", ovelha: "Tosquiar a ovelha", porco: "Dar lavagem aos porcos", galinha: "Pegar os ovos" };
@@ -31,6 +115,7 @@
   update = function (dt) {
     upBase(dt);
     if (player.zone !== "vila" || game.mode !== "world") return;
+    if (!pensFixed) fixPens();
     for (const a of animals) {
       a.rx += (a.x - a.rx) * Math.min(1, dt * 3);
       a.ry += (a.y - a.ry) * Math.min(1, dt * 3);
@@ -42,6 +127,7 @@
         ny = a.y + dy,
         P = a.pen;
       if (nx < P.x0 || nx > P.x1 || ny < P.y0 || ny > P.y1) continue;
+      if (P.ok && !P.ok.has(nx + "," + ny)) continue;
       if (animals.some((o) => o !== a && o.x === nx && o.y === ny) || (nx === player.x && ny === player.y)) continue;
       if (dx) a.dir = dx;
       a.x = nx;

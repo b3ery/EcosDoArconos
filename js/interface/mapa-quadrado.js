@@ -51,7 +51,8 @@
 
   const base = drawMinimap;
   drawMinimap = function (big, t) {
-    if (!big || game.worldMap) return base.apply(this, arguments);
+    if (!big) return roundMini(t);
+    if (game.worldMap) return base.apply(this, arguments);
     const z = ZONES[player.zone];
     if (!z) return base.apply(this, arguments);
     const B = regionMapBox(player.zone);
@@ -175,6 +176,94 @@
       }
     }
   };
+
+  /* ----- o minimapa do canto também é redondo (uma bússola pequena) e abre o mapa ao tocar ----- */
+  const MINI = (window.MINIMAP_HIT = { cx: 0, cy: 0, r: 46 });
+  function roundMini(t) {
+    const z = ZONES[player.zone];
+    if (!z || z.town && z.town.indoor) return;
+    const R = MINI.r,
+      cx = viewWidth - 10 - R,
+      cy = 40 + (game.mmDy || 34) + R;
+    MINI.cx = cx;
+    MINI.cy = cy;
+    const k = 2.4; // pixels por bloco
+    const px = (player.rx ?? player.x) + 0.5,
+      py = (player.ry ?? player.y) + 0.5;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(20,14,30,.92)";
+    ctx.fill();
+    ctx.clip();
+    const mm = typeof minimapOf === "function" ? minimapOf(player.zone) : null;
+    if (mm && mm.c) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(mm.c, cx - px * k, cy - py * k, z.w * k, z.h * k);
+    }
+    // você no meio
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#1a1420";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 5);
+    ctx.lineTo(cx + 4, cy + 4);
+    ctx.lineTo(cx, cy + 2);
+    ctx.lineTo(cx - 4, cy + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+    // aro dourado e o N
+    ctx.strokeStyle = "#5a4320";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R + 2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = "#c9a03a";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "#1a1420";
+    ctx.beginPath();
+    ctx.arc(cx, cy - R, 7, 0, 7);
+    ctx.fill();
+    ctx.fillStyle = "#ff7a6a";
+    ctx.font = '700 10px "Pixelify Sans", sans-serif';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("N", cx, cy - R + 1);
+    ctx.textBaseline = "alphabetic";
+  }
+  // tocar no minimapa abre o mapa redondo
+  const inMini = (e) => {
+    if (game.mode !== "world" || !MINI.cx || !game.showMM) return false;
+    const r = byId("cv").getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * viewWidth,
+      y = ((e.clientY - r.top) / r.height) * 480;
+    return Math.hypot(x - MINI.cx, y - MINI.cy) <= MINI.r + 4;
+  };
+  let miniDown = false;
+  addEventListener(
+    "pointerdown",
+    (e) => {
+      miniDown = inMini(e);
+      if (miniDown) (e.stopImmediatePropagation(), e.preventDefault());
+    },
+    true,
+  );
+  addEventListener(
+    "pointerup",
+    (e) => {
+      if (!miniDown) return;
+      miniDown = false;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      if (inMini(e) && typeof openMap === "function") openMap();
+    },
+    true,
+  );
 
   // abrir: centra em você
   const omBase = openMap;

@@ -27,6 +27,7 @@
   const cold = () => typeof season === "function" && season().id === "inv";
   const storm = () => ["chuva", "tempestade", "neve"].includes(player.weather || "sol");
   // distância até a terra mais perto (0 = encostado na margem)
+  const dirtyNow = () => typeof riverDirty === "function" && riverDirty();
   const shoreDist = (x, y) => {
     for (let r = 1; r <= 6; r++)
       for (let dy = -r; dy <= r; dy++)
@@ -40,6 +41,8 @@
 
   // DEATHS ganha o tubarão (o afogamento já existe em mortes.js)
   if (typeof DEATHS !== "undefined" && !DEATHS.tubarao)
+    DEATHS.aguasuja = { n: "Água podre", t: "Morreu da febre do rio sujo", env: "rio", fx: "bolhas", water: 1, epi: "Nadou onde a vila jogava o lixo.", padre: "Quando o reino não limpa o rio, o rio cobra de quem entra nele.", how: "Nadar no rio sujo (com a limpeza da vila baixa)." };
+  if (typeof DEATHS !== "undefined" && !DEATHS.tubarao)
     DEATHS.tubarao = { n: "Tubarão", t: "Atacad{o} por um tubarão no mar", env: "rio", fx: "bolhas", water: 1, epi: "O mar tem dono.", padre: "Quem nada no fundo do mar nada na casa do tubarão.", how: "Nadar no fundo do mar e não fugir da barbatana." };
 
   window.startSwim = function (x, y) {
@@ -52,6 +55,7 @@
     player.y = y;
     game.moveCd = 0.3;
     playSound(300, 0.2, "sine");
+    if (dirtyNow()) return toast("Você entra na água... ela fede, está turva e cheia de lixo. Isto pode te matar! Saia logo.", 3600);
     toast(isSea() ? "Você mergulha no mar! Fôlego na barra azul. Cuidado com o fundo: lá tem tubarão." : "Você entra na água! Fôlego na barra azul. Volte para a margem para descansar.", 3600);
   };
   function stopSwim(msg) {
@@ -127,10 +131,25 @@
     if (S.breath <= 0) {
       player.hp -= 9 * dt;
       if (S.warnT <= 0) ((S.warnT = 2.5), toast("Você está se afogando!", 1600), playSound(140, 0.2, "sawtooth"));
-      if (player.hp <= 0) return drown(), r;
+      if (player.hp <= 1.5) return drown(), r;
     }
+    // rio sujo: a água podre adoece e mata (quanto mais suja, mais rápido)
+    if (dirtyNow()) {
+      const lv = typeof riverDirtyLevel === "function" ? riverDirtyLevel() : 0.5;
+      S.dirtyT = (S.dirtyT || 0) + dt;
+      player.hp -= (2 + 4 * lv) * dt;
+      if (typeof addNeed === "function") addNeed("hygiene", -4 * dt);
+      if (!player.sick && S.dirtyT > 2 && typeof getSick === "function") (getSick(Math.random() < 0.5 ? "disenteria" : "intox"), toast("A água podre te fez mal! Você está doente.", 2600));
+      if (S.warnT <= 0) ((S.warnT = 3), toast("Água suja! Cada segundo aqui te envenena. Saia da água!", 2000), playSound(160, 0.15, "square"));
+      if (player.hp <= 1.5) {
+        stopSwim();
+        if (life() && typeof playerDies === "function" && playerDies("aguasuja")) return r;
+        rescue("A febre da água podre te derruba. Alguém te arrasta para fora do rio.");
+        return r;
+      }
+    } else S.dirtyT = 0;
     // Simulador: diverte, limpa e cansa
-    if (life() && typeof addNeed === "function") {
+    if (life() && typeof addNeed === "function" && !dirtyNow()) {
       addNeed("fun", 1.4 * dt);
       addNeed("hygiene", 1.2 * dt);
       addNeed("energy", -0.5 * dt);
@@ -179,7 +198,7 @@
             playSound(90, 0.4, "sawtooth");
             toast(`O tubarão morde! (−${dmg} de vida)`, 2000);
             S.splash.push({ x: player.x, y: player.y, t: 1, blood: 1 });
-            if (player.hp <= 0) return sharkDeath(), r;
+            if (player.hp <= 1.5) return sharkDeath(), r;
           }
         }
       }

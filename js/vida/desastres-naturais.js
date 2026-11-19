@@ -490,6 +490,9 @@
   // é seguro para beber; com a vila suja, piora.
   const wellsBad = () => lifeMode() && realm() && (realm().agua ?? 60) < 40 && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
   const dirty = () => lifeMode() && realm() && (realm().limp < 40 || (realm().agua ?? 60) < 40) && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
+  // o rio sujo (nadar.js usa: nadar nele adoece e pode matar)
+  window.riverDirty = () => lifeMode() && realm() && realm().limp < 40 && (player.zone === "vila" || player.zone === "porto" || player.zone === "serra");
+  window.riverDirtyLevel = () => (realm() ? Math.min(1, (40 - realm().limp) / 30) : 0);
   const iaW = interactAt;
   interactAt = function (x, y) {
     const c = typeof tileAt === "function" ? tileAt(player.zone, x, y) : null;

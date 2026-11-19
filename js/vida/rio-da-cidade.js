@@ -66,7 +66,7 @@
         },
       },
       {
-        t: "Nadar (entrar na água)",
+        t: typeof riverDirty === "function" && riverDirty() ? "Nadar (ÁGUA SUJA: pode matar!)" : "Nadar (entrar na água)",
         fn: () => {
           if (typeof startSwim === "function") return startSwim(x, y);
           need("fun", 30);
@@ -101,7 +101,7 @@
           if (!wetN.length) continue;
           // o lavadouro fica no fim do caminho (onde a rua encosta na água)
           if (c === "," && !stone) ((stone = [x, y]), M.set(x + "," + y, "lava"));
-          else if (c === "." && (x * 7 + y * 3) % 4 === 0) M.set(x + "," + y, "taboa");
+          else if (c === "." && (x * 7 + y * 3) % 4 === 0 && !((window.PARKS || {})[z] && PARKS[z].has(x + "," + y)) && !((window.PARKS || {})[z] && PARKS[z].has(x + 1 + "," + y))) M.set(x + "," + y, "taboa");
         }
     }
     return M;
@@ -135,11 +135,31 @@
       ctx.fillStyle = "rgba(196,170,116,.95)";
       ctx.fillRect(fx, fy, w, h);
     };
+    // margem natural: a grama avança e recua em curvas sobre a água
+    const bump = (u) => 5 + 4 * Math.sin(u * 0.9 + x * 1.7 + y * 2.3) + 2 * Math.sin(u * 2.1 + y);
+    ctx.fillStyle = "#6a9a46";
+    for (let u = 0; u < TILE; u += 4) {
+      const b = Math.max(1, bump(u / 4));
+      if (dry(x, y - 1)) ctx.fillRect(X + u, Y, 4, b);
+      if (dry(x, y + 1)) ctx.fillRect(X + u, Y + TILE - b, 4, b);
+      if (dry(x - 1, y)) ctx.fillRect(X, Y + u, b, 4);
+      if (dry(x + 1, y)) ctx.fillRect(X + TILE - b, Y + u, b, 4);
+    }
     ctx.save();
-    if (dry(x, y - 1)) (edge(X, Y, TILE, 4), (ctx.fillStyle = "rgba(255,255,255,.6)"), ctx.fillRect(X, Y + 4, TILE, 2));
-    if (dry(x, y + 1)) (edge(X, Y + TILE - 4, TILE, 4), (ctx.fillStyle = "rgba(255,255,255,.6)"), ctx.fillRect(X, Y + TILE - 6, TILE, 2));
-    if (dry(x - 1, y)) (edge(X, Y, 4, TILE), (ctx.fillStyle = "rgba(255,255,255,.6)"), ctx.fillRect(X + 4, Y, 2, TILE));
-    if (dry(x + 1, y)) (edge(X + TILE - 4, Y, 4, TILE), (ctx.fillStyle = "rgba(255,255,255,.6)"), ctx.fillRect(X + TILE - 6, Y, 2, TILE));
+    const shift = (fn) => fn;
+    for (let u = 0; u < TILE; u += 4) {
+      const b = Math.max(1, bump(u / 4));
+      ctx.fillStyle = "rgba(196,170,116,.95)";
+      if (dry(x, y - 1)) ctx.fillRect(X + u, Y + b, 4, 2);
+      if (dry(x, y + 1)) ctx.fillRect(X + u, Y + TILE - b - 2, 4, 2);
+      if (dry(x - 1, y)) ctx.fillRect(X + b, Y + u, 2, 4);
+      if (dry(x + 1, y)) ctx.fillRect(X + TILE - b - 2, Y + u, 2, 4);
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      if (dry(x, y - 1)) ctx.fillRect(X + u, Y + b + 2, 4, 1);
+      if (dry(x, y + 1)) ctx.fillRect(X + u, Y + TILE - b - 3, 4, 1);
+      if (dry(x - 1, y)) ctx.fillRect(X + b + 2, Y + u, 1, 4);
+      if (dry(x + 1, y)) ctx.fillRect(X + TILE - b - 3, Y + u, 1, 4);
+    }
     ctx.restore();
     // vitória-régia de vez em quando
     if ((x * 31 + y * 17) % 23 === 0) {

@@ -31,7 +31,9 @@
   };
   // criança pequena (desenhada com o pé em fx, fy)
   function kid(fx, fy, i, pose) {
-    const [shirt, skin] = kidColors[i % kidColors.length];
+    // os filhos de verdade (quando você leva a família ao parque) usam a cara deles
+    const fam = window.parkFamilyLook && parkFamilyLook(i);
+    const [shirt, skin] = fam ? [fam.robe || "#4a7ad9", fam.skin || "#f1c8a5"] : kidColors[i % kidColors.length];
     ctx.fillStyle = "rgba(0,0,0,.2)";
     ctx.fillRect(fx - 4, fy, 8, 2);
     ctx.fillStyle = "#3a2a3a";
@@ -41,7 +43,7 @@
     ctx.fillRect(fx - 3, fy - 10, 6, 6);
     ctx.fillStyle = skin;
     ctx.fillRect(fx - 3, fy - 15, 6, 5);
-    ctx.fillStyle = i % 2 ? "#3a2a1a" : "#c98a3a";
+    ctx.fillStyle = fam ? fam.hair || "#3a2a1a" : i % 2 ? "#3a2a1a" : "#c98a3a";
     ctx.fillRect(fx - 3, fy - 16, 6, 2);
     if (pose === "up") (ctx.fillStyle = skin), ctx.fillRect(fx - 5, fy - 14, 2, 4), ctx.fillRect(fx + 3, fy - 14, 2, 4);
   }
@@ -164,6 +166,104 @@
     },
   };
 
+  // estátua de pedra num pedestal (1 bloco): cavaleiro, rainha ou mago, pela posição
+  draw.estatua = function (X, Y, t, i) {
+    const S1 = "#b8b4aa",
+      S2 = "#8e8a80",
+      S3 = "#d8d4ca";
+    ctx.fillStyle = "rgba(0,0,0,.25)";
+    ctx.fillRect(X + 4, Y + 27, 26, 4);
+    ctx.fillStyle = S2;
+    ctx.fillRect(X + 5, Y + 18, 22, 10);
+    ctx.fillStyle = S1;
+    ctx.fillRect(X + 7, Y + 14, 18, 6);
+    ctx.fillStyle = S3;
+    ctx.fillRect(X + 7, Y + 14, 18, 2);
+    // a figura
+    const k = i % 3;
+    ctx.fillStyle = S1;
+    ctx.fillRect(X + 12, Y - 6, 8, 20);
+    ctx.fillRect(X + 13, Y - 13, 6, 7);
+    ctx.fillStyle = S3;
+    ctx.fillRect(X + 13, Y - 13, 2, 7);
+    ctx.fillStyle = S2;
+    if (k === 0) {
+      // cavaleiro com espada erguida
+      ctx.fillRect(X + 20, Y - 22, 2, 18);
+      ctx.fillRect(X + 18, Y - 5, 6, 2);
+      ctx.fillRect(X + 8, Y - 2, 5, 9);
+    } else if (k === 1) {
+      // rainha com coroa e manto
+      ctx.fillRect(X + 10, Y + 2, 12, 12);
+      ctx.fillRect(X + 13, Y - 16, 6, 3);
+      ctx.fillRect(X + 13, Y - 18, 1, 2);
+      ctx.fillRect(X + 15, Y - 19, 2, 3);
+      ctx.fillRect(X + 18, Y - 18, 1, 2);
+    } else {
+      // mago com cajado e chapéu pontudo
+      ctx.beginPath();
+      ctx.moveTo(X + 11, Y - 12);
+      ctx.lineTo(X + 21, Y - 12);
+      ctx.lineTo(X + 16, Y - 24);
+      ctx.fill();
+      ctx.fillRect(X + 23, Y - 16, 2, 30);
+      ctx.fillStyle = "#9ad8ff";
+      ctx.globalAlpha = 0.5 + 0.3 * Math.sin(t * 2);
+      ctx.fillRect(X + 22, Y - 19, 4, 4);
+      ctx.globalAlpha = 1;
+    }
+    // musgo
+    ctx.fillStyle = "rgba(90,130,60,.6)";
+    ctx.fillRect(X + 6, Y + 25, 5, 2);
+    ctx.fillRect(X + 21, Y + 19, 4, 2);
+  };
+  // coreto de madeira (2 blocos) com telhado e um músico de dia
+  draw.coreto = function (X, Y, t, i, kids) {
+    ctx.fillStyle = "#7a5a3a";
+    ctx.fillRect(X - 28, Y + 14, 56, 12);
+    ctx.fillStyle = "#a8784a";
+    ctx.fillRect(X - 30, Y + 12, 60, 4);
+    ctx.fillStyle = "#5a3a1c";
+    for (const px of [-26, -9, 8, 24]) ctx.fillRect(X + px, Y - 10, 3, 24);
+    ctx.fillStyle = "#8a1f1f";
+    ctx.beginPath();
+    ctx.moveTo(X - 34, Y - 8);
+    ctx.lineTo(X, Y - 30);
+    ctx.lineTo(X + 34, Y - 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#c9a03a";
+    ctx.fillRect(X - 1, Y - 36, 2, 7);
+    ctx.fillRect(X - 34, Y - 9, 68, 2);
+    if (kids) {
+      // um bardo tocando alaúde
+      ctx.fillStyle = "#3a6a4a";
+      ctx.fillRect(X - 4, Y, 8, 10);
+      ctx.fillStyle = "#e0b090";
+      ctx.fillRect(X - 3, Y - 6, 6, 6);
+      ctx.fillStyle = "#c9a03a";
+      ctx.fillRect(X + 3, Y + 3 + Math.sin(t * 6), 7, 4);
+      if (((t * 2) | 0) % 2) ((ctx.fillStyle = "#fff"), ctx.fillRect(X + 10, Y - 12 - ((t * 8) % 8), 3, 4));
+    }
+  };
+  // banco de praça de madeira com encosto e pés de ferro
+  draw.banco = function (X, Y) {
+    ctx.fillStyle = "rgba(0,0,0,.22)";
+    ctx.fillRect(X + 3, Y + 26, 26, 4);
+    ctx.fillStyle = "#3a3a44";
+    ctx.fillRect(X + 5, Y + 18, 3, 9);
+    ctx.fillRect(X + 24, Y + 18, 3, 9);
+    ctx.fillStyle = "#8a5a2e";
+    ctx.fillRect(X + 3, Y + 16, 26, 4);
+    ctx.fillStyle = "#a8784a";
+    ctx.fillRect(X + 3, Y + 16, 26, 1);
+    ctx.fillStyle = "#7a4a22";
+    ctx.fillRect(X + 3, Y + 6, 26, 3);
+    ctx.fillRect(X + 3, Y + 11, 26, 3);
+    ctx.fillStyle = "#3a3a44";
+    ctx.fillRect(X + 5, Y + 5, 2, 12);
+    ctx.fillRect(X + 25, Y + 5, 2, 12);
+  };
   const dtBase = drawTile;
   drawTile = function (z, x, y, c, t) {
     const r = dtBase.apply(this, arguments);
@@ -174,10 +274,13 @@
     // chão de terra batida embaixo dos brinquedos
     const X = x * TILE,
       Y = y * TILE;
-    ctx.fillStyle = "rgba(196,160,104,.55)";
-    ctx.fillRect(X - TILE + 2, Y + 2, TILE * 2 - 4, TILE - 4);
-    const i = (x * 3 + y * 5) % 7;
-    const kids = daytime() && (x + y) % 4 !== 0;
+    if (kind !== "estatua" && kind !== "coreto" && kind !== "banco") {
+      ctx.fillStyle = "rgba(196,160,104,.55)";
+      ctx.fillRect(X - TILE + 2, Y + 2, TILE * 2 - 4, TILE - 4);
+    }
+    const i = window.parkFamilyAt && parkFamilyAt(x, y) ? 100 + parkFamilyAt(x, y) - 1 : (x * 3 + y * 5) % 7;
+    const famHere = window.parkFamilyAt && parkFamilyAt(x, y);
+    const kids = famHere || (daytime() && (x + y) % 4 !== 0);
     draw[kind] && draw[kind](X, Y, t || performance.now() / 1000, i, kids);
     return r;
   };

@@ -38,7 +38,7 @@
     for (const b of cand.slice(0, zid.startsWith("pais-") ? 1 : 2)) b.big = true;
   }
   // cada bairro com o seu tipo de casa (depois que casas-e-realeza já classificou)
-  for (const L of LOTES.lots) if (!L.reused) L.b.style = L.size === "M" ? "casa" : L.size === "L" ? "casa2" : "casa";
+  for (const L of LOTES.lots) if (!L.reused && !L.b.shop) L.b.style = L.size === "M" ? "casa" : L.size === "L" ? "casa2" : "casa";
   // ao entrar num bairro, a placa do nome aparece
   let lastB = null;
   const upB = update;

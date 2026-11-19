@@ -227,3 +227,6 @@
   }
   window.END_FIX = endFix;
 })();
+
+// os currais de Cinzaluz (vida-no-campo.js): bichos e chão do cercado conferidos com o mapa final
+if (typeof fixVilaPens === "function") fixVilaPens();
