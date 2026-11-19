@@ -86,7 +86,12 @@
 
   // fileira de cima (linhas 11..18): Sua Casa (a porta continua em 5,17) e a Taverna
   lot(B.home, 1, 9, 11, 18, "home");
-  lot(B.taverna, 12, 23, 11, 18, "shop");
+  lot(B.taverna, 12, 20, 11, 18, "shop");
+  // rua do campo de treino: atrás dos lotes (linha 10) e descendo do lado da Taverna (x 21-23) até a praça
+  for (let x = X0; x <= X1; x++) if (m[10][x] === ".") m[10][x] = ",";
+  fill(21, 10, 23, 19, ",");
+  set(17, 9, ",");
+  set(18, 9, ",");
   // fileira de baixo (linhas 20..25): Padaria, Casebre e o Quartinho do Lucas
   lot(B.padaria, 1, 7, 20, 25, "shop");
   lot(B.c1, 9, 15, 20, 25, "home");

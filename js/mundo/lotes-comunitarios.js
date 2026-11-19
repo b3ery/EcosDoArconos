@@ -207,6 +207,98 @@
 
   const zones = Object.keys(ZONES).filter((z) => z === "vila" || z === "porto" || z === "serra" || z === "solmar" || z === "rosalva" || z === "cais" || z.startsWith("pais-"));
   for (const z of zones) communityLots(z);
+  // RUAS: entre dois prédios vizinhos sempre sobra uma passagem para andar
+  // (as sebes e os objetos dos lotes não podem fechar o beco)
+  function keepAlleys(zid) {
+    const Z = ZONES[zid];
+    const M = COM[zid];
+    if (!Z || !M || !Z.map) return;
+    const B = Z.town.bld;
+    const blocked = (x, y) => {
+      const k = M.get(x + "," + y);
+      if (k === "sebe" || (k && k.startsWith("p:"))) return true;
+      return !PASS.has((Z.map[y] || "")[x]) && !"H".includes((Z.map[y] || "")[x]);
+    };
+    for (const a of B)
+      for (const c of B) {
+        if (a === c || c.x < a.x + a.w) continue;
+        const gap = c.x - (a.x + a.w);
+        if (gap < 1 || gap > 4) continue;
+        const y0 = Math.max(a.y, c.y),
+          y1 = Math.min(a.y + a.h, c.y + c.h) - 1;
+        if (y1 < y0) continue;
+        const cols = [];
+        for (let x = a.x + a.w; x < c.x; x++) cols.push(x);
+        // a passagem vai da linha de trás à linha da frente dos dois prédios
+        const top = Math.min(a.y, c.y) - 1,
+          bot = Math.max(a.y + a.h, c.y + c.h);
+        const free = (x) => {
+          for (let y = top; y <= bot; y++) if (blocked(x, y) || "HD".includes((Z.map[y] || "")[x])) return false;
+          return true;
+        };
+        if (cols.some(free)) continue;
+        const mid = cols[Math.floor((cols.length - 1) / 2)];
+        for (let y = top; y <= bot; y++) {
+          const k = mid + "," + y;
+          const v = M.get(k);
+          if (v === "sebe" || (v && v.startsWith("p:"))) M.set(k, "grama");
+        }
+      }
+  }
+  // e nenhuma saída da cidade fica atrás de sebe ou de objeto de lote
+  function keepExits(zid) {
+    const Z = ZONES[zid];
+    const M = COM[zid];
+    if (!Z || !M || !Z.open) return;
+    for (const o of Object.values(Z.open)) {
+      if (!o || typeof o[0] !== "number") continue;
+      const [x0, y0] = o;
+      const [dx, dy] = x0 <= 0 ? [1, 0] : x0 >= Z.w - 1 ? [-1, 0] : y0 <= 0 ? [0, 1] : y0 >= Z.h - 1 ? [0, -1] : [0, 0];
+      if (!dx && !dy) continue;
+      const bad = (x, y) => {
+        const v = M.get(x + "," + y);
+        return v === "sebe" || (v && v.startsWith("p:"));
+      };
+      const okT = (x, y) => PASS.has((Z.map[y] || "")[x]) && !bad(x, y);
+      const clear = (x, y) => bad(x, y) && M.set(x + "," + y, "grama");
+      // entra pela saída e, se o primeiro tile der num beco de sebe, abre até a rua mais perto
+      const ex = x0 + dx,
+        ey = y0 + dy;
+      clear(x0, y0);
+      clear(ex, ey);
+      const opts = [];
+      for (const s of [-1, 1]) {
+        const pts = [];
+        for (let i = 1; i <= 8; i++) {
+          const x = ex + (dy ? s * i : 0),
+            y = ey + (dx ? s * i : 0);
+          if (!PASS.has((Z.map[y] || "")[x])) break;
+          pts.push([x, y]);
+          if (okT(x, y) && i > 0) {
+            opts.push(pts.slice());
+            break;
+          }
+        }
+      }
+      // em frente também conta
+      const fwd = [];
+      for (let i = 1; i <= 6; i++) {
+        const x = ex + dx * i,
+          y = ey + dy * i;
+        if (!PASS.has((Z.map[y] || "")[x])) break;
+        fwd.push([x, y]);
+        if (okT(x, y)) {
+          opts.push(fwd.slice());
+          break;
+        }
+      }
+      opts.sort((p, q) => p.length - q.length);
+      if (opts[0]) for (const [x, y] of opts[0]) clear(x, y);
+    }
+  }
+  for (const z of zones) keepAlleys(z);
+  // as saídas para as florestas são criadas depois deste arquivo: confere na primeira vez que alguém anda na cidade
+  const exitsDone = new Set();
   window.openYardGates = () => zones.reduce((s, z) => s + openGates(z), 0);
 
   // desenho: sebe aparada (liga com a vizinha) e canteiro de flores
@@ -393,6 +485,7 @@
   }
   const wkBase = walkable;
   walkable = function (z, x, y) {
+    if (!exitsDone.has(z)) (exitsDone.add(z), keepExits(z));
     const k = at(z, x, y);
     if (k === "sebe" || (k && k.startsWith("p:"))) return false;
     return wkBase.apply(this, arguments);
