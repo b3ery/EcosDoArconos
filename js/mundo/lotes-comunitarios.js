@@ -459,6 +459,56 @@
     return n;
   }
   window.PATHS_LAID = zones.reduce((s, z) => s + layPaths(z), 0);
+  // CAMINHOS COM 2 BLOCOS: todo caminho/rua de 1 bloco só ganha o segundo bloco do lado
+  // (só pinta grama livre: não entra em lote, quintal, cerca nem prédio)
+  function widen(zid) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.map) return 0;
+    const m = Z.map.map((r) => r.split(""));
+    const W = Z.w,
+      H = Z.h;
+    const plans = new Set();
+    for (const b of Z.town.bld) if (b.plan) for (const k of Object.keys(b.plan)) plans.add(k);
+    const doorCol = new Set();
+    for (const b of Z.town.bld) for (const d of b.door) doorCol.add(d + "," + (b.y + b.h));
+    const road = (x, y) => m[y] && ",=".includes(m[y][x]);
+    const free = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && m[y][x] === "." && !plans.has(x + "," + y) && !(COM[zid] && COM[zid].has(x + "," + y));
+    let n = 0;
+    for (let pass = 0; pass < 2; pass++) {
+      const add = [];
+      for (let y = 1; y < H - 1; y++)
+        for (let x = 1; x < W - 1; x++) {
+          if (m[y][x] !== ",") continue;
+          if (COM[zid] && COM[zid].has(x + "," + y)) continue;
+          const vert = road(x, y - 1) || road(x, y + 1),
+            horz = road(x - 1, y) || road(x + 1, y);
+          // caminho em pé com 1 de largura: alarga para o lado
+          if (vert && !road(x - 1, y) && !road(x + 1, y)) {
+            if (free(x + 1, y)) add.push([x + 1, y]);
+            else if (free(x - 1, y)) add.push([x - 1, y]);
+          }
+          // caminho deitado com 1 de altura: alarga para baixo (ou para cima)
+          if (horz && !road(x, y - 1) && !road(x, y + 1)) {
+            if (free(x, y + 1)) add.push([x, y + 1]);
+            else if (free(x, y - 1)) add.push([x, y - 1]);
+          }
+        }
+      for (const [x, y] of add) if (m[y][x] === ".") ((m[y][x] = ","), n++);
+    }
+    Z.map = m.map((r) => r.join(""));
+    return n;
+  }
+  window.PATHS_WIDENED = zones.reduce((s, z) => s + widen(z), 0);
+  // cerca de madeira encostada no muro da cidade sai (o muro já fecha)
+  for (const zid of zones) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.map) continue;
+    const m = Z.map.map((r) => r.split(""));
+    for (let y = 1; y < Z.h - 1; y++)
+      for (let x = 1; x < Z.w - 1; x++)
+        if (m[y][x] === "f" && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => m[y + dy][x + dx] === "#")) m[y][x] = ".";
+    Z.map = m.map((r) => r.join(""));
+  }
   // as saídas para as florestas são criadas depois deste arquivo: confere na primeira vez que alguém anda na cidade
   const exitsDone = new Set();
   // lote todo cercado: não abre buraco na cerca (o único portão é o da porta)
@@ -557,6 +607,7 @@
       R(xx + 4, 0, 1, 32, sh);
       for (const j of [0, 14, 27]) R(xx - 1, j, 6, 4, rail);
     };
+    if (noFence(z, x, y)) return;
     // frente que ficou aberta (era a única passagem da rua): sem cerca, só o meio-fio
     if (me && y >= me.y + me.h && !(FRONT[z] && FRONT[z].has(x + "," + y))) {
       if (!own(0, 1)) (R(0, 29, 32, 3, "#8a8274"), R(0, 29, 32, 1, "#c9c2b2"));
@@ -684,9 +735,27 @@
     if (k !== "patio" && k !== "floreira") return false;
     const me = OWNER[z] && OWNER[z].get(x + "," + y);
     if (!me) return false;
+    if (noFence(z, x, y)) return false;
     if (y < me.y + me.h) return true; // fundos e lados
     return !!(FRONT[z] && FRONT[z].has(x + "," + y)); // frente: só onde fechar não tranca a rua
   };
+  // sem cerca: encostada no muro da cidade, ou em cima da rua (estreitaria a passagem)
+  const NF = {};
+  function noFence(z, x, y) {
+    const C = (NF[z] = NF[z] || new Map());
+    const k = x + "," + y;
+    if (C.has(k)) return C.get(k);
+    const Z = ZONES[z];
+    const ch = (xx, yy) => (Z.map[yy] || "")[xx];
+    let r = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => ch(x + dx, y + dy) === "#");
+    if (!r && ",=".includes(ch(x, y))) {
+      // rua de verdade: dos dois lados (ou em cima e embaixo) continua chão de rua fora do lote
+      const road = (xx, yy) => ",=".includes(ch(xx, yy)) && !(COM[z] && COM[z].has(xx + "," + yy));
+      r = (road(x - 1, y) && road(x + 1, y)) || (road(x, y - 1) && road(x, y + 1));
+    }
+    C.set(k, r);
+    return r;
+  }
   const isFenced = (z, x, y) => {
     const k = at(z, x, y);
     return k === "sebe" || fenced(z, x, y);
