@@ -78,8 +78,9 @@
   drawBuilding = function (b, t) {
     const zz = ZONES[player.zone];
     const onRoad = zz && zz.map && zz.map[player.y] && ",=".includes(zz.map[player.y][player.x]);
-    const behind = !onRoad && player.rx >= b.x - 1.5 && player.rx <= b.x + b.w + 0.5 && player.ry >= b.y - 2 && player.ry < b.y + 0.2;
-    const a = Math.max(0.42, Math.min(1, (fade.get(b) ?? 1) + (behind ? -0.08 : 0.08)));
+    // só quando o telhado tapa você de verdade (logo atrás da casa), e bem de leve
+    const behind = !onRoad && player.rx >= b.x - 0.5 && player.rx <= b.x + b.w - 0.5 && player.ry >= b.y - 1.2 && player.ry < b.y + 0.2;
+    const a = Math.max(0.72, Math.min(1, (fade.get(b) ?? 1) + (behind ? -0.06 : 0.1)));
     fade.set(b, a);
     if (a >= 1) return dbFade.apply(this, arguments);
     ctx.save();

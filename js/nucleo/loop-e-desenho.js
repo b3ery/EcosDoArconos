@@ -1441,7 +1441,7 @@ function initVilaLife() {
   game.walkers = [];
   const wn = WALKER_NAMES.slice().sort(() => Math.random() - 0.5);
   // No Simulador de Vida a vila fica mais cheia.
-  const walkerCount = Math.round((player.zone === "vila" ? 28 : 24) * currentQuality().walkers * (lifeMode() ? 1.5 : 1));
+  const walkerCount = Math.round((player.zone === "vila" ? 28 : ZONES[player.zone].w * ZONES[player.zone].h > 12000 ? 30 : 24) * currentQuality().walkers * (lifeMode() ? 1.5 : 1));
   for (let i = 0; i < (roads.length ? walkerCount : 0); i++) {
     const [x, y] = roads[Math.floor(Math.random() * roads.length)];
     game.walkers.push({

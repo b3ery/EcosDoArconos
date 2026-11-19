@@ -9,6 +9,8 @@
  *  - guarita no meio com arco de pedra, grade levadiça, portas de madeira
  *    abertas e tochas;
  *  - estandartes do reino, seteiras que acendem à noite, hera e musgo.
+ * O palácio e a fortaleza dos outros reinos usam o mesmo desenho, com
+ * pedra clara e cúpulas azuis (palácio) ou pedra escura (fortaleza).
  * Cabe em qualquer tamanho de castelo. Modifica (envolve) drawBuilding.
  */
 
@@ -31,7 +33,10 @@
   const poly = (...p) => fillPolygon(...p);
 
   // parede de pedra com fiadas desencontradas e manchas de tempo
+  // paleta do prédio que está sendo desenhado (palácio claro, fortaleza escura)
+  let PAL = null;
   function stone(x, y, w, h, seed, base = "#8d877b") {
+    if (PAL) base = shade(PAL.stone, ((parseInt(base.slice(1, 3), 16) - 0x8d) / 255) * 1.5);
     R(x, y, w, h, base);
     const rowH = 8;
     for (let r = 0; r * rowH < h; r++) {
@@ -115,7 +120,7 @@
     const z = player.zone;
     const big = b.w >= 14;
     const flag = z === "vila" ? HERALD.vila : HERALD._[Math.floor(hs(b.x, b.y) * HERALD._.length)];
-    const roof = z === "vila" ? ["#34466a", "#4a5f8a"] : flag[0] === "#2a7a4a" ? ["#2f5a3a", "#43784f"] : ["#3a3a4a", "#55556a"];
+    const roof = PAL && PAL.roof ? PAL.roof : z === "vila" ? ["#34466a", "#4a5f8a"] : flag[0] === "#2a7a4a" ? ["#2f5a3a", "#43784f"] : ["#3a3a4a", "#55556a"];
     const seed = b.x * 7 + b.y;
     const tr = big ? 30 : 22; // raio das torres
     // o castelo cabe inteiro na tela: o que sobe acima do terreno só usa o espaço que existe no mapa
@@ -282,6 +287,15 @@
   const base = drawBuilding;
   drawBuilding = function (b, t) {
     if (b && b.style === "castle") return drawCastle(b, t);
+    // palácio (pedra clara, cúpulas azuis) e fortaleza (pedra escura): o mesmo castelo de verdade
+    if (b && (b.style === "palacio" || b.style === "fortaleza")) {
+      PAL = b.style === "palacio" ? { stone: "#e2dccb", roof: ["#2a5aa8", "#4a7ad0"] } : { stone: "#6c665c", roof: ["#3a2c2a", "#55403a"] };
+      try {
+        return drawCastle(b, t);
+      } finally {
+        PAL = null;
+      }
+    }
     return base.apply(this, arguments);
   };
 })();

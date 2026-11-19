@@ -25,7 +25,7 @@
   const tBase = targetAt;
   targetAt = function (x, y) {
     if (window.SWIM && SWIM.on) return tBase.apply(this, arguments);
-    if (isTownZ(player.zone) && tileAt(player.zone, x, y) === "~" && !(typeof inPlazaT === "function" && inPlazaT(player.zone, x, y))) return (ZONES[player.zone].theme === "porto" ? "Mar" : "Rio") + ": pescar, lavar roupa, banho, nadar";
+    if (isTownZ(player.zone) && tileAt(player.zone, x, y) === "~" && !(typeof inPlazaT === "function" && inPlazaT(player.zone, x, y))) return (ZONES[player.zone].theme === "porto" && !((window.LAKES || {})[player.zone] || []).some((R) => x >= R.x0 - 1 && x <= R.x1 + 1 && y >= R.y0 - 1 && y <= R.y1 + 1) ? "Mar" : "Rio") + ": pescar, lavar roupa, banho, nadar";
     return tBase.apply(this, arguments);
   };
 

@@ -615,6 +615,10 @@ function drawTile(z, x, y, c, t) {
     ctx.fillRect(X + 20, Y + 20, 3, 3);
   }
   if (ZONES[z].town && (c === "H" || c === "D" || c === "M")) {
+    // terra batida só no pé da parede (a fileira de baixo do prédio): em cima,
+    // nos cantos que o telhado inclinado não cobre, fica o chão normal
+    const below = tileAt(z, x, y + 1);
+    if (c === "H" && (below === "H" || below === "D")) return;
     if (
       !inMarket(z, x, y) &&
       !inPlazaT(z, x, y) &&

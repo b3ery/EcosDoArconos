@@ -230,3 +230,90 @@
 
 // os currais de Cinzaluz (vida-no-campo.js): bichos e chão do cercado conferidos com o mapa final
 if (typeof fixVilaPens === "function") fixVilaPens();
+
+/* ----- dentro de cada lote cercado: só o caminho da porta até a porteira.
+   Pedaços de caminho que saem da porta e batem na cerca (sem porteira) voltam a ser grama. ----- */
+(() => {
+  let fixed = 0;
+  for (const zid of Object.keys(ZONES)) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.town || Z.town.indoor || !Z.map) continue;
+    const m = Z.map.map((r) => r.split(""));
+    const T = (x, y) => (m[y] || [])[x];
+    for (const b of Z.town.bld) {
+      if (!b.door || !b.door.length) continue;
+      // a caixa da cerca em volta do prédio
+      const yb = b.y + Math.floor(b.h / 2);
+      let x0 = b.x - 1,
+        x1 = b.x + b.w;
+      while (x0 > 0 && T(x0, yb) !== "f" && b.x - x0 < 9) x0--;
+      while (x1 < Z.w - 1 && T(x1, yb) !== "f" && x1 - b.x - b.w < 9) x1++;
+      if (T(x0, yb) !== "f" || T(x1, yb) !== "f") continue;
+      let y1 = b.y + b.h;
+      while (y1 < Z.h - 1 && T(b.door[0], y1) !== "f" && y1 - b.y - b.h < 7 && !(T(b.door[0], y1) === "," && T(x0, y1) === "f" && T(x1, y1) === "f" && T(x0 + 1, y1) === "f")) y1++;
+      // a fileira da frente tem que ser cerca (com a porteira)
+      let fr = 0;
+      for (let x = x0; x <= x1; x++) if (T(x, y1) === "f") fr++;
+      if (fr < (x1 - x0 + 1) - 3) continue;
+      let y0 = b.y - 1;
+      while (y0 > 0 && T(b.x, y0) !== "f" && b.y - y0 < 14) y0--;
+      if (T(b.x, y0) !== "f") continue;
+      // só lote de verdade: a cerca fecha quase todo o contorno (só a porteira aberta)
+      let per = 0,
+        fen = 0;
+      for (let x = x0; x <= x1; x++) for (const y of [y0, y1]) (per++, T(x, y) === "f" && fen++);
+      for (let y = y0 + 1; y < y1; y++) for (const x of [x0, x1]) (per++, T(x, y) === "f" && fen++);
+      if (fen < per - 3) continue;
+      // caminho mais curto da porta até a porteira (por dentro do lote)
+      const sx = b.door[0],
+        sy = b.y + b.h;
+      const inside = (x, y) => x > x0 && x < x1 && y > y0 && y <= y1;
+      const prev = new Map([[sx + "," + sy, null]]);
+      const q = [[sx, sy]];
+      let gate = null;
+      while (q.length && !gate) {
+        const [x, y] = q.shift();
+        for (const [dx, dy] of [[0, 1], [1, 0], [-1, 0], [0, -1]]) {
+          const X = x + dx,
+            Y = y + dy,
+            k = X + "," + Y;
+          if (prev.has(k) || !inside(X, Y) || T(X, Y) !== ",") continue;
+          prev.set(k, x + "," + y);
+          if (Y === y1) {
+            gate = k;
+            break;
+          }
+          q.push([X, Y]);
+        }
+      }
+      if (!gate || T(sx, sy) !== ",") continue;
+      const keep = new Set();
+      for (let k = gate; k; k = prev.get(k)) keep.add(k);
+      for (let y = y0 + 1; y < y1; y++)
+        for (let x = x0 + 1; x < x1; x++) {
+          if (m[y][x] !== "," || keep.has(x + "," + y)) continue;
+          // só o caminho de terra solto (perto da casa); calçadas largas do quintal ficam
+          m[y][x] = ".";
+          fixed++;
+        }
+    }
+    // caminho e porteira desalinhados por 1 bloco: a porteira fica larga o bastante
+    for (let y = 2; y < Z.h - 2; y++)
+      for (let x = 2; x < Z.w - 2; x++) {
+        if (m[y][x] !== "f") continue;
+        {
+          const R = (a, b) => m[b] && (m[b][a] === "," || m[b][a] === "=");
+          // cerca entre a rua e um tiquinho de caminho (até 2 blocos) do outro lado: o tiquinho vira grama
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]])
+            if (R(x - dx, y - dy) && R(x - 2 * dx, y - 2 * dy) && R(x - 3 * dx, y - 3 * dy) && R(x + dx, y + dy) && !R(x + 3 * dx, y + 3 * dy))
+              for (const k of [1, 2]) if (R(x + k * dx, y + k * dy)) ((m[y + k * dy][x + k * dx] = "."), fixed++);
+          // porteira de 1 com caminho de 2 dos dois lados: a porteira fica com 2 de largura
+          if (m[y][x] === "f" && ((R(x, y - 1) && R(x, y + 1) && (R(x - 1, y) || R(x + 1, y))) || (R(x - 1, y) && R(x + 1, y) && (R(x, y - 1) || R(x, y + 1))))) ((m[y][x] = ","), fixed++);
+          // cerca cortando a rua de verdade (rua dos dois lados): vira passagem
+          if ((R(x - 1, y) && R(x - 2, y) && R(x - 3, y) && R(x + 1, y) && R(x + 2, y) && R(x + 3, y)) || (R(x, y - 1) && R(x, y - 2) && R(x, y - 3) && R(x, y + 1) && R(x, y + 2) && R(x, y + 3))) ((m[y][x] = ","), fixed++);
+        }
+      }
+    Z.map = m.map((r) => r.join(""));
+  }
+  window.LOT_STUBS_FIXED = fixed;
+})();

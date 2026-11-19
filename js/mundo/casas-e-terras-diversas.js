@@ -480,9 +480,24 @@
         let right = h % 2 === 0;
         // a escada vai para o lado que tem espaço (não encosta no vizinho nem na escada dele)
         const zb = ZONES[player.zone] && ZONES[player.zone].town ? ZONES[player.zone].town.bld : [];
-        const busy = (side) => zb.some((o) => o !== b && o.y < b.y + b.h && b.y < o.y + o.h && (side > 0 ? o.x >= b.x + b.w && o.x - (b.x + b.w) <= 3 : o.x + o.w <= b.x && b.x - (o.x + o.w) <= 3));
+        const Zm = ZONES[player.zone] && ZONES[player.zone].map;
+        // cerca, muro ou prédio a menos de 3 blocos daquele lado: a escada não cabe
+        const wallNear = (side) => {
+          if (!Zm) return false;
+          for (let y = b.y; y < b.y + b.h; y++)
+            for (let d = 0; d < 3; d++) {
+              const x = side > 0 ? b.x + b.w + d : b.x - 1 - d;
+              const c = (Zm[y] || "")[x];
+              if (c === "f" || c === "#" || c === "H" || c === "D") return true;
+            }
+          return false;
+        };
+        const busy = (side) => wallNear(side) || zb.some((o) => o !== b && o.y < b.y + b.h && b.y < o.y + o.h && (side > 0 ? o.x >= b.x + b.w && o.x - (b.x + b.w) <= 3 : o.x + o.w <= b.x && b.x - (o.x + o.w) <= 3));
         const sR = b._mir ? -1 : 1; // espelhado: "direita" do desenho é a esquerda do mapa
         if (busy(right ? sR : -sR) && !busy(right ? -sR : sR)) right = !right;
+        // sem espaço dos dois lados (cerca do lote, vizinho): sem escada de fora
+        if (busy(right ? sR : -sR)) b.stairSide = 0;
+        else {
         b.stairSide = (right ? 1 : -1) * (b._mir ? -1 : 1); // o lote deixa este lado livre para a escada
         const sx0 = right ? X + W - 4 : X + 4;
         const dir = right ? 1 : -1;
@@ -513,6 +528,7 @@
         ctx.stroke();
         R(right ? bx0 - 2 : bx0 + run - 2, gy - steps * 7, 4, steps * 7, "#4a2e17");
         R(right ? bx0 + run - 2 : bx0, gy - 12, 4, 12, "#4a2e17");
+        }
       }
       // barris junto da porta
       if (h % 5 < 3) {

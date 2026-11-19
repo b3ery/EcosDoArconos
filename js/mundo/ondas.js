@@ -61,6 +61,8 @@
   drawTile = function (z, x, y, c, t) {
     const r = dtBase.apply(this, arguments);
     if (c !== "~" || !isSea(z)) return r;
+    // o rio do parque não é mar (sem ondas de praia)
+    if (((window.LAKES || {})[z] || []).some((R) => x >= R.x0 - 1 && x <= R.x1 + 1 && y >= R.y0 - 1 && y <= R.y1 + 1)) return r;
     const F = field(z),
       k = y * F.W + x,
       d = F.D[k] < 0 ? 9 : F.D[k],

@@ -22,7 +22,9 @@
   const S = (game.swim = game.swim || { on: false, breath: 100, shark: null, warnT: 0, splash: [] });
   const T = (x, y) => tileAt(player.zone, x, y);
   const wet = (x, y) => T(x, y) === "~";
-  const isSea = () => ZONES[player.zone] && ZONES[player.zone].theme === "porto";
+  const inLake = () => ((window.LAKES || {})[player.zone] || []).some((R) => player.x >= R.x0 - 1 && player.x <= R.x1 + 1 && player.y >= R.y0 - 1 && player.y <= R.y1 + 1);
+  // mar de verdade (o rio do parque não tem tubarão)
+  const isSea = () => ZONES[player.zone] && ZONES[player.zone].theme === "porto" && !inLake();
   const life = () => typeof lifeMode === "function" && lifeMode();
   const cold = () => typeof season === "function" && season().id === "inv";
   const storm = () => ["chuva", "tempestade", "neve"].includes(player.weather || "sol");

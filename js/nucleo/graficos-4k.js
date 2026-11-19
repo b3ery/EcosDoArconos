@@ -10,8 +10,6 @@
  *    meio-dia, e some à noite.
  *  - SOMBRA DE CONTATO (oclusão): uma faixa escura e suave onde a parede
  *    encosta no chão, e embaixo de árvores, poços e baús.
- *  - VOLUME (3D): a lateral de cada prédio aparece em perspectiva, mais
- *    escura, e a quina do lado do sol ganha um fio de luz.
  * Na qualidade "Baixa" só a sombra de contato fica, para não pesar.
  * Modifica (envolve) applyQuality, drawBuilding e drawTile.
  */
@@ -100,31 +98,11 @@
     }
     const r = dbBase.apply(this, arguments);
     // oclusão: escurece de leve o chão rente à parede (frente) e o rodapé
-    const ao = ctx.createLinearGradient(0, Y + Hh - 6, 0, Y + Hh + 8);
+    const ao = ctx.createLinearGradient(0, Y + Hh, 0, Y + Hh + 8);
     ao.addColorStop(0, "rgba(10,8,18,.26)");
     ao.addColorStop(1, "rgba(10,8,18,0)");
     ctx.fillStyle = ao;
-    ctx.fillRect(X - 2, Y + Hh - 6, W + 4, 14);
-    if (!low() && b.w >= 3) {
-      // volume: lateral em perspectiva (o lado da sombra), e fio de luz no lado do sol
-      const side = S && S.dx < 0 ? -1 : 1; // sombra para a esquerda de tarde
-      const sx = side > 0 ? X + W : X;
-      const d = 5;
-      ctx.fillStyle = "rgba(15,10,25,.22)";
-      ctx.beginPath();
-      ctx.moveTo(sx, Y + 6);
-      ctx.lineTo(sx + d * side, Y + 10);
-      ctx.lineTo(sx + d * side, Y + Hh + 2);
-      ctx.lineTo(sx, Y + Hh - 2);
-      ctx.closePath();
-      ctx.fill();
-      const lx = side > 0 ? X : X + W - 2;
-      const lg = ctx.createLinearGradient(0, Y, 0, Y + Hh);
-      lg.addColorStop(0, `rgba(255,245,215,${S ? 0.22 : 0.08})`);
-      lg.addColorStop(1, "rgba(255,245,215,0)");
-      ctx.fillStyle = lg;
-      ctx.fillRect(lx, Y + 4, 2, Hh - 6);
-    }
+    ctx.fillRect(X, Y + Hh, W, 8);
     return r;
   };
 
