@@ -852,17 +852,29 @@ function drawMinimap(big, t) {
     ctx.fillStyle = "rgba(8,5,14,.78)";
     ctx.fillRect(0, 0, viewWidth, 480);
   }
-  const s = big ? Math.min(560 / z.w, 330 / z.h) : Math.min(96 / z.w, 72 / z.h);
+  const B = big && typeof regionMapBox === "function" ? regionMapBox(player.zone) : null;
+  const s = B ? B.s : big ? Math.min(560 / z.w, 330 / z.h) : Math.min(96 / z.w, 72 / z.h);
   const mw = z.w * s,
     mh = z.h * s,
-    ox = big ? Math.round(viewWidth / 2 - mw / 2) : Math.round(viewWidth - 8 - mw),
-    oy = big ? Math.round(236 - mh / 2) : 40;
+    ox = B ? B.ox : big ? Math.round(viewWidth / 2 - mw / 2) : Math.round(viewWidth - 8 - mw),
+    oy = B ? B.oy : big ? Math.round(236 - mh / 2) : 40;
   if (!big) ctx.globalAlpha = 0.85;
-  ctx.fillStyle = "rgba(12,8,20,.85)";
-  ctx.fillRect(ox - 3, oy - 3, mw + 6, mh + 6);
+  // o quadro: no mapa grande é sempre um quadrado (a região fica centrada dentro)
+  const fx = B ? B.sx : ox,
+    fy = B ? B.sy : oy,
+    fw = B ? B.sq : mw,
+    fh = B ? B.sq : mh;
+  ctx.fillStyle = "rgba(12,8,20,.9)";
+  ctx.fillRect(fx - 3, fy - 3, fw + 6, fh + 6);
+  if (B) {
+    ctx.fillStyle = THEMES[z.theme] ? THEMES[z.theme].g1 : "#3a5a2a";
+    ctx.globalAlpha = 0.35;
+    ctx.fillRect(fx, fy, fw, fh);
+    ctx.globalAlpha = 1;
+  }
   ctx.strokeStyle = "#7a62b8";
   ctx.lineWidth = 1.5;
-  ctx.strokeRect(ox - 3, oy - 3, mw + 6, mh + 6);
+  ctx.strokeRect(fx - 3, fy - 3, fw + 6, fh + 6);
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(mm.c, ox, oy, mw, mh);
   const r = Math.max(1.5, s * (big ? 0.45 : 0.8));
@@ -903,14 +915,11 @@ function drawMinimap(big, t) {
     ctx.textAlign = "center";
     ctx.font = '700 22px "Pixelify Sans", sans-serif';
     ctx.fillStyle = "#f2c14e";
-    ctx.fillText(z.nome, viewWidth / 2, oy - 14);
+    ctx.fillText(z.nome, viewWidth / 2, (B ? B.sy : oy) - 12);
     ctx.font = "18px VT323, monospace";
     ctx.fillStyle = "#cfc3e6";
-    ctx.fillText(
-      `Explorado: ${Math.round((100 * pct) / seen.length)}%  ·   M ou Esc fecha`,
-      viewWidth / 2,
-      oy + mh + 20,
-    );
+    const by = B ? B.sy + B.sq : oy + mh;
+    ctx.fillText("M ou Esc fecha", viewWidth / 2, by + 20);
     const leg = [
       ["#c77dff", "Livro"],
       ["#f2c14e", "Missão"],
@@ -926,9 +935,9 @@ function drawMinimap(big, t) {
     let lx = viewWidth / 2 - ws.reduce((a, b) => a + b, 0) / 2;
     leg.forEach(([c, n], i) => {
       ctx.fillStyle = c;
-      ctx.fillRect(lx, oy + mh + 32, 8, 8);
+      ctx.fillRect(lx, by + 32, 8, 8);
       ctx.fillStyle = "#cfc3e6";
-      ctx.fillText(n, lx + 12, oy + mh + 41);
+      ctx.fillText(n, lx + 12, by + 41);
       lx += ws[i];
     });
   }

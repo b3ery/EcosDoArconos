@@ -148,12 +148,16 @@ function mapThings(zone) {
 }
 
 /* ===================== GEOMETRIA DOS MAPAS ===================== */
+/** O mapa da região é sempre um QUADRADO fixo no meio da tela; a região cabe inteira dentro dele. */
+const MAP_SQ = 340;
 function regionMapBox(zone) {
   const z = ZONES[zone];
-  const s = Math.min(560 / z.w, 330 / z.h),
+  const s = Math.min(MAP_SQ / z.w, MAP_SQ / z.h),
     mw = z.w * s,
     mh = z.h * s;
-  return { s, ox: Math.round(viewWidth / 2 - mw / 2), oy: Math.round(236 - mh / 2), mw, mh };
+  const sx = Math.round(viewWidth / 2 - MAP_SQ / 2),
+    sy = Math.round(240 - MAP_SQ / 2);
+  return { s, ox: Math.round(viewWidth / 2 - mw / 2), oy: Math.round(240 - mh / 2), mw, mh, sx, sy, sq: MAP_SQ };
 }
 function worldMapNodes() {
   const W = Math.min(620, viewWidth - 40),

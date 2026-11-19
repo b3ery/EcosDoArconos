@@ -334,11 +334,12 @@ function drawCemSign() {
   const dmBase = drawMinimap;
   drawMinimap = function (big, t) {
     const r = dmBase.apply(this, arguments);
-    if (!cemOn() || player.zone !== "vila") return r;
+    if (!cemOn() || player.zone !== "vila" || (big && game.worldMap)) return r;
     const z = ZONES.vila;
-    const s = big ? Math.min(560 / z.w, 330 / z.h) : Math.min(96 / z.w, 72 / z.h);
-    const ox = big ? Math.round(viewWidth / 2 - (z.w * s) / 2) : Math.round(viewWidth - 8 - z.w * s),
-      oy = big ? Math.round(236 - (z.h * s) / 2) : 40;
+    const B = big && typeof regionMapBox === "function" ? regionMapBox("vila") : null;
+    const s = B ? B.s : big ? Math.min(560 / z.w, 330 / z.h) : Math.min(96 / z.w, 72 / z.h);
+    const ox = B ? B.ox : big ? Math.round(viewWidth / 2 - (z.w * s) / 2) : Math.round(viewWidth - 8 - z.w * s),
+      oy = B ? B.oy : big ? Math.round(236 - (z.h * s) / 2) : 40;
     const [gx, gy] = DESC.chapel.door;
     const cx = ox + (gx + 0.5) * s,
       cy = oy + (gy - 2) * s,

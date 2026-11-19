@@ -1457,8 +1457,8 @@ function seenOf(id) {
   if (!game.seenArr[id]) {
     const z = ZONES[id];
     const a = new Uint8Array(z.w * z.h);
-    const s = player.seen && player.seen[id];
-    if (s && s.length === a.length) for (let i = 0; i < a.length; i++) a[i] = s.charCodeAt(i) === 49 ? 1 : 0;
+    // o mundo é grande: o mapa mostra tudo desde o começo (sem neblina)
+    a.fill(1);
     game.seenArr[id] = a;
   }
   return game.seenArr[id];
