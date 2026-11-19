@@ -1,10 +1,9 @@
 /**
  * ECOS DO ARCANO — fonte-da-praca.js
  * A fonte da praça de Cinzaluz, como as fontes de praça das cidades
- * medievais: tanque de pedra octogonal com degrau, coluna no meio com uma
- * taça em cima e outra menor no topo, a água jorrando para cima e caindo em
- * cascata de uma taça para a outra até o tanque, com ondinhas, respingos e
- * moedas brilhando no fundo. Por baixo continua sendo o mesmo lugar de
+ * medievais: tanque redondo de pedra bruta com degrau e musgo, pilar de
+ * pedra com bicas de cabeça de leão jorrando água e a imagem de pedra do
+ * cavaleiro padroeiro em cima; água escura com ondas e moedas no fundo. Por baixo continua sendo o mesmo lugar de
  * "Beber da fonte" (os tiles de água seguem bloqueando a passagem).
  * Modifica (envolve) drawTile e crewDrawList.
  */
@@ -34,123 +33,105 @@
   };
   const ell = (cx, cy, rx, ry, col) => ((ctx.fillStyle = col), ctx.beginPath(), ctx.ellipse(cx, cy, rx, ry, 0, 0, 7), ctx.fill());
   function drawFountain(t) {
+    // fonte medieval de praça: tanque redondo de pedra bruta, pilar com bicas de
+    // cabeça de leão e uma imagem de pedra em cima; água escura, musgo e moedas
     const cx = ((X0 + X1 + 1) / 2) * TILE,
-      cy = ((Y0 + Y1 + 1) / 2) * TILE + 6;
-    const RX = 80,
-      RY = 50;
-    const night = nightAlpha() > 0.3;
-    // sombra no chão
-    ell(cx + 6, cy + 14, RX + 6, RY + 4, "rgba(0,0,0,.22)");
-    // degrau de pedra em volta
-    ctx.fillStyle = "#8a847a";
-    oct(cx, cy + 10, RX + 6, RY + 6);
-    ctx.fill();
-    ctx.fillStyle = "#a39d92";
-    oct(cx, cy + 6, RX + 6, RY + 6);
-    ctx.fill();
-    // parede do tanque (a face da frente, mais escura, com os blocos)
-    ctx.fillStyle = "#6e6960";
-    oct(cx, cy + 4, RX, RY);
-    ctx.fill();
-    ctx.save();
-    oct(cx, cy + 4, RX, RY);
-    ctx.clip();
-    ctx.fillStyle = "rgba(0,0,0,.18)";
-    for (let k = -RX; k < RX; k += 16) ctx.fillRect(cx + k, cy + RY * 0.55, 1, 14);
-    ctx.fillRect(cx - RX, cy + RY * 0.55 + 7, RX * 2, 1);
-    ctx.restore();
-    // borda de cima do tanque
-    ctx.fillStyle = "#c9c2b2";
-    oct(cx, cy - 6, RX, RY);
-    ctx.fill();
-    ctx.fillStyle = "#e2dccd";
-    oct(cx, cy - 8, RX - 2, RY - 2);
-    ctx.fill();
-    // a água
-    const g = ctx.createLinearGradient(0, cy - RY, 0, cy + RY);
-    g.addColorStop(0, night ? "#2a4a7a" : "#5aa8e0");
-    g.addColorStop(1, night ? "#1a2e54" : "#2f6fa8");
-    ctx.fillStyle = g;
-    oct(cx, cy - 6, RX - 9, RY - 8);
-    ctx.fill();
-    ctx.save();
-    oct(cx, cy - 6, RX - 9, RY - 8);
-    ctx.clip();
-    // moedas no fundo
-    for (let i = 0; i < 9; i++) {
-      const a = i * 2.4,
-        r = 20 + ((i * 17) % 40);
-      const px = cx + Math.cos(a) * r,
-        py = cy - 4 + Math.sin(a) * r * 0.55;
-      ctx.fillStyle = i % 3 ? "#c9a040" : "#e8d090";
-      ctx.fillRect(Math.round(px), Math.round(py), 3, 2);
-      if ((Math.floor(t * 2) + i) % 7 === 0) ((ctx.fillStyle = "#fff8d0"), ctx.fillRect(Math.round(px) + 1, Math.round(py) - 1, 1, 1));
+      cy = ((Y0 + Y1 + 1) / 2) * TILE + 8;
+    const RX = 72,
+      RY = 34;
+    const R = (x, y, w, h, c) => ((ctx.fillStyle = c), ctx.fillRect(Math.round(x), Math.round(y), w, h));
+    const night = nightAlpha() > 0.25;
+    // sombra no chão e o degrau de pedra em volta
+    ell(cx + 4, cy + 16, RX + 14, RY + 12, "rgba(0,0,0,.22)");
+    ell(cx, cy + 8, RX + 10, RY + 10, "#7d776b");
+    ell(cx, cy + 6, RX + 8, RY + 8, "#8f897c");
+    // a parede do tanque: pedras brutas, uma por uma
+    const wallH = 20;
+    ell(cx, cy + wallH - 4, RX, RY, "#6e685d");
+    for (let a = 0; a < Math.PI; a += Math.PI / 14) {
+      const x0 = cx + Math.cos(a) * RX,
+        y0 = cy + Math.sin(a) * RY;
+      const sh = 0.75 + Math.sin(a * 3 + 1) * 0.1;
+      ctx.fillStyle = `rgb(${Math.round(150 * sh)},${Math.round(143 * sh)},${Math.round(128 * sh)})`;
+      ctx.fillRect(Math.round(x0 - 9), Math.round(y0 - 4), 18, wallH);
+      R(x0 - 9, y0 - 4, 18, 2, "rgba(255,255,255,.14)");
+      R(x0 + 8, y0 - 4, 1, wallH, "rgba(40,36,30,.45)");
+      R(x0 - 9, y0 + 6, 18, 1, "rgba(40,36,30,.35)");
     }
-    // ondinhas saindo de onde a água cai
-    ctx.strokeStyle = "rgba(220,240,255,.5)";
+    // a borda de cima do tanque
+    ctx.strokeStyle = "#a59f91";
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - 4, RX - 3, RY - 3, 0, 0, 7);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(40,36,30,.35)";
     ctx.lineWidth = 1;
-    for (let i = 0; i < 3; i++) {
-      const k = (t * 0.6 + i / 3) % 1;
-      ctx.globalAlpha = 1 - k;
+    for (let a = 0; a < Math.PI * 2; a += Math.PI / 10) {
       ctx.beginPath();
-      ctx.ellipse(cx, cy - 4, 20 + k * 46, (20 + k * 46) * 0.5, 0, 0, 7);
+      ctx.moveTo(cx + Math.cos(a) * (RX - 6), cy - 4 + Math.sin(a) * (RY - 6));
+      ctx.lineTo(cx + Math.cos(a) * RX, cy - 4 + Math.sin(a) * RY);
       ctx.stroke();
     }
-    ctx.globalAlpha = 1;
-    // reflexo do céu
-    ell(cx - 30, cy - 24, 18, 4, "rgba(255,255,255,.18)");
-    ctx.restore();
-    // coluna do meio
-    const colTop = cy - 48;
-    ctx.fillStyle = "#9a9488";
-    ctx.fillRect(cx - 7, colTop, 14, cy - 4 - colTop);
-    ctx.fillStyle = "#c9c2b2";
-    ctx.fillRect(cx - 7, colTop, 4, cy - 4 - colTop);
-    ctx.fillStyle = "#6e6960";
-    ctx.fillRect(cx + 4, colTop, 3, cy - 4 - colTop);
-    ell(cx, cy - 4, 12, 4, "#8a847a");
-    // taça grande
-    ell(cx, colTop + 2, 30, 9, "#7a756a");
-    ell(cx, colTop, 30, 9, "#d6cfc0");
-    ell(cx, colTop - 1, 25, 6.5, night ? "#2a4a7a" : "#5aa8e0");
-    // coluna de cima e taça pequena
-    const top2 = colTop - 22;
-    ctx.fillStyle = "#a39d92";
-    ctx.fillRect(cx - 4, top2, 8, colTop - top2);
-    ctx.fillStyle = "#d6cfc0";
-    ctx.fillRect(cx - 4, top2, 2, colTop - top2);
-    ell(cx, top2 + 1, 14, 5, "#7a756a");
-    ell(cx, top2, 14, 5, "#e2dccd");
-    ell(cx, top2 - 1, 10, 3, night ? "#2a4a7a" : "#5aa8e0");
-    // pinha de pedra no topo
-    ell(cx, top2 - 6, 4, 5, "#c9c2b2");
-    // o jato subindo e a água caindo
-    const water = night ? "rgba(170,200,255,.75)" : "rgba(225,245,255,.85)";
-    ctx.fillStyle = water;
-    const jh = 16 + Math.sin(t * 9) * 2;
-    ctx.fillRect(cx - 1, top2 - 8 - jh, 2, jh);
-    for (let i = 0; i < 6; i++) {
-      const k = (t * 1.4 + i / 6) % 1;
-      const side = i % 2 ? 1 : -1;
-      // da pinha para a taça pequena
-      ctx.fillRect(Math.round(cx + side * k * 10), Math.round(top2 - 8 - jh + k * k * (jh + 10)), 2, 2);
-      // da taça pequena para a grande
-      ctx.fillRect(Math.round(cx + side * (13 + k * 8)), Math.round(top2 + k * k * 22), 1, 3);
-      // da taça grande para o tanque
-      ctx.fillRect(Math.round(cx + side * (29 + k * 10)), Math.round(colTop + k * k * 40), 1, 3);
-      ctx.fillRect(Math.round(cx + (i - 2.5) * 8), Math.round(colTop + 6 + k * k * 34), 1, 2);
+    // a água: escura, com ondas que andam
+    ell(cx, cy - 3, RX - 7, RY - 7, night ? "#1d3448" : "#2f5868");
+    ell(cx - 10, cy - 7, RX - 26, RY - 16, night ? "#24405a" : "#3d6e7e");
+    for (let i = 0; i < 4; i++) {
+      const r = ((t * 14 + i * 14) % 56) + 6;
+      ctx.strokeStyle = `rgba(200,230,240,${0.28 * (1 - r / 62)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - 3, r, r * 0.46, 0, 0, 7);
+      ctx.stroke();
     }
-    // cortinas de água escorrendo da borda das taças
-    ctx.fillStyle = night ? "rgba(170,200,255,.28)" : "rgba(225,245,255,.32)";
-    ctx.fillRect(cx - 30, colTop + 2, 60, 3);
-    ctx.fillRect(cx - 14, top2 + 2, 28, 2);
-    // respingos no tanque
-    for (let i = 0; i < 8; i++) {
-      const k = (t * 2 + i * 0.37) % 1;
-      const a = (i / 8) * Math.PI * 2;
-      ctx.fillStyle = `rgba(235,248,255,${0.8 * (1 - k)})`;
-      ctx.fillRect(Math.round(cx + Math.cos(a) * 36), Math.round(cy - 6 + Math.sin(a) * 14 - k * 6), 2, 2);
+    // moedas no fundo e musgo na beira
+    for (let i = 0; i < 6; i++) R(cx - 40 + ((i * 17) % 70), cy - 10 + ((i * 11) % 16), 3, 2, Math.sin(t * 2 + i) > 0.3 ? "#f2d26a" : "#b8942e");
+    for (let i = 0; i < 9; i++) {
+      const a = 0.25 + i * 0.32;
+      R(cx + Math.cos(a) * (RX - 2) - 3, cy - 4 + Math.sin(a) * (RY - 2) + 2, 6, 3, i % 2 ? "#4f7a3a" : "#3f6a2e");
     }
+    // o pilar no meio: pedra com faixas e base quadrada
+    const px = cx - 10,
+      pTop = cy - 62;
+    R(px - 6, cy - 14, 32, 10, "#857f72");
+    R(px - 6, cy - 14, 32, 2, "rgba(255,255,255,.15)");
+    R(px, pTop, 20, cy - 14 - pTop, "#9a9486");
+    R(px, pTop, 4, cy - 14 - pTop, "rgba(255,250,235,.16)");
+    R(px + 15, pTop, 5, cy - 14 - pTop, "rgba(0,0,0,.18)");
+    for (const yy of [pTop + 12, pTop + 30]) R(px - 2, yy, 24, 4, "#7d776b");
+    // bicas de cabeça de leão nos dois lados, jorrando água no tanque
+    for (const s of [-1, 1]) {
+      const hx = s < 0 ? px - 6 : px + 20;
+      R(hx, pTop + 18, 6, 8, "#b0a48a");
+      R(hx + (s < 0 ? 0 : 3), pTop + 20, 3, 2, "#3a2a1a");
+      // a água caindo em arco
+      ctx.strokeStyle = "rgba(170,215,235,.85)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      const sx = hx + (s < 0 ? 0 : 6);
+      ctx.moveTo(sx, pTop + 24);
+      ctx.quadraticCurveTo(sx + s * 16, pTop + 26, sx + s * 22, cy - 8);
+      ctx.stroke();
+      // respingos onde cai
+      for (let k = 0; k < 3; k++) {
+        const ph = (t * 3 + k * 0.33 + (s > 0 ? 0.5 : 0)) % 1;
+        R(sx + s * 22 + (k - 1) * 4, cy - 10 - Math.sin(ph * Math.PI) * 6, 2, 2, "rgba(220,240,250,.8)");
+      }
+    }
+    // a imagem de pedra em cima: um cavaleiro com escudo (o padroeiro da vila)
+    const sx0 = cx - 8,
+      sy0 = pTop - 34;
+    R(sx0 - 3, pTop - 4, 22, 5, "#857f72"); // pedestal
+    R(sx0 + 2, sy0 + 10, 12, 20, "#b8b2a3"); // corpo
+    R(sx0 + 2, sy0 + 10, 3, 20, "rgba(255,255,255,.16)");
+    R(sx0 + 4, sy0, 8, 10, "#c2bcad"); // cabeça (elmo)
+    R(sx0 + 5, sy0 + 4, 6, 2, "#6a655b"); // viseira
+    R(sx0 - 3, sy0 + 12, 7, 11, "#a39d8f"); // escudo
+    R(sx0 - 1, sy0 + 15, 3, 4, "#8a8474");
+    R(sx0 + 14, sy0 + 6, 2, 24, "#a39d8f"); // espada de pé
+    R(sx0 + 12, sy0 + 12, 6, 2, "#a39d8f");
+    // musgo e manchas de tempo no pilar e na estátua
+    for (let i = 0; i < 6; i++) R(px + ((i * 7) % 18), pTop + 34 + ((i * 5) % 14), 3, 2, "rgba(70,110,50,.55)");
+    R(sx0 + 3, sy0 + 26, 4, 3, "rgba(70,110,50,.5)");
   }
   const cdBase = crewDrawList;
   crewDrawList = function (list, t) {
