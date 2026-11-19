@@ -235,6 +235,165 @@
     }
     Z.map = m.map((r) => r.join(""));
   }
+  /* ----- GRADE: ruas paralelas ligadas por travessas (no máximo 28 blocos sem travessa)
+     e todo pedaço de rua solto ligado na rede principal ----- */
+  let cross = 0,
+    joined = 0;
+  for (const zid of zones) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.town || !Z.map) continue;
+    const W = Z.w,
+      H = Z.h;
+    const m = Z.map.map((r) => r.split(""));
+    const C = window.COMMUNITY_LOTS && COMMUNITY_LOTS[zid];
+    const plans = new Set();
+    for (const b of Z.town.bld) if (b.plan) for (const k of Object.keys(b.plan)) plans.add(k);
+    const inLot = (x, y) => plans.has(x + "," + y) || !!(C && C.has(x + "," + y));
+    const nearB = (x, y) => Z.town.bld.some((b) => x >= b.x - 1 && x <= b.x + b.w && y >= b.y - 1 && y <= b.y + b.h);
+    const road = (x, y) => m[y] && ",=".includes(m[y][x]) && !inLot(x, y);
+    const open = (x, y) => x > 1 && y > 1 && x < W - 2 && y < H - 2 && (".wTgb,".includes(m[y][x])) && !inLot(x, y) && !nearB(x, y) && !(Z.npcs && Z.npcs[x + "," + y]);
+    // faixas de rua compridas (horizontais e verticais)
+    const runs = (horiz) => {
+      const out = [];
+      const A = horiz ? H : W,
+        B = horiz ? W : H;
+      for (let a = 1; a < A - 1; a++) {
+        let s0 = -1;
+        for (let t = 0; t <= B; t++) {
+          const on = t < B && (horiz ? road(t, a) && road(t, a + 1) : road(a, t) && road(a + 1, t));
+          if (on && s0 < 0) s0 = t;
+          if (!on && s0 >= 0) {
+            if (t - s0 >= 14) out.push({ a, s: s0, e: t - 1 });
+            s0 = -1;
+          }
+        }
+      }
+      // tira as faixas repetidas da mesma rua (linha de baixo da rua de 2)
+      return out.filter((r) => !out.some((o) => o.a === r.a - 1 && o.s <= r.s + 2 && o.e >= r.e - 2));
+    };
+    for (const horiz of [true, false]) {
+      const R = runs(horiz);
+      for (const A of R)
+        for (const B of R) {
+          if (B.a <= A.a + 3 || B.a - A.a > 24) continue;
+          const s0 = Math.max(A.s, B.s) + 2,
+            e0 = Math.min(A.e, B.e) - 2;
+          if (e0 - s0 < 20) continue;
+          // há outra rua paralela no meio? então a ligação é com ela
+          if (R.some((M) => M.a > A.a + 1 && M.a < B.a - 1 && M.s <= s0 && M.e >= e0)) continue;
+          const at = (t, u) => (horiz ? [t, u] : [u, t]);
+          const links = (t) => {
+            for (let u = A.a + 2; u < B.a; u++) {
+              const [x, y] = at(t, u);
+              if (!road(x, y)) return false;
+            }
+            return true;
+          };
+          const can = (t) => {
+            for (let u = A.a + 2; u < B.a; u++)
+              for (const k of [0, 1]) {
+                const [x, y] = at(t + k, u);
+                if (!open(x, y)) return false;
+              }
+            return true;
+          };
+          for (let guard = 0; guard < 8; guard++) {
+            const L = [s0 - 1];
+            for (let t = s0; t <= e0; t++) if (links(t)) L.push(t);
+            L.push(e0 + 1);
+            let gap = 0,
+              gi = 0;
+            for (let i = 1; i < L.length; i++) if (L[i] - L[i - 1] > gap) ((gap = L[i] - L[i - 1]), (gi = i));
+            if (gap <= 28) break;
+            const mid = Math.floor((L[gi] + L[gi - 1]) / 2);
+            let pick = null;
+            for (let d = 0; d < gap / 2 - 3 && pick == null; d++) for (const t of [mid - d, mid + d]) if (pick == null && can(t)) pick = t;
+            if (pick == null) break;
+            for (let u = A.a + 2; u < B.a; u++)
+              for (const k of [0, 1]) {
+                const [x, y] = at(pick + k, u);
+                m[y][x] = ",";
+              }
+            cross++;
+          }
+        }
+    }
+    // pedaços soltos: liga na rede maior pela grama (2 de largura)
+    const comp = () => {
+      const id = new Int32Array(W * H).fill(-1);
+      const sz = [];
+      for (let y = 0; y < H; y++)
+        for (let x = 0; x < W; x++) {
+          if (!road(x, y) || id[y * W + x] >= 0) continue;
+          const c = sz.length;
+          let n = 0;
+          const q = [[x, y]];
+          id[y * W + x] = c;
+          while (q.length) {
+            const [a, bb] = q.pop();
+            n++;
+            for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+              const nx = a + dx,
+                ny = bb + dy;
+              if (nx < 0 || ny < 0 || nx >= W || ny >= H || id[ny * W + nx] >= 0 || !road(nx, ny)) continue;
+              id[ny * W + nx] = c;
+              q.push([nx, ny]);
+            }
+          }
+          sz.push(n);
+        }
+      return { id, sz };
+    };
+    for (let pass = 0; pass < 6; pass++) {
+      const { id, sz } = comp();
+      const main = sz.indexOf(Math.max(...sz));
+      const small = sz.map((n, i) => [n, i]).filter(([n, i]) => i !== main && n >= 12);
+      if (!small.length) break;
+      let any = false;
+      for (const [, ci] of small) {
+        // BFS a partir do pedaço até a rede principal
+        const prev = new Map();
+        let q = [];
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (id[y * W + x] === ci) (q.push([x, y]), prev.set(x + "," + y, null));
+        let hit = null;
+        for (let d = 0; d < 40 && q.length && !hit; d++) {
+          const nq = [];
+          for (const [x, y] of q) {
+            for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+              const nx = x + dx,
+                ny = y + dy,
+                k = nx + "," + ny;
+              if (prev.has(k)) continue;
+              if (id[ny * W + nx] === main) {
+                hit = [x, y];
+                break;
+              }
+              if (!(open(nx, ny) && (open(nx + 1, ny) || open(nx, ny + 1)))) continue;
+              prev.set(k, [x, y]);
+              nq.push([nx, ny]);
+            }
+            if (hit) break;
+          }
+          q = nq;
+        }
+        if (!hit) continue;
+        let c = hit;
+        while (c && id[c[1] * W + c[0]] !== ci) {
+          const [x, y] = c;
+          m[y][x] = ",";
+          if (open(x + 1, y)) m[y][x + 1] = ",";
+          else if (open(x, y + 1)) m[y + 1][x] = ",";
+          c = prev.get(x + "," + y);
+        }
+        joined++;
+        any = true;
+      }
+      if (!any) break;
+    }
+    Z.map = m.map((r) => r.join(""));
+  }
+  window.ROADS_CROSS = cross;
+  window.ROADS_JOINED = joined;
   window.ROADS_LINKED = linked;
   window.ROAD_LOOPS = loops;
 })();
