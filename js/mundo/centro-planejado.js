@@ -76,9 +76,20 @@
       put(ix1, back, "latrina");
     }
     if (ix1 - ix0 >= 7 && back - 1 > top) (put(ix0, back, "varal"), put(ix1, back, "colmeias"));
-    // jardim da frente (flores e gramado; a placa num canto)
-    for (let x = ix0; x <= ix1; x++) if (x !== door) put(x, front, (x + front) % 3 === 0 ? "flores" : "gramado");
-    put(ix0, front, "placa");
+    // frente fechada como no Bairro dos Lotes: cerca de madeira com o portão no caminho da porta
+    for (let x = x0; x <= x1; x++) if (x !== door) set(x, front, "f");
+    // portão do quintal: nos fundos, se atrás do lote tem rua; senão um portãozinho na frente, do lado da casa
+    const PASSC = ".,=";
+    // a coluna dos fundos mais perto da porta que dá numa rua
+    let gateX = null;
+    for (let d = 0; d <= ix1 - ix0 && gateX == null; d++)
+      for (const x of [door - d, door + d]) if (gateX == null && x >= ix0 && x <= ix1 && top > 1 && PASSC.includes((m[top - 1] || [])[x] || "#")) gateX = x;
+    if (gateX != null) set(gateX, top, ",");
+    else if (bx > ix0) set(ix0, front, ",");
+    else if (bx + b.w - 1 < ix1) set(ix1, front, ",");
+    // a placa fica dentro do lote, do lado da casa (se couber)
+    if (bx > ix0) put(ix0, by + b.h - 1, "placa");
+    else if (bx + b.w - 1 < ix1) put(ix1, by + b.h - 1, "placa");
     b.plan = plan;
     b.lot = true;
     b.planned = true; // lotes-no-centro.js registra o quintal (objetos sólidos e as ações do quintal)

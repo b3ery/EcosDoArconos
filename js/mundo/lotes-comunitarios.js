@@ -164,10 +164,18 @@
     const m = Z.map.map((r) => r.split(""));
     const W = Z.w;
     const block = solidPlans(Z);
-    for (const [k, v] of COM[zid] || []) if (v === "sebe" || v.startsWith("p:")) block.add(k);
+    // cercas dos lotes comunitários (sebe e os lados/fundos/frente fechados) também tapam
+    for (const [k, v] of COM[zid] || []) {
+      if (v === "sebe") block.add(k);
+      else if (v === "patio" || v === "floreira") {
+        const [x, y] = k.split(",").map(Number);
+        const me = OWNER[zid] && OWNER[zid].get(k);
+        if (me && (y < me.y + me.h || (FRONT[zid] && FRONT[zid].has(k)))) block.add(k);
+      }
+    }
     let opened = 0;
     for (const b of Z.town.bld) {
-      if (!b.plan) continue;
+      if (!b.plan || b.planned) continue; // lote planejado já tem o portão no lugar certo
       const cells = Object.entries(b.plan)
         .filter(([k, v]) => !YARD_SOLID.has(v))
         .map(([k]) => k.split(",").map(Number))
@@ -245,7 +253,7 @@
         for (let y = top; y <= bot; y++) {
           const k = mid + "," + y;
           const v = M.get(k);
-          if (v === "sebe" || v === "patio" || (v && v.startsWith("p:"))) M.set(k, "beco");
+          if (v === "sebe" || v === "patio" || v === "floreira" || (v && v.startsWith("p:"))) M.set(k, "beco");
         }
       }
   }
@@ -261,9 +269,9 @@
       if (!dx && !dy) continue;
       const bad = (x, y) => {
         const v = M.get(x + "," + y);
-        if (v === "patio") {
+        if (v === "patio" || v === "floreira") {
           const me = OWNER[zid].get(x + "," + y);
-          return !!me && y < me.y + me.h;
+          return !!me && (y < me.y + me.h || (FRONT[zid] && FRONT[zid].has(x + "," + y)));
         }
         return v === "sebe";
       };
@@ -305,6 +313,159 @@
     }
   }
   for (const z of zones) keepAlleys(z);
+  // FRENTE do lote: cerca com portão no caminho da porta, como no Bairro dos Lotes.
+  // Só fecha se todo mundo (portas, moradores, saídas) continua com caminho.
+  const FRONT = {};
+  function closeFronts(zid) {
+    const Z = ZONES[zid];
+    const M = COM[zid];
+    if (!Z || !M) return;
+    const F = (FRONT[zid] = new Set());
+    const W = Z.w,
+      H = Z.h;
+    const solid = (x, y) => {
+      const v = M.get(x + "," + y);
+      if (v === "sebe") return true;
+      if (v === "patio" || v === "floreira") {
+        const me = OWNER[zid].get(x + "," + y);
+        if (me && (y < me.y + me.h || F.has(x + "," + y))) return true;
+      }
+      return !PASS.has((Z.map[y] || "")[x]);
+    };
+    const bfs = () => {
+      const seen = new Uint8Array(W * H);
+      const st = Z.town.arrive || [1, 1];
+      const q = [st[1] * W + st[0]];
+      seen[q[0]] = 1;
+      for (let i = 0; i < q.length; i++) {
+        const x = q[i] % W,
+          y = (q[i] / W) | 0;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = x + dx,
+            ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H || seen[ny * W + nx] || solid(nx, ny)) continue;
+          seen[ny * W + nx] = 1;
+          q.push(ny * W + nx);
+        }
+      }
+      return seen;
+    };
+    const goals = [];
+    for (const b of Z.town.bld) for (const d of b.door) goals.push([d, b.y + b.h]);
+    for (const k in Z.npcs || {}) {
+      const [x, y] = k.split(",").map(Number);
+      goals.push([x, y + 1]);
+    }
+    for (const o of Object.values(Z.open || {})) if (o && typeof o[0] === "number") goals.push(o);
+    let R = bfs();
+    const want = goals.filter(([x, y]) => R[y * W + x]);
+    // e todo quintal que tinha entrada continua tendo (um pedaço alcançável de cada um)
+    for (const b of Z.town.bld)
+      if (b.plan) {
+        const c = Object.keys(b.plan)
+          .map((k) => k.split(",").map(Number))
+          .find(([x, y]) => y < b.y && R[y * W + x]);
+        if (c) want.push(c);
+      }
+    for (const b of Z.town.bld) {
+      const fr = [];
+      for (let x = b.x - 1; x <= b.x + b.w; x++) {
+        const k = x + "," + (b.y + b.h);
+        const v = M.get(k);
+        // não fecha a boca de um beco (o chão logo acima é passagem livre)
+        const upFree = !solid(x, b.y + b.h - 1) && !(x >= b.x && x < b.x + b.w);
+        if ((v === "patio" || v === "floreira") && OWNER[zid].get(k) === b && !upFree) fr.push(k);
+      }
+      if (!fr.length) continue;
+      for (const k of fr) F.add(k);
+      const R2 = bfs();
+      // ninguém perde o caminho e ninguém dá volta: a rua tem que continuar por baixo
+      const ok = want.every(([x, y]) => R2[y * W + x]);
+      if (!ok) for (const k of fr) F.delete(k);
+      else R = R2;
+    }
+    // quintal que ficou sem entrada por causa das sebes daqui: a frente dele volta a ficar aberta
+    let changed = false;
+    for (const b of Z.town.bld) {
+      if (!b._closed || !b.plan) continue;
+      const cells = Object.keys(b.plan).map((k) => k.split(",").map(Number)).filter(([x, y]) => y < b.y);
+      if (!cells.length || cells.some(([x, y]) => R[y * W + x])) continue;
+      const m = Z.map.map((r) => r.split(""));
+      for (const [x, y, c] of b._closed) m[y][x] = c;
+      Z.map = m.map((r) => r.join(""));
+      b._closed = null;
+      changed = true;
+      R = bfs();
+    }
+  }
+  for (const z of zones) closeFronts(z);
+  // CAMINHOS: da porta (e de cada portão) sai um caminho de pedra até a rua mais perto,
+  // como no Bairro dos Lotes; só pinta chão de grama (não muda por onde dá para andar)
+  function layPaths(zid) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.map) return 0;
+    const W = Z.w,
+      H = Z.h;
+    const m = Z.map.map((r) => r.split(""));
+    const road = (x, y) => m[y] && ",=".includes(m[y][x]) && !(COM[zid] && COM[zid].has(x + "," + y));
+    const grass = (x, y) => m[y] && m[y][x] === "." && !(COM[zid] && COM[zid].has(x + "," + y)) && !Z.town.bld.some((b) => b.plan && b.plan[x + "," + y]);
+    // caminho mais curto pela grama até a rua (no máximo 8 passos)
+    const link = (sx, sy) => {
+      const prev = new Map([[sx + "," + sy, null]]);
+      let q = [[sx, sy]];
+      for (let d = 0; d < 8 && q.length; d++) {
+        const nq = [];
+        for (const [x, y] of q)
+          for (const [dx, dy] of [[0, 1], [1, 0], [-1, 0], [0, -1]]) {
+            const nx = x + dx,
+              ny = y + dy,
+              k = nx + "," + ny;
+            if (prev.has(k) || nx < 1 || ny < 1 || nx >= W - 1 || ny >= H - 1) continue;
+            if (road(nx, ny)) {
+              let c = [x, y];
+              while (c) {
+                if (grass(c[0], c[1])) m[c[1]][c[0]] = ",";
+                c = prev.get(c[0] + "," + c[1]);
+              }
+              return true;
+            }
+            if (!grass(nx, ny)) continue;
+            prev.set(k, [x, y]);
+            nq.push([nx, ny]);
+          }
+        q = nq;
+      }
+      return false;
+    };
+    let n = 0;
+    for (const b of Z.town.bld)
+      for (const d of b.door) {
+        // anda pelo caminho que já existe (portão, jardim) até a grama
+        let y = b.y + b.h;
+        while (m[y] && (m[y][d] === "," || (COM[zid] && COM[zid].get(d + "," + y) === "caminho")) && y < b.y + b.h + 4) {
+          if (road(d, y + 1) && !(COM[zid] && COM[zid].has(d + "," + (y + 1)))) break;
+          y++;
+        }
+        if (m[y] && grass(d, y) && !road(d, y + 1)) n += link(d, y) ? 1 : 0;
+        else if (m[y] && grass(d, y)) ((m[y][d] = ","), n++);
+      }
+    // portões de quintal (buraco na cerca de madeira) também ganham o seu caminho
+    for (let y = 1; y < H - 1; y++)
+      for (let x = 1; x < W - 1; x++) {
+        if (m[y][x] !== "." && m[y][x] !== ",") continue;
+        const h = m[y][x - 1] === "f" && m[y][x + 1] === "f",
+          v = m[y - 1][x] === "f" && m[y + 1][x] === "f";
+        if (!h && !v) continue;
+        for (const [dx, dy] of h ? [[0, 1], [0, -1]] : [[1, 0], [-1, 0]]) {
+          const ox = x + dx,
+            oy = y + dy;
+          if (grass(ox, oy) && !Z.town.bld.some((b) => b.plan && b.plan[x + "," + y]) && link(ox, oy)) (grass(x, y) && (m[y][x] = ","), n++);
+        }
+      }
+    Z.map = m.map((r) => r.join(""));
+    return n;
+  }
+  window.PATHS_LAID = zones.reduce((s, z) => s + layPaths(z), 0);
   // as saídas para as florestas são criadas depois deste arquivo: confere na primeira vez que alguém anda na cidade
   const exitsDone = new Set();
   window.openYardGates = () => zones.reduce((s, z) => s + openGates(z), 0);
@@ -328,18 +489,13 @@
     const X = x * TILE,
       Y = y * TILE;
     const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
-    if (k.startsWith("p:")) return drawKit(k.slice(2), X, Y, R, x, y, t, OWNER[z] && OWNER[z].has(x + "," + y) ? z : null);
+    if (k.startsWith("p:")) {
+      drawKit(k.slice(2), X, Y, R, x, y, t, OWNER[z] && OWNER[z].has(x + "," + y) ? z : null);
+      return lotFence(z, x, y, k, R);
+    }
     if (k === "sebe") {
-      const n = (dx, dy) => at(z, x + dx, y + dy) === "sebe";
-      const l = n(-1, 0) ? 0 : 3,
-        r = n(1, 0) ? 32 : 29,
-        u = n(0, -1) ? 0 : 6;
-      R(l + 2, u + 4, r - l, 26 - u, "rgba(0,0,0,.2)"); // sombra
-      R(l, u, r - l, 26 - u, "#2e5a2a");
-      R(l, u, r - l, 5, "#4a8a3a");
-      R(l, u + 5, r - l, 3, "#3d7432");
-      for (let i = 0; i < 6; i++) R(l + 2 + ((i * 11 + x * 7) % Math.max(1, r - l - 4)), u + 9 + ((i * 7 + y * 5) % 12), 3, 2, i % 2 ? "#5a9a46" : "#24481f");
-      R(l, 24, r - l, 2, "#1e3a1a");
+      lotGround(z, x, y, t, R);
+      lotFence(z, x, y, k, R);
     } else if (k === "canteiro") {
       R(4, 14, 24, 14, "#7a7468");
       R(5, 15, 22, 10, "#5a3a22");
@@ -350,43 +506,14 @@
       R(4, 0, 24, 32, "rgba(150,120,80,.28)");
     }
     else if (k === "patio" || k === "floreira" || k === "caminho") {
-      // lote no estilo The Sims: gramado, caminho de pedra até a porta e
-      // cerquinha branca nos lados e nos fundos (a frente fica aberta, com meio-fio)
-      const me = OWNER[z] && OWNER[z].get(x + "," + y);
-      const own = (dx, dy) => {
-        const nx = x + dx,
-          ny = y + dy;
-        const q = at(z, nx, ny);
-        if (q === "sebe" || q === "canteiro" || q === "grama") return true; // a sebe já fecha o lote
-        if (q === "patio" || q === "floreira" || q === "caminho" || (q && q.startsWith("p:"))) return OWNER[z].get(nx + "," + ny) === me;
-        return !!me && nx >= me.x && nx < me.x + me.w && ny >= me.y && ny < me.y + me.h;
-      };
-      if (k !== "caminho") {
-        dtBase.call(this, z, x, y, ".", t);
-        R(0, 0, 32, 32, "rgba(120,190,80,.18)");
-        for (let i = 0; i < 3; i++) R((x * 13 + i * 11) % 28, (y * 7 + i * 9) % 26 + 2, 2, 3, "#5f9a3e");
-      } else {
+      // lote no padrão do Bairro dos Lotes: gramado, caminho de pedra até a porta
+      // e cerca de madeira em volta do lote todo, com o portão no caminho
+      if (k !== "caminho") lotGround(z, x, y, t, R);
+      else {
         R(6, 0, 20, 32, "#cdbb98");
         for (let r = 0; r < 4; r++) R(7 + (r % 2) * 4, r * 8 + 1, 14, 6, r % 2 ? "#b9a682" : "#ddd0b2");
       }
-      const front = me && y >= me.y + me.h;
-      const post = "#f4efe4",
-        sh = "#9a9282";
-      const fenceH = (yy) => {
-        R(0, yy, 32, 3, post);
-        R(0, yy + 3, 32, 1, sh);
-        for (let i = 2; i < 32; i += 8) (R(i, yy - 6, 3, 10, post), R(i + 3, yy - 5, 1, 9, sh));
-      };
-      const fenceV = (xx) => {
-        R(xx, 0, 3, 32, post);
-        R(xx + 3, 0, 1, 32, sh);
-        for (let j = 2; j < 32; j += 8) R(xx - 1, j, 5, 3, post);
-      };
-      if (!own(0, -1)) fenceH(4);
-      if (!own(-1, 0)) fenceV(1);
-      if (!own(1, 0)) fenceV(28);
-      if (!own(0, 1) && front) (R(0, 29, 32, 3, "#8a8274"), R(0, 29, 32, 1, "#c9c2b2"));
-      else if (!own(0, 1)) fenceH(26);
+      lotFence(z, x, y, k, R);
       if (k === "floreira") {
         R(5, 12, 22, 16, "#6e6960");
         R(6, 13, 20, 6, "#4a3020");
@@ -395,6 +522,55 @@
       }
     }
   };
+  function lotGround(z, x, y, t, R) {
+    dtBase(z, x, y, ".", t);
+    R(0, 0, 32, 32, "rgba(120,190,80,.18)");
+    for (let i = 0; i < 3; i++) R((x * 13 + i * 11) % 28, ((y * 7 + i * 9) % 26) + 2, 2, 3, "#5f9a3e");
+  }
+  // cerca de madeira (a mesma do Bairro dos Lotes) na beira do lote
+  const LOTK = (q) => q === "patio" || q === "floreira" || q === "caminho" || q === "sebe" || q === "canteiro" || q === "grama" || (q && q.startsWith("p:"));
+  function lotFence(z, x, y, k, R) {
+    const me = OWNER[z] && OWNER[z].get(x + "," + y);
+    const own = (dx, dy) => {
+      const nx = x + dx,
+        ny = y + dy;
+      const q = at(z, nx, ny);
+      if (LOTK(q)) {
+        const o = OWNER[z].get(nx + "," + ny);
+        return !me || !o || o === me;
+      }
+      // a parede do próprio prédio fecha o lote
+      return ZONES[z].town.bld.some((b) => nx >= b.x && nx < b.x + b.w && ny >= b.y && ny < b.y + b.h && (!me || b === me));
+    };
+    if (k === "caminho") {
+      // portão aberto: só os dois mourões
+      if (!own(0, 1)) (R(1, 18, 5, 14, "#6b4423"), R(26, 18, 5, 14, "#6b4423"), R(1, 18, 5, 2, "#8a5e32"), R(26, 18, 5, 2, "#8a5e32"));
+      return;
+    }
+    const post = "#6b4423",
+      rail = "#8a5e32",
+      sh = "#3e2814";
+    const fenceH = (yy) => {
+      R(0, yy - 4, 32, 3, rail);
+      R(0, yy + 1, 32, 3, rail);
+      R(0, yy + 4, 32, 1, sh);
+      for (const i of [1, 15, 28]) (R(i, yy - 9, 4, 15, post), R(i, yy - 9, 4, 2, rail));
+    };
+    const fenceV = (xx) => {
+      R(xx, 0, 4, 32, post);
+      R(xx + 4, 0, 1, 32, sh);
+      for (const j of [0, 14, 27]) R(xx - 1, j, 6, 4, rail);
+    };
+    // frente que ficou aberta (era a única passagem da rua): sem cerca, só o meio-fio
+    if (me && y >= me.y + me.h && !(FRONT[z] && FRONT[z].has(x + "," + y))) {
+      if (!own(0, 1)) (R(0, 29, 32, 3, "#8a8274"), R(0, 29, 32, 1, "#c9c2b2"));
+      return;
+    }
+    if (!own(0, -1)) fenceH(5);
+    if (!own(-1, 0)) fenceV(1);
+    if (!own(1, 0)) fenceV(27);
+    if (!own(0, 1)) fenceH(27);
+  }
   function drawKit(k, X, Y, R, x, y, t, z) {
     if (z) (dtBase(z, x, y, ".", t), R(0, 0, 32, 32, "rgba(120,190,80,.18)"));
     R(4, 24, 26, 6, "rgba(0,0,0,.22)"); // sombra
@@ -509,10 +685,15 @@
   // o resto é decoração e dá para passar por cima (objetos do ofício, canteiros, floreiras)
   const fenced = (z, x, y) => {
     const k = at(z, x, y);
-    if (k !== "patio") return false;
+    if (k !== "patio" && k !== "floreira") return false;
     const me = OWNER[z] && OWNER[z].get(x + "," + y);
     if (!me) return false;
-    return y < me.y + me.h; // fundos e lados (a frente do lote fica aberta para a rua)
+    if (y < me.y + me.h) return true; // fundos e lados
+    return !!(FRONT[z] && FRONT[z].has(x + "," + y)); // frente: só onde fechar não tranca a rua
+  };
+  const isFenced = (z, x, y) => {
+    const k = at(z, x, y);
+    return k === "sebe" || fenced(z, x, y);
   };
   walkable = function (z, x, y) {
     if (!exitsDone.has(z)) (exitsDone.add(z), keepExits(z));

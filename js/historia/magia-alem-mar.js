@@ -43,7 +43,11 @@
     // esconderijo nunca em portão, junto de cerca ou dentro de lote
     const fenceNear = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => (z.map[y + dy] || "")[x + dx] === "f");
     const inPlan = (x, y) => z.town && z.town.bld.some((b) => b.plan && b.plan[x + "," + y]);
-    return (hideCache[zid] = z ? CAND.filter(([x, y]) => ".,".includes(z.map[y][x]) && !fenceNear(x, y) && !inPlan(x, y)).slice(0, 5) : []);
+    // nem na frente de porta, nem no lote de ninguém (o barril tamparia a entrada)
+    const atDoor = (x, y) => z.town && z.town.bld.some((b) => b.door.some((d) => Math.abs(d - x) <= 1 && y >= b.y + b.h - 1 && y <= b.y + b.h + 1));
+    const COM = window.COMMUNITY_LOTS && COMMUNITY_LOTS[zid];
+    const inLot = (x, y) => !!(COM && COM.has(x + "," + y));
+    return (hideCache[zid] = z ? CAND.filter(([x, y]) => ".,".includes(z.map[y][x]) && !fenceNear(x, y) && !inPlan(x, y) && !atDoor(x, y) && !inLot(x, y)).slice(0, 5) : []);
   };
   const HIDES_ = () => hidesOf(player.zone);
   const S = () => (player.overseas = player.overseas || { done: {} });

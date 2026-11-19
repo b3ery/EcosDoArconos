@@ -127,6 +127,24 @@
         const blk = new Set(block);
         for (const [k, v] of Object.entries(plan)) if (SOLIDK.has(v)) blk.add(k);
         if (!ok(dist(m2, W, H, start, blk))) continue;
+        // fecha o lote como no Bairro dos Lotes: a cerca desce pelos lados da casa e
+        // passa na frente, com o portão no caminho da porta (só se ninguém ficar preso)
+        {
+          const m3 = m2.map((r) => r.slice());
+          const fy = b.y + b.h;
+          const can = (x, y) => m3[y] && ".,Tw".includes(m3[y][x]) && !(x === b.door[0] && y === fy);
+          for (let y = b.y; y <= fy; y++) for (const x of [x0, x1]) if (can(x, y)) m3[y][x] = "f";
+          for (let x = x0; x <= x1; x++) if (x !== b.door[0] && can(x, fy)) m3[fy][x] = "f";
+          if (m3[fy] && m3[fy][b.door[0]] === ".") m3[fy][b.door[0]] = ",";
+          const D3 = dist(m3, W, H, start, blk);
+          // o quintal continua com entrada (pelo portãozinho do lado)
+          const yardIn = cells.some(([x, y]) => D3[y * W + x] >= 0);
+          if (ok(D3) && yardIn) {
+            b._closed = [];
+            for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m3[y][x] !== m2[y][x]) b._closed.push([x, y, m2[y][x]]);
+            for (let y = 0; y < H; y++) m2[y] = m3[y];
+          }
+        }
         // jardim da frente, se houver grama na frente
         for (let x = b.x; x < b.x + b.w; x++) {
           const y = b.y + b.h;
@@ -149,6 +167,21 @@
         n++;
         done = true;
       }
+    }
+    // conferência final: se a cerca de um vizinho fechou o portãozinho de alguém,
+    // aquela frente volta a ficar aberta (o quintal nunca fica sem entrada)
+    for (let pass = 0; pass < 3; pass++) {
+      const D = dist(m, W, H, start, block);
+      let fixed = false;
+      for (const b of Z.town.bld) {
+        if (!b._closed || !b.plan) continue;
+        const cells = Object.keys(b.plan).map((k) => k.split(",").map(Number)).filter(([x, y]) => y < b.y);
+        if (!cells.length || cells.some(([x, y]) => D[y * W + x] >= 0)) continue;
+        for (const [x, y, c] of b._closed) m[y][x] = c;
+        b._closed = null;
+        fixed = true;
+      }
+      if (!fixed) break;
     }
     Z.map = m.map((r) => r.join(""));
   }
