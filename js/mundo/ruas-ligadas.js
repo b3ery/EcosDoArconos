@@ -26,7 +26,8 @@
     const lot = (x, y) => plans.has(x + "," + y) || !!(C && C.has(x + "," + y));
     const inB = (x, y) => Z.town.bld.some((b) => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h);
     const R = (x, y) => m[y] && ",=".includes(m[y][x]) && !(C && C.has(x + "," + y));
-    const open = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && ".wTg".includes(m[y][x]) && !lot(x, y) && !inB(x, y) && !(Z.npcs && Z.npcs[x + "," + y]);
+    const PR = (window.FILLED_AREAS || {})[zid] || new Set(); // jardins, pomares e hortas: caminho não corta por dentro
+    const open = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && ".wTg".includes(m[y][x]) && !PR.has(x + "," + y) && !lot(x, y) && !inB(x, y) && !(Z.npcs && Z.npcs[x + "," + y]);
     const D4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
     // pedaço de lote (pátio) que ficou no meio da rua, com rua dos dois lados: volta a ser rua
     if (C)
@@ -45,7 +46,7 @@
     const Rt = (x, y) => R(x, y) || (m[y] && "zP".includes(m[y][x]) && D4.filter(([a, c]) => R(x + a, y + c)).length >= 2);
     // buraco de grama de 1 bloco no meio de uma rua vira rua
     for (let y = 1; y < H - 1; y++)
-      for (let x = 1; x < W - 1; x++) if (m[y][x] === "." && !lot(x, y) && R(x - 1, y) && R(x + 1, y) && (R(x, y - 1) || R(x, y + 1))) m[y][x] = ",";
+      for (let x = 1; x < W - 1; x++) if (m[y][x] === "." && !lot(x, y) && !PR.has(x + "," + y) && R(x - 1, y) && R(x + 1, y) && (R(x, y - 1) || R(x, y + 1))) m[y][x] = ",";
     const thick = () => {
       const T = new Uint8Array(W * H);
       for (let y = 0; y < H - 1; y++)

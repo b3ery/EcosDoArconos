@@ -391,7 +391,7 @@ function carriageMenu() {
           }
           payWithTax(price);
           player.flags.rode = true;
-          player.clock = (player.clock + 60) % 1440;
+          passTime(1, "Uma hora de carruagem."); // passa a hora de verdade (vira o dia se passar da meia-noite)
           const zz = ZONES[z];
           const o = zz.town ? zz.town.arrive : z === "escola" ? zz.open.n : zz.open[zz.side];
           player.zone = z;

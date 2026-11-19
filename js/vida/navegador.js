@@ -203,7 +203,8 @@
     const k = e.key.toLowerCase();
     keys[k] = true;
     if (["arrowup", "arrowdown", "arrowleft", "arrowright", " "].includes(k)) e.preventDefault();
-    if (k === "w" || k === "arrowup") V.sail = Math.min(2, V.sail + 1);
+    if (k === "w" || k === "arrowup") ((V.sail = Math.min(2, V.sail + 1)), (V.anchor = false));
+    if (k === " " || k === "q") dropAnchor();
     if (k === "s" || k === "arrowdown") V.sail = Math.max(0, V.sail - 1);
     if (k === "e" || k === "enter") tryDock();
   });
@@ -214,7 +215,7 @@
     if (el) return;
     el = document.createElement("div");
     el.id = "sea";
-    el.innerHTML = `<canvas></canvas><div class="sea-pad"><button data-k="l">◀ Leme</button><button data-k="sail">Velas</button><button data-k="r">Leme ▶</button><button data-k="dock" class="dock">Atracar</button></div>`;
+    el.innerHTML = `<canvas></canvas><div class="sea-pad"><button data-k="l">◀ Leme</button><button data-k="sail">Velas</button><button data-k="r">Leme ▶</button><button data-k="anchor">⚓ Parar</button><button data-k="dock" class="dock">Atracar</button></div>`;
     byId("screen").appendChild(el);
     const st = document.createElement("style");
     st.textContent = `#sea{position:absolute;inset:0;z-index:4;display:none;background:#0a1a2e}#sea canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
@@ -228,13 +229,20 @@
       const k = b.dataset.k;
       const on = (v) => (e) => (e.preventDefault(), k === "l" ? (V.tl = v) : k === "r" ? (V.tr = v) : 0);
       b.onpointerdown = (e) => {
-        if (k === "sail") V.sail = (V.sail + 1) % 3;
+        if (k === "sail") ((V.sail = (V.sail + 1) % 3), (V.anchor = false));
+        else if (k === "anchor") dropAnchor();
         else if (k === "dock") tryDock();
         else on(true)(e);
       };
       b.onpointerup = on(false);
       b.onpointerleave = on(false);
     });
+  }
+  function dropAnchor() {
+    if (!V) return;
+    V.sail = 0;
+    V.anchor = true;
+    note("Âncora lançada: o navio para.");
   }
   function fogArr() {
     const s = S();
@@ -316,6 +324,8 @@
   }
   window.seaDisembark = (id) => disembark(C9.find((c) => c.id === id));
   window.seaReembark = reembark;
+  window.seaState = () => V; // (para os testes)
+  window.seaSetSail = () => setSail();
   window.SEA_COUNTRIES = C9;
   window.SEA_HOME = HOME;
   function endVoyage(msg) {
@@ -357,7 +367,10 @@
     V.wind += (Math.random() - 0.5) * dt * 0.15;
     const windK = 0.55 + 0.45 * Math.cos(V.h - V.wind);
     const target = [0, 32, 58][V.sail] * sh.sp * (V.sail ? windK : 1) + (V.sail === 0 ? 0 : 6);
-    V.v += (target - V.v) * Math.min(1, dt * 0.8);
+    // velas recolhidas: o navio freia de verdade; com a âncora, para em instantes
+    const brake = V.anchor ? 4 : V.sail === 0 ? 1.6 : 0.8;
+    V.v += (target - V.v) * Math.min(1, dt * brake);
+    if (V.sail === 0 && Math.abs(V.v) < 1.5) V.v = 0;
     let nx = V.x + Math.cos(V.h) * V.v * dt,
       ny = V.y + Math.sin(V.h) * V.v * dt;
     // terra firme: o navio encalha na costa (e arranha o casco)
@@ -401,7 +414,7 @@
     // perto de um país ou de casa?
     V.near = null;
     if (Math.hypot(V.x - HOME.x, V.y - HOME.y) < 110) V.near = { home: true };
-    for (const c of C9) if (Math.hypot(V.x - c.x, V.y - c.y) < c.r + 70) V.near = c;
+    for (const c of C9) if (Math.hypot(V.x - c.x, V.y - c.y) < c.r + 120) V.near = c;
     const disc = V.near && !V.near.home && !S().found.includes(V.near.id);
     if (disc) {
       S().found.push(V.near.id);
@@ -492,6 +505,9 @@
       enterZone(false);
       return endVoyage([["", `Depois de ${d} dia(s) no mar, você atraca de volta em casa. A Capitania guarda o seu navio.`]]);
     }
+    // atracando: o navio para no cais do país
+    V.v = 0;
+    V.sail = 0;
     game.mode = "choice";
     countryMenu(V.near);
   }
@@ -704,7 +720,7 @@
     bar(40, "Casco", sh.hull, sh.max, sh.hull < sh.max * 0.3 ? "#c94a3a" : "#8a5a2e");
     bar(54, "Comida (dias)", sh.food, 30, "#c9a050");
     bar(68, "Água (dias)", sh.water, 30, "#4a8ac9");
-    g.fillText(`Marujos: ${sh.crew}   Velas: ${["recolhidas", "meia vela", "todas"][V.sail]}`, 20, 94);
+    g.fillText(`Marujos: ${sh.crew}   Velas: ${V.anchor && !V.v ? "ancorado" : ["recolhidas", "meia vela", "todas"][V.sail]}`, 20, 94);
     // rosa dos ventos
     const cx = W - 54,
       cy = 54;
@@ -741,7 +757,7 @@
     // dica de controles
     g.font = '600 12px "Pixelify Sans", sans-serif';
     g.fillStyle = "rgba(255,255,255,.75)";
-    g.fillText("A/D ou ◀ ▶: leme · W/S: velas · E: atracar · encontre os 9 países do Mar Aberto", W / 2, H - 56);
+    g.fillText("A/D ou ◀ ▶: leme · W/S: velas · Espaço: parar (âncora) · E: atracar · encontre os 9 países do Mar Aberto", W / 2, H - 56);
   }
 
   /* ===================== NO MUNDO ===================== */

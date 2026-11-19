@@ -251,7 +251,14 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
       if (typeof closeInv === "function" && game.mode === "inv") closeInv();
       player.flags.rode = true;
       playSound(330, 0.2, "triangle");
-      playCine(roadScene(from, to, days, horse), 2.6 + days * 1.1, () => {
+      // a cena da estrada segue sozinha quando acaba (ou com um toque/Enter antes)
+      const dur = 2.6 + days * 1.1;
+      setTimeout(() => {
+        const c = game.cine;
+        if (c && c.draw === sc) ((c.t0 = -999), endCine());
+      }, (dur + 1.2) * 1000);
+      const sc = roadScene(from, to, days, horse);
+      playCine(sc, dur, () => {
         const before = player.day;
         // a estrada cansa: come e bebe pelo caminho, mas chega com fome
         passTime(days * 24 - (player.clock - 9 * 60) / 60, `Depois de ${days} dia(s) de estrada, você chega a ${ZONES[to].nome}.`);
@@ -280,7 +287,8 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
 
   const cmBase = carriageMenu;
   carriageMenu = function () {
-    if (!lifeMode() || !isTown(player.zone)) return cmBase.apply(this, arguments);
+    // entre reinos a viagem leva dias nos dois modos (História e Simulador)
+    if (!isTown(player.zone)) return cmBase.apply(this, arguments);
     const free = friendshipLevel("cocheiro") >= 2 && !player.flags.rodeFree;
     const opts = [];
     for (const z of TOWNS.filter((q) => q !== player.zone)) {
@@ -296,7 +304,7 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
   // ninguém vai a pé para outro reino
   const wtBase = walkTo;
   walkTo = function (dest) {
-    if (lifeMode() && isTown(dest) && isTown(player.zone)) {
+    if (isTown(dest) && isTown(player.zone)) {
       say([["", `${ZONES[dest].nome} fica a ${daysBetween(player.zone, dest)} dias de estrada. A pé não dá: pegue a carruagem no Estábulo ou vá a cavalo.`]], () => carriageMenu());
       return;
     }
@@ -340,5 +348,23 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
           }
       },
     });
+  };
+})();
+
+/* ----- andar de uma região para a vizinha gasta tempo (os dois modos) ----- */
+(() => {
+  if (typeof changeZone !== "function") return;
+  const czBase = changeZone;
+  const outdoor = (z) => ZONES[z] && ZONE_DEFS[z] && ZONE_DEFS[z].exits && Object.keys(ZONE_DEFS[z].exits).length && !(ZONES[z].town && ZONES[z].town.indoor);
+  changeZone = function (to) {
+    const from = player.zone;
+    const r = czBase.apply(this, arguments);
+    if (from !== player.zone && outdoor(from) && outdoor(player.zone)) {
+      // meia hora de caminhada até a região vizinha (vira o dia se passar da meia-noite)
+      const total = player.clock + 30;
+      if (total >= 1440) player.day += Math.floor(total / 1440);
+      player.clock = total % 1440;
+    }
+    return r;
   };
 })();

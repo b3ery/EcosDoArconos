@@ -259,7 +259,12 @@
   };
 
   /* ----- o que se faz em terra ----- */
-  const at = (x, y, p) => x === p[0] && y === p[1];
+  // o mapa dos países foi esticado (geracao-do-mundo.js afasta as casas): a coluna velha vira a nova
+  const SXz = (z, x) => {
+    const f = ZONES[z || player.zone] && ZONES[z || player.zone].stretchX;
+    return typeof f === "function" ? f(x) : x;
+  };
+  const at = (x, y, p, z) => x === SXz(z, p[0]) && y === p[1];
   function kind(x, y) {
     if (!here()) return null;
     if (at(x, y, RITE)) return "rite";
@@ -340,7 +345,7 @@
   };
   const wkBase = walkable;
   walkable = function (z, x, y) {
-    if (z && z.startsWith("pais-") && (at(x, y, RITE) || at(x, y, SIGN) || at(x, y, ROAD) || (at(x, y, BOAT) && z.split("-").length === 2))) return false;
+    if (z && z.startsWith("pais-") && (at(x, y, RITE, z) || at(x, y, SIGN, z) || at(x, y, ROAD, z) || (at(x, y, BOAT, z) && z.split("-").length === 2))) return false;
     return wkBase(z, x, y);
   };
 
@@ -403,7 +408,7 @@
     list.push({
       y: RITE[1],
       draw: () => {
-        const X = RITE[0] * T,
+        const X = SXz(null, RITE[0]) * T,
           Y = RITE[1] * T;
         R(X - 6, Y + 26, 44, 5, "rgba(0,0,0,.25)");
         const k = d.rite.kind;
@@ -454,7 +459,7 @@
     list.push({
       y: SIGN[1],
       draw: () => {
-        const X = SIGN[0] * T,
+        const X = SXz(null, SIGN[0]) * T,
           Y = SIGN[1] * T;
         R(X + 14, Y + 4, 4, 26, "#5a3a1e");
         R(X + 2, Y, 28, 14, A().home === id ? "#3a6a3a" : "#8a5a2e");
@@ -466,7 +471,7 @@
       y: BOAT[1],
       draw: () => {
         // o bote do navio, amarrado na ponta do cais
-        const X = BOAT[0] * T - 6,
+        const X = SXz(null, BOAT[0]) * T - 6,
           Y = BOAT[1] * T + 6 + Math.sin(t * 2) * 1.5;
         R(X, Y + 4, 44, 14, "#5a3a1e");
         R(X + 4, Y + 2, 36, 4, "#8a5a2e");

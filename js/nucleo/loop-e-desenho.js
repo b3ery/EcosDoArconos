@@ -2261,15 +2261,21 @@ function drawAmbience(t, th) {
     if (bt < 0.5) {
       const bx = -60 + bt * 2 * (viewWidth + 120),
         by = 60 + Math.sin(t * 0.3) * 30;
-      ctx.fillStyle = "#2a2a3a";
+      // bando de pássaros em V: cada um com as asas em "v" batendo
+      ctx.strokeStyle = "rgba(30,28,44,.75)";
+      ctx.lineWidth = 1.5;
+      ctx.lineCap = "round";
       for (let k = 0; k < 5; k++) {
-        const ox = bx - k * 18,
-          oy = by + Math.abs(k - 2) * 10,
-          w = Math.sin(t * 10 + k) > 0;
-        ctx.fillRect(ox - 4, oy - (w ? 2 : 0), 4, 1);
-        ctx.fillRect(ox, oy, 1, 1);
-        ctx.fillRect(ox + 1, oy - (w ? 2 : 0), 4, 1);
+        const ox = bx - Math.abs(k - 2) * 16,
+          oy = by + (k < 2 ? -1 : 1) * Math.abs(k - 2) * 9,
+          f = Math.sin(t * 9 + k * 1.3) * 3;
+        ctx.beginPath();
+        ctx.moveTo(ox - 6, oy - 1 - f);
+        ctx.quadraticCurveTo(ox - 3, oy - 3 - f * 0.4, ox, oy);
+        ctx.quadraticCurveTo(ox + 3, oy - 3 - f * 0.4, ox + 6, oy - 1 - f);
+        ctx.stroke();
       }
+      ctx.lineCap = "butt";
     }
   }
 }
