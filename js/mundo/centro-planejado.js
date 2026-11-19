@@ -41,7 +41,8 @@
   // ruas: a viela do portão norte (x 10-11) desce até a rua do meio (linha 19);
   // a linha 10 fica livre (passagem do jardim de cima para a praça)
   fill(10, Y0, 11, 18, ",");
-  for (let x = X0; x <= X1; x++) if (!keep.has(m[19][x])) m[19][x] = ",";
+  // a rua do meio do quarteirão tem 2 blocos (linhas 19 e 20)
+  for (let x = X0; x <= X1; x++) for (const y of [19, 20]) if (!keep.has(m[y][x])) m[y][x] = ",";
 
   /** Um lote: cerca nos lados e no fundo, quintal atrás, casa, jardim na frente (aberto para a rua). */
   function lot(b, x0, x1, top, front, kind) {
@@ -99,9 +100,9 @@
   set(17, 9, ",");
   set(18, 9, ",");
   // fileira de baixo (linhas 20..25): Padaria, Casebre e o Quartinho do Lucas
-  lot(B.padaria, 1, 7, 20, 25, "shop");
-  lot(B.c1, 9, 15, 20, 25, "home");
-  lot(B.hLucas, 17, 23, 20, 25, "home");
+  lot(B.padaria, 1, 7, 21, 25, "shop");
+  lot(B.c1, 9, 15, 21, 25, "home");
+  lot(B.hLucas, 17, 23, 21, 25, "home");
 
   /* ----- quarteirão do templo (x 17..50, linhas 28..45) ----- */
   const T = ["templo", "hosp", "forja", "clinica", "c10", "atelie", "alfaiate", "c7", "c4", "c5", "c6", "c8", "c9"].map(bld);
