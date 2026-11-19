@@ -16,6 +16,32 @@
 "use strict";
 
 (() => {
+  /* a seta do jogador: gira suave para a direção em que ele olha */
+  const DIR_A = { up: 0, right: Math.PI / 2, down: Math.PI, left: -Math.PI / 2 };
+  let arrowA = 0;
+  function arrow(x, y, s, t) {
+    const want = DIR_A[player.dir] ?? 0;
+    let d = want - arrowA;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    arrowA += d * 0.25;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(arrowA);
+    ctx.scale(s, s);
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#1a1420";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, -6);
+    ctx.lineTo(4.5, 5);
+    ctx.lineTo(0, 2.5);
+    ctx.lineTo(-4.5, 5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
   const SQ = 400; // diâmetro do círculo (na tela de 480 de altura)
   const ZOOMS = [3, 4, 6, 8, 11];
   const V = (game.mapView = game.mapView || { zi: 2, cx: 0, cy: 0, zone: null });
@@ -100,17 +126,7 @@
     ctx.beginPath();
     ctx.arc(px, py, 9 + Math.sin(t * 5) * 2, 0, 7);
     ctx.fill();
-    ctx.fillStyle = "#fff";
-    ctx.strokeStyle = "#1a1420";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(px, py - 7);
-    ctx.lineTo(px + 5, py + 5);
-    ctx.lineTo(px, py + 2);
-    ctx.lineTo(px - 5, py + 5);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    arrow(px, py, 1.4, t);
     ctx.restore();
     // moldura, título e ajuda
     // moldura redonda de bússola: aro dourado, marcas e os pontos cardeais
@@ -190,6 +206,12 @@
     const k = 2.4; // pixels por bloco
     const px = (player.rx ?? player.x) + 0.5,
       py = (player.ry ?? player.y) + 0.5;
+    // o mapa segue você, mas para na borda da região: aí a seta anda até a beirada
+    const half = R / k;
+    const mcx = z.w <= 2 * half ? z.w / 2 : Math.max(half, Math.min(z.w - half, px)),
+      mcy = z.h <= 2 * half ? z.h / 2 : Math.max(half, Math.min(z.h - half, py));
+    const ax = cx + (px - mcx) * k,
+      ay = cy + (py - mcy) * k;
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
@@ -199,20 +221,10 @@
     const mm = typeof minimapOf === "function" ? minimapOf(player.zone) : null;
     if (mm && mm.c) {
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(mm.c, cx - px * k, cy - py * k, z.w * k, z.h * k);
+      ctx.drawImage(mm.c, cx - mcx * k, cy - mcy * k, z.w * k, z.h * k);
     }
-    // você no meio
-    ctx.fillStyle = "#fff";
-    ctx.strokeStyle = "#1a1420";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - 5);
-    ctx.lineTo(cx + 4, cy + 4);
-    ctx.lineTo(cx, cy + 2);
-    ctx.lineTo(cx - 4, cy + 4);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    // você: a seta anda e gira para onde o personagem olha
+    arrow(ax, ay, 1, t);
     ctx.restore();
     // aro dourado e o N
     ctx.strokeStyle = "#5a4320";
@@ -328,5 +340,46 @@
       V.zi = Math.max(0, Math.min(ZOOMS.length - 1, V.zi + (e.deltaY < 0 ? 1 : -1)));
     },
     { passive: false },
+  );
+})();
+
+/* ----- fechar o mapa no celular: botão ✕ dourado e toque fora do círculo ----- */
+(() => {
+  const css = document.createElement("style");
+  css.textContent = `#mapX{position:absolute;z-index:40;display:none;bottom:14px;left:14px;padding:8px 14px;border-radius:999px;border:2px solid #c9a03a;background:linear-gradient(#3a2a1a,#1a1210);color:#f6e7c1;font:700 16px "Pixelify Sans",sans-serif;box-shadow:0 3px 8px rgba(0,0,0,.5)}
+#mapX:active{transform:scale(.95)}`;
+  document.head.appendChild(css);
+  const b = document.createElement("button");
+  b.id = "mapX";
+  b.textContent = "✕ Fechar mapa";
+  const host = byId("screen") || document.body;
+  host.appendChild(b);
+  const shut = (e) => {
+    e && (e.preventDefault(), e.stopPropagation());
+    if (game.mode === "map" && typeof closeMap === "function") closeMap();
+  };
+  b.addEventListener("pointerdown", (e) => e.stopPropagation(), true);
+  b.addEventListener("click", shut);
+  // aparece só com o mapa aberto
+  setInterval(() => (b.style.display = game.mode === "map" ? "block" : "none"), 150);
+  // tocar fora do círculo do mapa (e longe da legenda) fecha
+  let down = null;
+  addEventListener("pointerdown", (e) => game.mode === "map" && e.target === byId("cv") && (down = [e.clientX, e.clientY]), true);
+  addEventListener(
+    "pointerup",
+    (e) => {
+      if (!down || game.mode !== "map" || game.worldMap) return (down = null);
+      const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]);
+      down = null;
+      if (moved > 12) return;
+      const r = byId("cv").getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * viewWidth,
+        y = ((e.clientY - r.top) / r.height) * 480;
+      const R = 200,
+        cx = viewWidth / 2,
+        cy = 244;
+      if (Math.hypot(x - cx, y - cy) > R + 30) shut(e);
+    },
+    true,
   );
 })();
