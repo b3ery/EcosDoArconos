@@ -62,7 +62,8 @@
   };
   const wkBase = walkable;
   walkable = function (z, x, y) {
-    if (typeof LOTES !== "undefined") for (const L of zoneLots(z)) if (SOLID.has(L.b.plan[x + "," + y])) return false;
+    // objetos do quintal são decoração: dá para passar por cima (só o lago, que é água, não)
+    if (typeof LOTES !== "undefined") for (const L of zoneLots(z)) if (L.b.plan[x + "," + y] === "lago") return false;
     return wkBase(z, x, y);
   };
   function cellar(L) {

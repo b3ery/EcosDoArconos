@@ -157,7 +157,7 @@
     const Z = ZONES[zid];
     if (!Z || !Z.town || !Z.town.bld) continue;
     let k = 0;
-    for (const b of Z.town.bld) if (b.plan && !b.lot) LOTES.yards.push({ b, fam: b.name || "Família " + FAMS[(k++ * 5 + 3) % FAMS.length], zid, size: "M", center: true });
+    for (const b of Z.town.bld) if (b.plan && (!b.lot || b.planned)) LOTES.yards.push({ b, fam: b.lotFam || b.name || "Família " + FAMS[(k++ * 5 + 3) % FAMS.length], zid, size: "M", center: true });
   }
   if (typeof BAIRRO_LOTES !== "undefined") {
     ZONES.vila.town.extraPlans = ZONES.vila.town.extraPlans || [];

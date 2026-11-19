@@ -216,7 +216,11 @@
     const B = Z.town.bld;
     const blocked = (x, y) => {
       const k = M.get(x + "," + y);
-      if (k === "sebe" || (k && k.startsWith("p:"))) return true;
+      if (k === "sebe") return true;
+      if (k === "patio") {
+        const me = OWNER[zid].get(x + "," + y);
+        if (me && y < me.y + me.h) return true;
+      }
       return !PASS.has((Z.map[y] || "")[x]) && !"H".includes((Z.map[y] || "")[x]);
     };
     for (const a of B)
@@ -241,7 +245,7 @@
         for (let y = top; y <= bot; y++) {
           const k = mid + "," + y;
           const v = M.get(k);
-          if (v === "sebe" || (v && v.startsWith("p:"))) M.set(k, "grama");
+          if (v === "sebe" || v === "patio" || (v && v.startsWith("p:"))) M.set(k, "beco");
         }
       }
   }
@@ -257,10 +261,14 @@
       if (!dx && !dy) continue;
       const bad = (x, y) => {
         const v = M.get(x + "," + y);
-        return v === "sebe" || (v && v.startsWith("p:"));
+        if (v === "patio") {
+          const me = OWNER[zid].get(x + "," + y);
+          return !!me && y < me.y + me.h;
+        }
+        return v === "sebe";
       };
       const okT = (x, y) => PASS.has((Z.map[y] || "")[x]) && !bad(x, y);
-      const clear = (x, y) => bad(x, y) && M.set(x + "," + y, "grama");
+      const clear = (x, y) => bad(x, y) && M.set(x + "," + y, "beco");
       // entra pela saída e, se o primeiro tile der num beco de sebe, abre até a rua mais perto
       const ex = x0 + dx,
         ey = y0 + dy;
@@ -303,11 +311,20 @@
 
   // desenho: sebe aparada (liga com a vizinha) e canteiro de flores
   const at = (z, x, y) => COM[z] && COM[z].get(x + "," + y);
+  const stairBeside = (z, x, y) => {
+    for (const b of ZONES[z].town.bld) {
+      if (!b.stairSide || y < b.y - 1 || y >= b.y + b.h) continue;
+      if ((b.stairSide > 0 && (x === b.x + b.w || x === b.x + b.w + 1)) || (b.stairSide < 0 && (x === b.x - 1 || x === b.x - 2))) return true;
+    }
+    return false;
+  };
   const dtBase = drawTile;
   drawTile = function (z, x, y, c, t) {
     dtBase.apply(this, arguments);
     const k = at(z, x, y);
     if (!k) return;
+    // do lado da escada de fora do sobrado não tem sebe nem cerca (a escada fica ali)
+    if ((k === "sebe" || k === "patio") && stairBeside(z, x, y)) return;
     const X = x * TILE,
       Y = y * TILE;
     const R = (a, b, w, h, col) => ((ctx.fillStyle = col), ctx.fillRect(X + a, Y + b, w, h));
@@ -328,6 +345,10 @@
       R(5, 15, 22, 10, "#5a3a22");
       for (let i = 0; i < 5; i++) (R(7 + i * 4, 13, 2, 6, "#3a6a2a"), R(6 + i * 4, 10 + (i % 2) * 2, 4, 4, ["#e86a8a", "#f2c14e", "#f6f2ea", "#b48aff", "#ff9a4a"][(i + x) % 5]));
     } else if (k === "grama") R(0, 0, 32, 32, "rgba(140,190,90,.16)");
+    else if (k === "beco") {
+      // passagem entre dois lotes: chão batido, sem cerca
+      R(4, 0, 24, 32, "rgba(150,120,80,.28)");
+    }
     else if (k === "patio" || k === "floreira" || k === "caminho") {
       // lote no estilo The Sims: gramado, caminho de pedra até a porta e
       // cerquinha branca nos lados e nos fundos (a frente fica aberta, com meio-fio)
@@ -484,10 +505,19 @@
     }
   }
   const wkBase = walkable;
+  // CERCA bloqueia (sebe e a cerquinha branca dos lados e dos fundos do lote);
+  // o resto é decoração e dá para passar por cima (objetos do ofício, canteiros, floreiras)
+  const fenced = (z, x, y) => {
+    const k = at(z, x, y);
+    if (k !== "patio") return false;
+    const me = OWNER[z] && OWNER[z].get(x + "," + y);
+    if (!me) return false;
+    return y < me.y + me.h; // fundos e lados (a frente do lote fica aberta para a rua)
+  };
   walkable = function (z, x, y) {
     if (!exitsDone.has(z)) (exitsDone.add(z), keepExits(z));
     const k = at(z, x, y);
-    if (k === "sebe" || (k && k.startsWith("p:"))) return false;
+    if (k === "sebe" || fenced(z, x, y)) return false;
     return wkBase.apply(this, arguments);
   };
 })();

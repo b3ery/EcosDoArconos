@@ -81,6 +81,9 @@
     put(ix0, front, "placa");
     b.plan = plan;
     b.lot = true;
+    b.planned = true; // lotes-no-centro.js registra o quintal (objetos sólidos e as ações do quintal)
+    const NOME = { home: "Sua casa", taverna: "Taverna", padaria: "Padaria", templo: "Templo da Luz", hosp: "Hospital", forja: "Forja", clinica: "Clínica", escola: "Escola", atelie: "Ateliê", alfaiate: "Alfaiataria", boticario: "Boticário", acougue: "Açougue", armazem: "Armazém", tecidos: "Loja de Tecidos", livraria: "Livraria", emporio: "Empório", salao: "Salão", marcenaria: "Marcenaria" };
+    if (kind === "shop") b.lotFam = b.name || NOME[b.style] || "Comércio";
     return b;
   }
 

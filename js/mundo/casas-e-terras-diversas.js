@@ -475,8 +475,15 @@
       R(cx - 2, top - 28, 16, 4, "#5a2a20");
       if (V.snowy) for (let k = 0; k < W / 6; k++) R(X - 6 + k * 6, top - 14 + Math.abs(Math.sin(k)) * 3, 7, 4, "#f2f6fa");
       // escada de madeira por fora, com sacada no primeiro andar
+      b.stairSide = 0;
       if ((h % 4 < 2 || b.flats) && b.w >= 3) {
-        const right = h % 2 === 0;
+        let right = h % 2 === 0;
+        // a escada vai para o lado que tem espaço (não encosta no vizinho nem na escada dele)
+        const zb = ZONES[player.zone] && ZONES[player.zone].town ? ZONES[player.zone].town.bld : [];
+        const busy = (side) => zb.some((o) => o !== b && o.y < b.y + b.h && b.y < o.y + o.h && (side > 0 ? o.x >= b.x + b.w && o.x - (b.x + b.w) <= 3 : o.x + o.w <= b.x && b.x - (o.x + o.w) <= 3));
+        const sR = b._mir ? -1 : 1; // espelhado: "direita" do desenho é a esquerda do mapa
+        if (busy(right ? sR : -sR) && !busy(right ? -sR : sR)) right = !right;
+        b.stairSide = (right ? 1 : -1) * (b._mir ? -1 : 1); // o lote deixa este lado livre para a escada
         const sx0 = right ? X + W - 4 : X + 4;
         const dir = right ? 1 : -1;
         const sy = wallTop - 4;

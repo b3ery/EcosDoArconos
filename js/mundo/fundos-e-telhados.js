@@ -94,13 +94,22 @@
   drawBuilding = function (b, t) {
     const z = ZONES[player.zone];
     if (!z || !z.map || FREE.has(b.style) || b.y < 1) return dbClip.apply(this, arguments);
-    const row = z.map[b.y - 1] || "";
-    let road = false;
-    for (let x = b.x - 1; x <= b.x + b.w; x++) if (",=".includes(row[x])) road = true;
-    if (!road) return dbClip.apply(this, arguments);
+    // o fundo do lote (gramado, quintal) não é rua: o telhado pode ficar por cima dele;
+    // só corta onde o telhado entraria na rua de verdade
+    const COM = window.COMMUNITY_LOTS && COMMUNITY_LOTS[player.zone];
+    const lotTile = (x, y) => (COM && COM.has(x + "," + y)) || (b.plan && b.plan[x + "," + y]);
+    const roadRow = (y) => {
+      const row = z.map[y] || "";
+      for (let x = b.x - 1; x <= b.x + b.w; x++) if (",=".includes(row[x]) && !lotTile(x, y)) return true;
+      return false;
+    };
+    let cut = null;
+    if (roadRow(b.y - 1)) cut = b.y;
+    else if (b.y >= 2 && roadRow(b.y - 2)) cut = b.y - 1;
+    if (cut == null) return dbClip.apply(this, arguments);
     ctx.save();
     ctx.beginPath();
-    ctx.rect(b.x * TILE - 48, b.y * TILE - 2, b.w * TILE + 96, b.h * TILE + 40);
+    ctx.rect(b.x * TILE - 48, cut * TILE - 2, b.w * TILE + 96, (b.y + b.h - cut) * TILE + 40);
     ctx.clip();
     try {
       return dbClip.apply(this, arguments);
