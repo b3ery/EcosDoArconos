@@ -211,7 +211,10 @@
       const r = base.apply(this, arguments);
       if (tipsOn() && player && !seen()[id] && (!TUTS[id].mode || lifeMode())) {
         seen()[id] = true;
-        if (after) setTimeout(() => !cur && show(id), 250);
+        // só abre por cima se a mesma tela ainda estiver aberta; se o jogador já
+        // saiu (e entrou numa luta, por exemplo), espera a volta ao mundo
+        const m0 = game.mode;
+        if (after) setTimeout(() => (!cur && game.mode === m0 ? show(id) : pending.includes(id) || pending.push(id)), 250);
       }
       return r;
     };
@@ -239,7 +242,8 @@
       const r = rp.apply(this, arguments);
       if (r && tipsOn() && player && !seen().pizza) {
         seen().pizza = true;
-        setTimeout(() => !cur && show("pizza"), 200);
+        const m0 = game.mode;
+        setTimeout(() => (!cur && game.mode === m0 ? show("pizza") : pending.includes("pizza") || pending.push("pizza")), 200);
       }
       return r;
     };

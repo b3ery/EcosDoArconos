@@ -507,6 +507,10 @@
     for (let y = 1; y < Z.h - 1; y++)
       for (let x = 1; x < Z.w - 1; x++)
         if (m[y][x] === "f" && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => m[y + dy][x + dx] === "#")) m[y][x] = ".";
+    // e pedaço de cerca que ficou sozinho
+    for (let y = 1; y < Z.h - 1; y++)
+      for (let x = 1; x < Z.w - 1; x++)
+        if (m[y][x] === "f" && ![[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => m[y + dy][x + dx] === "f")) m[y][x] = ".";
     Z.map = m.map((r) => r.join(""));
   }
   // as saídas para as florestas são criadas depois deste arquivo: confere na primeira vez que alguém anda na cidade
