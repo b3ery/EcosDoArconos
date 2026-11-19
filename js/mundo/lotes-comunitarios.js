@@ -249,7 +249,13 @@
           return true;
         };
         if (cols.some(free)) continue;
-        const mid = cols[Math.floor((cols.length - 1) / 2)];
+        // abre o beco numa coluna que só está tapada por sebe/cerquinha do lote (não por cerca de madeira do mapa)
+        const mapFree = (x) => {
+          for (let y = top; y <= bot; y++) if (!PASS.has((Z.map[y] || "")[x])) return false;
+          return true;
+        };
+        const opts = cols.filter(mapFree);
+        const mid = opts.length ? opts[Math.floor((opts.length - 1) / 2)] : cols[Math.floor((cols.length - 1) / 2)];
         for (let y = top; y <= bot; y++) {
           const k = mid + "," + y;
           const v = M.get(k);

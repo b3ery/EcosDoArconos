@@ -133,8 +133,18 @@
           const m3 = m2.map((r) => r.slice());
           const fy = b.y + b.h;
           const can = (x, y) => m3[y] && ".,Tw".includes(m3[y][x]) && !(x === b.door[0] && y === fy);
-          for (let y = b.y; y <= fy; y++) for (const x of [x0, x1]) if (can(x, y)) m3[y][x] = "f";
-          for (let x = x0; x <= x1; x++) if (x !== b.door[0] && can(x, fy)) m3[fy][x] = "f";
+          // do lado do portãozinho do quintal fica a passagem até o canto da frente (portão de canto)
+          const gx = gateL ? x0 : x1;
+          const side = (x, y) => x === gx && (m3[y][x] === "." || m3[y][x] === ",");
+          const closeAll = (keepSide) => {
+            for (let y = b.y; y <= fy; y++) for (const x of [x0, x1]) if (can(x, y) && !(keepSide && x === gx)) m3[y][x] = "f";
+            for (let x = x0; x <= x1; x++) if (x !== b.door[0] && can(x, fy) && !(keepSide && x === gx)) m3[fy][x] = "f";
+          };
+          const keepSide = side(gx, b.y);
+          closeAll(keepSide);
+          // pedaço de cerca sozinho (sem vizinho de cerca) não fica: vira chão de novo
+          for (let x = x0; x <= x1; x++)
+            if (m3[fy][x] === "f" && m2[fy][x] !== "f" && m3[fy][x - 1] !== "f" && m3[fy][x + 1] !== "f" && m3[fy - 1][x] !== "f") m3[fy][x] = m2[fy][x];
           if (m3[fy] && m3[fy][b.door[0]] === ".") m3[fy][b.door[0]] = ",";
           const D3 = dist(m3, W, H, start, blk);
           // o quintal continua com entrada (pelo portãozinho do lado)
