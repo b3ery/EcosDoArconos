@@ -2,42 +2,38 @@
 
 <div align="center">
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0a0710,50:3a1f6a,100:b06cff&height=200&section=header&text=✦%20Ecos%20do%20Arcano&fontSize=58&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=RPG%20Pixel%20Art%20%7C%20Magia%20por%20Runas%20%7C%20HTML5%20Canvas&descAlignY=62&descSize=14&descColor=e0c8ff"/>
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:1a0f08,45:5a3a1a,100:c9a03a&height=210&section=header&text=⚜%20Ecos%20do%20Arcano%20⚜&fontSize=56&fontColor=f6e7c1&animation=fadeIn&fontAlignY=36&desc=Crônica%20de%20um%20Reino%20em%20Pixel%20Art%20%7C%20Runas%2C%20Coroas%20e%20Espadas&descAlignY=60&descSize=15&descColor=f2d58a"/>
 
-</div>
+[![Typing SVG](https://readme-typing-svg.herokuapp.com/?font=Cinzel&color=c9a03a&size=20&center=true&vCenter=true&width=900&lines=⚜+Há+trezentos+anos%2C+o+mundo+esqueceu+como+cantar...;🗡️+Liberte+os+Guardiões+e+as+seis+runas;👑+Ou+viva+uma+vida+inteira+no+Reino+de+Aurélia)](https://git.io/typing-svg)
 
-<div align="center">
-
-[![Typing SVG](https://readme-typing-svg.herokuapp.com/?color=b06cff&size=20&center=true&vCenter=true&width=900&lines=✦+Um+mundo+que+esqueceu+como+sonhar...;🔥+Combine+runas+e+recupere+a+magia+perdida;🏰+Liberte+os+Guardiões.+Enfrente+o+Silenciador.)](https://git.io/typing-svg)
-
-</div>
+![HTML5](https://img.shields.io/badge/HTML5-8a3a1a?style=for-the-badge&logo=html5&logoColor=f6e7c1)
+![JavaScript](https://img.shields.io/badge/JavaScript_puro-5a3a1a?style=for-the-badge&logo=javascript&logoColor=f2d58a)
+![Canvas](https://img.shields.io/badge/Canvas_2D-3a2410?style=for-the-badge&logoColor=white)
+![Web Audio](https://img.shields.io/badge/Música-Web_Audio-6b1f1f?style=for-the-badge)
+![Celular](https://img.shields.io/badge/Celular-Toque_e_Joystick-2f4a2a?style=for-the-badge)
+![Gráficos](https://img.shields.io/badge/Gráficos-até_4K-c9a03a?style=for-the-badge)
 
 <br>
 
-<div align="center">
+### ⚔️ [⟶ Entrar no Reino (jogar no navegador) ⟵](https://b3ery.github.io/EcosDoArconos/) ⚔️
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![Canvas](https://img.shields.io/badge/Canvas-2D-3a1f6a?style=flat-square&logoColor=white)
-![Web Audio API](https://img.shields.io/badge/Web%20Audio-Música%20Procedural-4a0070?style=flat-square&logoColor=white)
-![Mobile](https://img.shields.io/badge/Mobile-Joystick%20Touch-7a00b3?style=flat-square&logoColor=white)
+<sub>Sem instalar nada · computador e celular · salva sozinho</sub>
 
 <br><br>
 
-### 🎮 [Jogar agora no navegador](https://b3ery.github.io/EcosDoArconos/)
+<img src="assets/screenshots/seisvozes.png" width="860" alt="As Seis Vozes, no Ecos do Arcano"/>
 
 <br>
 
-<img src="assets/screenshots/seisvozes.png" width="860" alt="As Seis Vozes, no Ecos do Arcano"/>
+<sub>✠ ─────────── ✠ ─────────── ✠</sub>
 
 </div>
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 👥 Nossa Equipe
+## 🛡️ Os Escribas do Reino <sub>(a equipe)</sub>
 
 <div align="center">
 
@@ -89,17 +85,19 @@
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 📑 Índice
+## 📜 Sumário da Crônica
 
-[Sobre](#-sobre-o-projeto) · [Como jogar](#-como-jogar) · [Modo História](#%EF%B8%8F-modo-hist%C3%B3ria) · [Simulador de Vida](#-simulador-de-vida) · [Personagens](#-personagens) · [Chefes e runas](#-chefes-e-runas) · [O mundo](#%EF%B8%8F-o-mundo) · [Opções](#%EF%B8%8F-op%C3%A7%C3%B5es) · [Para quem desenvolve](#%EF%B8%8F-para-quem-desenvolve)
+[I · A Lenda](#lenda) · [II · Como Jogar](#como-jogar) · [III · História](#historia) · [IV · Simulador](#simulador) · [V · Gentes](#gentes) · [VI · Guardiões](#guardioes) · [VII · Mundo](#mundo) · [VIII · Opções](#opcoes) · [IX · A Forja](#forja)
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 🌌 Sobre o Projeto
+<a id="lenda"></a>
+
+## 🕯️ Capítulo I · A Lenda
 
 > **Ecos do Arcano** é um **RPG em pixel art** que roda direto no navegador, no computador e no celular. Há trezentos anos, o mago Vesper aprisionou as seis runas para "proteger" a magia e o mundo mergulhou no **Grande Silêncio**. Você é um aprendiz que ainda carrega um eco de uma delas: liberte os Guardiões, descubra o segredo dos irmãos Vesper e Odelia e devolva a Canção Arcana ao mundo. ✦💜
 
@@ -111,9 +109,11 @@ O jogo tem **dois modos**:
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 🚀 Como Jogar
+<a id="como-jogar"></a>
+
+## 🗝️ Capítulo II · Como Jogar
 
 **🌐 Online:** [b3ery.github.io/EcosDoArconos](https://b3ery.github.io/EcosDoArconos/) · **💻 No computador:** baixe o repositório e abra o `index.html` no navegador.
 
@@ -127,6 +127,8 @@ C                Montar no cavalo          R    Decorar a casa
 J                Jornada (História) · Jornal (Simulador)
 Y                Menu de Ações (Simulador) L    Calendário
 
+Navio:    A/D leme · W/S velas · Espaço âncora (parar) · E atracar
+Nadar:    na beira da água, E → Nadar; ande pela água; saia pela margem
 Batalha:  1–6 magias · Enter lança · D defende · H habilidades · I itens
 Celular:  joystick na metade esquerda · botões A e B · ☰ abre o Menu do jogo · toque e segure numa pessoa
 ```
@@ -137,9 +139,11 @@ Celular:  joystick na metade esquerda · botões A e B · ☰ abre o Menu do jog
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## ⚔️ Modo História
+<a id="historia"></a>
+
+## ⚔️ Capítulo III · O Modo História
 
 **Como começa:** você escolhe um **dom** (Lava, Gelo, Raio, Metal, Cristal ou Veneno), que é um pedaço de uma das runas ecoando em você. Enquanto as runas estão presas, o dom é a sua única magia.
 
@@ -165,9 +169,11 @@ flowchart LR
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 🏡 Simulador de Vida
+<a id="simulador"></a>
+
+## 🏰 Capítulo IV · O Simulador de Vida
 
 | | |
 |:---|:---|
@@ -182,13 +188,16 @@ flowchart LR
 | **Crime** | Roubar, matar, fofoca, calabouço com o Professor L e pena de morte. |
 | **Exílio** | No Modo História, o mago exilado é barrado na entrada da vila; de capuz dá para entrar, mas a patrulha te expulsa se te vir. |
 | **Vida e morte** | Ano de 15 dias, 30 jeitos de morrer com cena e velório, **convites** de casamento e velório, **Capela Branca e Cemitério**. |
+| **Água** | Nadar, banho e roupa lavada no rio; afogar-se ou virar comida de tubarão também são jeitos de morrer |
 | **Na tela** | Botões de **Jornal**, **Corações** e **Calendário**, e o **Menu de Ações** (Y) com tudo num lugar só. |
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 👥 Personagens
+<a id="gentes"></a>
+
+## 👑 Capítulo V · As Gentes do Reino
 
 ### 🍻 A Turma de Cinzaluz: os Alcoólatras Anônimos
 
@@ -252,9 +261,11 @@ Os criadores do jogo viraram personagens, com seus parceiros. Cada um tem **casa
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 👹 Chefes e runas
+<a id="guardioes"></a>
+
+## 🐉 Capítulo VI · Guardiões e Runas
 
 <div align="center">
 
@@ -276,9 +287,11 @@ Cada Guardião guarda uma das seis runas: 🔥 Chama, 💧 Água, 🌪️ Ar, �
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 🏘️ O Mundo
+<a id="mundo"></a>
+
+## 🗺️ Capítulo VII · O Mundo
 
 | Lugar | O que tem |
 |:---|:---|
@@ -290,13 +303,29 @@ Cada Guardião guarda uma das seis runas: 🔥 Chama, 💧 Água, 🌪️ Ar, �
 | 🌍 **Além-mar** | 10 países com 5 reinos cada, de navio: roupas, clima, sotaque e leis de cada terra |
 | 🌳 **Florestas** | 3 matas por cidade (rio, mata fechada e vale do lago), com os bichos, frutas e plantas da terra. Caçar demais acaba com eles. Tem cachoeira, montanha nevada e vulcão |
 
+| 🌳 **Parques** | Em toda cidade, vila e reino: árvores, caminho em anel e parquinho (balanço, escorregador, gangorra, caixa de areia, trepa-trepa e gira-gira) com crianças brincando de dia |
+| 💧 **Rios e lagos** | Pescar, beber, lavar roupa, tomar banho e **nadar de verdade**: fôlego, risco de afogamento e **tubarões** no fundo do mar |
+| 🌊 **O mar** | Ondas que vêm do fundo e quebram na praia, espuma que vai e volta, e o mar escurece quando fica fundo |
+| ⛵ **Navios** | Velas, leme e âncora; atraque nos países além-mar e desembarque nos portos |
+
+<div align="center">
+
+| | | |
+|:---:|:---:|:---:|
+| <img src="assets/screenshots/parque.jpg" width="280"/><br><sub>Parque com parquinho</sub> | <img src="assets/screenshots/lago.jpg" width="280"/><br><sub>Lago do rio</sub> | <img src="assets/screenshots/nadar.jpg" width="280"/><br><sub>Nadando no mar (e a barbatana...)</sub> |
+| <img src="assets/screenshots/ondas.jpg" width="280"/><br><sub>Ondas quebrando em Solmar</sub> | <img src="assets/screenshots/mapa-redondo.jpg" width="280"/><br><sub>Mapa redondo, como uma bússola</sub> | |
+
+</div>
+
 **Cidades em lotes, como no The Sims:** bairros de ricos, classe média e pobres; cada casa com jardim na frente e quintal cercado nos fundos (porta dos fundos na sua casa), e cada loja com o seu lote.
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## ⚙️ Opções
+<a id="opcoes"></a>
+
+## 🪶 Capítulo VIII · Opções
 
 - **Acessibilidade:** tamanho da letra, tremores e flashes, cenas que esperam o seu toque.
 - **Acontecimentos:** desligar os ataques de monstros (História), o golpe automático (Simulador) e o **sangue**.
@@ -306,9 +335,11 @@ Cada Guardião guarda uma das seis runas: 🔥 Chama, 💧 Água, 🌪️ Ar, �
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
-## 🛠️ Para quem desenvolve
+<a id="forja"></a>
+
+## 🔨 Capítulo IX · A Forja <sub>(para quem desenvolve)</sub>
 
 HTML5, CSS3 e JavaScript puro, sem dependências. Tudo é desenhado pixel a pixel no `<canvas>` e a música é criada na hora com o Web Audio API.
 
@@ -338,12 +369,16 @@ EcosDoArconos/
 
 <br>
 
----
+<div align="center"><sub>✠ ─────────── ⚜ ─────────── ✠</sub></div>
 
 <div align="center">
 
 <br>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:b06cff,50:3a1f6a,100:0a0710&height=120&section=footer"/>
+<sub><i>"Que as runas guiem os seus passos, e que a sua bolsa nunca fique vazia."</i></sub>
+
+<br><br>
+
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:c9a03a,55:5a3a1a,100:1a0f08&height=120&section=footer"/>
 
 </div>

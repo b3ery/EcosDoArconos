@@ -6,7 +6,7 @@
  *  - LAVAR ROUPA: 1 hora esfregando na pedra; as roupas ficam limpas
  *    (higiene sobe um pouco) e dá para ganhar uns trocados lavando para fora;
  *  - TOMAR BANHO: meia hora, a higiene enche (água fria: cansa um pouco);
- *  - NADAR: 1 hora, diverte e cansa. No frio do inverno, nadar faz mal.
+ *  - NADAR: entra na água de verdade (nadar.js: fôlego, afogamento, tubarão).
  * Tudo passa o tempo do relógio. No modo História, banho e roupa não têm
  * necessidade, mas o tempo passa do mesmo jeito.
  * Os lagos grandes (preencher-mapas.js) ganham um lavadouro de pedra e
@@ -24,7 +24,8 @@
 
   const tBase = targetAt;
   targetAt = function (x, y) {
-    if (isTownZ(player.zone) && tileAt(player.zone, x, y) === "~" && !(typeof inPlazaT === "function" && inPlazaT(player.zone, x, y))) return "Rio: pescar, lavar roupa, banho, nadar";
+    if (window.SWIM && SWIM.on) return tBase.apply(this, arguments);
+    if (isTownZ(player.zone) && tileAt(player.zone, x, y) === "~" && !(typeof inPlazaT === "function" && inPlazaT(player.zone, x, y))) return (ZONES[player.zone].theme === "porto" ? "Mar" : "Rio") + ": pescar, lavar roupa, banho, nadar";
     return tBase.apply(this, arguments);
   };
 
@@ -65,16 +66,11 @@
         },
       },
       {
-        t: "Nadar (1 hora)",
+        t: "Nadar (entrar na água)",
         fn: () => {
+          if (typeof startSwim === "function") return startSwim(x, y);
           need("fun", 30);
-          need("energy", -15);
-          need("hygiene", 25);
-          if (cold() && life()) {
-            need("energy", -15);
-            toast("A água do inverno é muito fria. Você saiu tremendo.", 2600);
-          }
-          passTime(1, cold() ? "Você nadou na água gelada... corajoso!" : "Você nada de uma margem à outra. Que delícia!");
+          passTime(1, "Você nada de uma margem à outra.");
         },
       },
       { t: "Cancelar", fn: null },
@@ -84,6 +80,7 @@
 
   const iBase = interactAt;
   interactAt = function (x, y) {
+    if (window.SWIM && SWIM.on && tileAt(player.zone, x, y) === "~") return toast("Você está nadando. Volte para a terra (ou um píer) para sair.", 1800);
     if (isTownZ(player.zone) && tileAt(player.zone, x, y) === "~" && !(typeof inPlazaT === "function" && inPlazaT(player.zone, x, y))) return waterMenu(x, y);
     return iBase.apply(this, arguments);
   };
@@ -198,4 +195,30 @@
     }
     return r;
   };
+})();
+
+/* ----- barcos ancorados: cada um na água aberta (o mapa esticou e alguns
+   ficaram encostados no píer ou na areia) ----- */
+(() => {
+  for (const z in ZONES) {
+    const Z = ZONES[z];
+    const B = Z && Z.town && Z.town.boats;
+    if (!B || !B.length || !Z.map) continue;
+    const used = [];
+    const open = (x, y) => [-2, -1, 0, 1, 2].every((d) => (Z.map[y] || "")[x + d] === "~") && !used.some(([ux, uy]) => uy === y && Math.abs(ux - x) < 4);
+    for (const bt of B) {
+      const y = Math.floor(bt[1]),
+        x0 = Math.floor(bt[0]);
+      let best = null;
+      for (let d = 0; d < 30 && !best; d++)
+        for (const x of [x0 - d, x0 + d])
+          for (const yy of [y, y - 1, y + 1])
+            if (!best && open(x, yy)) best = [x, yy];
+      if (best) {
+        bt[0] = best[0] + (bt[0] % 1);
+        bt[1] = best[1] + (bt[1] % 1);
+        used.push(best);
+      }
+    }
+  }
 })();

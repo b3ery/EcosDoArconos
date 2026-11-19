@@ -1224,6 +1224,35 @@ function initTownExtras() {
       [40, 23],
     ].forEach(([x, y], i) => actors.push({ kind: "goat", x, y, timer: i, hx: x, hy: y }));
   }
+  // o mapa esticou (as casas foram afastadas): pescador vai para a ponta de um píer e
+  // barco começa na água, numa fileira com mar dos dois lados
+  if (player.zone === "porto") {
+    const Z = ZONES.porto,
+      T = (x, y) => (Z.map[y] || "")[x];
+    const ends = [];
+    for (let x = 1; x < Z.w - 1; x++)
+      for (let y = Z.h - 2; y > 0; y--)
+        if (T(x, y) === "=" && T(x, y + 1) === "~" && T(x, y - 1) === "=") {
+          // píer de 2 blocos: um pescador só, na tábua da direita
+          if (ends.length && ends[ends.length - 1][0] === x - 1) ends.pop();
+          ends.push([x, y]);
+          break;
+        }
+    const fishers = actors.filter((a) => a.kind === "fisher");
+    fishers.forEach((a, i) => {
+      const e = ends[i % Math.max(1, ends.length)];
+      if (i >= ends.length) a.kind = "none";
+      if (e) ((a.x = e[0]), (a.y = e[1]));
+    });
+    // barcos: uma fileira de mar aberto, longe da muralha de baixo
+    const row = [Z.h - 4, Z.h - 3, Z.h - 2].find((y) => [...(Z.map[y] || "")].filter((c) => c === "~").length > Z.w * 0.4) || Z.h - 2;
+    for (const a of actors.filter((q) => q.kind === "boat")) {
+      a.y = row + 0.3;
+      let x = Math.round(a.x);
+      while (x < Z.w - 2 && !(T(x - 2, row) === "~" && T(x + 2, row) === "~" && T(x, row) === "~")) x++;
+      a.x = x;
+    }
+  }
   for (const a of actors) {
     if (a.path) {
       a.i = 0;
@@ -1267,7 +1296,7 @@ function updateTownExtras(dt) {
     } else if (a.kind === "boat") {
       // Só navega na água: chegou na areia (ou na ilha do palácio), dá meia-volta.
       const nx = a.x + a.v * dt,
-        ahead = Math.round(nx + (a.v > 0 ? 1.6 : -1.6)),
+        ahead = Math.round(nx + (a.v > 0 ? 2.2 : -2.2)),
         row = Math.floor(a.y);
       const sea = (x) => x >= 0 && x < ZONES.porto.w && tileAt("porto", x, row) === "~";
       if (sea(ahead) && sea(Math.round(nx))) a.x = nx;
