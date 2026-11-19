@@ -118,13 +118,15 @@
       Hh = b.h * TILE;
     const night = nightAlpha() > 0.25;
     const z = player.zone;
-    const big = b.w >= 14;
+    const big = b.w >= 16;
     const flag = z === "vila" ? HERALD.vila : HERALD._[Math.floor(hs(b.x, b.y) * HERALD._.length)];
     const roof = PAL && PAL.roof ? PAL.roof : z === "vila" ? ["#34466a", "#4a5f8a"] : flag[0] === "#2a7a4a" ? ["#2f5a3a", "#43784f"] : ["#3a3a4a", "#55556a"];
     const seed = b.x * 7 + b.y;
     const tr = big ? 30 : 22; // raio das torres
     // o castelo cabe inteiro na tela: o que sobe acima do terreno só usa o espaço que existe no mapa
-    const top = big ? Y - 8 : Y - Math.min(Math.max(0, Y - 6), 90);
+    // espaço acima: o mapa ganha uma faixa por cima do muro (topPad) para as torres subirem
+    const above = Y + ((ZONES[z] && ZONES[z].topPad) || 0) - 6;
+    const top = big ? Y - Math.min(Math.max(8, above), 60) : Y - Math.min(Math.max(0, above), 150);
     const room = Y + Hh - top; // altura total disponível
     const kt0 = top + Math.round(room * (big ? 0.27 : 0.3)); // topo da menagem
     const wallTop = Math.max(Y + (big ? 34 : 24), top + Math.round(room * 0.52));

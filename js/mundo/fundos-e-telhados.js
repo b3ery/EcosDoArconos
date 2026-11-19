@@ -82,7 +82,7 @@
     const behind = !onRoad && player.rx >= b.x - 0.5 && player.rx <= b.x + b.w - 0.5 && player.ry >= b.y - 1.2 && player.ry < b.y + 0.2;
     const a = Math.max(0.72, Math.min(1, (fade.get(b) ?? 1) + (behind ? -0.06 : 0.1)));
     fade.set(b, a);
-    if (a >= 1) return dbFade.apply(this, arguments);
+    if (a >= 1 || window.__inReflection) return dbFade.apply(this, arguments);
     ctx.save();
     ctx.globalAlpha *= a;
     try {
@@ -94,7 +94,7 @@
   const dbClip = drawBuilding;
   drawBuilding = function (b, t) {
     const z = ZONES[player.zone];
-    if (!z || !z.map || FREE.has(b.style) || b.y < 1) return dbClip.apply(this, arguments);
+    if (!z || !z.map || FREE.has(b.style) || b.y < 1 || window.__inReflection) return dbClip.apply(this, arguments);
     // o fundo do lote (gramado, quintal) não é rua: o telhado pode ficar por cima dele;
     // só corta onde o telhado entraria na rua de verdade
     const COM = window.COMMUNITY_LOTS && COMMUNITY_LOTS[player.zone];

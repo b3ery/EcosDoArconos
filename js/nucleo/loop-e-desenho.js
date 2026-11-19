@@ -2342,6 +2342,12 @@ function walkerAt(x, y) {
 }
 function drawWorld(t) {
   const z = ZONES[player.zone];
+  // castelo colado no topo do mapa: ganha uma faixa por cima do muro para as torres subirem
+  if (z.topPad === undefined) {
+    z.topPad = 0;
+    if (z.town && z.town.bld)
+      for (const b of z.town.bld) if (/^(castle|palacio|fortaleza)$/.test(b.style) && b.y < 6) z.topPad = Math.max(z.topPad, (6 - b.y) * TILE + 32);
+  }
   const Z = game.zoom,
     VWz = viewWidth / Z,
     VHz = 480 / Z;
@@ -2352,7 +2358,23 @@ function drawWorld(t) {
     camY =
       z.h * TILE < VHz
         ? -Math.round((VHz - z.h * TILE) / 2)
-        : Math.round(clampi(player.ry * TILE + 16 - VHz / 2, 0, z.h * TILE - VHz));
+        : Math.round(clampi(player.ry * TILE + 16 - VHz / 2 - (game.camUp || 0), -(z.topPad || 0), z.h * TILE - VHz));
+  // perto do castle do topo: a câmera sobe de mansinho para mostrar o castelo inteiro (torres e menagem)
+  {
+    let want = 0;
+    if (z.town && z.town.bld)
+      for (const b of z.town.bld) {
+        if (!/^(castle|palacio|fortaleza)$/.test(b.style) || b.w >= 16) continue;
+        const near = player.ry < b.y + b.h + 9 && player.rx > b.x - 6 && player.rx < b.x + b.w + 6;
+        if (!near) continue;
+        const ctop = b.y * TILE - Math.min(150, b.y * TILE + (z.topPad || 0) - 6) - 14; // o alto das torres
+        const normal = player.ry * TILE + 16 - VHz / 2;
+        // sobe até mostrar o topo, mas sem deixar você sair de baixo da tela
+        want = Math.max(want, Math.min(normal - ctop, VHz / 2 - 56));
+      }
+    game.camUp = (game.camUp || 0) + (want - (game.camUp || 0)) * 0.08;
+    if (Math.abs(game.camUp - want) < 0.5) game.camUp = want;
+  }
   game.cam = { camX, camY, Z };
   const x0 = Math.max(0, Math.floor(camX / TILE)),
     y0 = Math.max(0, Math.floor(camY / TILE)),
@@ -2364,6 +2386,8 @@ function drawWorld(t) {
   ctx.save();
   ctx.scale(Z, Z);
   ctx.translate(-camX, -camY);
+  // acima do muro de cima (onde sobe o castelo): o campo e a mata do lado de fora da cidade
+  if (camY < 0 && z.topPad) for (let y = Math.floor(camY / TILE); y < 0; y++) for (let x = x0; x <= x1; x++) drawTile(player.zone, x, y, (tileHash(x, y - 99) > 0.86 && y < -1) ? "T" : ".", t);
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) drawTile(player.zone, x, y, z.map[y][x], t);
   const list = [];
   for (const [x, y, id] of z.npcList) {
@@ -2467,6 +2491,8 @@ function drawWorld(t) {
       if (b.x > x1 + 1 || b.x + b.w < x0 - 1 || b.y > y1 + 2 || b.y + b.h < y0 - 1) continue;
       list.push({
         y: b.y + b.h - 1.01,
+        x: b.x,
+        w: b.w,
         draw: () => drawBuilding(b, t),
       });
     }
@@ -2995,7 +3021,16 @@ function drawWorld(t) {
   animalsDrawList(list, t);
   crewDrawList(list, t);
   questDrawList(list, t);
-  list.sort((a, b) => a.y - b.y).forEach((s) => s.draw());
+  list.sort((a, b) => a.y - b.y);
+  if (typeof drawReflections === "function") {
+    window.__inReflection = true;
+    try {
+      drawReflections(list, t, x0, y0, x1, y1);
+    } finally {
+      window.__inReflection = false;
+    }
+  }
+  list.forEach((s) => s.draw());
   if (ZONES[player.zone].town) drawVilaLife(t, x0, y0, x1, y1);
   if (player.zone === "vila") {
     const gx = 39 * TILE,
