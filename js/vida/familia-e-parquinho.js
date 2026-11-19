@@ -10,7 +10,9 @@
  *    The Sims, você troca para outro membro da casa com 5 anos ou mais e
  *    passa a jogar com ele. Quem você deixou continua na família e dá para
  *    voltar para ele quando quiser. O ouro da casa é um só.
- *    (O cônjuge é morador da vila e segue a vida dele: não dá para controlar.)
+ *    Dá para controlar o cônjuge também (o morador some da vila enquanto
+ *    você joga com ele) e PERSONALIZAR quem você estiver controlando
+ *    (roupa, cabelo e cores ficam guardados em cada um).
  * Só no Simulador de Vida (no modo História a família não existe).
  * Modifica (envolve) targetAt, interactAt e actionsMenu.
  */
@@ -134,11 +136,48 @@
     for (const n of NEEDS) if (player[n] != null) me.needs[n] = player[n];
     return me;
   }
+  // o visual que você deu ao cônjuge fica nele (e o morador da vila muda junto)
+  function leaveSpouse() {
+    const id = player.ctlSpouse;
+    if (!id) return;
+    const L = (player.spouseLooks = player.spouseLooks || {});
+    L[id] = JSON.parse(JSON.stringify(player.look || {}));
+    if (NPCS[id]) ((NPCS[id].robe = player.look.robe || NPCS[id].robe), (NPCS[id].hair = player.look.hair || NPCS[id].hair));
+    (player.spouseAges = player.spouseAges || {})[id] = typeof playerAge === "function" ? playerAge() : 30;
+    player.ctlSpouse = null;
+  }
+  function becomeSpouse(id) {
+    const N = NPCS[id];
+    if (!N) return;
+    const me = snapshot();
+    me.isParent = true;
+    me.spouseNpc = id;
+    player.kids.push(me);
+    player.ctlSpouse = id;
+    const g = typeof npcGender === "function" ? npcGender(id) : "m";
+    const saved = (player.spouseLooks || {})[id];
+    player.name = N.nome || id;
+    player.gender = g;
+    player.look = Object.assign({}, player.look, saved || { robe: N.robe, hair: N.hair, hat: "nenhum", hstyle: g === "f" ? "longo" : "curto", outfit: g === "f" ? "vestido" : "tunica" });
+    player.age = (player.spouseAges || {})[id] || (typeof playerAge === "function" ? playerAge() : 25);
+    player.spouse = null;
+    player.dating = null;
+    player.job = null;
+    for (const n of ["energy", "fun", "hygiene", "social"]) player[n] = Math.max(player[n] || 0, 70);
+    game.fade = 1;
+    saveGame();
+    playSound(523, 0.15, "triangle");
+    say([["", `Agora você controla ${player.name}. ${me.name} fica em casa.`], ["", "Quer mudar o visual? Tecla N › Personalizar. Para voltar: tecla N."]]);
+  }
   function become(k) {
+    const wasSpouse = !!player.ctlSpouse;
+    if (wasSpouse) leaveSpouse();
     const me = snapshot();
     const i = player.kids.indexOf(k);
     if (i < 0) return;
-    player.kids.splice(i, 1, me);
+    // voltando do cônjuge: ele volta a ser o morador da vila (não vira um membro extra da casa)
+    if (wasSpouse) player.kids.splice(i, 1);
+    else player.kids.splice(i, 1, me);
     player.name = k.name;
     player.gender = k.g === "f" ? "f" : k.g === "m" ? "m" : player.gender;
     player.look = Object.assign({}, player.look, k.look || {}, k.isParent ? {} : { hat: "nenhum" });
@@ -161,15 +200,33 @@
     const opts = [];
     for (const k of player.kids || []) {
       if (k.movedOut) continue;
+      if (player.ctlSpouse && !k.isParent) continue;
       const a = kidAge(k);
-      const papel = k.isParent ? (k.g === "f" ? "mãe" : k.g === "m" ? "pai" : "responsável") : a < 16 ? "filho(a)" : "filho(a) adulto(a)";
+      const papel = k.isParent && k.spouseNpc && player.ctlSpouse === k.spouseNpc ? (k.g === "f" ? "esposa" : k.g === "m" ? "marido" : "cônjuge") : k.isParent ? (k.g === "f" ? "mãe" : k.g === "m" ? "pai" : "responsável") : a < 16 ? "filho(a)" : "filho(a) adulto(a)";
       if (a < 5) opts.push({ t: `${k.name} · ${a} ano(s) · pequeno demais para controlar`, icon: "baby", fn: () => familyMenu() });
       else opts.push({ t: `Controlar ${k.name} (${papel}, ${a} anos)`, icon: "smile", fn: () => become(k) });
     }
-    if (player.spouse && typeof NPCS !== "undefined" && NPCS[player.spouse]) opts.push({ t: `${NPCS[player.spouse].name || player.spouse} (cônjuge): segue a vida na vila`, icon: "heart", fn: () => familyMenu() });
+    if (player.spouse && typeof NPCS !== "undefined" && NPCS[player.spouse]) {
+      const id = player.spouse;
+      opts.unshift({ t: `Controlar ${NPCS[id].nome || id} (${typeof gw === "function" ? gw(id, "marido", "esposa") : "cônjuge"})`, icon: "heart", fn: () => becomeSpouse(id) });
+    }
+    opts.unshift({
+      t: `Personalizar ${player.name} (roupa, cabelo, cores)`,
+      icon: "shirt",
+      fn: () => {
+        game.invTab = "visual";
+        if (typeof openInv === "function") openInv();
+      },
+    });
     opts.push({ t: "Fechar", fn: null });
     choice("Família", opts.length > 1 ? `Você joga com ${player.name}, ${typeof playerAge === "function" ? playerAge() : ""} anos. Escolha com quem jogar agora:` : "Ainda não há ninguém na casa para controlar. Tenha ou adote um filho!", opts);
   };
+  if (typeof npcHidden === "function") {
+    const nhBase = npcHidden;
+    npcHidden = function (id) {
+      return (player && player.ctlSpouse === id) || nhBase.apply(this, arguments);
+    };
+  }
   // quem você deixou de controlar (pai/mãe) não entra nas fases de filho (namoro, escola...)
   if (typeof growKids === "function") {
     const gkBase = growKids;
