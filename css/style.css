@@ -107,7 +107,7 @@ button {
   border: 2px solid var(--edge);
   border-radius: 3px;
   padding: 0.12em 0.55em;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
   line-height: 1.1;
 }
 
@@ -122,7 +122,7 @@ button:focus-visible {
 
 button:disabled {
   opacity: 0.38;
-  cursor: url("../assets/cursor/espada.svg") 1 1, default;
+  cursor: url("../assets/cursor/fantasia.svg") 3 3, default;
 }
 
 svg {
@@ -222,7 +222,7 @@ svg {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
   display: none;
   border-color: #c9a23e;
   background: rgba(20, 14, 32, 0.72);
@@ -928,7 +928,7 @@ body.mland #tgtpill {
   background: var(--panel);
   padding: 0.45em 0.7em;
   text-align: left;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
   border-radius: 4px;
   color: var(--text);
   font-family: "VT323", monospace;
@@ -1020,7 +1020,7 @@ body.mland #tgtpill {
   min-height: 23%;
   padding: 0.5em 0.8em 1.2em;
   display: none;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
 }
 
 #dport {
@@ -2753,7 +2753,7 @@ body.mland #credits .cr-p canvas {
   height: 0.5em;
   border-radius: 50%;
   background: #4a3a6a;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
   transition: 0.2s;
 }
 .st-dots i.on {
@@ -2995,7 +2995,7 @@ body.mland #credits .cr-p canvas {
 #pie .pie-opt[disabled] {
   opacity: 0.5;
   filter: grayscale(0.7);
-  cursor: url("../assets/cursor/espada.svg") 1 1, default;
+  cursor: url("../assets/cursor/fantasia.svg") 3 3, default;
 }
 #pie .pie-center {
   width: 2em;
@@ -4819,7 +4819,7 @@ canvas.sv-pv {
   color: #fff;
   font-weight: bold;
   text-shadow: 0 1px 0 #000;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
   overflow: hidden;
 }
 .cc-sw.plus.off {
@@ -4830,7 +4830,7 @@ canvas.sv-pv {
   position: absolute;
   inset: 0;
   opacity: 0;
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
 }
 .cc-grid {
   display: grid;
@@ -5918,7 +5918,7 @@ body.mland #touch.hs #tMenu {
 
 /* Jogos salvos: botões grandes para o dedo e cartão inteiro tocável. */
 .sv.tap {
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
 }
 .sv-b button {
   min-height: 2.6em;
@@ -6951,7 +6951,7 @@ body.mland #dport {
   background: radial-gradient(circle at 50% 30%, #241838, #07050c 75%);
   color: #ece4ff;
   text-align: center;
-  cursor: url("../assets/cursor/espada.svg") 1 1, default;
+  cursor: url("../assets/cursor/fantasia.svg") 3 3, default;
 }
 #rollcred .rc-roll {
   position: absolute;
@@ -7317,7 +7317,7 @@ html,
 body,
 canvas,
 #cv {
-  cursor: url("../assets/cursor/espada.svg") 1 1, auto;
+  cursor: url("../assets/cursor/fantasia.svg") 3 3, auto;
 }
 button,
 a,
@@ -7328,7 +7328,7 @@ select,
 label,
 input[type="range"],
 input[type="checkbox"] {
-  cursor: url("../assets/cursor/manopla.svg") 8 2, pointer;
+  cursor: url("../assets/cursor/fantasia-brilho.svg") 3 3, pointer;
 }
 input[type="text"],
 textarea {
