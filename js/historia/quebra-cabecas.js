@@ -352,7 +352,7 @@ function puzzleAt(x, y) {
   .pz-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px}
   .pz-grid{display:grid;gap:6px;margin:0 auto;width:min(240px,62vh,80vw)}
   .pz-grid.g3{grid-template-columns:repeat(3,1fr)} .pz-grid.g4{grid-template-columns:repeat(4,1fr)}
-  .pz-t{aspect-ratio:1;font:700 22px "Pixelify Sans",sans-serif;border-radius:8px;border:2px solid rgba(255,255,255,.25);color:#fff;cursor:url("assets/cursor/fantasia-brilho.svg") 3 3,pointer;padding:0}
+  .pz-t{aspect-ratio:1;font:700 22px "Pixelify Sans",sans-serif;border-radius:8px;border:2px solid rgba(255,255,255,.25);color:#fff;cursor:url("assets/cursor/fantasia-brilho.svg") 8 8,pointer;padding:0}
   .pz-t.empty{background:rgba(0,0,0,.35);border-style:dashed}
   .pz-t.rune{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3)}
   .pz-t.rune.on{background:var(--rc);color:#fff;box-shadow:0 0 12px var(--rc)}
