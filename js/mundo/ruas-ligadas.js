@@ -63,6 +63,8 @@
             if (t(x + dx, y + dy) || !t(x - dx, y - dy)) continue;
             const f = (m[y + dy] || "")[x + dx];
             if (f === "#" || f === undefined || f === "D" || f === "~" || f === "=" || f === "C") continue;
+            // porteira de roça (a rua chega na porteira e entra na roça)
+            if (window.FARM_GATES && (FARM_GATES.has(zid + ":" + x + "," + y) || FARM_GATES.has(zid + ":" + (x + dx) + "," + (y + dy)))) continue;
             // T: na ponta, a rua encontra outra que passa de lado
             {
               const sx0 = dy ? 1 : 0,
