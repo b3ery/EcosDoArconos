@@ -190,8 +190,8 @@ const check = (name, ok) => {
   await page.waitForTimeout(500);
   await page.evaluate(() => { battle.e.hp = 0; win(); });
   let fim = false;
-  for (let i = 0; i < 60 && !fim; i++) {
-    await page.waitForTimeout(500);
+  for (let i = 0; i < 160 && !fim; i++) {
+    await page.waitForTimeout(300);
     fim = await page.evaluate(() => {
       if (game.cine) { game.cine.t0 = game.t - 99; endCine(); }
       if (game.dialog) { const d = game.dialog; d.i = d.lines.length - 1; advanceDialog(); advanceDialog(); }
