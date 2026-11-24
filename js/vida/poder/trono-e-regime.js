@@ -117,7 +117,7 @@
     if (rulesK("aurelia")) {
       return choice(`${royalTitle()} · salão do trono`, `Os guardas batem as lanças no chão quando você entra. Regime: <b>${regimeName()}</b>.`, [
         { t: "Sentar no trono e governar", icon: "crown", fn: royalMenu },
-        { t: "Orçamento, leis e acordos do reino", icon: "scroll", fn: () => (typeof budgetMenu === "function" ? budgetMenu() : royalMenu()) },
+        { t: "Orçamento das áreas e acordos comerciais", icon: "scroll", fn: () => (typeof budgetMenu === "function" ? budgetMenu() : royalMenu()) },
         { t: "Mudar o regime", icon: "flag", fn: () => regimeChooser(false) },
         { t: `Reforçar a guarda do castelo (80 ouro) · proteção ${player.palaceGuard || 0}`, icon: "sword", fn: () => (player.gold < 80 ? toast("O tesouro não tem 80 de ouro.", 2000) : ((player.gold -= 80), (player.palaceGuard = Math.min(5, (player.palaceGuard || 0) + 1)), saveGame(), say([["Capitão da Guarda", "Mais homens nos corredores e na porta do seu quarto, Majestade. Nenhum assassino passa."]]))) },
         { t: "Sair", fn: null },
