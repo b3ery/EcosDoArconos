@@ -33,6 +33,21 @@
   function kid(fx, fy, i, pose) {
     // os filhos de verdade (quando você leva a família ao parque) usam a cara deles
     const fam = window.parkFamilyLook && parkFamilyLook(i);
+    if (!fam) return; // só crianças de verdade (seus filhos) brincam nos parquinhos
+    if (typeof heroRects === "function" && Object.keys(fam).length) {
+      // a criança com a cara dela, em tamanho de criança
+      const sc = 1.4;
+      ctx.fillStyle = "rgba(0,0,0,.2)";
+      ctx.fillRect(fx - 6, fy, 12, 2);
+      ctx.save();
+      ctx.translate(fx - 8 * sc, fy - 16 * sc + (pose === "sit" ? 3 : 0));
+      for (const [x, y, w, h, c] of heroRects(fam, "down", null)) {
+        ctx.fillStyle = c;
+        ctx.fillRect(x * sc, y * sc, w * sc, h * sc);
+      }
+      ctx.restore();
+      return;
+    }
     const [shirt, skin] = fam ? [fam.robe || "#4a7ad9", fam.skin || "#f1c8a5"] : kidColors[i % kidColors.length];
     ctx.fillStyle = "rgba(0,0,0,.2)";
     ctx.fillRect(fx - 4, fy, 8, 2);
@@ -50,12 +65,20 @@
 
   const draw = {
     balanco(X, Y, t, i, kids) {
-      // armação em A dos dois lados e a trave em cima
-      ctx.fillStyle = DARK;
+      // armação pintada de vermelho e a trave com bandeirinhas
+      ctx.fillStyle = "#b8453a";
       ctx.fillRect(X - 30, Y - 12, 3, 40);
       ctx.fillRect(X + 26, Y - 12, 3, 40);
-      ctx.fillStyle = WOOD;
+      ctx.fillStyle = "#e8b84a";
       ctx.fillRect(X - 32, Y - 14, 63, 4);
+      ["#d94a4a", "#4a7ad9", "#4aa86a", "#e8b23a", "#b04ad9"].forEach((c, k) => {
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.moveTo(X - 26 + k * 12, Y - 10);
+        ctx.lineTo(X - 20 + k * 12, Y - 10);
+        ctx.lineTo(X - 23 + k * 12, Y - 5 + Math.sin(t * 3 + k) * 0.8);
+        ctx.fill();
+      });
       // dois balanços
       for (const [sx, ph] of [[-14, 0], [12, 1.7]]) {
         const a = kids ? Math.sin(t * 2.4 + ph + i) * 6 : Math.sin(t * 0.6 + ph) * 1;
@@ -67,7 +90,7 @@
         ctx.moveTo(X + sx + 5, Y - 10);
         ctx.lineTo(X + sx + 5 + a, Y + 14);
         ctx.stroke();
-        ctx.fillStyle = WOOD;
+        ctx.fillStyle = sx < 0 ? "#4a7ad9" : "#e8b23a";
         ctx.fillRect(X + sx - 6 + a, Y + 14, 12, 3);
         if (kids && ph === 0) kid(X + sx + a, Y + 18, i, "sit");
       }
@@ -80,7 +103,14 @@
       for (let k = 0; k < 6; k++) ctx.fillRect(X - 26, Y - 6 + k * 6, 12, 2);
       ctx.fillStyle = WOOD;
       ctx.fillRect(X - 28, Y - 12, 16, 4);
-      ctx.fillStyle = "#b07a3a";
+      // telhadinho azul em cima da plataforma
+      ctx.fillStyle = "#3a6ac9";
+      ctx.beginPath();
+      ctx.moveTo(X - 30, Y - 12);
+      ctx.lineTo(X - 20, Y - 22);
+      ctx.lineTo(X - 10, Y - 12);
+      ctx.fill();
+      ctx.fillStyle = "#d9533a";
       ctx.beginPath();
       ctx.moveTo(X - 12, Y - 12);
       ctx.lineTo(X + 26, Y + 22);
@@ -110,9 +140,9 @@
       ctx.save();
       ctx.translate(X, Y + 14);
       ctx.rotate(a);
-      ctx.fillStyle = WOOD;
+      ctx.fillStyle = "#e0a83a";
       ctx.fillRect(-28, -2, 56, 4);
-      ctx.fillStyle = DARK;
+      ctx.fillStyle = "#c94a3a";
       ctx.fillRect(-24, -6, 2, 4);
       ctx.fillRect(22, -6, 2, 4);
       ctx.restore();
@@ -139,7 +169,7 @@
       // trepa-trepa: grade de troncos
       ctx.fillStyle = WOOD;
       for (let k = 0; k < 4; k++) ctx.fillRect(X - 26 + k * 17, Y - 6, 3, 34);
-      for (let k = 0; k < 4; k++) ctx.fillRect(X - 26, Y - 6 + k * 10, 54, 2);
+      for (let k = 0; k < 4; k++) ((ctx.fillStyle = ["#d94a4a", "#e8b23a", "#4a7ad9", "#4aa86a"][k]), ctx.fillRect(X - 26, Y - 6 + k * 10, 54, 2));
       if (kids) kid(X - 9 + ((t * 8 + i * 20) % 30), Y + 6, i + 4, "up");
     },
     gira(X, Y, t, i, kids) {
@@ -149,10 +179,15 @@
       ctx.beginPath();
       ctx.ellipse(X, Y + 20, 22, 8, 0, 0, 7);
       ctx.fill();
-      ctx.fillStyle = WOOD;
-      ctx.beginPath();
-      ctx.ellipse(X, Y + 17, 22, 8, 0, 0, 7);
-      ctx.fill();
+      // disco com gomos coloridos que giram
+      for (let k = 0; k < 6; k++) {
+        ctx.fillStyle = ["#d94a4a", "#e8b23a", "#4a7ad9", "#4aa86a", "#b04ad9", "#e07a3a"][k];
+        ctx.beginPath();
+        ctx.moveTo(X, Y + 17);
+        ctx.ellipse(X, Y + 17, 22, 8, 0, a + (k * Math.PI) / 3, a + ((k + 1) * Math.PI) / 3);
+        ctx.closePath();
+        ctx.fill();
+      }
       ctx.strokeStyle = ROPE;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -275,12 +310,23 @@
     const X = x * TILE,
       Y = y * TILE;
     if (kind !== "estatua" && kind !== "coreto" && kind !== "banco") {
-      ctx.fillStyle = "rgba(196,160,104,.55)";
-      ctx.fillRect(X - TILE + 2, Y + 2, TILE * 2 - 4, TILE - 4);
+      // chão macio de areia com borda de toras e pedrinhas
+      const px = X - TILE + 1,
+        py = Y + 1,
+        pw = TILE * 2 - 2,
+        ph = TILE - 2;
+      ctx.fillStyle = "#8a5a2e";
+      ctx.fillRect(px, py, pw, ph);
+      ctx.fillStyle = "#ecd9a8";
+      ctx.fillRect(px + 2, py + 2, pw - 4, ph - 4);
+      ctx.fillStyle = "#d9c28a";
+      for (let k = 0; k < 9; k++) ctx.fillRect(px + 4 + ((k * 23 + x * 7) % (pw - 8)), py + 4 + ((k * 11 + y * 5) % (ph - 8)), 2, 1);
+      ctx.fillStyle = "#a87a44";
+      for (let k = 0; k < pw; k += 8) ctx.fillRect(px + k, py, 1, 2);
     }
     const i = window.parkFamilyAt && parkFamilyAt(x, y) ? 100 + parkFamilyAt(x, y) - 1 : (x * 3 + y * 5) % 7;
     const famHere = window.parkFamilyAt && parkFamilyAt(x, y);
-    const kids = famHere || (daytime() && (x + y) % 4 !== 0);
+    const kids = !!famHere; // sem crianças inventadas: só a sua família
     draw[kind] && draw[kind](X, Y, t || performance.now() / 1000, i, kids);
     return r;
   };

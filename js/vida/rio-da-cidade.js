@@ -73,6 +73,7 @@
           passTime(1, "Você nada de uma margem à outra.");
         },
       },
+      ...(typeof fishBook === "function" ? [{ t: "Ver o caderno de pesca", icon: "book", fn: () => fishBook() }] : []),
       { t: "Cancelar", fn: null },
     );
     choice("Beira do rio", "O que você quer fazer na água?", opts);

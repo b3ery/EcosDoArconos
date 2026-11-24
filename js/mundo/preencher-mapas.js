@@ -65,6 +65,37 @@
       }
     }
   };
+  /* ----- PARQUINHO DE BAIRRO: pracinha cercada de árvores, com brinquedos e bancos ----- */
+  window.makePlayLot = function (m, R, zid) {
+    const P = (PARKS[zid] = PARKS[zid] || new Map());
+    const put = (x, y, c) => m[y] && m[y][x] !== undefined && (m[y][x] = c);
+    for (let y = R.y0; y <= R.y1; y++)
+      for (let x = R.x0; x <= R.x1; x++) {
+        const edge = x === R.x0 || x === R.x1 || y === R.y0 || y === R.y1;
+        // por dentro, chão de terra batida inteiro (pracinha): dá para correr por todo lado
+        put(x, y, edge ? ((x + y) % 2 ? "T" : ".") : ",");
+      }
+    // onde uma rua chega na borda, a borda vira entrada
+    for (let y = R.y0; y <= R.y1; y++)
+      for (let x = R.x0; x <= R.x1; x++) {
+        const edge = x === R.x0 || x === R.x1 || y === R.y0 || y === R.y1;
+        if (!edge) continue;
+        const out = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]].filter(([a, c]) => a < R.x0 || a > R.x1 || c < R.y0 || c > R.y1);
+        if (out.some(([a, c]) => m[c] && m[c][a] === ",")) put(x, y, ",");
+      }
+    const PL = ["balanco", "escorrega", "gira", "gangorra", "trepa", "areia"];
+    let k = (R.x0 + R.y0) % PL.length,
+      n = 0;
+    for (let y = R.y0 + 2; y <= R.y1 - 2; y += 2)
+      for (let x = R.x0 + 2; x + 1 <= R.x1 - 2; x += 3) {
+        P.set(x + 1 + "," + y, PL[k++ % PL.length]);
+        P.set(x + "," + y, "-");
+        n++;
+      }
+    // bancos para os pais na beira
+    for (let x = R.x0 + 3; x <= R.x1 - 3; x += 6) if (m[R.y1 - 2] && m[R.y1 - 2][x] === "," && !P.has(x + "," + (R.y1 - 2))) P.set(x + "," + (R.y1 - 2), "banco");
+    return n;
+  };
   /* ----- O GRANDE PARQUE DO RIO: um parque só, com o rio serpenteando no meio,
      pontes, parquinho, jardins de flores, estátuas, coreto, bosque e bancos ----- */
   window.makeMegaPark = function (m, R, zid) {
@@ -72,98 +103,139 @@
     const w = R.x1 - R.x0 + 1,
       h = R.y1 - R.y0 + 1;
     const put = (x, y, c) => m[y] && m[y][x] !== undefined && (m[y][x] = c);
-    // borda de árvores e o passeio de 2 blocos em volta
+    // borda de árvores e o passeio em volta (só 1 bloco quando o vazio é baixo: sobra mais lago)
+    const rw = h < 14 ? 1 : 2;
     for (let y = R.y0; y <= R.y1; y++)
       for (let x = R.x0; x <= R.x1; x++) {
         const edge = x === R.x0 || x === R.x1 || y === R.y0 || y === R.y1;
-        const ring = !edge && (x <= R.x0 + 2 || x >= R.x1 - 2 || y <= R.y0 + 2 || y >= R.y1 - 2);
+        const ring = !edge && (x <= R.x0 + rw || x >= R.x1 - rw || y <= R.y0 + rw || y >= R.y1 - rw);
         put(x, y, edge ? ((x + y) % 2 ? "T" : ".") : ring ? "," : ".");
       }
-    // o rio: serpenteia de um lado ao outro do miolo, mais largo no meio e com as pontas arredondadas
-    const ix0 = R.x0 + 3,
-      ix1 = R.x1 - 3,
-      iy0 = R.y0 + 3,
-      iy1 = R.y1 - 3;
-    const ih = iy1 - iy0 + 1;
-    // miolo baixo: o rio corre na parte de baixo e a margem de cima fica para o parquinho e os jardins
-    const low = ih < 6;
-    const rw = low ? Math.max(2, ih - 1) : h >= 16 ? 4 : 3;
-    const mid = low ? iy1 - (rw - 1) / 2 : (iy0 + iy1) / 2,
-      amp = low ? 0 : Math.max(0, Math.min(2, (h - 12) / 2 + 1));
-    const top = {},
-      bot = {};
-    for (let x = ix0; x <= ix1; x++) {
-      const e = Math.min(x - ix0, ix1 - x);
-      const ww = e < 1 ? rw - 2 : e < 3 ? rw - 1 : rw;
-      const c = Math.round(mid + amp * Math.sin((x - ix0) * 0.17));
-      top[x] = c - Math.floor(ww / 2);
-      bot[x] = top[x] + ww - 1;
-      for (let y = top[x]; y <= bot[x]; y++) if (y > iy0 && (low ? y <= iy1 : y < iy1)) put(x, y, "~");
-    }
+    // o miolo: o parquinho num canto e um LAGO NATURAL no resto (margem torta,
+    // enseadas, ilhota e um píer de madeira entrando na água)
+    const ix0 = R.x0 + rw + 1,
+      ix1 = R.x1 - rw - 1,
+      iy0 = R.y0 + rw + 1,
+      iy1 = R.y1 - rw - 1;
+    const iw = ix1 - ix0 + 1,
+      ih = iy1 - iy0 + 1;
+    const pw = Math.max(7, Math.min(13, Math.floor(iw * 0.28))); // o canto do parquinho
+    const lx0 = ix0 + pw + 1,
+      lx1 = ix1,
+      ly0 = iy0 - 1,
+      ly1 = iy1 + 1;
+    const cx = (lx0 + lx1) / 2,
+      cy = (ly0 + ly1) / 2 - 0.3,
+      rx = (lx1 - lx0) / 2,
+      ry = (ly1 - ly0) / 2;
+    const seed = (R.x0 * 13 + R.y0 * 7 + zid.length * 3) % 100;
+    // espaço baixo: nada de laguinho espremido do lado do parquinho, vira jardim
+    const bigLake = ih >= 7;
+    if (!bigLake)
+      for (let y = iy0; y <= iy1; y++)
+        for (let x = lx0; x <= lx1; x++) {
+          const k = (x - lx0) % 6;
+          if (k === 0) continue; // corredores de grama entre os canteiros
+          if ((y - iy0) % 2 === 0) put(x, y, k === 3 ? "T" : "w");
+        }
+    if (bigLake) for (let y = ly0; y <= ly1; y++)
+      for (let x = lx0; x <= lx1; x++) {
+        const dx = (x - cx) / rx,
+          dy = (y - cy) / ry,
+          a = Math.atan2(dy, dx);
+        const wob = 0.16 * Math.sin(a * 3 + seed) + 0.09 * Math.sin(a * 5 + seed * 0.7) + 0.05 * Math.sin(a * 9 + seed * 0.3);
+        if (dx * dx + dy * dy < 0.78 + wob && y >= iy0 && y <= iy1) put(x, y, "~");
+      }
     // sem pocinhas soltas: água com menos de 2 vizinhos de água vira grama
-    for (let k = 0; k < 2; k++)
+    for (let k = 0; k < 3; k++)
       for (let y = iy0; y <= iy1; y++)
         for (let x = ix0; x <= ix1; x++)
           if (m[y][x] === "~" && [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => m[y + dy][x + dx] === "~").length < 2) m[y][x] = ".";
-    (LAKES[zid] = LAKES[zid] || []).push({ x0: ix0, y0: iy0, x1: ix1, y1: iy1, river: true });
-    // pontes: caminhos de 2 de cima a baixo cruzando o rio
-    const nb = w >= 46 ? 2 : 1;
-    R.bridges = [];
-    for (let i = 1; i <= nb; i++) {
-      const bx = R.x0 + Math.round((w * i) / (nb + 1)) - 1;
-      R.bridges.push(bx);
-      for (let y = R.y0 + 1; y <= R.y1 - 1; y++) for (const x of [bx, bx + 1]) put(x, y, m[y][x] === "~" ? "=" : ",");
+    let wx0 = 1e9,
+      wx1 = -1,
+      wy0 = 1e9,
+      wy1 = -1;
+    for (let y = iy0; y <= iy1; y++)
+      for (let x = ix0; x <= ix1; x++)
+        if (m[y][x] === "~") ((wx0 = Math.min(wx0, x)), (wx1 = Math.max(wx1, x)), (wy0 = Math.min(wy0, y)), (wy1 = Math.max(wy1, y)));
+    if (wx1 >= 0) (LAKES[zid] = LAKES[zid] || []).push({ x0: wx0, y0: wy0, x1: wx1, y1: wy1, river: true, natural: true });
+    // ilhota com uma árvore (lago grande)
+    const water = (x, y) => m[y] && m[y][x] === "~";
+    if (rx >= 9 && ry >= 4.5) {
+      const ex = Math.round(cx + rx * 0.42),
+        ey = Math.round(cy - ry * 0.15);
+      let ok = true;
+      for (let y = ey - 1; y <= ey + 1 && ok; y++) for (let x = ex - 1; x <= ex + 2 && ok; x++) if (!water(x, y)) ok = false;
+      if (ok) ((m[ey][ex] = "T"), (m[ey][ex + 1] = "w"), (window.ISLES = window.ISLES || {})[zid] = [ex, ey]);
     }
-    const onBridge = (x) => R.bridges.some((b) => x >= b - 1 && x <= b + 2);
-    // as margens: o que fica entre o passeio e o rio
-    const north = [],
-      south = [];
-    for (let x = ix0; x <= ix1; x++) {
-      if (onBridge(x)) continue;
-      for (let y = iy0; y < top[x] - 0; y++) if (m[y][x] === ".") north.push([x, y]);
-      for (let y = bot[x] + 1; y <= iy1; y++) if (m[y][x] === ".") south.push([x, y]);
+    // o PÍER: sai do passeio de baixo e entra no lago, com uma plataforma na ponta
+    const px = Math.round(cx - rx * 0.25);
+    const PIER = ((window.PIERS = window.PIERS || {})[zid] = new Set());
+    let tip = null;
+    // lago pequeno (baixo) fica sem píer: só os lagos grandes ganham um
+    if (wx1 >= 0 && wy1 - wy0 >= 5) {
+      let wet = 0;
+      for (let y = R.y1 - 1; y >= iy0 + 1; y--) {
+        if (water(px, y) || m[y][px] === "=") {
+          wet++;
+          put(px, y, "=");
+          PIER.add(px + "," + y);
+          tip = [px, y];
+          if (wet >= Math.max(2, Math.round((wy1 - wy0 + 1) * (wy1 - wy0 < 5 ? 0.45 : 0.55)))) break;
+        } else if (wet) break;
+        else if (".w".includes(m[y][px]) || m[y][px] === "T") put(px, y, ",");
+      }
+      if (tip && wy1 - wy0 >= 5) for (const dx of [-1, 1]) if (water(tip[0] + dx, tip[1])) (put(tip[0] + dx, tip[1], "="), PIER.add(tip[0] + dx + "," + tip[1]));
     }
-    const third = (x) => (x - ix0) / Math.max(1, ix1 - ix0);
-    // PARQUINHO (margem norte, primeiro terço): brinquedos de 2 blocos lado a lado
-    const PLAYS = ["balanco", "escorrega", "gangorra", "areia", "trepa", "gira", "balanco", "escorrega"];
+    R.bridges = [px];
+    R.pierTip = tip;
+    // PARQUINHO no canto: fileiras de brinquedos de 2 blocos, com chão de areia
+    const PLAYS = ["balanco", "escorrega", "gangorra", "areia", "trepa", "gira", "balanco", "escorrega", "gangorra"];
     let pk = 0;
-    for (let x = ix0 + 1; x + 1 <= ix1 && pk < 6; x += 3) {
-      if (third(x) > 0.36 || onBridge(x) || onBridge(x + 1)) continue;
-      const y = iy0;
-      if (m[y][x] !== "." || m[y][x + 1] !== "." || y >= top[x] - 0 || y >= top[x + 1]) continue;
-      P.set(x + 1 + "," + y, PLAYS[pk++]);
-      P.set(x + "," + y, "-");
-    }
-    // JARDINS DE FLORES com estátua no meio (margem norte, do meio para a direita)
-    for (const [x, y] of north) {
-      if (third(x) < 0.4 || P.has(x + "," + y)) continue;
-      if ((x + y) % 4 !== 0) m[y][x] = "w";
-    }
-    for (const f of [0.5, 0.82]) {
-      const x = Math.round(ix0 + f * (ix1 - ix0));
-      if (!onBridge(x) && m[iy0] && "w.".includes(m[iy0][x])) ((m[iy0][x] = "."), P.set(x + "," + iy0, "estatua"));
-    }
-    // BOSQUE com bancos e estátuas (margem sul) e o CORETO
-    let sb = 0;
-    for (const [x, y] of south) {
-      if (P.has(x + "," + y)) continue;
-      const f = third(x);
-      if (f > 0.45 && f < 0.6 && !P.has("coreto") && y === iy1 && m[y][x - 1] === ".") {
-        P.set(x + "," + y, "coreto");
-        P.set(x - 1 + "," + y, "-");
-        P.set("coreto", 1);
-        continue;
+    for (let y = iy0; y <= iy1; y += 2)
+      for (let x = ix0; x + 1 <= ix0 + pw - 1 && pk < PLAYS.length; x += 3) {
+        if (m[y][x] !== "." || m[y][x + 1] !== ".") continue;
+        P.set(x + 1 + "," + y, PLAYS[pk++]);
+        P.set(x + "," + y, "-");
       }
-      if (y === iy1 && (x * 5) % 7 === 0) m[y][x] = "T";
-      else if (y === bot[x] + 1 && x % 6 === 2 && sb++ < 8) P.set(x + "," + y, "banco");
-      else if ((x * 3 + y) % 11 === 0) P.set(x + "," + y, "estatua");
+    // banquinhos para os pais ao lado do parquinho e flores na divisa
+    for (let y = iy0; y <= iy1; y++) {
+      const x = ix0 + pw;
+      if (m[y][x] === "." && !P.has(x + "," + y)) {
+        if (y % 3 === 1) P.set(x + "," + y, "banco");
+        else m[y][x] = "w";
+      }
     }
+    // a beira do lago: bancos, lampiões, estátuas e árvores (nunca no caminho do píer)
+    const shore = [];
+    for (let y = iy0; y <= iy1; y++)
+      for (let x = lx0 - 1; x <= ix1; x++) {
+        if (m[y][x] !== "." || P.has(x + "," + y) || Math.abs(x - px) <= 1) continue;
+        if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => water(x + dx, y + dy))) shore.push([x, y]);
+      }
+    let nb = 0;
+    shore.forEach(([x, y], i) => {
+      const h = (x * 7 + y * 13) % 17;
+      if (h === 0 && nb++ < 10) P.set(x + "," + y, "banco");
+      else if (h === 5) m[y][x] = "l";
+      else if (h === 9) m[y][x] = "w";
+    });
+    // canto livre: o coreto e duas estátuas
+    const freeAt = (x, y) => m[y] && m[y][x] === "." && !P.has(x + "," + y) && !water(x + 1, y) && !water(x - 1, y) && !water(x, y + 1) && !water(x, y - 1);
+    for (let y = iy1; y >= iy0 && !P.has("coreto"); y--)
+      for (let x = ix1; x > lx0; x--)
+        if (freeAt(x, y) && freeAt(x - 1, y) && Math.abs(x - px) > 2) {
+          P.set(x + "," + y, "coreto");
+          P.set(x - 1 + "," + y, "-");
+          P.set("coreto", 1);
+          break;
+        }
     P.delete("coreto");
-    // lampiões na beira do rio ao lado das pontes (na grama, nunca no caminho)
-    for (const bx of R.bridges)
-      for (const x of [bx - 1, bx + 2]) {
-        for (const y of [top[x] - 1, bot[x] + 1]) if (m[y] && m[y][x] === "." && !P.has(x + "," + y)) m[y][x] = "l";
-      }
+    let ns = 0;
+    for (let y = iy0; y <= iy1 && ns < 2; y++)
+      for (let x = lx0; x <= ix1 && ns < 2; x += 5) if (freeAt(x, y) && (x + y) % 3 === 0 && Math.abs(x - px) > 2) (P.set(x + "," + y, "estatua"), ns++);
+    // lampiões dos dois lados da entrada do píer
+    for (const x of [px - 1, px + 1]) for (const y of [R.y1 - 2, iy1]) if (m[y] && m[y][x] === "." && !P.has(x + "," + y)) m[y][x] = "l";
   };
 
   /* ----- o lago grande do rio: pescar, lavar roupa, tomar banho e nadar ----- */
@@ -232,7 +304,8 @@
             if (h < 9) break;
             const w = x2 - x + 1;
             if (w < 10) continue;
-            const area = w * Math.min(h, 24);
+            // prefere um vazio "cheio" (lago de verdade) a uma faixa comprida e fina
+            const area = Math.min(w, Math.min(h, 24) * 4) * Math.min(h, 24);
             if (!best || area > best.area) best = { area, x0: x, x1: x2, y1: y, y0: y - h + 1 };
           }
         }
@@ -271,9 +344,15 @@
     const PROT = PROT0;
     // pomar e horta só de vez em quando (nada de repetir para encher): no máximo 3 por cidade
     const all = parks.concat(spots.slice(0, 3));
+    // parquinhos de bairro (fora do parque grande): até 2 por cidade
+    spots
+      .slice(3)
+      .filter((R) => R.n >= 2)
+      .slice(0, 2)
+      .forEach((R) => ((R.play = true), all.push(R)));
     const fillOne = (R, i) => {
       for (let y = R.y0; y <= R.y1; y++) for (let x = R.x0; x <= R.x1; x++) PROT.add(x + "," + y);
-      const kind = R.mega ? "mega" : R.park ? "jardim" : R.lake ? "lago" : ["pomar", "horta"][(i + Math.floor(hs(R.x0, R.y0 + zid.length) * 2)) % 2];
+      const kind = R.mega ? "mega" : R.play ? "parquinho" : R.park ? "jardim" : R.lake ? "lago" : ["pomar", "horta"][(i + Math.floor(hs(R.x0, R.y0 + zid.length) * 2)) % 2];
       const set = (x, y, c) => m[y] && m[y][x] === "." && (m[y][x] = c);
       const midX = Math.floor((R.x0 + R.x1) / 2),
         midY = Math.floor((R.y0 + R.y1) / 2);
@@ -292,6 +371,8 @@
         window.makeLake(m, R, zid);
       } else if (kind === "mega") {
         window.makeMegaPark(m, R, zid);
+      } else if (kind === "parquinho") {
+        window.makePlayLot(m, R, zid);
       } else {
         // parque: árvores em volta, caminho de 2 em anel e o parquinho das crianças no meio
         window.makePark(m, R, zid);
@@ -335,7 +416,23 @@
             if (m[yy] && ".wTg".includes(m[yy][xx])) m[yy][xx] = ",";
           }
         }
-      if (kind === "jardim" || kind === "mega") window.parkGate(m, R);
+      if (kind === "jardim" || kind === "mega" || kind === "parquinho") window.parkGate(m, R);
+      // pomar e horta: o caminho entra até a trilha de dentro
+      if ((kind === "pomar" || kind === "horta") && best)
+        for (let d = 1; d < 12; d++) {
+          const x = best.sx - best.dx * d,
+            y = best.sy - best.dy * d;
+          if (!m[y] || x < R.x0 || x > R.x1 || y < R.y0 || y > R.y1) break;
+          let hit = false;
+          for (const k of [0, 1]) {
+            const xx = x + (best.dy ? k : 0),
+              yy = y + (best.dx ? k : 0);
+            if (!m[yy]) continue;
+            if (m[yy][xx] === ",") hit = true;
+            else if (".wTg".includes(m[yy][xx])) m[yy][xx] = ",";
+          }
+          if (hit) break;
+        }
       if (kind === "lago" && best) {
         // o caminho entra até a beira da água (lá é o lavadouro)
         for (let d = 1; d < 12; d++) {
@@ -358,6 +455,32 @@
     Z.map = m.map((r) => r.join(""));
   }
   window.MAP_FILLED = total;
+  /* ----- pontes que terminam no paredão (sem nada do outro lado) saem do mapa ----- */
+  for (const zid of Object.keys(ZONES)) {
+    const Z = ZONES[zid];
+    if (!Z || !Z.town || Z.town.indoor || !Z.map) continue;
+    const m = Z.map.map((r) => r.split(""));
+    const T = (x, y) => (m[y] || [])[x];
+    const seen = new Set();
+    let changed = false;
+    for (let y = 0; y < Z.h; y++)
+      for (let x = 0; x < Z.w; x++) {
+        if (T(x, y) !== "=" || seen.has(x + "," + y)) continue;
+        const comp = [],
+          q = [[x, y]];
+        seen.add(x + "," + y);
+        while (q.length) {
+          const [a, c] = q.pop();
+          comp.push([a, c]);
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]])
+            if (T(a + dx, c + dy) === "=" && !seen.has(a + dx + "," + (c + dy))) (seen.add(a + dx + "," + (c + dy)), q.push([a + dx, c + dy]));
+        }
+        if (!comp.some(([a, c]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => T(a + dx, c + dy) === "#" || T(a + dx, c + dy) === undefined))) continue;
+        for (const [a, c] of comp) m[c][a] = T(a, c - 1) === "~" && T(a, c + 1) === "~" ? "~" : T(a - 1, c) === "~" && T(a + 1, c) === "~" ? "~" : ".";
+        changed = true;
+      }
+    if (changed) Z.map = m.map((r) => r.join(""));
+  }
   window.PARK_COUNT = Object.fromEntries(Object.entries(window.PARKS).map(([z, P]) => [z, [...P.values()].filter((v) => v !== "-").length]));
 
   /* ----- RUAS SEM SAÍDA: liga com a rua vizinha (mesmo de outro bairro) ou fecha num balão ----- */

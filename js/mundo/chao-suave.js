@@ -415,28 +415,38 @@
     R(0, 0, TILE, TILE, "#3f86c7");
     R(horiz ? 0 : 3, horiz ? 3 : 0, horiz ? TILE : 28, horiz ? 28 : TILE, "rgba(10,30,60,.35)");
     const tone = (i) => ["#9a6a3a", "#8a5e32", "#a8784a", "#93643a"][(i + x * 3 + y) % 4];
+    // ponte de 2 ou mais blocos de largura é UMA ponte só: corrimão só nas bordas de fora
+    const wU = wood(q(0, -1)),
+      wD = wood(q(0, 1)),
+      wL = wood(q(-1, 0)),
+      wR = wood(q(1, 0));
     if (horiz) {
+      const t0 = wU ? 0 : 4,
+        t1 = wD ? TILE : 26;
       // tábuas atravessadas (no sentido da correnteza), uma por uma
       for (let i = 0; i < 8; i++) {
-        R(i * 4, 4, 4, 22, tone(i));
-        R(i * 4, 4, 1, 22, "#6b4423");
+        R(i * 4, t0, 4, t1 - t0, tone(i));
+        R(i * 4, t0, 1, t1 - t0, "#6b4423");
         if ((i + x) % 3 === 0) R(i * 4 + 2, 14, 1, 1, "#4a2e17");
       }
-      // vigas e corrimão com postes
-      R(0, 4, TILE, 2, "#5a3a1e");
-      R(0, 24, TILE, 2, "#5a3a1e");
-      R(0, 0, TILE, 2, "#7a4f2a");
-      R(0, 28, TILE, 2, "#7a4f2a");
-      for (const px of [2, 26]) (R(px, -2, 4, 8, "#5a3a1e"), R(px, 24, 4, 8, "#5a3a1e"), R(px + 1, -2, 1, 7, "#8a5e32"));
+      // vigas e corrimão com postes (só do lado de fora)
+      if (!wU) (R(0, 4, TILE, 2, "#5a3a1e"), R(0, 0, TILE, 2, "#7a4f2a"));
+      if (!wD) (R(0, 24, TILE, 2, "#5a3a1e"), R(0, 28, TILE, 2, "#7a4f2a"));
+      for (const px of [2, 26]) {
+        if (!wU) (R(px, -2, 4, 8, "#5a3a1e"), R(px + 1, -2, 1, 7, "#8a5e32"));
+        if (!wD) R(px, 24, 4, 8, "#5a3a1e");
+      }
     } else {
+      const l0 = wL ? 0 : 4,
+        l1 = wR ? TILE : 28;
       // píer: tábuas no comprimento, estacas na água e uma corda
       for (let i = 0; i < 8; i++) {
-        R(4, i * 4, 24, 4, tone(i));
-        R(4, i * 4, 24, 1, "#6b4423");
+        R(l0, i * 4, l1 - l0, 4, tone(i));
+        R(l0, i * 4, l1 - l0, 1, "#6b4423");
         if ((i + y) % 3 === 0) R(15, i * 4 + 2, 1, 1, "#4a2e17");
       }
-      if (!wood(q(-1, 0))) R(4, 0, 2, TILE, "#5a3a1e");
-      if (!wood(q(1, 0))) R(26, 0, 2, TILE, "#5a3a1e");
+      if (!wL) R(4, 0, 2, TILE, "#5a3a1e");
+      if (!wR) R(26, 0, 2, TILE, "#5a3a1e");
       for (const [px, dx] of [[0, -1], [28, 1]]) if (!wood(q(dx, 0))) (R(px, 10, 4, 12, "#4a2e17"), R(px + 1, 10, 1, 11, "#6b4423"), R(px - 1, 21, 6, 2, "rgba(200,230,255,.5)"));
       if (y % 2 === 0 && !wood(q(-1, 0))) {
         ctx.strokeStyle = "#c9b080";

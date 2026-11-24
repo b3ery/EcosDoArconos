@@ -7,7 +7,7 @@
  *  - RIO correndo (chiado suave da água; mais forte com chuva);
  *  - VENTO e CHUVA quando o tempo fecha;
  *  - SINOS do castelo a cada hora cheia (até 4 badaladas);
- *  - RISADAS e gritinhos das crianças perto do parquinho (de dia);
+ *  - RISADAS das crianças no parquinho (quando você leva os seus filhos);
  *  - passarinhos de manhã, grilos à noite.
  * Tudo respeita o volume de Efeitos das Opções. Fica mudo em telas de
  * menu, batalha e dentro das casas.
@@ -161,7 +161,7 @@
     const hr = player.clock / 60;
     // crianças no parquinho (de dia, sem chuva)
     tLaugh -= 0.25;
-    if (tLaugh <= 0 && !rain && hr >= 7 && hr < 18 && window.PARKS && PARKS[player.zone]) {
+    if (tLaugh <= 0 && !rain && game.parkFam && game.parkFam.zone === player.zone && window.PARKS && PARKS[player.zone]) {
       let dk = 99;
       for (const [k, v] of PARKS[player.zone]) {
         if (v === "-" || v === "estatua" || v === "banco" || v === "coreto") continue;
