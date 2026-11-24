@@ -175,6 +175,7 @@ const DEV_PLACES = () => {
 };
 const DEV_ACTIONS = {
   comeco: [
+    ["Passeio pelos lugares bonitos (apresentação)", "eye", () => (closeDevPanel(), typeof startTour === "function" && startTour())],
     ["Liberar tudo", "star", () => devUnlockAll()],
     ["Invencível", "heart", () => ((game.devGod = !game.devGod), toast(`Invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600)), () => game.devGod],
     ["+1000 de ouro", "coin", () => ((player.gold += 1000), toast("+1000 de ouro.", 1400))],
@@ -188,7 +189,7 @@ const DEV_ACTIONS = {
     ["Hora dourada (17h30)", "sun", () => devClock(17.5)],
     ["Noite (22h)", "zzz", () => devClock(22)],
     ["+1 dia", "scroll", () => passTime(24, "DEV: um dia depois.")],
-    ["Próxima estação", "flower", () => ((player.day += 7), toast(`Estação: ${season().n || season().id}.`, 1600))],
+    ["Próxima estação", "flower", () => ((player.day += seasonLen(seasonIdx(player.day)) - seasonDay() + 1), toast(`Estação: ${season().n || season().id}.`, 1600))],
     ["Sol", "sun", () => devWeather("sol")],
     ["Chuva", "rain", () => devWeather("chuva")],
     ["Tempestade", "storm", () => devWeather("tempestade")],
