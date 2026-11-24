@@ -215,7 +215,7 @@
   interactAt = function (x, y) {
     if (atDock(x, y) && !B.on) {
       const p = partner();
-      const opts = [{ t: "Remar (5 ouro)", icon: "boat", fn: () => startBoat(false) }];
+      const opts = [{ t: "Remar (5 ouro)", icon: "fish", fn: () => startBoat(false) }];
       if (p && life()) opts.unshift({ t: `Levar ${firstName(p)} para um passeio (5 ouro)`, icon: "heart", fn: () => startBoat(true) });
       return choice("Barqueiro do parque", "Um passeio de barco pelo rio do parque. Volte para a margem quando quiser descer.", opts.concat([{ t: "Agora não", fn: null }]));
     }
