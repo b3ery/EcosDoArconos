@@ -13,7 +13,7 @@
 
 /* ===================== O ANO DE 15 DIAS ===================== */
 
-const YEAR_DAYS = 30;
+const YEAR_DAYS = YEAR_LEN; // 31 dias
 /** Migra o jogo salvo (antes cada dia era um ano). */
 function yearMigrate() {
   if (!player || player.yr15) return;

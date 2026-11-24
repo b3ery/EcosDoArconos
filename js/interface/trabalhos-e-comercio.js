@@ -719,7 +719,7 @@ function renderInv() {
     h += `<div class="statl"><div>Nível: <b>${player.lvl}</b></div><div>XP: <b>${player.xp}/${xpToNextLevel(player.lvl)}</b></div><div>HP: <b>${player.hp}/${maxHp()}</b></div><div>MP: <b>${player.mp}/${maxMp()}</b></div>
     <div>Bônus de dano: <b>+${Math.round(equipStat("pow") * 100)}%</b></div><div>Redução de dano: <b>${Math.round(equipStat("def") * 100)}%</b></div>
     <div>Afinidade: <b>${RUNES[player.aff].nome} (+25%)</b></div><div>Regeneração: <b>${equipStat("regen")} HP/turno</b></div>
-    <div>Dificuldade: <b>${difficulty().n}</b></div><div>Estação: <b>${season().ic} ${season().n}</b> (dia ${seasonDay()}/7)</div><div>Clima: <b>${currentWeather().ic} ${currentWeather().n}</b></div></div><div class="qtip">${currentWeather().fx} ${
+    <div>Dificuldade: <b>${difficulty().n}</b></div><div>Estação: <b>${season().ic} ${season().n}</b> (dia ${seasonDay()}/${seasonLen(seasonIdx(player.day))})</div><div>Clima: <b>${currentWeather().ic} ${currentWeather().n}</b></div></div><div class="qtip">${currentWeather().fx} ${
       {
         pri: "Primavera: flores por toda parte.",
         ver: "Verão: a sede cai mais rápido.",

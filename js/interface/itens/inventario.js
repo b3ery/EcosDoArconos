@@ -178,7 +178,7 @@ function invStatusHTML() {
     ["coin", "Ouro", player.gold],
     ["flag", "Reputação", `${player.rep ?? 50} · ${repLabel()}`],
     ["crown", "Conquistas", `${Object.keys(player.ach || {}).length}`],
-    ["sun", "Estação", `${season().n} (dia ${seasonDay()}/7)`],
+    ["sun", "Estação", `${season().n} (dia ${seasonDay()}/${seasonLen(seasonIdx(player.day))})`],
     [WEATHER_ICONS[player.weather] || "sun", "Clima", currentWeather().n],
     ["party", "Próximo festival", festivalToday() ? "hoje!" : "em " + daysToFest() + " dia(s)"],
     ["skull", "Dificuldade", difficulty().n],

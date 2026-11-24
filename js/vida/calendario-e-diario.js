@@ -17,17 +17,18 @@
 
 function dayEvents(d) {
   const ev = [];
-  const fest = d % 7 === 0 ? FESTS[(Math.floor(d / 7) - 1) % 4] : null;
+  const fest = festOf(d);
   if (fest) ev.push(["party", fest.n, "Praça de Cinzaluz, o dia todo. Fogos à noite."]);
   if (d % 5 === 3 && !fest) ev.push(["crown", "Desfile da família real", "Das 10h às 12h, pelas ruas da vila."]);
-  const yd = ((d - 1) % 28) + 1;
+  const yd = yearDayOf(d);
   for (const [id, b] of Object.entries(CREW_BDAY)) if (b === yd) ev.push(["cake", `Aniversário de ${crewName(id)}`, "Festa na fonte às 18h. Presentes valem o dobro."]);
   if (d % 7 === 5) ev.push(["mug", `Reunião dos ${GROUP_NAME}`, "Taverna Javali Dourado, das 19h às 23h."]);
   if (d % 7 === 3) ev.push(["flower", "Exposição da Mylena", "Ateliê da Mylena, até as 17h. Quadro único à venda."]);
   if (d % 3 === 1 && !fest) ev.push(["chat", "Turma na fonte", "Os seis se encontram na fonte das 17h às 21h."]);
   if (d % 7 === 6) ev.push(["crown", "Visita do Rei Vini", "O Rei do Sul passeia por Cinzaluz com a Júlia."]);
   if (player.lucasWed === d) ev.push(["ring", "Casamento do Lucas", "No Templo. Fale com o Lucas para ir."]);
-  if (d % 7 === 1) ev.push(["sun", `Começa a ${SEASONS[Math.floor((d - 1) / 7) % 4].n}`, "Mudam o clima e as colheitas."]);
+  if (seasonDayOf(d) === 1) ev.push(["sun", `Começa ${seasonIdx(d) === 1 ? "o" : "a"} ${seasonOf(d).n}`, "Mudam o clima e as colheitas."]);
+  if (yearDayOf(d) === 1) ev.push(["party", "Ano Novo", "Começa um ano novo: todo mundo fica um ano mais velho no aniversário."]);
   return ev;
 }
 function logEvent(icon, text) {
@@ -101,16 +102,26 @@ function openCalendar(tab) {
   game.calTab = tab || game.calTab || "cal";
   let body = "";
   if (game.calTab === "cal") {
-    const days = [];
-    for (let d = player.day; d < player.day + 14; d++) {
-      const ev = dayEvents(d);
-      const s = SEASONS[Math.floor((d - 1) / 7) % 4];
-      days.push(`<div class="cal-day ${d === player.day ? "today" : ""} ${ev.some((e) => e[0] === "party") ? "fest" : ""}">
-        <div class="cal-h"><b>${d === player.day ? "Hoje" : d === player.day + 1 ? "Amanhã" : "Dia " + d}</b><small>${s.n} · ${((d - 1) % 7) + 1}/7</small></div>
-        ${ev.length ? ev.map(([ic, n, desc]) => `<div class="cal-ev">${iconHTML(ic, 16)}<div><b>${n}</b><small>${desc}</small></div></div>`).join("") : `<div class="cal-none">Dia tranquilo.</div>`}
-      </div>`);
+    // o ano inteiro (31 dias) em grade, com as cores de cada estação; tocar num dia mostra o que acontece
+    const y0 = player.day - yearDayOf(player.day) + 1,
+      ano = Math.floor((player.day - 1) / YEAR_LEN) + 1;
+    const sel = game.calSel && game.calSel >= y0 && game.calSel < y0 + YEAR_LEN ? game.calSel : player.day;
+    const SC = ["#6fbf5a", "#e8b23a", "#d0702a", "#8ac0e8"];
+    const cells = [];
+    for (let i = 0; i < YEAR_LEN; i++) {
+      const d = y0 + i,
+        ev = dayEvents(d),
+        si = seasonIdx(d);
+      const marks = ev.slice(0, 3).map((e) => iconHTML(e[0], 12)).join("");
+      cells.push(`<button class="cm-d ${d === player.day ? "today" : ""} ${d === sel ? "sel" : ""} ${d < player.day ? "past" : ""} ${ev.some((e) => e[0] === "party") ? "fest" : ""}" data-cd="${d}" style="--sc:${SC[si]}"><b>${i + 1}</b><span>${marks}</span></button>`);
     }
-    body = `<div class="cal-grid">${days.join("")}</div>`;
+    const leg = SEASONS.map((s, i) => `<span><i style="background:${SC[i]}"></i>${s.n} (${SEASON_START[i]}-${i < 3 ? SEASON_START[i + 1] - 1 : YEAR_LEN})</span>`).join("");
+    const ev = dayEvents(sel);
+    body = `<div class="cm-top"><b>Ano ${ano}</b> · hoje é dia ${yearDayOf(player.day)} de ${YEAR_LEN} · ${season().n}</div>
+      <div class="cm-leg">${leg}</div>
+      <div class="cm-grid">${cells.join("")}</div>
+      <div class="cal-day sel-day"><div class="cal-h"><b>${sel === player.day ? "Hoje" : sel === player.day + 1 ? "Amanhã" : "Dia " + yearDayOf(sel)}</b><small>${seasonOf(sel).n} · dia ${seasonDayOf(sel)} de ${seasonLen(seasonIdx(sel))}</small></div>
+      ${ev.length ? ev.map(([ic, n, desc]) => `<div class="cal-ev">${iconHTML(ic, 16)}<div><b>${n}</b><small>${desc}</small></div></div>`).join("") : `<div class="cal-none">Dia tranquilo.</div>`}</div>`;
   } else {
     const log = (player.log || []).slice().reverse();
     body = log.length
@@ -122,6 +133,7 @@ function openCalendar(tab) {
   el.style.display = "block";
   byId("calclose").onclick = closeCalendar;
   el.querySelectorAll("[data-ct]").forEach((b) => (b.onclick = () => openCalendar(b.dataset.ct)));
+  el.querySelectorAll("[data-cd]").forEach((b) => (b.onclick = () => ((game.calSel = +b.dataset.cd), openCalendar("cal"))));
 }
 function closeCalendar() {
   const el = byId("cal");

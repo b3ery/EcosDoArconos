@@ -152,12 +152,12 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
   const isTown = (z) => TOWNS.includes(z);
   window.travelDays = daysBetween;
 
-  function roadScene(from, to, days, horse) {
+  function roadScene(from, to, days, horse, hours) {
     return (W, H, t) => {
-      const dur = 2.4 + days * 1.1;
+      const dur = hours ? 3 : 2.4 + days * 1.1;
       const p = Math.min(1, t / dur);
-      // céu passando por dias e noites
-      const ph = (p * days) % 1;
+      // céu passando por dias e noites (viagem curta: só a luz da hora)
+      const ph = hours ? Math.min(0.95, Math.max(0.05, (player.clock / 60 - 5) / 14)) : (p * days) % 1;
       const day = Math.sin(ph * Math.PI);
       const sky = ctx.createLinearGradient(0, 0, 0, H);
       sky.addColorStop(0, `rgb(${30 + 120 * day},${30 + 140 * day},${70 + 150 * day})`);
@@ -166,7 +166,7 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
       ctx.fillRect(0, 0, W, H);
       // sol e lua
       const ax = W * (0.1 + 0.8 * ph);
-      const ay = H * 0.5 - Math.sin(ph * Math.PI) * H * 0.35;
+      const ay = H * 0.58 - Math.sin(ph * Math.PI) * H * 0.3;
       ctx.fillStyle = day > 0.15 ? "#ffe08a" : "#e8e8f0";
       ctx.beginPath();
       ctx.arc(ax, ay, 18, 0, 7);
@@ -238,7 +238,7 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
       ctx.fillStyle = "#fff";
       ctx.fillText(`${ZONES[from].nome.split(",")[0]}  →  ${ZONES[to].nome.split(",")[0]}`, W / 2, 58);
       ctx.font = '600 18px "Pixelify Sans", sans-serif';
-      ctx.fillText(`Dia ${Math.min(days, 1 + Math.floor(p * days))} de ${days} na estrada${horse ? " a cavalo" : " de carruagem"}`, W / 2, 88);
+      ctx.fillText(hours ? `${hours === 1 ? "Uma hora" : hours + " horas"} de estrada${horse ? " a cavalo" : " de carruagem"}` : `Dia ${Math.min(days, 1 + Math.floor(p * days))} de ${days} na estrada${horse ? " a cavalo" : " de carruagem"}`, W / 2, 88);
     };
   }
   function journey(to, horse, price) {
@@ -285,10 +285,54 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
   }
   window.journey = journey;
 
+  /** Viagem curta (região vizinha): cena da estrada e as horas passando de verdade. */
+  function shortTrip(z, hours, price) {
+    const from = player.zone;
+    if (price && player.gold < withTax(price)) return say([["Cocheiro", "Sem ouro, sem viagem."]]);
+    if (price) payWithTax(price);
+    player.flags.rode = true;
+    playSound(330, 0.2, "triangle");
+    const sc = roadScene(from, z, 1, false, hours);
+    setTimeout(() => {
+      const c = game.cine;
+      if (c && c.draw === sc) ((c.t0 = -999), endCine());
+    }, 4200);
+    playCine(sc, 3, () => {
+      passTime(hours, `${hours === 1 ? "Uma hora" : hours + " horas"} de carruagem até ${ZONES[z].nome}.`);
+      const zz = ZONES[z];
+      const o = zz.town ? zz.town.arrive : z === "escola" ? zz.open.n : zz.open[zz.side] || Object.values(zz.open)[0];
+      player.zone = z;
+      player.x = o[0];
+      player.y = o[1];
+      player.rx = o[0];
+      player.ry = o[1];
+      player.dir = "down";
+      enterZone();
+      saveGame();
+    });
+  }
+  window.shortTrip = shortTrip;
+
   const cmBase = carriageMenu;
   carriageMenu = function () {
     // entre reinos a viagem leva dias nos dois modos (História e Simulador)
-    if (!isTown(player.zone)) return cmBase.apply(this, arguments);
+    if (!isTown(player.zone)) {
+      const opts = [];
+      if (player.zone.startsWith("pais-")) {
+        // além-mar: só os reinos do mesmo país (para casa, só de navio)
+        const c = player.zone.split("-")[1];
+        for (const z of Object.keys(ZONES).filter((q) => q !== player.zone && (q === "pais-" + c || q.startsWith("pais-" + c + "-")))) {
+          const d = typeof travelDays === "function" ? travelDays(player.zone, z) : 1;
+          const price = 10 + d * 10;
+          opts.push({ t: `Carruagem para ${ZONES[z].nome.split(",")[0]} · ${d} dia(s) · ${withTax(price)} ouro`, icon: "horse", fn: () => journey(z, false, price) });
+        }
+        return choice("Estrada do país", "Os reinos daqui ficam a poucos dias um do outro. Para voltar a Valdária, só de navio, pelo cais.", opts.concat([{ t: "Cancelar", fn: null }]));
+      }
+      // de uma região de fora: volta para as cidades com cena
+      for (const z of ["vila", "porto", "serra"].filter((q) => q !== player.zone))
+        opts.push({ t: `${ZONES[z].nome.split(",")[0]} · 2 horas · ${withTax(20)} ouro`, icon: "horse", fn: () => shortTrip(z, 2, 20) });
+      return choice("Carruagem", "Para onde? A estrada passa pela mata.", opts.concat([{ t: "Cancelar", fn: null }]));
+    }
     const free = friendshipLevel("cocheiro") >= 2 && !player.flags.rodeFree;
     const opts = [];
     for (const z of TOWNS.filter((q) => q !== player.zone)) {
@@ -298,7 +342,7 @@ KINGDOM_PAIRS.push(["solmar", "rosalva"]);
       if (player.horse) opts.push({ t: `A cavalo para ${ZONES[z].nome.split(",")[0]} · ${Math.max(1, d - 1)} dia(s) · grátis`, icon: "horse", fn: () => journey(z, true, 0) });
     }
     const near = player.visited.filter((z) => ZONES[z] && !ZONES[z].town && z !== "torre" && z !== player.zone && !isTown(z) && player.zone === "vila");
-    for (const z of near) opts.push({ t: `${ZONES[z].nome} (perto, 1 hora)`, icon: "boots", fn: () => cmBase() });
+    for (const z of near) opts.push({ t: `${ZONES[z].nome} (perto, 1 hora · ${withTax(10)} ouro)`, icon: "boots", fn: () => shortTrip(z, 1, 10) });
     choice("Estrada Real", "Para outro reino só se vai de carruagem ou a cavalo, e a viagem leva dias. Leve comida!" + (free ? " (O cocheiro é seu amigo.)" : ""), opts.concat([{ t: "Cancelar", fn: null }]));
   };
   // ninguém vai a pé para outro reino

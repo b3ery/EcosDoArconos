@@ -220,11 +220,35 @@ const SEASONS = [
     ic: "",
   },
 ];
+/* O ano tem 31 dias: Primavera (dias 1-8), Verão (9-16), Outono (17-24) e Inverno (25-31). */
+const YEAR_LEN = 31;
+const SEASON_START = [1, 9, 17, 25];
+function yearDayOf(d) {
+  return ((Math.max(1, d) - 1) % YEAR_LEN) + 1;
+}
+function seasonIdx(d) {
+  const y = yearDayOf(d);
+  return y >= 25 ? 3 : y >= 17 ? 2 : y >= 9 ? 1 : 0;
+}
+function seasonOf(d) {
+  return SEASONS[seasonIdx(d)];
+}
+function seasonLen(i) {
+  return i === 3 ? 7 : 8;
+}
+function seasonDayOf(d) {
+  return yearDayOf(d) - SEASON_START[seasonIdx(d)] + 1;
+}
 function season() {
-  return SEASONS[Math.floor((player.day - 1) / 7) % 4];
+  return seasonOf(player.day);
 }
 function seasonDay() {
-  return ((player.day - 1) % 7) + 1;
+  return seasonDayOf(player.day);
+}
+/** Festival no último dia de cada estação. */
+function festOf(d) {
+  const i = seasonIdx(d);
+  return seasonDayOf(d) === seasonLen(i) ? FESTS[i] : null;
 }
 /** Cada clima deixa duas runas mais fortes e uma ou duas mais fracas (só ao ar livre). */
 const WEATHER = {
@@ -372,12 +396,10 @@ const FESTS = [
   },
 ];
 function festivalToday() {
-  return player.day % 7 === 0
-    ? FESTS[(Math.floor(player.day / 7) - 1) % 4]
-    : null;
+  return festOf(player.day);
 }
 function daysToFest() {
-  return (7 - (player.day % 7)) % 7;
+  return seasonLen(seasonIdx(player.day)) - seasonDay();
 }
 function sleepTime() {
   const h = currentHour();
