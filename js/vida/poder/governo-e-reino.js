@@ -42,6 +42,8 @@
     if (player.realm.agua == null) ((player.realm.agua = 60), (player.realm.bud.agua = 1));
     return player.realm;
   };
+  const chiefOrCrown = () => (player.council && player.council.chief === "player") || (typeof rulesK === "function" && rulesK("aurelia"));
+  window.chiefOrCrown = chiefOrCrown;
   const ruling = () => lifeMode() && ((typeof isMonarch === "function" && isMonarch()) || (typeof rulesK === "function" && rulesK("aurelia")) || (player.council && player.council.chief === "player"));
   window.playerRules = ruling;
   const title = () => (player.regime === "ditadura" ? "Ditador" + genderWord("", "a", "e") : player.council && player.council.chief === "player" ? "Presidente" : typeof royalTitle === "function" ? royalTitle() : "Coroa");
@@ -63,6 +65,12 @@
     if (tax === "alto") r.social = Math.max(0, r.social - 3);
     if (tax === "baixo") r.social = Math.min(100, r.social + 1);
     if (player.regime === "ditadura") ((r.social = Math.max(0, r.social - 2)), (r.seg = Math.min(100, r.seg + 2)));
+    if (me && chiefOrCrown()) {
+      const up = (k, v) => (r[k] = Math.max(0, Math.min(100, r[k] + v)));
+      if (player.regime === "socialismo") (up("saude", 1.5), up("edu", 1.5), up("social", 2), (player.gold = Math.max(0, player.gold - 40)));
+      if (player.regime === "capitalismo") (up("social", -1.5), up("limp", 0.5), (player.gold += 60));
+      if (player.regime === "comunismo") (up("social", 2), up("seg", -0.5));
+    }
     if (me && spent) {
       player.gold = Math.max(0, player.gold - spent);
       setTimeout(() => toast(`Tesouro: -${spent} ouro investidos no reino (limpeza, guarda, escolas, saúde, social).`, 3800), 6500);
@@ -91,13 +99,15 @@
       let d = 0;
       if (tax === "alto") d -= 1;
       if (player.regime === "ditadura") d -= 2;
+      if (player.regime === "comunismo" && chiefOrCrown()) d -= 1;
+      if (player.regime === "capitalismo" && chiefOrCrown()) d += 1;
       if (r.social < 30) d -= 1;
       if (player.sea && Object.keys(player.sea.col || {}).length) d -= 1;
       if (Object.values(r).filter((v) => typeof v === "number").every((v) => v >= 65)) d += 1;
       for (const [a, b] of KINGDOM_PAIRS) if (a === "aurelia" || b === "aurelia") w.rel[pairKey(a, b)] = Math.max(0, Math.min(100, w.rel[pairKey(a, b)] + d));
       // acordos comerciais rendem
       let inc = 0;
-      for (const k of Object.keys(r.trade)) if (relWith(k) >= 30) inc += 30;
+      for (const k of Object.keys(r.trade)) if (relWith(k) >= 30) inc += player.regime === "capitalismo" && chiefOrCrown() ? 45 : 30;
       else delete r.trade[k];
       if (inc) ((player.gold += inc), setTimeout(() => toast(`Acordos comerciais: +${inc} ouro.`, 3200), 11000));
     }
@@ -117,7 +127,7 @@
     }));
     opts.push({ t: "Decretar feriado amanhã (150 ouro · o povo ama)", icon: "flag", fn: () => (player.gold < 150 ? toast("O tesouro não tem 150 de ouro.", 2000) : ((player.gold -= 150), R().hol.push(player.day + 1), (r.social = Math.min(100, r.social + 6)), toast("Decreto: amanhã é feriado no reino!", 3000), budgetMenu())) });
     opts.push({ t: "Acordos comerciais com os outros reinos", icon: "scroll", fn: tradeMenu });
-    if (player.council && player.council.chief === "player") opts.push({ t: `Regime: ${typeof regimeName === "function" ? regimeName() : "?"} · mudar`, icon: "crown", fn: regimeMenu });
+    if (chiefOrCrown()) opts.push({ t: `Regime: ${typeof regimeName === "function" ? regimeName() : "?"} · mudar`, icon: "crown", fn: regimeMenu });
     opts.push({ t: "Voltar", fn: null });
     choice(`Governo · ${title()}`, `<div style="text-align:left;line-height:1.6">${AREAS.map(([k, n]) => `${n}: ${bar(r[k])}`).join("<br>")}</div><small>Sem investimento as áreas caem todo dia. Imposto: ${player.royalTax || "normal"}.</small>`, opts);
   }
@@ -338,9 +348,15 @@
     ["comunismo", "República popular (comunismo: tudo é do povo)"],
     ["constitucional", "Monarquia constitucional (a Rainha reina, você governa)"],
     ["ditadura", "Ditadura (sem eleições, tudo nas suas mãos)"],
+    ["socialismo", "Socialismo (o Estado cuida de saúde, escola e pão)"],
+    ["capitalismo", "Capitalismo (comércio livre, lucro e desigualdade)"],
+    ["monarquia", "Monarquia tradicional (a Coroa decide tudo)"],
   ];
+  window.REGIMES = REGIMES;
+  // quem governa pelo trono não faz eleição; a república só existe com Conselho
+  const regimesFor = () => REGIMES.filter(([k]) => (player.council ? k !== "monarquia" && k !== "socialismo" && k !== "capitalismo" : k !== "democracia" && k !== "constitucional"));
   function regimeMenu() {
-    choice("Escolher o regime", "O regime muda como o povo vive e como os outros reinos te enxergam.", REGIMES.map(([k, n]) => ({ t: (player.regime === k ? "✓ " : "") + n, icon: k === "ditadura" ? "skull" : "flag", fn: () => setRegime(k) })).concat([{ t: "Voltar", fn: budgetMenu }]));
+    choice("Escolher o regime", "O regime muda como o povo vive e como os outros reinos te enxergam.", regimesFor().map(([k, n]) => ({ t: (player.regime === k ? "✓ " : "") + n, icon: k === "ditadura" ? "skull" : "flag", fn: () => setRegime(k) })).concat([{ t: "Voltar", fn: budgetMenu }]));
   }
   function setRegime(k) {
     player.regime = k;
@@ -351,6 +367,9 @@
       comunismo: "O ouro acima de 120 vai para o Fundo do Povo. Pão e salário iguais para todos.",
       constitucional: "A Rainha volta ao trono como símbolo. Você governa pelo parlamento.",
       ditadura: "Sem eleições. Jornal censurado, guarda nas ruas, opositores presos. Os outros reinos cortam negócios. E o povo... espera.",
+      socialismo: "O tesouro paga hospital, escola e sopa para os pobres (custa 40 ouro por dia). Salário um pouco melhor, o povo agradece.",
+      capitalismo: "Comércio livre: o tesouro ganha imposto das lojas (+60 ouro por dia) e os acordos rendem mais. Quem tem ofício bom enriquece; quem não tem, sofre.",
+      monarquia: "Tudo como sempre foi: a Coroa decide os impostos, a guarda obedece e o povo reza.",
     }[k];
     if (k === "ditadura") (bumpAll(-15), typeof repAdd === "function" && repAdd(-6));
     if (typeof vilaNews === "function") vilaNews(`Novo regime em Cinzaluz: ${REGIMES.find((q) => q[0] === k)[1]}.`);
@@ -363,14 +382,14 @@
   if (typeof regimeName === "function") {
     const rnBase = regimeName;
     regimeName = function () {
-      if (player.council && player.council.chief === "player" && player.regime) return { democracia: "República (democracia)", comunismo: `República Popular de ${player.name}`, constitucional: "Monarquia constitucional", ditadura: `Ditadura de ${player.name}` }[player.regime];
+      if (chiefOrCrown() && player.regime) return { democracia: "República (democracia)", comunismo: `República Popular de ${player.name}`, constitucional: "Monarquia constitucional", ditadura: `Ditadura de ${player.name}`, socialismo: `Reino Socialista de ${player.name}`, capitalismo: `Reino Livre do Comércio (capitalismo)`, monarquia: `Monarquia de ${player.name}` }[player.regime];
       return rnBase.apply(this, arguments);
     };
   }
   if (typeof isCommunist === "function") {
     const icBase = isCommunist;
     isCommunist = function () {
-      if (player.council && player.council.chief === "player" && player.regime) return player.regime === "comunismo";
+      if (chiefOrCrown() && player.regime) return player.regime === "comunismo";
       return icBase.apply(this, arguments);
     };
   }
@@ -396,6 +415,7 @@
     return chBase.call(this, title, text, opts);
   };
   window.politicsMenu = politicsMenu;
+  window.setRegime = setRegime;
   window.budgetMenu = budgetMenu;
 
   /* ===================== LIXO E SUJEIRA NAS RUAS ===================== */
@@ -448,19 +468,20 @@
 (() => {
   const regime = () => {
     if (!lifeMode()) return null;
-    if (player.council && player.council.chief === "player" && player.regime) return player.regime;
+    if (chiefOrCrown() && player.regime) return player.regime;
     if (typeof isCommunist === "function" && isCommunist()) return "comunismo";
     if (player.council && !player.council.prov) return "democracia";
     return "monarquia";
   };
   window.workRegime = regime;
-  const MUL = { constitucional: 1.05, democracia: 1.12, ditadura: 0.75 };
+  const MUL = { constitucional: 1.05, democracia: 1.12, ditadura: 0.75, socialismo: 1.08 };
   const jpBase = jobPay;
   jobPay = function (base) {
     const r = regime();
     let b = base;
     if (r === "comunismo") b = (base + 14) / 2; // achata: todos ganham parecido
     let m = MUL[r] || 1;
+    if (r === "capitalismo") m = base >= 18 ? 1.25 : 0.88; // quem tem ofício bom enriquece
     if (r === "monarquia") m = { alto: 0.85, baixo: 1.05 }[player.royalTax] || 1;
     return jpBase.call(this, Math.max(1, b * m));
   };
@@ -491,6 +512,8 @@
       constitucional: ["Agora tem conselho e feriado de verdade. Melhorou um pouco.", "A Rainha virou enfeite, mas o salário subiu."],
       democracia: ["Agora a gente vota! O patrão não pode mais mandar embora por nada.", "Salário melhor e ninguém é obrigado a trabalhar doente."],
       comunismo: poor ? ["Pela primeira vez ganho igual ao ferreiro! E tem pão todo dia.", "No Fundo do Povo, ninguém passa fome."] : ["Trabalho o dobro e ganho igual ao preguiçoso do lado.", "Meu ouro foi todo para o Fundo do Povo. Grande coisa."],
+      socialismo: poor ? ["Agora tem médico de graça e sopa na praça. Nunca pensei que veria isso.", "Meu filho vai pra escola sem pagar nada!"] : ["O imposto subiu, mas pelo menos não tem mais mendigo na porta da loja.", "Pago mais, mas a rua tá limpa e o hospital funciona."],
+      capitalismo: poor ? ["O patrão ficou rico e eu continuo comendo pão velho.", "Tudo tá à venda agora. Até a água do poço."] : ["Nunca vendi tanto! Comércio livre é outra coisa.", "Abri a segunda loja esse mês. Viva o mercado!"],
       ditadura: ["*olha pros lados* Não posso falar... a guarda escuta tudo.", "Levaram meu marido pra corveia e não devolveram.", "Salário? Que salário. A gente trabalha pra não ser preso."],
     }[r];
     return L ? pk(L) : null;

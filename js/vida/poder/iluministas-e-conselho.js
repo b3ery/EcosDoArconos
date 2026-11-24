@@ -487,8 +487,8 @@ function rivalTick() {
   if (!R || !rulesK("aurelia")) return;
   const n = shortName(R.id);
   choice("TRAIÇÃO NA CORTE!", `${n} invade o salão do trono com guardas comprados!`, [
-    { t: "Lutar pela coroa", icon: "sword", fn: () => (Math.random() < 0.45 + army() / 300 ? (repAdd(4), say([["", `Você desarma ${n} na frente de todos. A corte se ajoelha.`]])) : loseThrone(`${n} tomou o trono. A traição veio de dentro.`)) },
-    { t: "Chamar o povo", icon: "flag", fn: () => (Math.random() < (player.rep ?? 50) / 100 ? (repAdd(3), say([["", `O povo invade o salão gritando seu nome. ${n} foge pela janela.`]])) : loseThrone(`O povo não veio. ${n} tomou o trono.`)) },
+    { t: "Lutar pela coroa", icon: "sword", fn: () => (Math.random() < 0.45 + army() / 300 ? (repAdd(4), say([["", `Você desarma ${n} na frente de todos. A corte se ajoelha.`]])) : loseThrone(`${n} tomou o trono. A traição veio de dentro.`, n)) },
+    { t: "Chamar o povo", icon: "flag", fn: () => (Math.random() < (player.rep ?? 50) / 100 ? (repAdd(3), say([["", `O povo invade o salão gritando seu nome. ${n} foge pela janela.`]])) : loseThrone(`O povo não veio. ${n} tomou o trono.`, n)) },
   ]);
 }
 {

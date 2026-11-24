@@ -2521,7 +2521,8 @@ function drawWorld(t) {
           y: pr[2] - (pr[0] === "rug" || pr[0] === "carpet" ? 0.9 : 0.02),
           draw: () => drawProp(pr, t),
         });
-      list.push({
+      // a sala do trono (sala-do-trono.js) desenha o governante sentado no trono
+      if (!I.throne) list.push({
         y: I.ky,
         draw: () => {
           ctx.fillStyle = "rgba(0,0,0,.25)";
@@ -2549,7 +2550,7 @@ function drawWorld(t) {
           }
         },
       });
-      if (I.st === "castle")
+      if (I.st === "castle" && !I.throne)
         list.push({
           y: I.ky - 0.5,
           draw: () => {
