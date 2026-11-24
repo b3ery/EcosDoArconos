@@ -22,7 +22,7 @@
   const low = () => typeof currentQuality === "function" && typeof QUALITY !== "undefined" && currentQuality() === QUALITY.baixa;
   const wet = (z, x, y) => {
     const c = tileAt(z, x, y);
-    return c === "~";
+    return c === "~" && !(typeof isFrozen === "function" && isFrozen(z, x, y));
   };
   // cor do céu refletido pela hora do dia
   function skyTint() {
