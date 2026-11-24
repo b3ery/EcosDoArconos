@@ -55,7 +55,7 @@
     if (!rulesK("aurelia")) return;
     if (army() < 10) return say([["General", "Majestade, sobraram poucos soldados. Espere uns dias o quartel treinar novos recrutas."]], () => conquerMenu(k));
     choice(`Guerra contra ${K.short}`, `Seu exército: <b>${army()} soldados</b>${friendshipLevel("marcos") >= 2 ? " (o General Marcos comanda)" : ""}. ${K.short} defende o castelo com uns ${DEF[k] * 5} soldados e arqueiros no portão.<br>Você marcha junto, na frente das tropas.`, [
-      { t: `Marchar e atacar ${K.short}!`, icon: "sword", fn: () => march(k) },
+      { t: `Marchar e atacar ${K.short}! (${typeof travelDays === "function" ? travelDays("vila", K.zone) + 1 : 3} dias de marcha)`, icon: "sword", fn: () => march(k) },
       { t: "Ainda não", fn: () => conquerMenu(k) },
     ]);
   };
@@ -70,19 +70,32 @@
     }
     vilaNews(`O exército de Aurélia marchou contra ${K.short}!`);
     const n = army();
-    const sc = marchScene(k, n);
+    // a marcha leva dias de verdade (a mesma distância da carruagem; o exército é mais lento)
+    const here = player.zone === "interior" || player.zone === "casa" ? (player.ret && player.ret.zone) || "vila" : player.zone;
+    const days = here === K.zone ? 0 : Math.max(1, (typeof travelDays === "function" ? travelDays(here, K.zone) : 2) + 1);
+    const sc = marchScene(k, n, days);
+    const dur = 4 + days * 1.4;
     setTimeout(() => {
       const c = game.cine;
       if (c && c.draw === sc) ((c.t0 = -999), endCine());
-    }, 6200);
-    playCine(sc, 5, () => {
-      passTime(6, `Seis horas de marcha até ${K.short}...`);
+    }, (dur + 1.2) * 1000);
+    playCine(sc, dur, () => {
+      const before = player.day;
+      if (days) {
+        passTime(days * 24 - (player.clock - 8 * 60) / 60, `Depois de ${days} dia(s) de marcha, o exército chega a ${K.short} ao amanhecer.`);
+        player.clock = 8 * 60;
+        // a marcha cansa e gasta comida do tesouro
+        player.gold = Math.max(0, player.gold - days * 20);
+        game.annDay = before;
+      } else passTime(2, `O exército se forma em ${K.short}...`);
       startBattle(k);
     });
   }
-  function marchScene(k, n) {
+  function marchScene(k, n, days) {
     const [c1, c2] = COLORS.aurelia;
     return (W, H, t) => {
+      const dur = 4 + days * 1.4,
+        p = Math.min(1, t / dur);
       const sky = ctx.createLinearGradient(0, 0, 0, H);
       sky.addColorStop(0, "#5a6a9a");
       sky.addColorStop(1, "#e8b07a");
@@ -139,7 +152,13 @@
       ctx.font = '700 28px "Pixelify Sans", sans-serif';
       ctx.fillText(`O exército de Aurélia marcha contra ${KINGDOMS[k].short}`, W / 2, 64);
       ctx.font = '600 18px "Pixelify Sans", sans-serif';
-      ctx.fillText(`${n} soldados · tambores, lanças e a bandeira vinho e ouro`, W / 2, 94);
+      ctx.fillText(days ? `Dia ${Math.min(days, 1 + Math.floor(p * days))} de ${days} de marcha · ${n} soldados` : `${n} soldados · tambores, lanças e a bandeira vinho e ouro`, W / 2, 94);
+      // acampamento à noite: fogueiras entre os dias
+      const night = days ? Math.sin(p * days * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5 : 0;
+      if (night > 0.55) {
+        ctx.fillStyle = `rgba(10,10,40,${(night - 0.55) * 1.4})`;
+        ctx.fillRect(0, 0, W, H);
+      }
     };
   }
 

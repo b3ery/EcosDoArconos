@@ -254,16 +254,77 @@ drawDialogPortrait = function (d, talking) {
   const c2 = cv.getContext("2d");
   if (!em) return;
   withContext(c2, () => {
-    const s = 2.6,
-      bob = Math.sin(game.t * 6) * 1.5;
-    c2.fillStyle = "#fff3d6";
-    c2.beginPath();
-    c2.arc(cv.width - 14, 14 + bob, 13, 0, 7);
-    c2.fill();
-    c2.strokeStyle = "#f2c14e";
-    c2.lineWidth = 2;
-    c2.stroke();
-    drawPixelIcon(em, cv.width - 14, 14 + bob, s);
+    // símbolo de emoção estilo quadrinho (sem carinha): veia de raiva, gota,
+    // coração, !?, notinha e brilho, num balãozinho de fala
+    const bob = Math.sin(game.t * 6) * 1.5;
+    const cx = cv.width - 15,
+      cy = 15 + bob;
+    const R = (x, y, w, h, c) => ((c2.fillStyle = c), c2.fillRect(Math.round(cx + x), Math.round(cy + y), w, h));
+    // balão: retângulo arredondado em pixel com rabinho
+    c2.fillStyle = "#3a2414";
+    c2.fillRect(cx - 12, cy - 10, 24, 20);
+    c2.fillRect(cx - 10, cy - 12, 20, 24);
+    c2.fillStyle = "#fff6e0";
+    c2.fillRect(cx - 10, cy - 10, 20, 20);
+    c2.fillRect(cx - 11, cy - 8, 22, 16);
+    c2.fillRect(cx - 8, cy - 11, 16, 22);
+    R(-9, 10, 4, 3, "#3a2414");
+    R(-8, 10, 2, 2, "#fff6e0");
+    if (em === "anger") {
+      // veia de raiva (💢) vermelha
+      const r = "#d93a3a";
+      for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+        R(sx * 2 - 1 + (sx > 0 ? 1 : 0), sy * 6 - 1, 2, 3, r);
+        R(sx * 6 - 1, sy * 2 - 1 + (sy > 0 ? 1 : 0), 3, 2, r);
+        R(sx * 4 - 1, sy * 4 - 1, 2, 2, r);
+      }
+    } else if (em === "sweat") {
+      // gota de suor azul
+      c2.fillStyle = "#4a9ae8";
+      c2.beginPath();
+      c2.moveTo(cx, cy - 8);
+      c2.quadraticCurveTo(cx + 7, cy + 2, cx, cy + 7);
+      c2.quadraticCurveTo(cx - 7, cy + 2, cx, cy - 8);
+      c2.fill();
+      R(-3, 0, 2, 3, "#bfe2ff");
+    } else if (em === "heart") {
+      c2.fillStyle = "#e8507a";
+      c2.beginPath();
+      c2.arc(cx - 3.5, cy - 2, 4, 0, 7);
+      c2.arc(cx + 3.5, cy - 2, 4, 0, 7);
+      c2.fill();
+      c2.beginPath();
+      c2.moveTo(cx - 7.5, cy - 1);
+      c2.lineTo(cx + 7.5, cy - 1);
+      c2.lineTo(cx, cy + 8);
+      c2.fill();
+      R(-5, -4, 2, 2, "#ffc0d0");
+    } else if (em === "eye") {
+      // !? de surpresa
+      R(-6, -7, 3, 9, "#d93a3a");
+      R(-6, 4, 3, 3, "#d93a3a");
+      R(1, -7, 6, 2, "#3a6ac9");
+      R(5, -5, 2, 4, "#3a6ac9");
+      R(2, -2, 4, 2, "#3a6ac9");
+      R(2, 0, 2, 2, "#3a6ac9");
+      R(2, 4, 2, 3, "#3a6ac9");
+    } else if (em === "laugh") {
+      // notinhas de música (risada)
+      for (const [x, y, c] of [[-6, -1, "#7a3ab0"], [2, -4, "#3a8a5a"]]) {
+        R(x, y + 4, 4, 3, c);
+        R(x + 3, y - 5, 1, 10, c);
+        R(x + 4, y - 5, 3, 2, c);
+      }
+    } else {
+      // brilho de alegria
+      const g = "#e8a820";
+      R(-1, -8, 2, 16, g);
+      R(-8, -1, 16, 2, g);
+      R(-3, -3, 6, 6, g);
+      R(-1, -1, 2, 2, "#fff3b0");
+      R(5, -7, 2, 2, g);
+      R(-7, 5, 2, 2, g);
+    }
   });
 };
 

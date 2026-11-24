@@ -109,7 +109,7 @@ function drawPose(cv, L, pose, t) {
 }
 
 function ccAvail(cat) {
-  const owned = (o) => (game.lookMode === "new" ? o[2] === 0 : cosOwned(cat, o[0]));
+  const owned = (o) => (game.lookMode === "new" ? o[2] === 0 || cat === "hstyle" : cosOwned(cat, o[0])); // na criação todo penteado é livre
   return (COSMETICS[cat] || []).filter((o) => o[2] < 9999 || owned(o)).map((o) => ({ id: o[0], n: o[1], pr: o[2], ok: owned(o) }));
 }
 function renderCreate() {
@@ -300,3 +300,32 @@ function renderCreate() {
     }
   };
 }
+
+/* Celular: o "Começar" nunca some. A janela usa a altura VISÍVEL de verdade
+ * (visualViewport: tira a barra do navegador e o teclado), e no toque o botão
+ * fica flutuando no canto de baixo da área visível. */
+(() => {
+  const fit = () => {
+    const el = byId("create");
+    if (!el || el.style.display === "none" || game.mode !== "create") return;
+    const vv = window.visualViewport;
+    const vh = vv ? vv.height : innerHeight;
+    const win = el.querySelector(".cc-win");
+    if (win) win.style.maxHeight = Math.max(240, vh - 12) + "px";
+    const go = byId("cgo");
+    const touch = matchMedia("(pointer: coarse)").matches || innerWidth < 900;
+    if (go && touch) {
+      const bottom = vv ? Math.max(0, innerHeight - (vv.offsetTop + vv.height)) : 0;
+      Object.assign(go.style, { position: "fixed", right: "14px", bottom: bottom + 12 + "px", zIndex: 60, boxShadow: "0 4px 14px rgba(0,0,0,.55)" });
+    }
+  };
+  const rc = renderCreate;
+  renderCreate = function () {
+    const r = rc.apply(this, arguments);
+    fit();
+    return r;
+  };
+  if (window.visualViewport) (visualViewport.addEventListener("resize", fit), visualViewport.addEventListener("scroll", fit));
+  addEventListener("resize", fit);
+  addEventListener("orientationchange", () => setTimeout(fit, 300));
+})();
