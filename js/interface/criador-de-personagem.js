@@ -109,7 +109,7 @@ function drawPose(cv, L, pose, t) {
 }
 
 function ccAvail(cat) {
-  const owned = (o) => (game.lookMode === "new" ? o[2] === 0 || cat === "hstyle" : cosOwned(cat, o[0])); // na criação todo penteado é livre
+  const owned = (o) => (game.lookMode === "new" ? o[2] === 0 : cosOwned(cat, o[0])); // na criação só o que é grátis; o resto se compra
   return (COSMETICS[cat] || []).filter((o) => o[2] < 9999 || owned(o)).map((o) => ({ id: o[0], n: o[1], pr: o[2], ok: owned(o) }));
 }
 function renderCreate() {

@@ -8,8 +8,8 @@
  * ondas curtas.
  * Os penteados são desenhados por cima da cabeça (e o comprimento atrás do
  * corpo); o chapéu continua por cima do cabelo.
- * Na criação do personagem todos são grátis; depois, se compram no Salão
- * Tesoura de Ouro (o penteado que você já usa continua seu).
+ * Os pagos se compram no Salão Tesoura de Ouro (também ficam bloqueados na
+ * criação); o penteado que você já usa continua seu.
  * Modifica (envolve) heroRects e cosOwned e acrescenta em COSMETICS.hstyle.
  */
 
