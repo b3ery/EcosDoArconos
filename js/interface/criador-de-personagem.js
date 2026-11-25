@@ -312,11 +312,28 @@ function renderCreate() {
     const vh = vv ? vv.height : innerHeight;
     const win = el.querySelector(".cc-win");
     if (win) win.style.maxHeight = Math.max(240, vh - 12) + "px";
-    const go = byId("cgo");
-    const touch = matchMedia("(pointer: coarse)").matches || innerWidth < 900;
-    if (go && touch) {
-      const bottom = vv ? Math.max(0, innerHeight - (vv.offsetTop + vv.height)) : 0;
-      Object.assign(go.style, { position: "fixed", right: "14px", bottom: bottom + 12 + "px", zIndex: 60, boxShadow: "0 4px 14px rgba(0,0,0,.55)" });
+    // o quadro do boneco encolhe até os botões (Aleatório e Começar) caberem embaixo
+    const stage = el.querySelector(".cc-stage"),
+      room = el.querySelector(".cc-room"),
+      pose = el.querySelector(".cc-pose"),
+      btns = el.querySelector(".cc-btns"),
+      cv = byId("pvc");
+    if (stage && room && btns) {
+      room.style.height = "";
+      room.style.flex = "";
+      if (cv) cv.style.maxHeight = "";
+      const sr = stage.getBoundingClientRect(),
+        br = btns.getBoundingClientRect(),
+        wr = win ? win.getBoundingClientRect() : sr;
+      const limit = Math.min(sr.bottom, wr.bottom - 8, (vv ? vv.offsetTop + vv.height : innerHeight) - 8);
+      if (br.bottom > limit) {
+        const over = br.bottom - limit;
+        const h = Math.max(90, room.getBoundingClientRect().height - over - 6);
+        room.style.flex = "0 0 auto";
+        room.style.height = h + "px";
+        if (cv) cv.style.maxHeight = Math.max(60, h - 46) + "px";
+      }
+      void pose;
     }
   };
   const rc = renderCreate;

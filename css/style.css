@@ -7349,3 +7349,19 @@ textarea {
 .cm-d.sel{outline:2px solid #fff;outline-offset:1px}
 .sel-day{margin-top:2px}
 @media (max-width:700px){.cm-grid{grid-template-columns:repeat(7,1fr)}.cm-d{min-height:38px}}
+
+/* Criador em celular deitado: Aleatório e Começar lado a lado, compactos */
+@media (max-height: 480px) {
+  .cc-btns {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+  }
+  .cc-btns button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 6px 6px !important;
+    font-size: 0.85em !important;
+    white-space: nowrap;
+  }
+}
