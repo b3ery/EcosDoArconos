@@ -3,7 +3,9 @@
  * Mais penteados para escolher (criador, Salão e família):
  * franja, chanel, black power, dreads, maria-chiquinha, topete, ondulado
  * longo, trança de lado, coque samurai, espetado, cachos longos, undercut,
- * meio-preso e liso repartido.
+ * meio-preso e liso repartido (pagos no Salão) e mais 8 grátis: rabo alto,
+ * joãozinho, duas tranças, coque baixo, cachinhos, franja de lado, tigela e
+ * ondas curtas.
  * Os penteados são desenhados por cima da cabeça (e o comprimento atrás do
  * corpo); o chapéu continua por cima do cabelo.
  * Na criação do personagem todos são grátis; depois, se compram no Salão
@@ -30,6 +32,15 @@
     ["undercut", "Undercut", 70],
     ["meiopreso", "Meio-preso", 60],
     ["repartido", "Liso repartido", 40],
+    // grátis para todo mundo
+    ["rabalto", "Rabo alto", 0],
+    ["joaozinho", "Joãozinho", 0],
+    ["duastrancas", "Duas tranças", 0],
+    ["coquebaixo", "Coque baixo", 0],
+    ["cachinhos", "Cachinhos curtos", 0],
+    ["franjalonga", "Franja de lado", 0],
+    ["tigela", "Corte tigela", 0],
+    ["ondascurtas", "Ondas curtas", 0],
   ];
   for (const h of NEW) if (!COSMETICS.hstyle.some((o) => o[0] === h[0])) COSMETICS.hstyle.push(h);
   const KEYS = new Set(NEW.map((h) => h[0]));
@@ -173,6 +184,74 @@
         F(7, 5, 1, 1, lo);
         F(8, 5, 1, 1, hi);
         if (up) F(5, 5, 6, 4);
+        break;
+      case "rabalto":
+        F(5, 5, 6, 1);
+        F(5, 6, 1, 1);
+        F(10, 6, 1, 1);
+        F(8, 4, 2, 1, "#e0466a");
+        F(9, 2, 2, 2);
+        F(11, 3, 1, 4);
+        F(11, 7, 1, 2, lo);
+        if (up) (F(5, 5, 6, 4), F(7, 4, 2, 6));
+        break;
+      case "joaozinho":
+        F(5, 5, 6, 1);
+        F(5, 6, 2, 1);
+        F(10, 6, 1, 1);
+        F(6, 4, 4, 1, hi);
+        if (up) F(5, 4, 6, 4);
+        break;
+      case "duastrancas":
+        F(5, 5, 6, 1);
+        F(5, 6, 1, 1);
+        F(10, 6, 1, 1);
+        for (let y = 7; y <= 12; y++) (F(4, y, 1, 1, y % 2 ? c : lo), F(11, y, 1, 1, y % 2 ? c : lo));
+        F(4, 13, 1, 1, "#f2c14e");
+        F(11, 13, 1, 1, "#f2c14e");
+        if (up) F(5, 5, 6, 4);
+        break;
+      case "coquebaixo":
+        F(5, 5, 6, 1);
+        F(5, 6, 1, 2);
+        F(10, 6, 1, 2);
+        F(6, 5, 1, 1, hi);
+        if (up) (F(5, 5, 6, 4), F(6, 8, 4, 2, lo));
+        break;
+      case "cachinhos":
+        F(4, 4, 8, 2);
+        F(4, 6, 1, 2);
+        F(11, 6, 1, 2);
+        F(5, 4, 1, 1, hi);
+        F(8, 4, 1, 1, hi);
+        F(10, 5, 1, 1, hi);
+        if (up) F(4, 4, 8, 5);
+        break;
+      case "franjalonga":
+        F(5, 5, 6, 1);
+        F(5, 6, 3, 1);
+        F(5, 7, 1, 1);
+        F(10, 6, 1, 3);
+        B(10, 8, 2, 4);
+        if (up) F(5, 5, 6, 6);
+        break;
+      case "tigela":
+        F(4, 4, 8, 2);
+        F(4, 6, 1, 2);
+        F(11, 6, 1, 2);
+        F(5, 6, 6, 1, lo);
+        F(5, 4, 3, 1, hi);
+        if (up) F(4, 4, 8, 4);
+        break;
+      case "ondascurtas":
+        F(4, 5, 8, 1);
+        F(4, 6, 1, 3);
+        F(11, 6, 1, 3);
+        F(4, 9, 1, 1, lo);
+        F(11, 9, 1, 1, lo);
+        F(6, 5, 1, 1, hi);
+        F(9, 5, 1, 1, hi);
+        if (up) F(4, 5, 8, 5);
         break;
     }
     return { back, front };
