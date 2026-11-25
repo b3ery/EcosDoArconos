@@ -6,7 +6,9 @@
  * meio-preso e liso repartido.
  * Os penteados são desenhados por cima da cabeça (e o comprimento atrás do
  * corpo); o chapéu continua por cima do cabelo.
- * Modifica (envolve) heroRects e acrescenta em COSMETICS.hstyle.
+ * Na criação do personagem todos são grátis; depois, se compram no Salão
+ * Tesoura de Ouro (o penteado que você já usa continua seu).
+ * Modifica (envolve) heroRects e cosOwned e acrescenta em COSMETICS.hstyle.
  */
 
 "use strict";
@@ -14,23 +16,34 @@
 (() => {
   if (typeof COSMETICS === "undefined" || typeof heroRects !== "function") return;
   const NEW = [
-    ["franja", "Franja", 0],
-    ["chanel", "Chanel", 0],
-    ["afro", "Black power", 0],
-    ["dreads", "Dreads", 0],
-    ["chiquinha", "Maria-chiquinha", 0],
-    ["topete", "Topete", 0],
-    ["ondulado", "Ondulado longo", 0],
-    ["trancalado", "Trança de lado", 0],
-    ["samurai", "Coque samurai", 0],
-    ["espetado", "Espetado", 0],
-    ["cachoslongos", "Cachos longos", 0],
-    ["undercut", "Undercut", 0],
-    ["meiopreso", "Meio-preso", 0],
-    ["repartido", "Liso repartido", 0],
+    ["franja", "Franja", 40],
+    ["chanel", "Chanel", 60],
+    ["afro", "Black power", 80],
+    ["dreads", "Dreads", 90],
+    ["chiquinha", "Maria-chiquinha", 50],
+    ["topete", "Topete", 60],
+    ["ondulado", "Ondulado longo", 70],
+    ["trancalado", "Trança de lado", 80],
+    ["samurai", "Coque samurai", 90],
+    ["espetado", "Espetado", 50],
+    ["cachoslongos", "Cachos longos", 100],
+    ["undercut", "Undercut", 70],
+    ["meiopreso", "Meio-preso", 60],
+    ["repartido", "Liso repartido", 40],
   ];
   for (const h of NEW) if (!COSMETICS.hstyle.some((o) => o[0] === h[0])) COSMETICS.hstyle.push(h);
   const KEYS = new Set(NEW.map((h) => h[0]));
+  // o penteado novo que o jogador já está usando (escolhido de graça na criação) fica sendo dele
+  if (typeof cosOwned === "function") {
+    const co = cosOwned;
+    cosOwned = function (cat, id) {
+      if (co.apply(this, arguments)) return true;
+      if (cat !== "hstyle" || !KEYS.has(id) || typeof player === "undefined" || !player || !player.look || player.look.hstyle !== id) return false;
+      player.owned = player.owned || {};
+      (player.owned.hstyle = player.owned.hstyle || []).push(id);
+      return true;
+    };
+  }
   const shade2 = (c, v) => (typeof shade === "function" ? shade(c, v) : c);
 
   // [x, y, w, h] em pixels do boneco 16x16 (cabeça em x 5..10, y 5..8)

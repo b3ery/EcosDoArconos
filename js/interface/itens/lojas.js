@@ -453,11 +453,12 @@ function renderCosmetic() {
     if (Math.abs(dx) > 40) cosSlide(dx < 0 ? 1 : -1);
   };
   cosFocus();
-  root.querySelectorAll("[data-pv]").forEach((cv) => drawPreview(cv, Object.assign({}, player.look, { [cat]: list[+cv.dataset.pv][0] }), "down"));
+  root.querySelectorAll("[data-pv]").forEach((cv) => drawPreview(cv, Object.assign({}, player.look, { [cat]: list[+cv.dataset.pv][0] }, cat === "hstyle" || cat === "hair" ? { hat: "nenhum" } : {}), "down"));
   game.cosDir = game.cosDir || "down";
   clearInterval(game.cosAnim);
   const dr = () => {
-    const look = game.tryOn ? Object.assign({}, player.look, { [game.tryOn.c]: game.tryOn.id }) : player.look;
+    // no Salão, o espelho mostra o cabelo sem chapéu
+    const look = Object.assign({}, player.look, game.tryOn ? { [game.tryOn.c]: game.tryOn.id } : {}, game.cosCat === "hstyle" || game.cosCat === "hair" ? { hat: "nenhum" } : {});
     if (byId("cosc")) drawPreview(byId("cosc"), look, game.cosDir);
     drawKeeper(byId("stk"), keeper);
   };
