@@ -137,8 +137,8 @@ function renderCreate() {
       <label>${iconHTML("scroll", 18)}<span>Nome</span><input id="cname" maxlength="12" value="${(game.draftName || "").replace(/"/g, "")}" autocomplete="off" placeholder="Seu nome"></label>
       <div class="cc-lbl">${iconHTML("heart", 18)}<span>Gênero</span></div>
       <div class="cc-seg">${[
-        ["m", "Masculino", "smile"],
-        ["f", "Feminino", "flower"],
+        ["m", "Masculino", "male"],
+        ["f", "Feminino", "female"],
         ["n", "Prefiro não dizer", "star"],
       ]
         .map(([k, n, ic]) => `<button data-gen="${k}" class="${game.draftGender === k ? "on" : ""}">${iconHTML(ic, 18)}${n}</button>`)

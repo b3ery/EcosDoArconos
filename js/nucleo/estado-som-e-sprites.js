@@ -518,9 +518,18 @@ const PIXEL_ICONS = {
     c: { k: "#222" },
     p: ["........", "k.k.k.k.", ".k...k..", "........", ".kkkkk..", "..kkk..."],
   },
+  // "smile" (amigável) virou um aperto de mãos: nada de carinha
   smile: {
-    c: { k: "#222" },
-    p: ["........", ".k...k..", ".k...k..", "........", "k.....k.", ".kkkkk.."],
+    c: { s: "#f1c8a5", t: "#c98a5a", k: "#7a4a2a" },
+    p: ["........", "ss....tt", "sss..ttt", ".sssttt.", "..ksst..", "........"],
+  },
+  male: {
+    c: { b: "#4a8ad9" },
+    p: ["....bbbb", "......bb", "..bbbb.b", ".b....b.", ".b....b.", ".b....b.", "..bbbb..", "........"],
+  },
+  female: {
+    c: { r: "#e0466a" },
+    p: ["..rrrr..", ".r....r.", ".r....r.", "..rrrr..", "...rr...", ".rrrrrr.", "...rr...", "...rr..."],
   },
   meh: {
     c: { k: "#222" },
