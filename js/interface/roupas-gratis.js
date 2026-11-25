@@ -59,10 +59,21 @@
     const T = Object.assign({}, L, { outfit: "tunica" });
     const full = base.call(this, T, dir, glow, fr);
     const noHat = base.call(this, Object.assign({}, T, { hat: "nenhum" }), dir, glow, fr);
+    const bald = base.call(this, Object.assign({}, T, { hat: "nenhum", hstyle: "careca" }), dir, glow, fr);
     const R = rects(L.outfit, L.robe || "#3d4fa8");
-    // a roupa vai por cima do corpo, mas embaixo do chapéu
-    const same = (a, b) => a === b || String(a) === String(b);
-    if (full.length >= noHat.length && noHat.every((q, i) => same(q, full[i]))) return noHat.concat(R, full.slice(noHat.length));
-    return full.concat(R);
+    const key = String;
+    // chapéu = o que sobra depois do corpo sem chapéu
+    if (!(full.length >= noHat.length && noHat.every((q, i) => key(q) === key(full[i])))) return full.concat(R);
+    const hat = full.slice(noHat.length);
+    // cabelo = o que o corpo com cabelo tem a mais que o careca
+    const left = new Map();
+    for (const q of bald) left.set(key(q), (left.get(key(q)) || 0) + 1);
+    const hair = noHat.filter((q) => {
+      const n = left.get(key(q)) || 0;
+      if (n) return left.set(key(q), n - 1), false;
+      return true;
+    });
+    // ordem: corpo, roupa nova, cabelo (não fica escondido) e chapéu por cima
+    return bald.concat(R, hair, hat);
   };
 })();
