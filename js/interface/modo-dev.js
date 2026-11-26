@@ -293,6 +293,7 @@ function devPanelHTML() {
     const st = curStep();
     body = `<p style="margin:4px 0 8px">${demoOn() ? `<b style="color:#ffe08a">Modo demo ligado.</b> Só o começo da história, do zero e guiado. Agora: <b>${st ? st.t : "-"}</b>` : "Para a apresentação, ligue o <b>modo demo</b>: começa do zero, só o prólogo e a primeira runa, com a primeira parte do mundo aberta."}</p>
       <div class="dv-grid">${DEV_ACTIONS.demo.map((a, i) => btn("demo:" + i, a)).join("")}</div>
+      <h4>Comando</h4><div class="dv-row"><input id="dvCmd" placeholder="/apresentacao" autocomplete="off" style="flex:1;min-width:0"><button data-dv="cmd" class="go">Ok</button></div>
       <div class="dv-row"><button data-dv="demo">${demoOn() ? "Desligar o modo demo" : "Ligar o modo demo"}</button><button data-dv="more">${devMore ? "Esconder ferramentas" : "Mais ferramentas ▾"}</button></div>`;
   } else body = `<div class="dv-grid">${(DEV_ACTIONS[devTab] || []).map((a, i) => btn(devTab + ":" + i, a)).join("")}</div>`;
   return `<div class="gh"><h2>Painel de testes</h2><button id="devx">✕</button></div>
@@ -311,6 +312,7 @@ function openDevPanel() {
   el.innerHTML = devPanelHTML();
   el.style.display = "block";
   byId("devx").onclick = closeDevPanel;
+  if (byId("dvCmd")) byId("dvCmd").onkeydown = (e) => (e.stopPropagation(), e.key === "Enter" && runDevCmd());
   el.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => ((devTab = b.dataset.tab), openDevPanel())));
   el.querySelectorAll("[data-act]").forEach(
     (b) =>
@@ -337,6 +339,7 @@ function openDevPanel() {
         if (a === "scene") return (closeDevPanel(), DEV_SCENES[byId("dvScene").value]());
         if (a === "demo") return typeof setDemo === "function" && setDemo(!demoOn());
         if (a === "more") return ((devMore = !devMore), openDevPanel());
+        if (a === "cmd") return runDevCmd();
         if (a === "off") {
           try {
             localStorage.removeItem("ecosDev");
@@ -345,6 +348,12 @@ function openDevPanel() {
         }
       }),
   );
+}
+function runDevCmd() {
+  const el = byId("dvCmd");
+  if (!el) return;
+  if (typeof devCommand === "function" && devCommand(el.value)) return closeDevPanel();
+  toast(`Comando desconhecido: ${el.value || "(vazio)"}. Use /apresentacao para abrir a demo.`, 2600);
 }
 function closeDevPanel() {
   const el = byId("devpanel");

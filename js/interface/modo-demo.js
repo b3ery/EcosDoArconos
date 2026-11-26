@@ -11,6 +11,8 @@
  *    próximo objetivo a cada passo.
  *  - Termina com a tela "Fim da demo" quando o Mosaico é montado.
  *  - Salva num espaço próprio: não mexe nos seus jogos salvos.
+ *  - No modo testes, digitar /apresentacao (no jogo ou no campo de comando do
+ *    painel TESTES) abre o modo demo.
  * Modifica (envolve): slotKey, startGame, enterZone, journey, update.
  */
 
@@ -41,6 +43,22 @@ function setDemo(on) {
   } catch (e) {}
   location.href = location.pathname + (on ? "?demo" : "?nodemo");
 }
+
+/** Comandos do modo testes. Devolve true se reconheceu. */
+function devCommand(txt) {
+  const c = String(txt || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (c === "/apresentacao") {
+    if (typeof toast === "function") toast("Abrindo o modo demo da apresentação...", 1500);
+    setTimeout(() => setDemo(true), 400);
+    return true;
+  }
+  return false;
+}
+// (a escuta do teclado para os comandos fica em js/nucleo/comandos-de-teste.js, que carrega primeiro)
 
 function demoEndScreen() {
   if (player.demoEnded) return;
