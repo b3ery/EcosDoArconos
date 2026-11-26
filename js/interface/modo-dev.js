@@ -9,6 +9,9 @@
  *  - Invencível, vencer a luta agora, resolver o quebra-cabeça aberto,
  *    resolver as provas da Torre, revelar o mapa.
  *  - Ver cenas: cartões de capítulo, sonho, Torre, união dos poderes, reencontro.
+ *  - Aba "Apresentação" (a única visível de início): liga o modo demo
+ *    (modo-demo.js), vai ao próximo objetivo, vence a luta, resolve o
+ *    quebra-cabeça. As outras abas ficam em "Mais ferramentas".
  * Fora da versão dev, nada disto existe para o jogador.
  */
 
@@ -149,7 +152,8 @@ const DEV_SCENES = {
 /* ===================== PAINEL (versão para apresentação) =====================
    Abas simples com botões grandes: cada botão testa uma mecânica.
    Começo · Lugares · Tempo e clima · História · Simulador · Avançado */
-let devTab = "comeco";
+let devTab = "demo";
+let devMore = false; // "Mais ferramentas": as abas completas ficam escondidas na apresentação
 const DEV_PLACES = () => {
   const L = typeof LOTES !== "undefined" ? LOTES.lots.filter((q) => q.zid === "vila") : [];
   const lot = (k) => L.find((q) => q.size === k);
@@ -170,10 +174,39 @@ const DEV_PLACES = () => {
     ["Bairros em lotes", [["Alto dos Nobres (mansões)", "crown", lotSpot("L")], ["Rua dos Ofícios (classe média)", "house", lotSpot("M")], ["Beco dos Remendos (pobres)", "house", lotSpot("S")], ["Bairro das Flores", "flower", at("vila", 30, 59)]]],
     ["Reinos", [["Marés (porto)", "fish", () => devGoZone("porto")], ["Pedravale (serra)", "gem", () => devGoZone("serra")], ["Solmar (festival)", "sun", () => devGoZone("solmar")], ["Rosalva", "wine", () => devGoZone("rosalva")]]],
     ["Além-mar", [["Zahar (deserto)", "sun", () => devGoZone("pais-zahar")], ["Gelomar (gelo)", "snow", () => devGoZone("pais-gelo")], ["Jadeluz", "flower", () => devGoZone("pais-jade")], ["Verdemata", "herb", () => devGoZone("pais-verde")]]],
+    ["Navegação", [["Cais dos Navegantes (Capitania)", "anchor", () => devGoZone("cais", [11, 10])], ["Zarpar agora pelo Mar Aberto", "flag", devSail], ["Porto de Marés (portal do cais)", "fish", at("porto", 58, 21)]]],
     ["Florestas", [["Mata do Rio Grande", "water", mata("vila", 0)], ["Cachoeira Grande", "water", mata("pais-verde-3", 2)], ["Vulcão de Ferrofundo", "sun", mata("pais-ferro", 2)], ["Montanha nevada", "snow", mata("pais-gelo", 1)], ["Savana", "paw", mata("pais-ouro", 0)]]],
   ];
 };
+const demoOn = () => typeof DEMO !== "undefined" && DEMO;
+function devNextGoal() {
+  const s = curStep();
+  if (!s) return;
+  if (typeof demoZoneOk === "function" && demoOn() && !demoZoneOk(s.zone)) return toast("A demo já chegou ao fim desta parte.", 2000);
+  devGoToStep(s);
+  toast(`Objetivo: ${s.t}`, 2600);
+}
+function devSail() {
+  closeDevPanel();
+  if (typeof seaSetSail !== "function") return;
+  devGoZone("cais", [11, 10]);
+  player.gold = Math.max(player.gold, 2000);
+  interactAt(11, 9);
+  const i = (game.choice || []).findIndex((o) => /Zarpar/.test(o.t));
+  if (i >= 0) return pickChoice(i);
+  const r = (game.choice || []).findIndex((o) => /Alugar/.test(o.t));
+  if (r >= 0) pickChoice(r);
+  toast("Navio alugado: fale com o Capitão do Porto (à frente) e escolha Zarpar.", 3200);
+}
 const DEV_ACTIONS = {
+  demo: [
+    ["Próximo objetivo (ir até lá)", "flag", () => (closeDevPanel(), devNextGoal())],
+    ["Vencer a luta", "sword", () => devWinBattle()],
+    ["Resolver quebra-cabeça / covil", "lock", () => devSolvePuzzle()],
+    ["Invencível", "heart", () => ((game.devGod = !game.devGod), toast(`Invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600)), () => game.devGod],
+    ["Recomeçar a demo do zero", "scroll", () => (typeof demoRestart === "function" ? demoRestart() : null)],
+    ["Passeio pelos lugares bonitos", "eye", () => (closeDevPanel(), typeof startTour === "function" && startTour())],
+  ],
   comeco: [
     ["Passeio pelos lugares bonitos (apresentação)", "eye", () => (closeDevPanel(), typeof startTour === "function" && startTour())],
     ["Liberar tudo", "star", () => devUnlockAll()],
@@ -233,7 +266,9 @@ function devDisaster(k) {
 }
 function devPanelHTML() {
   const cur = curStep();
-  const tabs = [["comeco", "Começo"], ["lugares", "Lugares"], ["tempo", "Tempo e clima"], ["historia", "História"], ["simulador", "Simulador"], ["avancado", "Avançado"]];
+  const allTabs = [["comeco", "Começo"], ["lugares", "Lugares"], ["tempo", "Tempo e clima"], ["historia", "História"], ["simulador", "Simulador"], ["avancado", "Avançado"]];
+  const tabs = [["demo", "Apresentação"]].concat(devMore ? allTabs : []);
+  if (!tabs.some(([k]) => k === devTab)) devTab = "demo";
   const btn = (id, [n, ic, , on]) => `<button class="dv-big ${on && on() ? "on" : ""}" data-act="${id}">${iconHTML(ic, 18)}<span>${n}</span></button>`;
   let body = "";
   if (devTab === "lugares")
@@ -254,6 +289,11 @@ function devPanelHTML() {
     body = `<h4>Ir para qualquer lugar</h4><div class="dv-row"><select id="dvZone">${zones}</select><button data-dv="zone" class="go">Ir</button></div>
       <small>Etapa: <b>${cur.id}</b> · ${player.zone} ${player.x},${player.y} · nível ${player.lvl}</small>
       <div class="dv-row"><button data-dv="off">Sair da versão dev</button></div>`;
+  } else if (devTab === "demo") {
+    const st = curStep();
+    body = `<p style="margin:4px 0 8px">${demoOn() ? `<b style="color:#ffe08a">Modo demo ligado.</b> Só o começo da história, do zero e guiado. Agora: <b>${st ? st.t : "-"}</b>` : "Para a apresentação, ligue o <b>modo demo</b>: começa do zero, só o prólogo e a primeira runa, com a primeira parte do mundo aberta."}</p>
+      <div class="dv-grid">${DEV_ACTIONS.demo.map((a, i) => btn("demo:" + i, a)).join("")}</div>
+      <div class="dv-row"><button data-dv="demo">${demoOn() ? "Desligar o modo demo" : "Ligar o modo demo"}</button><button data-dv="more">${devMore ? "Esconder ferramentas" : "Mais ferramentas ▾"}</button></div>`;
   } else body = `<div class="dv-grid">${(DEV_ACTIONS[devTab] || []).map((a, i) => btn(devTab + ":" + i, a)).join("")}</div>`;
   return `<div class="gh"><h2>Painel de testes</h2><button id="devx">✕</button></div>
   <small class="dv-now">${lifeMode() ? "Simulador de Vida" : "Modo História"} · ${ZONES[player.zone] ? ZONES[player.zone].nome : player.zone} · dia ${player.day}, ${String(Math.floor(player.clock / 60)).padStart(2, "0")}h</small>
@@ -295,6 +335,8 @@ function openDevPanel() {
         if (a === "jump") return (closeDevPanel(), devJumpTo(+byId("dvStep").value));
         if (a === "zone") return devGoZone(byId("dvZone").value);
         if (a === "scene") return (closeDevPanel(), DEV_SCENES[byId("dvScene").value]());
+        if (a === "demo") return typeof setDemo === "function" && setDemo(!demoOn());
+        if (a === "more") return ((devMore = !devMore), openDevPanel());
         if (a === "off") {
           try {
             localStorage.removeItem("ecosDev");
@@ -346,6 +388,7 @@ function setupDev() {
     const r = sgBase.apply(this, arguments);
     setTimeout(() => {
       if (!player || !player.name) return;
+      if (typeof DEMO !== "undefined" && DEMO) return; // a demo começa do zero, sem nada liberado
       devUnlockAll(true);
       toast("DEV: tudo liberado. F9 abre o painel.", 3000);
     }, 300);
@@ -391,7 +434,7 @@ function enableCheats() {
     localStorage.setItem("ecosDev", "1");
   } catch (err) {}
   setupDev();
-  if (player && player.name) devUnlockAll(true);
+  if (player && player.name && !(typeof DEMO !== "undefined" && DEMO)) devUnlockAll(true);
   playSound && playSound(1047, 0.2, "triangle");
   toast && toast("Truques liberados! O painel TESTES está no Menu do jogo (ou F9).", 3200);
 }

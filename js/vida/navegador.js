@@ -198,8 +198,12 @@
   /* ===================== O MAR ===================== */
   let el, cv, g, raf, V;
   const keys = {};
+  // uma janela aberta no mar (mensagem, aviso, convite) não pode virar o leme nem atracar
+  const seaBusy = () => !!game.dialog || game.mode === "choice" || (byId("choice") && byId("choice").style.display === "block");
+  const atSea = () => !!(V && el && el.style.display === "block");
   addEventListener("keydown", (e) => {
-    if (game.mode !== "sea") return;
+    // a mesma tecla que fecha uma mensagem não pode atracar/virar o leme logo em seguida
+    if (game.mode !== "sea" || !V || seaBusy() || performance.now() - (V.busyAt || 0) < 300) return;
     const k = e.key.toLowerCase();
     keys[k] = true;
     if (["arrowup", "arrowdown", "arrowleft", "arrowright", " "].includes(k)) e.preventDefault();
@@ -292,7 +296,10 @@
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       if (!V) return;
-      if (game.mode === "sea") step(dt);
+      // fechar uma janela durante a viagem devolvia o jogo para "world" e o leme parava de responder
+      if (game.mode === "world" && el && el.style.display === "block" && !seaBusy()) game.mode = "sea";
+      if (seaBusy()) V.busyAt = now;
+      if (game.mode === "sea" && !seaBusy()) step(dt);
       draw(now / 1000);
       raf = requestAnimationFrame(frame);
     };
@@ -496,6 +503,15 @@
   /* ===================== NO PORTO DE UM PAÍS ===================== */
   function tryDock() {
     if (!V || !V.near || game.mode !== "sea") return;
+    if (V.near.home && !V.confirmHome) {
+      // atracar em casa encerra a viagem: pergunta antes (o E também fecha mensagens)
+      V.v = 0;
+      game.mode = "choice";
+      return choice("Voltar para casa?", "Atracar no Cais dos Navegantes encerra a viagem.", [
+        { t: "Atracar e encerrar a viagem", icon: "anchor", fn: () => ((V.confirmHome = true), (game.mode = "sea"), tryDock()) },
+        { t: "Continuar navegando", icon: "flag", fn: backToSea },
+      ]);
+    }
     if (V.near.home) {
       const d = V.days;
       player.zone = CZ;
@@ -770,6 +786,7 @@
   };
   const iaBase = interactAt;
   interactAt = function (x, y) {
+    if (atSea()) return; // no mar, as teclas são do navio (o boneco ficou no cais)
     if (capAt(x, y)) return capitania();
     if (backAt(x, y)) return leaveCais();
     if (gateAt(x, y)) return goCais();
