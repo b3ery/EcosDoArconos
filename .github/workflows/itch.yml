@@ -1,0 +1,62 @@
+name: Publicar no itch.io
+
+# A cada push no main (ou pelo botão "Run workflow"), roda os testes, monta a
+# versão rápida (dist/, todos os scripts num arquivo só) e envia para o itch.io
+# com o butler, a ferramenta oficial do itch.
+#
+# Configuração (uma vez só):
+#  1. itch.io → Settings → API keys → "Generate new API key".
+#  2. GitHub → repositório → Settings → Secrets and variables → Actions:
+#     - Secret  BUTLER_API_KEY = a chave do passo 1
+#     - (opcional) Variable ITCH_GAME = o final do endereço do jogo no itch
+#       (padrão: ecos-do-arcano, ou seja b3ery.itch.io/ecos-do-arcano)
+#  3. Depois do primeiro envio, na página do jogo no itch (Edit game), marque
+#     o arquivo "html5" como "This file will be played in the browser".
+# Sem a chave cadastrada, o envio é pulado (os testes rodam normalmente).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# segurança: só leitura do repositório
+permissions:
+  contents: read
+
+concurrency:
+  group: itch
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      ITCH_USER: b3ery
+      ITCH_GAME: ${{ vars.ITCH_GAME || 'ecos-do-arcano' }}
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check
+      - run: npm test
+      - name: Montar a versão rápida (dist/)
+        run: node tools/build.js
+      - name: Instalar o butler
+        if: env.BUTLER_API_KEY != ''
+        run: |
+          curl -sSfL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d butler
+          chmod +x butler/butler
+          ./butler/butler -V
+      - name: Enviar para o itch.io
+        if: env.BUTLER_API_KEY != ''
+        run: ./butler/butler push dist "$ITCH_USER/$ITCH_GAME:html5" --userversion "$(date -u +%Y.%m.%d)-${GITHUB_SHA::7}"
+      - name: Aviso (sem chave do itch)
+        if: env.BUTLER_API_KEY == ''
+        run: echo "::notice::Cadastre o secret BUTLER_API_KEY para enviar ao itch.io automaticamente."

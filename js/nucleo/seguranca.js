@@ -14,7 +14,8 @@
  *    de protótipo). Um save "envenenado" compartilhado não roda script.
  * 3. Limites de tamanho para o que é importado.
  * 4. Trusted Types: todo HTML posto na página passa por limpaHTML().
- * 5. Defesa contra clickjacking (jogo escondido num iframe de outro site).
+ * 5. Defesa contra clickjacking (jogo escondido num iframe de outro site;
+ *    o itch.io pode embutir).
  * 6. Protótipos (Object, Array...) congelados depois do carregamento.
  * A política de conteúdo (CSP) fica numa <meta> no topo do index.html.
  * Exporta: limpaTexto, limpaNome, limpaDados, limpaHTML.
@@ -165,8 +166,23 @@
   // defesa é aqui: se a página estiver dentro de um <iframe> de outro site,
   // uma capa opaca cobre tudo (cliques invisíveis não chegam no jogo) e
   // oferece abrir o jogo na aba de verdade.
+  // Sites que podem mostrar o jogo num iframe: o itch.io (o jogo fica no CDN
+  // dele: html-classic.itch.zone / *.hwcdn.net) e o próprio site do jogo.
+  const PODE_EMBUTIR = /(^|\.)(itch\.io|itch\.zone|hwcdn\.net)$/i;
   function emOutroSite() {
     if (window.top === window.self) return false;
+    if (PODE_EMBUTIR.test(location.hostname)) {
+      // no Chrome/Safari dá para conferir quem está por fora do iframe
+      const anc = location.ancestorOrigins;
+      if (!anc || !anc.length) return false;
+      return ![...anc].every((o) => {
+        try {
+          return PODE_EMBUTIR.test(new URL(o).hostname) || new URL(o).origin === location.origin;
+        } catch (e) {
+          return false;
+        }
+      });
+    }
     try {
       return window.top.location.origin !== location.origin;
     } catch (e) {
