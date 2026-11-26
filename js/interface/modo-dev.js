@@ -200,12 +200,12 @@ function devSail() {
 }
 const DEV_ACTIONS = {
   demo: [
-    ["Próximo objetivo (ir até lá)", "flag", () => (closeDevPanel(), devNextGoal())],
-    ["Vencer a luta", "sword", () => devWinBattle()],
-    ["Resolver quebra-cabeça / covil", "lock", () => devSolvePuzzle()],
+    ["Próximo objetivo (ir até lá)", "flag", () => (closeDevPanel(), devNextGoal()), null, "historia"],
+    ["Vencer a luta", "sword", () => devWinBattle(), null, "historia"],
+    ["Resolver quebra-cabeça / covil", "lock", () => devSolvePuzzle(), null, "historia"],
     ["Invencível", "heart", () => ((game.devGod = !game.devGod), toast(`Invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600)), () => game.devGod],
-    ["Simulador: abrir os Trabalhos", "hammer", () => (closeDevPanel(), lifeMode() ? professionsMenu() : toast("Isto é da demo do Simulador.", 1800))],
-    ["Simulador: governo do reino (K)", "flag", () => (closeDevPanel(), lifeMode() ? kingdomsMenu() : toast("Isto é da demo do Simulador.", 1800))],
+    ["Abrir os Trabalhos", "hammer", () => (closeDevPanel(), professionsMenu()), null, "vida"],
+    ["Governo do reino (K)", "flag", () => (closeDevPanel(), kingdomsMenu()), null, "vida"],
     ["Recomeçar a demo do zero", "scroll", () => (typeof demoRestart === "function" ? demoRestart() : null)],
     ["Passeio pelos lugares bonitos", "eye", () => (closeDevPanel(), typeof startTour === "function" && startTour())],
   ],
@@ -215,7 +215,6 @@ const DEV_ACTIONS = {
     ["Invencível", "heart", () => ((game.devGod = !game.devGod), toast(`Invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600)), () => game.devGod],
     ["+1000 de ouro", "coin", () => ((player.gold += 1000), toast("+1000 de ouro.", 1400))],
     ["Encher fome, sede e energia", "bread", () => ((player.food = player.water = 100), (player.stamina = 100), typeof addNeed === "function" && lifeMode() && ["energy", "fun", "social", "hygiene", "bladder"].forEach((n) => addNeed(n, 100)), toast("Tudo cheio.", 1400))],
-    ["Revelar mapas", "scroll", () => devRevealMap()],
     ["Trocar de modo (História ↔ Simulador)", "book", () => ((player.mode = lifeMode() ? "historia" : "vida"), saveGame(), toast(`Agora: ${lifeMode() ? "Simulador de Vida" : "Modo História"}. Recarregando...`, 1500), setTimeout(() => location.reload(), 900))],
   ],
   tempo: [
@@ -269,9 +268,12 @@ function devDisaster(k) {
 function devPanelHTML() {
   const cur = curStep();
   const allTabs = [["comeco", "Começo"], ["lugares", "Lugares"], ["tempo", "Tempo e clima"], ["historia", "História"], ["simulador", "Simulador"], ["avancado", "Avançado"]];
-  const tabs = [["demo", "Apresentação"]].concat(devMore ? allTabs : []);
+  // a aba História só na História; a aba Simulador só no Simulador
+  const tabs = [["demo", "Apresentação"]].concat(devMore ? allTabs.filter(([k]) => !(k === "historia" && lifeMode()) && !(k === "simulador" && !lifeMode())) : []);
   if (!tabs.some(([k]) => k === devTab)) devTab = "demo";
-  const btn = (id, [n, ic, , on]) => `<button class="dv-big ${on && on() ? "on" : ""}" data-act="${id}">${iconHTML(ic, 18)}<span>${n}</span></button>`;
+  // cada botão só aparece no modo em que funciona (5º campo: "historia" ou "vida")
+  const fits = (a) => !a[4] || a[4] === (lifeMode() ? "vida" : "historia");
+  const btn = (id, a) => (fits(a) ? `<button class="dv-big ${a[3] && a[3]() ? "on" : ""}" data-act="${id}">${iconHTML(a[1], 18)}<span>${a[0]}</span></button>` : "");
   let body = "";
   if (devTab === "lugares")
     body = DEV_PLACES()

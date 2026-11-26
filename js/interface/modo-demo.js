@@ -98,6 +98,11 @@ function simStart() {
   if (typeof throne === "function") throne().aurelia = true;
   if (typeof syncRulers === "function") syncRulers();
   player.gold = Math.max(player.gold || 0, 500);
+  // a coroa é emprestada pela demo: não conta como golpe de estado
+  player.ach = player.ach || {};
+  player.ach.golpe = player.ach.golpe || player.day || 1;
+  // o regime fica para o teste "Governar" (K): não abre a pergunta sozinha
+  if (!player.crownRegime) player.crownRegime = -1;
   saveGame();
   setTimeout(() => {
     if (game.mode === "world" && !game.dialog)
@@ -112,7 +117,7 @@ function simBar() {
   if (!el) {
     el = document.createElement("div");
     el.id = "demoSimBar";
-    el.style.cssText = "position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:60;background:rgba(26,16,40,.88);color:#f2e8d0;border:2px solid #f2c14e;border-radius:10px;padding:5px 12px;font:600 13px/1.3 'Pixelify Sans',sans-serif;display:flex;gap:12px;align-items:center;pointer-events:none;white-space:nowrap";
+    el.style.cssText = "position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:60;background:rgba(26,16,40,.9);color:#f2e8d0;border:2px solid #f2c14e;border-radius:12px;padding:6px 14px;font:600 15px/1.3 'Pixelify Sans',sans-serif;display:flex;gap:14px;align-items:center;pointer-events:none;white-space:nowrap;max-width:96vw;overflow:hidden";
     document.body.appendChild(el);
   }
   return el;
@@ -123,16 +128,63 @@ function simTick(dt) {
   const show = game.mode !== "title" && !D.over;
   el.style.display = show ? "flex" : "none";
   if (!show) return;
-  if (!game.paused && game.mode !== "cutscene") D.t += dt;
+  // o relógio só começa quando o jogador já escolheu a casa e leu as boas-vindas
+  const choiceOpen = byId("choice") && byId("choice").style.display !== "none" && byId("choice").style.display !== "";
+  // (a escolha da casa abre logo depois das boas-vindas: espera 3 s de jogo livre)
+  if (!D.go) D.free = game.mode === "world" && !game.dialog && !choiceOpen ? (D.free || 0) + dt : 0;
+  if (!D.go && (D.free > 3 || (player.home && D.free > 0.5))) D.go = true;
+  if (D.go && !game.paused && game.mode !== "cutscene") D.t += dt;
   const left = Math.max(0, SIM_DEMO_S - D.t);
   const mm = Math.floor(left / 60),
     ss = String(Math.floor(left % 60)).padStart(2, "0");
-  el.innerHTML = `<b style="color:#f2c14e">Demo do Simulador · ${mm}:${ss}</b>` + SIM_GOALS.map(([k, n]) => `<span style="opacity:${D[k] ? 0.6 : 1}">${D[k] ? "✓" : "○"} ${n}</span>`).join("");
+  // cronômetro grande (fica vermelho no último minuto) e a lista dos três testes
+  const late = left < 60;
+  const nxt = SIM_GOALS.find(([k]) => !D[k]);
+  el.innerHTML =
+    `<span style="font-size:22px;color:${late ? "#ff6b5a" : "#f2c14e"};${late && Math.floor(D.t * 2) % 2 ? "opacity:.55" : ""}">⏳ ${mm}:${ss}</span>` +
+    SIM_GOALS.map(([k, n]) => `<span style="opacity:${D[k] ? 0.55 : 1}${nxt && nxt[0] === k ? ";color:#ffe08a;text-decoration:underline" : ""}">${D[k] ? "✓" : "○"} ${n}</span>`).join("") +
+    (nxt ? `<span style="color:#cfc3e6;font-size:12px">siga a seta dourada</span>` : "");
   // a cada minuto, lembra o que falta
   const next = SIM_GOALS.find(([k]) => !D[k]);
   const minute = Math.floor(D.t / 60);
   if (next && minute !== D.tipAt && game.mode === "world" && !game.dialog) ((D.tipAt = minute), toast(next[2], 4200));
   if (left <= 0) simEnd();
+}
+/** Para onde a seta dourada aponta na demo do Simulador (o próximo teste que falta). */
+let simBoard = null;
+function simTarget() {
+  const D = player && player.demoSim;
+  if (!D || D.over || !lifeMode() || player.zone !== "vila" || player.job) return null;
+  const next = SIM_GOALS.find(([k]) => !D[k]);
+  if (!next) return null;
+  const Z = ZONES.vila;
+  if (next[0] === "job") {
+    if (!simBoard)
+      for (let y = 0; y < Z.h && !simBoard; y++) {
+        const x = Z.map[y].indexOf("J");
+        if (x >= 0) simBoard = { x, y: y + 1 };
+      }
+    return simBoard;
+  }
+  if (next[0] === "talk") {
+    // o morador parado mais perto
+    let best = null,
+      bd = 1e9;
+    for (const [x, y] of Z.npcList || []) {
+      const d = Math.abs(x - player.x) + Math.abs(y - player.y);
+      if (d > 1 && d < bd) ((bd = d), (best = { x, y: y + 1 }));
+    }
+    return best;
+  }
+  // governo: a porta do castelo (o trono fica lá dentro; a tecla K também abre)
+  const c = (Z.town.bld || []).find((b) => /^(castle|palacio|fortaleza)$/.test(b.style));
+  return c && c.door ? { x: c.door[0], y: c.y + c.h } : null;
+}
+if (DEMO && typeof trappedTarget === "function") {
+  const ttBase = trappedTarget;
+  trappedTarget = function () {
+    return ttBase.apply(this, arguments) || simTarget();
+  };
 }
 function simMark(k) {
   const D = player && player.demoSim;

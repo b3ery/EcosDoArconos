@@ -192,7 +192,7 @@
       if (cur && game.mode !== "tutc") ((byId("tutc").style.display = "none"), (cur = null));
       return;
     }
-    if (game.mode === "world" && !game.dialog) {
+    if (game.mode === "world" && !game.dialog && !game.tour) {
       worldT += dt;
       if (worldT > 1.2) tutOnce("basico");
       if (worldT > 25) tutOnce("necessidades");

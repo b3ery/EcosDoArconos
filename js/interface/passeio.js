@@ -77,7 +77,10 @@
     game.dialog = null;
     if (byId("dialog")) byId("dialog").style.display = "none";
     game.mode = "world";
+    game.cine = null;
+    document.body.classList.remove("cutscene");
     game.tour = true;
+    if (byId("tutc")) byId("tutc").style.display = "none";
     go(0);
   };
   function stopTour() {
@@ -120,10 +123,12 @@
   // durante o passeio, nenhuma janela abre por cima
   setInterval(() => {
     if (!T) return;
+    // um cartão de capítulo ou outra cena cobria a tela inteira durante o passeio
+    if (game.cine) ((game.cine = null), document.body.classList.remove("cutscene"));
     if (game.dialog || game.mode !== "world") {
       game.dialog = null;
       game.mode = "world";
-      for (const id of ["dialog", "choice"]) if (byId(id)) byId(id).style.display = "none";
+      for (const id of ["dialog", "choice", "tutc"]) if (byId(id)) byId(id).style.display = "none";
       if (typeof hidePie === "function") hidePie();
     }
   }, 200);

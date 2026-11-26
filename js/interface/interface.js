@@ -563,11 +563,12 @@ function route(zone, pos) {
     };
   }
   const z = ZONES[player.zone];
-  const o = z.open[z.side];
+  // matas e outros lugares sem "lado" definido: aponta para a primeira saída
+  const o = (z.open && (z.open[z.side] || Object.values(z.open)[0])) || [player.x, player.y];
   return {
     x: o[0],
     y: o[1],
-    hop: "Vila de Cinzaluz",
+    hop: z.exits && Object.values(z.exits)[0] && ZONES[Object.values(z.exits)[0]] ? ZONES[Object.values(z.exits)[0]].nome : "Vila de Cinzaluz",
   };
 }
 function questTarget() {
