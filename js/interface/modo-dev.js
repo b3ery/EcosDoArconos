@@ -204,6 +204,8 @@ const DEV_ACTIONS = {
     ["Vencer a luta", "sword", () => devWinBattle()],
     ["Resolver quebra-cabeça / covil", "lock", () => devSolvePuzzle()],
     ["Invencível", "heart", () => ((game.devGod = !game.devGod), toast(`Invencível ${game.devGod ? "ligado" : "desligado"}.`, 1600)), () => game.devGod],
+    ["Simulador: abrir os Trabalhos", "hammer", () => (closeDevPanel(), lifeMode() ? professionsMenu() : toast("Isto é da demo do Simulador.", 1800))],
+    ["Simulador: governo do reino (K)", "flag", () => (closeDevPanel(), lifeMode() ? kingdomsMenu() : toast("Isto é da demo do Simulador.", 1800))],
     ["Recomeçar a demo do zero", "scroll", () => (typeof demoRestart === "function" ? demoRestart() : null)],
     ["Passeio pelos lugares bonitos", "eye", () => (closeDevPanel(), typeof startTour === "function" && startTour())],
   ],

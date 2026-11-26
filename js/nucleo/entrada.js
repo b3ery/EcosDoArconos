@@ -38,7 +38,7 @@ const WORLD_SHORTCUTS = {
   escape: openOptions,
   r: () => player.zone === "casa" && openDecor(),
   p: togglePause,
-  k: kingdomsMenu,
+  k: () => kingdomsMenu(), // chama a versão atual (com tudo que os outros arquivos acrescentam)
   t: cycleSpeed,
   h: waitMenu,
 };

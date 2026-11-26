@@ -10,6 +10,10 @@
  *  - Guiada: cartões de tutorial ligados, a seta dourada e um aviso do
  *    próximo objetivo a cada passo.
  *  - Termina com a tela "Fim da demo" quando o Mosaico é montado.
+ *  - DEMO DO SIMULADOR (5 minutos, só em Cinzaluz): quem joga ganha a coroa
+ *    de Aurélia e uma lista no alto da tela guia três coisas: um trabalho de
+ *    verdade, conversar com um morador (menu em pizza) e governar o reino.
+ *    O relógio corre só com o jogo andando; no fim, a tela "Fim da demo".
  *  - Salva num espaço próprio: não mexe nos seus jogos salvos.
  *  - No modo testes, digitar /apresentacao (no jogo ou no campo de comando do
  *    painel TESTES) abre o modo demo.
@@ -80,6 +84,123 @@ function demoRestart() {
   location.href = location.pathname + "?demo";
 }
 
+/* ===================== DEMO DO SIMULADOR (5 minutos) ===================== */
+const SIM_DEMO_S = 5 * 60;
+const simZoneOk = (z) => !z || /^(vila|casa|interior|alareal|calabouco|taverna-cima|banheiro|escola)$/.test(z);
+const SIM_GOALS = [
+  ["job", "Trabalhar", "Faça um trabalho: Menu → Trabalhos (ou o Quadro de Trabalhos da praça)."],
+  ["talk", "Conversar", "Clique num morador e escolha uma ação no menu em pizza."],
+  ["gov", "Governar", "Aperte K (ou Menu → Reinos) e cuide do reino: orçamento, impostos e decretos."],
+];
+function simStart() {
+  player.demoSim = { t: 0, job: false, talk: false, gov: false, over: false };
+  // para mostrar o governo, quem joga a demo usa a coroa de Aurélia
+  if (typeof throne === "function") throne().aurelia = true;
+  if (typeof syncRulers === "function") syncRulers();
+  player.gold = Math.max(player.gold || 0, 500);
+  saveGame();
+  setTimeout(() => {
+    if (game.mode === "world" && !game.dialog)
+      say([
+        ["Demo", "Bem-vindo à demo do Simulador de Vida! Você tem 5 minutos em Cinzaluz, e a coroa de Aurélia está com você."],
+        ["Demo", "Experimente três coisas: um trabalho de verdade, conversar com um morador e governar o reino. A lista fica no alto da tela."],
+      ]);
+  }, 1400);
+}
+function simBar() {
+  let el = byId("demoSimBar");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "demoSimBar";
+    el.style.cssText = "position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:60;background:rgba(26,16,40,.88);color:#f2e8d0;border:2px solid #f2c14e;border-radius:10px;padding:5px 12px;font:600 13px/1.3 'Pixelify Sans',sans-serif;display:flex;gap:12px;align-items:center;pointer-events:none;white-space:nowrap";
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function simTick(dt) {
+  const D = player.demoSim;
+  const el = simBar();
+  const show = game.mode !== "title" && !D.over;
+  el.style.display = show ? "flex" : "none";
+  if (!show) return;
+  if (!game.paused && game.mode !== "cutscene") D.t += dt;
+  const left = Math.max(0, SIM_DEMO_S - D.t);
+  const mm = Math.floor(left / 60),
+    ss = String(Math.floor(left % 60)).padStart(2, "0");
+  el.innerHTML = `<b style="color:#f2c14e">Demo do Simulador · ${mm}:${ss}</b>` + SIM_GOALS.map(([k, n]) => `<span style="opacity:${D[k] ? 0.6 : 1}">${D[k] ? "✓" : "○"} ${n}</span>`).join("");
+  // a cada minuto, lembra o que falta
+  const next = SIM_GOALS.find(([k]) => !D[k]);
+  const minute = Math.floor(D.t / 60);
+  if (next && minute !== D.tipAt && game.mode === "world" && !game.dialog) ((D.tipAt = minute), toast(next[2], 4200));
+  if (left <= 0) simEnd();
+}
+function simMark(k) {
+  const D = player && player.demoSim;
+  if (!D || D[k] || D.over) return;
+  D[k] = true;
+  const g = SIM_GOALS.find((q) => q[0] === k);
+  const next = SIM_GOALS.find(([q]) => !D[q]);
+  setTimeout(() => toast(`✓ ${g[1]}!${next ? " Agora: " + next[2] : " Você viu as três coisas principais. Fique à vontade para explorar até o fim do tempo."}`, 4200), 300);
+}
+function simEnd() {
+  const D = player.demoSim;
+  if (D.over) return;
+  D.over = true;
+  if (byId("demoSimBar")) byId("demoSimBar").style.display = "none";
+  if (typeof endJob === "function" && player.job) endJob();
+  saveGame();
+  const feitos = SIM_GOALS.filter(([k]) => D[k]).map((q) => q[1].toLowerCase());
+  choice(
+    "Fim da demo do Simulador",
+    `Os 5 minutos acabaram${feitos.length ? ` (você experimentou: ${feitos.join(", ")})` : ""}. No jogo completo tem família, casamento, casas, carreiras, eleições, guerra, 50 reinos e 10 países além-mar. Obrigado por jogar!`,
+    [
+      { t: "Recomeçar a demo", icon: "scroll", fn: demoRestart },
+      { t: "Voltar à tela de título", icon: "flag", fn: () => location.reload() },
+    ],
+  );
+}
+if (DEMO) {
+  // o que a demo do simulador acompanha
+  const mark = (k) => player && player.demoSim && lifeMode() && simMark(k);
+  if (typeof earn === "function") {
+    const eBase = earn;
+    earn = function () {
+      mark("job");
+      return eBase.apply(this, arguments);
+    };
+  }
+  if (typeof socialMenu === "function") {
+    const sBase = socialMenu;
+    socialMenu = function () {
+      mark("talk");
+      return sBase.apply(this, arguments);
+    };
+  }
+  // escolher uma ação no menu em pizza de um morador também conta como conversa
+  if (typeof pickChoice === "function") {
+    const pBase = pickChoice;
+    pickChoice = function () {
+      if (game.pieAnchor) mark("talk");
+      return pBase.apply(this, arguments);
+    };
+  }
+  if (typeof kingdomsMenu === "function") {
+    const kBase = kingdomsMenu;
+    kingdomsMenu = function () {
+      mark("gov");
+      return kBase.apply(this, arguments);
+    };
+  }
+  // sem sair de Cinzaluz: as saídas da vila não levam a outro reino
+  if (typeof simTravel === "function") {
+    const stBase = simTravel;
+    simTravel = function () {
+      if (player && player.demoSim) return toast("Na demo do Simulador você fica em Cinzaluz. Os outros reinos chegam no jogo completo!", 2600), true;
+      return stBase.apply(this, arguments);
+    };
+  }
+}
+
 if (DEMO) {
   // um espaço de jogo salvo só da demo
   if (typeof slotKey === "function") {
@@ -91,7 +212,10 @@ if (DEMO) {
   if (document.readyState !== "loading") demoTitle();
   function demoTitle() {
     const life = byId("btnLife");
-    if (life) life.style.display = "none";
+    if (life) {
+      const t = life.querySelector("span:not(.mode-ic)");
+      if (t) t.textContent = "Demo de 5 minutos em Cinzaluz: um trabalho de verdade, as interações com os moradores e o governo do reino.";
+    }
     const sub = document.querySelector("#title .sub");
     if (sub && !byId("demoTag")) sub.insertAdjacentHTML("afterend", `<div id="demoTag" style="margin:6px auto;padding:4px 12px;border:2px solid #f2c14e;border-radius:8px;color:#f2c14e;font-weight:700;letter-spacing:.12em;width:max-content">DEMO · Prólogo e a primeira runa</div>`);
   }
@@ -100,6 +224,7 @@ if (DEMO) {
   const sgBase = startGame;
   startGame = function () {
     const r = sgBase.apply(this, arguments);
+    if (player && player.name && lifeMode() && !player.demoSim) simStart();
     if (player && player.name && !lifeMode() && !player.demo) {
       player.demo = true;
       player.tutDone = false;
@@ -113,16 +238,17 @@ if (DEMO) {
     return r;
   };
 
-  // regiões fora da primeira parte ficam fechadas
+  // regiões fora da primeira parte ficam fechadas (no Simulador: só Cinzaluz)
   let lastOk = null;
+  const zoneOk = (z) => (lifeMode() ? simZoneOk(z) : demoZoneOk(z));
   const ezBase = enterZone;
   enterZone = function () {
-    if (!lifeMode() && !demoZoneOk(player.zone) && lastOk) {
+    if (player && (player.demo || player.demoSim) && !zoneOk(player.zone) && lastOk) {
       [player.zone, player.x, player.y] = lastOk;
       player.rx = player.x;
       player.ry = player.y;
       const r = ezBase.call(this, false);
-      setTimeout(() => toast("Na demo, só a primeira parte está aberta: Cinzaluz e o Bosque. O resto do reino chega no jogo completo!", 3200), 50);
+      setTimeout(() => toast(lifeMode() ? "Na demo do Simulador você fica em Cinzaluz. Os outros reinos chegam no jogo completo!" : "Na demo, só a primeira parte está aberta: Cinzaluz e o Bosque. O resto do reino chega no jogo completo!", 3200), 50);
       return r;
     }
     return ezBase.apply(this, arguments);
@@ -130,7 +256,7 @@ if (DEMO) {
   if (typeof journey === "function") {
     const jBase = journey;
     journey = function (to) {
-      if (!lifeMode() && !demoZoneOk(to)) return toast("Na demo, a viagem para outras regiões está fechada.", 2600);
+      if (player && (player.demo || player.demoSim) && !zoneOk(to)) return toast("Na demo, a viagem para outras regiões está fechada.", 2600);
       return jBase.apply(this, arguments);
     };
   }
@@ -140,6 +266,10 @@ if (DEMO) {
   const upBase = update;
   update = function (dt) {
     upBase(dt);
+    if (player && player.demoSim && lifeMode()) {
+      if (simZoneOk(player.zone)) lastOk = [player.zone, player.x, player.y];
+      return simTick(dt);
+    }
     if (!player || !player.name || lifeMode() || !player.demo) return;
     if (demoZoneOk(player.zone)) lastOk = [player.zone, player.x, player.y];
     if (game.mode !== "world" || game.dialog) return;
