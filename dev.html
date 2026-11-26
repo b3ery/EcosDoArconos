@@ -2,11 +2,11 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'" />
+    <meta name="referrer" content="no-referrer" />
+    <!-- Versão dev: abre o jogo com o painel de testes (tecla F9 ou botão DEV). Sem script nesta página. -->
+    <meta http-equiv="refresh" content="0; url=index.html?dev" />
     <title>Ecos do Arcano — versão dev</title>
-    <script>
-      // Versão dev: abre o jogo com o painel de testes (tecla F9 ou botão DEV).
-      location.replace("index.html?dev" + location.hash);
-    </script>
   </head>
   <body>
     <a href="index.html?dev">Abrir a versão dev</a>
