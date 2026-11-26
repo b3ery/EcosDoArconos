@@ -73,6 +73,17 @@
     }
     return v;
   }
+
+  /* ----- 0. dicas na tela de carregamento (o resto do jogo ainda está baixando) ----- */
+  try {
+    const DICAS = ["Despertando as runas...", "Acendendo as lareiras da taverna...", "Afiando o cajado do aprendiz...", "Enchendo o mar de peixes (e tubarões)...", "Contando as moedas do reino...", "Ensaiando o bardo...", "Desenhando cada pixel com carinho..."];
+    let i = 0;
+    const t = setInterval(() => {
+      const d = document.getElementById("cgDica");
+      if (!d) return clearInterval(t);
+      d.textContent = DICAS[++i % DICAS.length];
+    }, 1600);
+  } catch (e) {}
   window.limpaTexto = limpaTexto;
   window.limpaNome = limpaNome;
   window.limpaDados = limpaDados;
@@ -89,6 +100,39 @@
     },
     true,
   );
+
+
+  /* ----- 2b. salvamento reserva ----- */
+  // Dentro de alguns iframes isolados (o itch.io no celular, abas privadas)
+  // o navegador proíbe o localStorage e qualquer acesso dá erro. Aí o jogo
+  // usa uma memória que dura enquanto a aba estiver aberta, em vez de quebrar.
+  (() => {
+    try {
+      const s = window.localStorage;
+      s.setItem("__ecos_t", "1");
+      s.removeItem("__ecos_t");
+      return;
+    } catch (e) {}
+    const mem = () => {
+      const m = new Map();
+      return {
+        getItem: (k) => (m.has(String(k)) ? m.get(String(k)) : null),
+        setItem: (k, v) => void m.set(String(k), String(v)),
+        removeItem: (k) => void m.delete(String(k)),
+        clear: () => m.clear(),
+        key: (i) => [...m.keys()][i] ?? null,
+        get length() {
+          return m.size;
+        },
+      };
+    };
+    for (const nome of ["localStorage", "sessionStorage"])
+      try {
+        const st = mem();
+        Object.defineProperty(window, nome, { configurable: true, get: () => st });
+      } catch (e) {}
+    window.SEGURANCA = Object.assign(window.SEGURANCA || {}, { semSalvar: true });
+  })();
 
   /* ----- 2. tudo que sai do localStorage do jogo passa pela limpeza ----- */
   try {
@@ -210,5 +254,5 @@
   });
 
   /* ----- 3. limites para importar ----- */
-  window.SEGURANCA = { maxImport: 8 * 1024 * 1024 };
+  window.SEGURANCA = Object.assign(window.SEGURANCA || {}, { maxImport: 8 * 1024 * 1024 });
 })();

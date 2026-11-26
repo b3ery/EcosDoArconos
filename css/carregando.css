@@ -1,0 +1,30 @@
+/* ECOS DO ARCANO — tela de carregamento (aparece antes de qualquer script). */
+#carregando{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vmin;
+  background:radial-gradient(ellipse at 50% 40%,#2c1a4a 0%,#140c22 55%,#0a0612 100%);color:#f2e8d0;font-family:"VT323",monospace;text-align:center;
+  transition:opacity .6s ease;overflow:hidden}
+#carregando.some{opacity:0;pointer-events:none}
+#carregando .lua{position:absolute;top:9%;right:14%;width:12vmin;height:12vmin;border-radius:50%;background:#fbf0b0;box-shadow:0 0 0 2.2vmin rgba(251,240,176,.08),0 0 6vmin rgba(251,240,176,.35)}
+#carregando .estrelas{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 12% 20%,#fff,transparent),radial-gradient(1px 1px at 33% 72%,#fff,transparent),radial-gradient(1.5px 1.5px at 58% 14%,#fff,transparent),radial-gradient(1px 1px at 80% 64%,#fff,transparent),radial-gradient(1px 1px at 90% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 22% 48%,#fff,transparent),radial-gradient(1px 1px at 68% 86%,#fff,transparent),radial-gradient(1px 1px at 45% 38%,#fff,transparent);opacity:.7;animation:cg-pisca 3s ease-in-out infinite alternate}
+#carregando .titulo{position:relative;font-family:"Pixelify Sans",sans-serif;font-weight:700;font-size:min(10vw,9vmin);color:#ffd35a;letter-spacing:.04em;text-shadow:0 .08em 0 #6a3410,0 0 .5em rgba(255,190,60,.45)}
+#carregando .sub{position:relative;font-size:min(4.4vw,4.2vmin);letter-spacing:.35em;color:#cdb8f0;margin-top:-1vmin}
+#carregando .runas{position:relative;display:flex;gap:2.4vmin;margin:1vmin 0}
+#carregando .runas svg{display:block;width:min(7vw,6.5vmin);height:min(7vw,6.5vmin)}
+#carregando .runas span{animation:cg-runa 1.8s ease-in-out infinite;opacity:.25;}
+#carregando .runas span:nth-child(2){animation-delay:.3s}#carregando .runas span:nth-child(3){animation-delay:.6s}
+#carregando .runas span:nth-child(4){animation-delay:.9s}#carregando .runas span:nth-child(5){animation-delay:1.2s}#carregando .runas span:nth-child(6){animation-delay:1.5s}
+#carregando .barra{position:relative;width:min(70vw,60vmin);height:2.2vmin;min-height:10px;border:.4vmin solid #ffd35a;border-radius:2vmin;background:#1a0f2a;overflow:hidden;box-shadow:0 0 2vmin rgba(255,200,80,.25)}
+#carregando .barra i{position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(90deg,transparent,#ffd35a,#fff3c0,#ffd35a,transparent);animation:cg-barra 1.4s linear infinite}
+#carregando .dica{position:relative;font-size:min(4.6vw,4.4vmin);color:#f2e8d0;min-height:1.2em;padding:0 4vw}
+#carregando .lento{position:relative;font-size:min(4vw,3.6vmin);color:#cdb8f0;opacity:0;animation:cg-aparece .5s 12s forwards}
+#carregando .casas{position:absolute;left:0;right:0;bottom:0;height:14vmin;background:
+  linear-gradient(#0b0714,#0b0714) 0 100%/100% 4vmin no-repeat,
+  linear-gradient(135deg,transparent 50%,#0b0714 50%) 6% calc(100% - 4vmin)/6vmin 5vmin no-repeat,
+  linear-gradient(225deg,transparent 50%,#0b0714 50%) 12% calc(100% - 4vmin)/6vmin 5vmin no-repeat,
+  linear-gradient(#0b0714,#0b0714) 22% 100%/8vmin 11vmin no-repeat,
+  linear-gradient(#0b0714,#0b0714) 78% 100%/10vmin 8vmin no-repeat,
+  linear-gradient(#0b0714,#0b0714) 90% 100%/7vmin 10vmin no-repeat}
+@keyframes cg-barra{to{left:100%}}
+@keyframes cg-runa{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-.6vmin)}}
+@keyframes cg-pisca{to{opacity:.35}}
+@keyframes cg-aparece{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){#carregando *{animation:none!important}#carregando .runas span{opacity:1}}
