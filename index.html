@@ -2,6 +2,12 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <!-- Segurança: só roda script do próprio jogo (nada de script injetado, inline ou de outro site) -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -208,6 +214,7 @@
          A ORDEM IMPORTA: cada arquivo pode envolver (modificar) funções dos anteriores.
          O cabeçalho de cada arquivo diz o que ele faz e o que ele modifica. -->
     <!-- núcleo -->
+    <script src="js/nucleo/seguranca.js"></script>
     <script src="js/nucleo/comandos-de-teste.js"></script>
     <script src="js/nucleo/dados.js"></script>
     <script src="js/nucleo/estado-som-e-sprites.js"></script>

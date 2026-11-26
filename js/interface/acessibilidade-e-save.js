@@ -45,8 +45,10 @@ function toCode(obj) {
 }
 function fromCode(txt) {
   const t = String(txt || "").trim();
-  if (t.startsWith("{")) return JSON.parse(t);
-  return JSON.parse(decodeURIComponent(escape(atob(t))));
+  // segurança: nada gigante e tudo limpo antes de usar (veja seguranca.js)
+  if (t.length > ((window.SEGURANCA && SEGURANCA.maxImport) || 8e6)) throw new Error("grande demais");
+  const o = t.startsWith("{") ? JSON.parse(t) : JSON.parse(decodeURIComponent(escape(atob(t))));
+  return typeof limpaDados === "function" ? limpaDados(o) : o;
 }
 function exportSaveFile() {
   if (!player || !player.name) return toast("Ainda não há jogo para exportar.", 2600);
@@ -70,10 +72,11 @@ function exportSaveCode() {
   }
 }
 function importPacket(pkt) {
-  if (!pkt || pkt.app !== "ecos-do-arcano" || !pkt.player || !pkt.player.name) throw new Error("formato");
+  if (!pkt || typeof pkt !== "object" || pkt.app !== "ecos-do-arcano" || !pkt.player || typeof pkt.player !== "object" || Array.isArray(pkt.player) || typeof pkt.player.name !== "string") throw new Error("formato");
+  if (typeof limpaNome === "function") pkt.player.name = limpaNome(pkt.player.name, 24) || "Aprendiz";
   if (!window.confirm(`Carregar o jogo de ${pkt.player.name}? O progresso atual deste espaço será substituído.`)) return;
   localStorage.setItem(slotKey(curSlot()), JSON.stringify(pkt.player));
-  for (const [k, v] of Object.entries(pkt.extra || {})) if (EXTRA_KEYS.includes(k)) localStorage.setItem(k, v);
+  for (const [k, v] of Object.entries(pkt.extra || {})) if (EXTRA_KEYS.includes(k) && typeof v === "string") localStorage.setItem(k, v);
   toast("Jogo importado! Recarregando...", 2000);
   setTimeout(() => location.reload(), 900);
 }
