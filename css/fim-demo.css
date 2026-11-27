@@ -1,0 +1,36 @@
+/* ECOS DO ARCANO — tela "Final da demo" (tela cheia, no estilo da tela de carregamento) */
+#fimDemo{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 38%,#3a2260 0%,#1a0f2e 50%,#0a0612 100%);color:#f2e8d0;font-family:"VT323",monospace;
+  animation:fd-entra .8s ease both}
+#fimDemo .estrelas{position:absolute;inset:0;background-image:radial-gradient(2px 2px at 12% 20%,#fff,transparent),radial-gradient(2px 2px at 33% 72%,#fff,transparent),radial-gradient(3px 3px at 58% 14%,#fff,transparent),radial-gradient(2px 2px at 80% 64%,#fff,transparent),radial-gradient(2px 2px at 90% 30%,#fff,transparent),radial-gradient(3px 3px at 22% 48%,#fff,transparent),radial-gradient(2px 2px at 68% 86%,#fff,transparent),radial-gradient(2px 2px at 45% 38%,#fff,transparent),radial-gradient(2px 2px at 6% 60%,#fff,transparent),radial-gradient(2px 2px at 95% 90%,#fff,transparent);opacity:.7;animation:fd-pisca 3s ease-in-out infinite alternate}
+#fimDemo .lua{position:absolute;top:7%;right:9%;width:11vmin;height:11vmin;border-radius:50%;background:#fbf0b0;box-shadow:0 0 0 2vmin rgba(251,240,176,.08),0 0 6vmin rgba(251,240,176,.35)}
+#fimDemo .casas{position:absolute;left:0;right:0;bottom:0;height:12vmin;background:
+  linear-gradient(#0b0714,#0b0714) 0 100%/100% 3vmin no-repeat,
+  linear-gradient(#0b0714,#0b0714) 8% 100%/7vmin 9vmin no-repeat,linear-gradient(#0b0714,#0b0714) 18% 100%/6vmin 7vmin no-repeat,
+  linear-gradient(#0b0714,#0b0714) 80% 100%/9vmin 8vmin no-repeat,linear-gradient(#0b0714,#0b0714) 92% 100%/6vmin 10vmin no-repeat}
+#fimDemo .conteudo{position:relative;display:grid;grid-template-columns:auto auto;gap:5vmin;align-items:center;max-width:94vw;padding:3vmin}
+#fimDemo .lado{display:flex;flex-direction:column;align-items:center;gap:1.6vmin;text-align:center}
+#fimDemo .selo{font-family:"Pixelify Sans",sans-serif;font-weight:700;font-size:min(3.4vw,3.2vmin);letter-spacing:.3em;color:#cdb8f0}
+#fimDemo h1{margin:0;font-family:"Pixelify Sans",sans-serif;font-weight:700;font-size:min(8vw,8.5vmin);line-height:1;color:#ffd35a;
+  text-shadow:0 .07em 0 #6a3410,0 .12em 0 #2a1408,0 0 .45em rgba(255,190,60,.5)}
+#fimDemo .feito{font-size:min(3.6vw,3.6vmin);max-width:62vmin;color:#e4d8ff;line-height:1.25}
+#fimDemo .runas{display:flex;gap:2vmin;margin:.6vmin 0}
+#fimDemo .runas svg{width:min(6vw,6vmin);height:min(6vw,6vmin);animation:fd-runa 2s ease-in-out infinite}
+#fimDemo .runas span:nth-child(2) svg{animation-delay:.2s}#fimDemo .runas span:nth-child(3) svg{animation-delay:.4s}
+#fimDemo .runas span:nth-child(4) svg{animation-delay:.6s}#fimDemo .runas span:nth-child(5) svg{animation-delay:.8s}#fimDemo .runas span:nth-child(6) svg{animation-delay:1s}
+#fimDemo .mago{width:min(26vw,26vmin);height:min(26vw,26vmin);image-rendering:pixelated;filter:drop-shadow(0 0 3vmin rgba(170,130,255,.8)) drop-shadow(0 1vmin 0 rgba(0,0,0,.4));animation:fd-flutua 3s ease-in-out infinite}
+#fimDemo .pergunta{font-family:"Pixelify Sans",sans-serif;font-weight:700;font-size:min(5vw,5.2vmin);color:#fff3c0;margin-top:.5vmin}
+#fimDemo .qr{background:#1a0f2a;border:.6vmin solid #ffd35a;border-radius:2vmin;padding:1.4vmin;box-shadow:0 0 3vmin rgba(255,200,80,.35)}
+#fimDemo .qr img{display:block;width:min(24vw,24vmin);height:min(24vw,24vmin);image-rendering:pixelated;border-radius:1vmin}
+#fimDemo .link{font-size:min(3.4vw,3.4vmin);color:#ffd35a}
+#fimDemo .botoes{display:flex;flex-direction:column;gap:1.6vmin;width:min(70vw,62vmin);margin-top:1vmin}
+#fimDemo button{font-family:"Pixelify Sans",sans-serif;font-weight:700;font-size:min(4vw,4vmin);padding:1.6vmin 3vmin;border-radius:2.4vmin;cursor:pointer;transition:transform .15s,filter .15s}
+#fimDemo button:hover,#fimDemo button:focus-visible{transform:translateY(-.3vmin) scale(1.02);filter:brightness(1.08);outline:none}
+#fimDemo .principal{color:#1a0f2a;background:linear-gradient(#ffe38a,#f2b638);border:.4vmin solid #fff3c0;box-shadow:0 .7vmin 0 #8a5a14,0 0 3vmin rgba(255,200,80,.5)}
+#fimDemo .secundario{color:#f2e8d0;background:rgba(40,24,70,.85);border:.4vmin solid #8a6ad0;box-shadow:0 .6vmin 0 #2a1440}
+@media (max-aspect-ratio:1/1){#fimDemo .conteudo{grid-template-columns:1fr;gap:3vmin}}
+@keyframes fd-entra{from{opacity:0}to{opacity:1}}
+@keyframes fd-pisca{to{opacity:.35}}
+@keyframes fd-runa{0%,100%{transform:translateY(0);filter:brightness(1)}50%{transform:translateY(-.6vmin);filter:brightness(1.4)}}
+@keyframes fd-flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-1vmin)}}
+@media (prefers-reduced-motion:reduce){#fimDemo,#fimDemo *{animation:none!important}}

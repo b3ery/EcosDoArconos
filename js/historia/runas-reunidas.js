@@ -136,7 +136,8 @@ function sixRunesReward() {
     acc += dt || 0;
     if (acc < 0.5) return r;
     acc = 0;
-    if (!player || !player.name || lifeMode() || !player.flags || player.flags.seisRunas) return r;
+    // na demo as runas vêm liberadas de presente: a cena especial fica para o jogo completo
+    if (!player || !player.name || lifeMode() || player.demo || !player.flags || player.flags.seisRunas) return r;
     if (game.mode !== "world" || game.dialog || game.cine || game.deathScene || battle) return r;
     if (!hasSix()) return r;
     player.flags.seisRunas = true;

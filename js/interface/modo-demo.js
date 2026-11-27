@@ -9,8 +9,9 @@
  *    covil do Ent). As outras regiões ficam fechadas com um aviso.
  *  - Guiada: cartões de tutorial ligados, a seta dourada e um aviso do
  *    próximo objetivo a cada passo.
- *  - Termina com a tela "Fim da demo" assim que o Ent é libertado (a primeira
- *    runa). Ali dá para liberar as seis runas e testar todos os feitiços.
+ *  - As seis runas e todos os feitiços já vêm liberados ao entrar na demo.
+ *  - Termina com a tela "Final da demo" assim que o Ent é libertado: convite
+ *    para continuar no jogo completo (itch.io) ou sair da demo.
  *  - DEMO DO SIMULADOR (5 minutos, só em Cinzaluz): quem joga ganha a coroa
  *    de Aurélia e uma lista no alto da tela guia três coisas: um trabalho de
  *    verdade, conversar com um morador (menu em pizza) e governar o reino.
@@ -65,34 +66,60 @@ function devCommand(txt) {
 }
 // (a escuta do teclado para os comandos fica em js/nucleo/comandos-de-teste.js, que carrega primeiro)
 
+const JOGO_COMPLETO = "https://b3ery.itch.io/ecos-do-arcano";
 function demoEndScreen() {
   if (player.demoEnded) return;
   player.demoEnded = true;
   player.tutDone = true; // o cartão de ajuda não cobre a tela final
-  for (const id of ["tutc", "coach"]) if (byId(id)) byId(id).style.display = "none";
+  for (const id of ["tutc", "coach", "dialog", "choice"]) if (byId(id)) byId(id).style.display = "none";
+  game.dialog = null;
+  game.mode = "fimdemo";
   saveGame();
-  choice(
-    "Fim da demo",
-    "Você libertou o Ent e recuperou a primeira runa. O Ecos do Arcano continua com mais cinco Guardiões, o Porto, o Pântano, Pedravale, a Torre do Silêncio e o Simulador de Vida. Obrigado por jogar!",
-    [
-      { t: "Testar com todas as runas", icon: "star", fn: demoAllRunes },
-      { t: "Continuar explorando Cinzaluz e o Bosque", icon: "flag", fn: () => toast("A primeira parte continua aberta para explorar.", 2400) },
-      { t: "Recomeçar a demo do início", icon: "scroll", fn: demoRestart },
-    ],
-  );
+  // o mago de quem jogou, em tamanho grande
+  let mago = "";
+  try {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = 16 * 16;
+    drawRectsOn(cv, heroRects(player.look, "down", true, 0), 16);
+    mago = `<img class="mago" src="${cv.toDataURL()}" alt="">`;
+  } catch (e) {}
+  const el = document.createElement("div");
+  el.id = "fimDemo";
+  el.setAttribute("role", "dialog");
+  el.setAttribute("aria-label", "Final da demo");
+  el.innerHTML = `<div class="estrelas"></div><div class="lua"></div><div class="casas"></div>
+    <div class="conteudo">
+      <div class="lado">
+        <div class="selo">FINAL DA DEMO</div>
+        <h1>Ecos do Arcano</h1>
+        <div class="runas">${ORDER.map((r) => `<span>${runeSVG(r, 40)}</span>`).join("")}</div>
+        ${mago}
+        <div class="feito">Você libertou o Ent e recuperou a primeira runa. A aventura continua com mais cinco Guardiões, o Porto, o Pântano, Pedravale, a Torre do Silêncio e o Simulador de Vida.</div>
+      </div>
+      <div class="lado">
+        <div class="pergunta">Se interessou? Continue jogando!</div>
+        <div class="qr"><img src="assets/qr_ecos_itch.png" alt="QR code do jogo"></div>
+        <div class="link">${JOGO_COMPLETO.replace("https://", "")}</div>
+        <div class="botoes">
+          <button class="principal" id="fdJogar">Continuar jogando</button>
+          <button class="secundario" id="fdSair">Sair da demo</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  byId("fdJogar").onclick = demoFullGame;
+  byId("fdSair").onclick = () => setDemo(false);
 }
-/** Depois da demo: as seis runas e todos os feitiços para testar (no treino com o Kael ou nos monstros do Bosque). */
-function demoAllRunes() {
-  player.runes = ORDER.slice();
-  if (typeof SPELLS !== "undefined") player.spells = Object.keys(SPELLS);
-  player.lvl = Math.max(player.lvl || 1, 10);
-  if (typeof maxHp === "function") ((player.hp = maxHp()), (player.mp = maxMp()));
-  saveGame();
-  say([
-    ["Demo", "As seis runas estão com você: Chama, Maré, Vento, Terra, Luz e Sombra. Combine duas runas na batalha para criar feitiços novos."],
-    ["Demo", "Teste no boneco de treino do Instrutor Kael ou enfrente os monstros do Bosque."],
-  ]);
+/** Abre o jogo completo: a página do jogo no itch.io numa aba nova; se o navegador bloquear, sai da demo aqui mesmo. */
+function demoFullGame() {
+  let w = null;
+  try {
+    w = window.open(JOGO_COMPLETO, "_blank", "noopener");
+  } catch (e) {}
+  if (!w) setDemo(false);
 }
+// na tela final as teclas não mexem no jogo (e um Enter sem querer não fecha a tela): só os botões
+KEY_HANDLERS.fimdemo = () => {};
 function demoRestart() {
   clearSave();
   location.href = location.pathname + "?demo";
@@ -295,10 +322,13 @@ if (DEMO) {
       player.demo = true;
       player.tutDone = false;
       player.tutAsked = true;
+      // na demo as seis runas e todos os feitiços já vêm liberados para testar
+      player.runes = ORDER.slice();
+      if (typeof SPELLS !== "undefined") player.spells = Object.keys(SPELLS);
       saveGame();
       setTimeout(() => {
         if (game.mode === "world" && !game.dialog)
-          say([["Demo", "Bem-vindo à demo do Ecos do Arcano! Você vai jogar o começo da história: treinar, explorar Cinzaluz e o Bosque e recuperar a primeira runa. Siga a seta dourada e os cartões de ajuda."]]);
+          say([["Demo", "Bem-vindo à demo do Ecos do Arcano! Você vai jogar o começo da história: treinar, explorar Cinzaluz e o Bosque e enfrentar o primeiro Guardião. As seis runas já estão liberadas para você testar todos os feitiços. Siga a seta dourada e os cartões de ajuda."]]);
       }, 1200);
     }
     return r;
