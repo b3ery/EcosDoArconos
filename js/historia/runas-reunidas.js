@@ -155,7 +155,7 @@ function sixRunesReward() {
   const dmBase = dmgMul;
   dmgMul = function () {
     const m = dmBase.apply(this, arguments);
-    return player && player.flags && player.flags.seisRunas && !lifeMode() ? m * 1.1 : m;
+    return player && player.flags && player.flags.seisRunas && !player.demo && !lifeMode() ? m * 1.1 : m;
   };
 }
 
@@ -164,7 +164,7 @@ function sixRunesReward() {
   const cdBase = crewDrawList;
   crewDrawList = function (list, t) {
     cdBase(list, t);
-    if (!player || lifeMode() || !player.flags || !player.flags.seisRunas || !hasSix()) return;
+    if (!player || lifeMode() || player.demo || !player.flags || !player.flags.seisRunas || !hasSix()) return;
     list.push({
       y: player.ry + 0.6,
       draw: () => {
