@@ -10,6 +10,7 @@
  *  - Guiada: cartões de tutorial ligados, a seta dourada e um aviso do
  *    próximo objetivo a cada passo.
  *  - As seis runas e todos os feitiços já vêm liberados ao entrar na demo.
+ *  - É só demonstração: sem visões, sonhos, lembranças nem cenas de tela cheia.
  *  - Termina com a tela "Final da demo" assim que o Ent é libertado: convite
  *    para continuar no jogo completo (itch.io) ou sair da demo.
  *  - DEMO DO SIMULADOR (5 minutos, só em Cinzaluz): quem joga ganha a coroa
@@ -123,6 +124,28 @@ KEY_HANDLERS.fimdemo = () => {};
 function demoRestart() {
   clearSave();
   location.href = location.pathname + "?demo";
+}
+
+
+/* ----- demo = só demonstração: sem visões, sonhos, lembranças nem cenas de história ----- */
+const storyDemo = () => player && player.demo && !lifeMode();
+function demoQuiet() {
+  // marca as cenas da história como já vistas (as runas liberadas de presente disparariam todas)
+  const F = (player.flags = player.flags || {});
+  F.fragWake = true;
+  for (let i = 1; i <= 12; i++) F["frag" + i] = true;
+  F.seisRunas = true;
+  player.fbSeen = 99;
+  player.dreams = 99;
+  player.dreamPending = false;
+}
+{
+  // qualquer cena de tela cheia é pulada na demo; o que vem depois dela continua normalmente
+  const pcBase = playCine;
+  playCine = function (draw, dur, next) {
+    if (!storyDemo()) return pcBase.apply(this, arguments);
+    if (next) setTimeout(next, 0);
+  };
 }
 
 /* ===================== DEMO DO SIMULADOR (5 minutos) ===================== */
@@ -325,6 +348,7 @@ if (DEMO) {
       // na demo as seis runas e todos os feitiços já vêm liberados para testar
       player.runes = ORDER.slice();
       if (typeof SPELLS !== "undefined") player.spells = Object.keys(SPELLS);
+      demoQuiet();
       saveGame();
       setTimeout(() => {
         if (game.mode === "world" && !game.dialog)
@@ -367,6 +391,7 @@ if (DEMO) {
       return simTick(dt);
     }
     if (!player || !player.name || lifeMode() || !player.demo) return;
+    if (!player.fbSeen || player.fbSeen < 99) demoQuiet();
     if (demoZoneOk(player.zone)) lastOk = [player.zone, player.x, player.y];
     if (game.mode !== "world" || game.dialog) return;
     if (demoOver()) return demoEndScreen();

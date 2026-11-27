@@ -65,7 +65,7 @@ renderTutorial = function () {
 (() => {
   const st = document.createElement("style");
   st.textContent = `
-  #tut.tut-new{top:auto;bottom:25%;left:50%;transform:translateX(-50%);width:min(92%,34em);padding:.6em .9em .7em;text-align:left;pointer-events:auto;z-index:6;background:rgba(18,12,32,.94);border:3px solid var(--gold);border-radius:12px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+  #tut.tut-new{top:17%;bottom:auto;left:50%;transform:translateX(-50%);width:min(70%,34em);padding:.6em .9em .7em;text-align:left;pointer-events:auto;z-index:6;background:rgba(18,12,32,.94);border:3px solid var(--gold);border-radius:12px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
   #tut.tut-new .tut-head{display:flex;align-items:center;gap:.45em;font-family:"Pixelify Sans",sans-serif;color:var(--gold);font-size:.9em}
   #tut.tut-new .tut-dots{display:flex;gap:4px;margin-left:auto}
   #tut.tut-new .tut-dots i{width:9px;height:9px;border-radius:50%;background:#3a2a5a;border:1px solid #6a5a8a}
