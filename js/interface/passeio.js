@@ -14,9 +14,13 @@
 (() => {
   const castleSpot = (z) => {
     const c = ZONES[z].town.bld.find((b) => /^(castle|palacio|fortaleza)$/.test(b.style));
-    return c ? [c.x + (c.w >> 1), c.y + c.h + (c.w >= 16 ? 6 : 2)] : ZONES[z].town.arrive;
+    // na porta do castelo: a câmera centraliza no jogador e o castelo aparece inteiro logo acima
+    return c ? [c.x + (c.w >> 1), c.y + c.h - 2] : ZONES[z].town.arrive;
   };
   const lakeSpot = (z) => {
+    // o parque do rio (mega parque com rio, pontes e parquinho) vem primeiro
+    const P = ((window.PARK_RECTS || {})[z] || []).find((r) => r.mega) || ((window.PARK_RECTS || {})[z] || [])[0];
+    if (P) return [Math.round((P.x0 + P.x1) / 2), Math.round((P.y0 + P.y1) / 2)];
     const L = ((window.LAKES || {})[z] || [])[0];
     return L ? [Math.round((L.x0 + L.x1) / 2), L.y0 - 1] : ZONES[z].town.arrive;
   };
@@ -28,13 +32,13 @@
   // [zona, ponto, hora, dia do ano (estação), clima, legenda]
   const STOPS = () => [
     ["vila", castleSpot("vila"), 11, 3, "sol", "Cinzaluz — o castelo da Rainha Aurélia"],
-    ["vila", lakeSpot("vila"), 10, 4, "sol", "O parque do rio: parquinho, estátuas, coreto e reflexo na água"],
+    ["vila", lakeSpot("vila"), 10, 4, "sol", "O parque de Cinzaluz: jardins floridos, estátuas e parquinho"],
     ["vila", null, 11, 6, "sol", "Feira Medieval de fim de semana"],
     ["porto", castleSpot("porto"), 21.5, 12, "sol", "Palácio das Marés refletido no mar, à noite"],
     ["porto", castleSpot("porto"), 11, 12, "tempestade", "Tempestade: o mar fica bravo"],
-    ["vila", lakeSpot("vila"), 11, 27, "sol", "Inverno: neve nos telhados e rio congelado para patinar"],
+    ["vila", lakeSpot("vila"), 11, 27, "sol", "Inverno: o parque de Cinzaluz coberto de neve"],
     ["pais-jade-2", cropSpot("pais-jade-2"), 11, 19, "sol", "Outono nas roças de Jadeluz"],
-    ["pais-jade-2", castleSpot("pais-jade-2"), 10, 3, "sol", "Jadeluz, além-mar: primavera em flor"],
+    ["pais-jade-2", castleSpot("pais-jade-2"), 10, 3, "sol", "Jadeluz, além-mar: o castelo de outro país"],
     ["rosalva", castleSpot("rosalva"), 17.6, 10, "sol", "Castelo de Rosalva no pôr do sol"],
   ];
   let T = null;
