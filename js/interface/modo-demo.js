@@ -4,12 +4,13 @@
  *  - Liga com index.html?demo (ou no painel de testes: "Modo demo"). Desliga
  *    com ?nodemo ou no próprio painel.
  *  - Começa do zero, sem nada liberado: treino, mercado, o Cofre de Vesper no
- *    Bosque, o covil do Ent (a primeira runa), contar à Odelia e o Mosaico.
+ *    Bosque e o covil do Ent (a primeira runa).
  *  - Livre para explorar a primeira parte (Cinzaluz, o Bosque, as casas e o
  *    covil do Ent). As outras regiões ficam fechadas com um aviso.
  *  - Guiada: cartões de tutorial ligados, a seta dourada e um aviso do
  *    próximo objetivo a cada passo.
- *  - Termina com a tela "Fim da demo" quando o Mosaico é montado.
+ *  - Termina com a tela "Fim da demo" assim que o Ent é libertado (a primeira
+ *    runa). Ali dá para liberar as seis runas e testar todos os feitiços.
  *  - DEMO DO SIMULADOR (5 minutos, só em Cinzaluz): quem joga ganha a coroa
  *    de Aurélia e uma lista no alto da tela guia três coisas: um trabalho de
  *    verdade, conversar com um morador (menu em pizza) e governar o reino.
@@ -33,8 +34,8 @@ let DEMO = (() => {
   }
 })();
 
-/** Etapas da demo: até o Mosaico de Vesper (a primeira runa e os primeiros quebra-cabeças). */
-const DEMO_LAST = "q-mosaico";
+/** Etapas da demo: até libertar o Ent (a primeira runa). */
+const DEMO_LAST = "ent";
 const demoZoneOk = (z) => !z || /^(vila|bosque|casa|interior|escola|covil-bosque(-\d+)?)$/.test(z);
 const demoStepIdx = () => STEPS.indexOf(curStep());
 const demoLastIdx = () => STEPS.findIndex((s) => s.id === DEMO_LAST);
@@ -72,12 +73,25 @@ function demoEndScreen() {
   saveGame();
   choice(
     "Fim da demo",
-    "Você recuperou a primeira runa e decifrou os primeiros segredos de Vesper. O Ecos do Arcano continua com mais cinco Guardiões, o Porto, o Pântano, Pedravale, a Torre do Silêncio e o Simulador de Vida. Obrigado por jogar!",
+    "Você libertou o Ent e recuperou a primeira runa. O Ecos do Arcano continua com mais cinco Guardiões, o Porto, o Pântano, Pedravale, a Torre do Silêncio e o Simulador de Vida. Obrigado por jogar!",
     [
+      { t: "Testar com todas as runas", icon: "star", fn: demoAllRunes },
       { t: "Continuar explorando Cinzaluz e o Bosque", icon: "flag", fn: () => toast("A primeira parte continua aberta para explorar.", 2400) },
       { t: "Recomeçar a demo do início", icon: "scroll", fn: demoRestart },
     ],
   );
+}
+/** Depois da demo: as seis runas e todos os feitiços para testar (no treino com o Kael ou nos monstros do Bosque). */
+function demoAllRunes() {
+  player.runes = ORDER.slice();
+  if (typeof SPELLS !== "undefined") player.spells = Object.keys(SPELLS);
+  player.lvl = Math.max(player.lvl || 1, 10);
+  if (typeof maxHp === "function") ((player.hp = maxHp()), (player.mp = maxMp()));
+  saveGame();
+  say([
+    ["Demo", "As seis runas estão com você: Chama, Maré, Vento, Terra, Luz e Sombra. Combine duas runas na batalha para criar feitiços novos."],
+    ["Demo", "Teste no boneco de treino do Instrutor Kael ou enfrente os monstros do Bosque."],
+  ]);
 }
 function demoRestart() {
   clearSave();
@@ -313,7 +327,7 @@ if (DEMO) {
     };
   }
 
-  // avisa o próximo objetivo e termina a demo no fim do Mosaico
+  // avisa o próximo objetivo e termina a demo quando o Ent é libertado
   let lastStep = null;
   const upBase = update;
   update = function (dt) {

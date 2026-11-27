@@ -89,27 +89,43 @@ const PZ_MOSAIC = {
   n: "Mosaico de Vesper",
   zone: "vila",
   where: "Vila de Cinzaluz",
-  help: "Toque numa peça que esteja ao lado do espaço vazio para ela deslizar até lá. Deixe igual ao objetivo: 1, 2, 3 em cima, 4, 5, 6 no meio, 7, 8 e o vazio embaixo.",
+  help: "Toque numa peça ao lado do espaço vazio para ela deslizar até lá. Deixe igual ao objetivo: 1, 2, 3 em cima, 4, 5, 6 no meio, 7, 8 e o vazio embaixo. Peças com borda dourada já estão no lugar. Travou? Toque em Dica e a próxima peça a mover pisca.",
   win: "As cores se alinham e formam um arco-íris. No meio, gravado: \"Para Odelia, que pintava o céu.\"",
   reward: { gold: 60, xp: 70 },
   make() {
     const b = [1, 2, 3, 4, 5, 6, 7, 8, 0];
     let z = 8,
       last = -1;
-    for (let k = 0; k < 80; k++) {
+    // poucas trocas a partir da imagem certa: dá para montar em uns 10 movimentos
+    for (let k = 0; k < 14; k++) {
       const n = [z - 3, z + 3, z % 3 ? z - 1 : -1, z % 3 < 2 ? z + 1 : -1].filter((q) => q >= 0 && q < 9 && q !== last);
       const m = n[rnd(n.length)];
       [b[z], b[m]] = [b[m], b[z]];
       last = z;
       z = m;
     }
-    return { b, moves: 0 };
+    if (b.every((v, i) => v === (i === 8 ? 0 : i + 1))) [b[7], b[8]] = [b[8], b[7]];
+    return { b, moves: 0, hint: -1 };
   },
   html: (s) =>
-    `<div class="pz-mos"><div class="pz-grid g3">${s.b.map((v, i) => (v ? `<button class="pz-t" data-a="${i}" style="background:${MOSAIC_COL[v - 1]}">${v}</button>` : `<div class="pz-t empty"></div>`)).join("")}</div>
+    `<div class="pz-mos"><div class="pz-grid g3">${s.b
+      .map((v, i) => {
+        if (!v) return `<div class="pz-t empty"></div>`;
+        const certo = v === i + 1,
+          dica = i === s.hint;
+        // peça no lugar certo ganha borda dourada; a da dica pisca em branco
+        const extra = dica ? ";outline:4px solid #fff;outline-offset:-4px;animation:pzDica .6s ease-in-out infinite alternate" : certo ? ";box-shadow:inset 0 0 0 3px #ffd35a" : "";
+        return `<button class="pz-t" data-a="${i}" style="background:${MOSAIC_COL[v - 1]}${extra}">${v}${certo ? "<small style=\"position:absolute;right:4px;top:2px;font-size:.5em\">✓</small>" : ""}</button>`;
+      })
+      .join("")}</div>
     <div class="pz-goal"><small>Objetivo</small><div class="pz-grid g3 mini">${[1, 2, 3, 4, 5, 6, 7, 8, 0].map((v) => (v ? `<div class="pz-t" style="background:${MOSAIC_COL[v - 1]}">${v}</div>` : `<div class="pz-t empty"></div>`)).join("")}</div></div></div>`,
-  status: (s) => `Movimentos: ${s.moves}`,
+  status: (s) => `Movimentos: ${s.moves} · No lugar certo: ${s.b.filter((v, i) => v && v === i + 1).length}/8 <button class="pz-dica" data-a="dica" style="margin-left:.6em">Dica</button>`,
   act(s, a) {
+    if (a === "dica") {
+      s.hint = mosaicHint(s.b);
+      return;
+    }
+    s.hint = -1;
     const i = +a,
       z = s.b.indexOf(0);
     const adj = Math.abs(i - z) === 3 || (Math.abs(i - z) === 1 && Math.floor(i / 3) === Math.floor(z / 3));
@@ -119,6 +135,36 @@ const PZ_MOSAIC = {
   },
   won: (s) => s.b.every((v, i) => v === (i === 8 ? 0 : i + 1)),
 };
+
+/** Qual peça mover agora para chegar mais rápido no objetivo (busca em largura, 3×3 é pequeno). */
+function mosaicHint(b) {
+  const goal = "123456780";
+  const start = b.join("");
+  if (start === goal) return -1;
+  const prev = new Map([[start, null]]);
+  const q = [start];
+  for (let h = 0; h < q.length && q.length < 200000; h++) {
+    const cur = q[h];
+    const z = cur.indexOf("0");
+    for (const m of [z - 3, z + 3, z % 3 ? z - 1 : -1, z % 3 < 2 ? z + 1 : -1]) {
+      if (m < 0 || m > 8) continue;
+      const arr = cur.split("");
+      [arr[z], arr[m]] = [arr[m], arr[z]];
+      const nx = arr.join("");
+      if (prev.has(nx)) continue;
+      prev.set(nx, [cur, m]);
+      if (nx === goal) {
+        // volta pelo caminho até o primeiro passo
+        let k = nx,
+          step = prev.get(k);
+        while (step[0] !== start) ((k = step[0]), (step = prev.get(k)));
+        return step[1];
+      }
+      q.push(nx);
+    }
+  }
+  return -1;
+}
 
 /* ===================== 2. SELO DAS RUNAS (acender tudo) ===================== */
 const PZ_LIGHTS = {

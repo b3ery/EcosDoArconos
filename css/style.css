@@ -7365,3 +7365,7 @@ textarea {
     white-space: nowrap;
   }
 }
+
+/* Mosaico: dica pisca e o ✓ das peças no lugar */
+.pz-mos .pz-t{position:relative}
+@keyframes pzDica{from{filter:brightness(1)}to{filter:brightness(1.5)}}
